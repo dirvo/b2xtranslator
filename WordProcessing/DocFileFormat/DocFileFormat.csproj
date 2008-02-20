@@ -1,0 +1,85 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{70A244FD-C90E-4474-9E70-82BCF5147FF9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DIaLOGIKa.b2xtranslator.DocFileFormat</RootNamespace>
+    <AssemblyName>DIaLOGIKa.b2xtranslator.DocFileFormat</AssemblyName>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AutoNumberedListDataDescriptor.cs" />
+    <Compile Include="AutoNumberLevelDescriptor.cs" />
+    <Compile Include="BorderCode.cs" />
+    <Compile Include="ByteParseException.cs" />
+    <Compile Include="CharacterPropertyExceptions.cs" />
+    <Compile Include="DateAndTime.cs" />
+    <Compile Include="DocumentProperties.cs" />
+    <Compile Include="DropCapSpecifier.cs" />
+    <Compile Include="FileInformationBlock.cs" />
+    <Compile Include="FormattedDiskPage.cs" />
+    <Compile Include="FormattedDiskPageCHPX.cs" />
+    <Compile Include="FormattedDiskPagePAPX.cs" />
+    <Compile Include="LanguageID.cs" />
+    <Compile Include="LineSpacingDescriptor.cs" />
+    <Compile Include="NumberRevisionMarkData.cs" />
+    <Compile Include="OutlineLiSTData.cs" />
+    <Compile Include="ParagraphHeight.cs" />
+    <Compile Include="ParagraphProperties.cs" />
+    <Compile Include="ParagraphPropertyExceptions.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SectionProperties.cs" />
+    <Compile Include="ShadingDescriptor.cs" />
+    <Compile Include="SinglePropertyModifier.cs" />
+    <Compile Include="StyleSheet.cs" />
+    <Compile Include="StyleSheetDescription.cs" />
+    <Compile Include="StyleSheetInformation.cs" />
+    <Compile Include="TabDescriptor.cs" />
+    <Compile Include="TablePropertyExceptions.cs" />
+    <Compile Include="TextBoundary.cs" />
+    <Compile Include="Utils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\StructuredStorageReader\StructuredStorageReader.csproj">
+      <Project>{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}</Project>
+      <Name>StructuredStorageReader</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
