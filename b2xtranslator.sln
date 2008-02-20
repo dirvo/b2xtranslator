@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StructuredStorageReader", "Common\StructuredStorageReader\StructuredStorageReader.csproj", "{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompoundFileExtractTest", "Test\CompoundFileExtractTest\CompoundFileExtractTest.csproj", "{01308A7D-882B-4822-A78B-EBAD044044FC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01308A7D-882B-4822-A78B-EBAD044044FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01308A7D-882B-4822-A78B-EBAD044044FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01308A7D-882B-4822-A78B-EBAD044044FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01308A7D-882B-4822-A78B-EBAD044044FC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
