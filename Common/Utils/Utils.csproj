@@ -4,12 +4,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{01308A7D-882B-4822-A78B-EBAD044044FC}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{B44FAEE0-B32E-4682-AA42-618C893F14C6}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CompoundFileExtractTest</RootNamespace>
-    <AssemblyName>CompoundFileExtractTest</AssemblyName>
-    <StartupObject>CompoundFileExtractTest.Program</StartupObject>
+    <RootNamespace>Utils</RootNamespace>
+    <AssemblyName>Utils</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,18 +33,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="TraceLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Common\StructuredStorageReader\StructuredStorageReader.csproj">
-      <Project>{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}</Project>
-      <Name>StructuredStorageReader</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Common\Utils\Utils.csproj">
-      <Project>{B44FAEE0-B32E-4682-AA42-618C893F14C6}</Project>
-      <Name>Utils</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

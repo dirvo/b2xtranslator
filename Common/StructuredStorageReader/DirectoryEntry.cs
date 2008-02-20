@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using DIaLOGIKa.b2xtranslator.Utils;
 
 namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 {
@@ -210,7 +211,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
             if (_header.SectorSize == 512 && sizeHigh != 0x0)
             {
-                //throw new ValueNotZeroException("_ulSizeHigh");
+                TraceLogger.Warning("ul_SizeHigh of stream '" + Name + "' should be zero as sector size is 512.");
                 sizeHigh = 0x0;
             }
             SizeOfStream = ((UInt64)sizeHigh << 32) + sizeLow;

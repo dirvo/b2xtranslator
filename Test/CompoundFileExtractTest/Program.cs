@@ -32,6 +32,8 @@ using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 using System.IO;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using DIaLOGIKa.b2xtranslator.Utils;
 
 namespace CompoundFileExtractTest
 {
@@ -41,6 +43,11 @@ namespace CompoundFileExtractTest
         {            
             const int bytesToReadAtOnce = 1024;
             char[] invalidChars = Path.GetInvalidFileNameChars();
+
+            TraceLogger.LogLevel = TraceLogger.LoggingLevel.ERROR;
+            ConsoleTraceListener consoleTracer = new ConsoleTraceListener();
+            Trace.Listeners.Add(consoleTracer);
+            Trace.AutoFlush = true;
 
             if (args.Length < 1)
             {
