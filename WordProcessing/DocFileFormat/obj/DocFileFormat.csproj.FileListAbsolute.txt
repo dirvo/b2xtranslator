@@ -1,7 +1,0 @@
-C:\Documents and Settings\makz\My Documents\Projects\Dotnet\b2xtranslator\trunk\WordProcessing\DocFileFormat\obj\Debug\ResolveAssemblyReference.cache
-C:\Documents and Settings\makz\My Documents\Projects\Dotnet\b2xtranslator\trunk\WordProcessing\DocFileFormat\bin\Debug\DIaLOGIKa.b2xtranslator.DocFileFormat.dll
-C:\Documents and Settings\makz\My Documents\Projects\Dotnet\b2xtranslator\trunk\WordProcessing\DocFileFormat\bin\Debug\DIaLOGIKa.b2xtranslator.DocFileFormat.pdb
-C:\Documents and Settings\makz\My Documents\Projects\Dotnet\b2xtranslator\trunk\WordProcessing\DocFileFormat\bin\Debug\DIaLOGIKa.b2xtranslator.StructuredStorageReader.dll
-C:\Documents and Settings\makz\My Documents\Projects\Dotnet\b2xtranslator\trunk\WordProcessing\DocFileFormat\bin\Debug\DIaLOGIKa.b2xtranslator.StructuredStorageReader.pdb
-C:\Documents and Settings\makz\My Documents\Projects\Dotnet\b2xtranslator\trunk\WordProcessing\DocFileFormat\obj\Debug\DIaLOGIKa.b2xtranslator.DocFileFormat.dll
-C:\Documents and Settings\makz\My Documents\Projects\Dotnet\b2xtranslator\trunk\WordProcessing\DocFileFormat\obj\Debug\DIaLOGIKa.b2xtranslator.DocFileFormat.pdb
