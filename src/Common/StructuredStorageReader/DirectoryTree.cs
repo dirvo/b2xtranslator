@@ -33,7 +33,7 @@ using System.Collections.ObjectModel;
 namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 {
     /// <summary>
-    /// Represents the directory structure of a compount file
+    /// Represents the directory structure of a compound file
     /// Author: math
     /// </summary>
     internal class DirectoryTree
@@ -49,9 +49,9 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="fat">Handle to the Fat of the compount file</param>
-        /// <param name="header">Handle to the header of the compount file</param>
-        /// <param name="fileHandler">Handle to the file handler of the compount file</param>
+        /// <param name="fat">Handle to the Fat of the compound file</param>
+        /// <param name="header">Handle to the header of the compound file</param>
+        /// <param name="fileHandler">Handle to the file handler of the compound file</param>
         internal DirectoryTree(Fat fat, Header header, FileHandler fileHandler)
         {
             _fat = fat;
@@ -80,7 +80,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
 
         /// <summary>
-        /// Determines the directory entries in a compount file recursively
+        /// Determines the directory entries in a compound file recursively
         /// </summary>
         /// <param name="sid">start sid</param>
         private void GetAllDirectoryEntriesRecursive(UInt32 sid, string path)
@@ -194,7 +194,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         }
 
         /// <summary>
-        /// Returns all entry names contained in a compount file
+        /// Returns all entry names contained in a compound file
         /// </summary>        
         internal ReadOnlyCollection<string> GetNamesOfAllEntries()
         {
@@ -209,7 +209,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
 
         /// <summary>
-        /// Returns all entry paths contained in a compount file
+        /// Returns all entry paths contained in a compound file
         /// </summary>        
         internal ReadOnlyCollection<string> GetPathsOfAllEntries()
         {
@@ -224,7 +224,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
 
         /// <summary>
-        /// Returns all stream entry names contained in a compount file
+        /// Returns all stream entry names contained in a compound file
         /// </summary>        
         internal ReadOnlyCollection<string> GetNamesOfAllStreamEntries()
         {
@@ -242,7 +242,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
 
         /// <summary>
-        /// Returns all stream entry paths contained in a compount file
+        /// Returns all stream entry paths contained in a compound file
         /// </summary>        
         internal ReadOnlyCollection<string> GetPathsOfAllStreamEntries()
         {
@@ -260,7 +260,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
 
         /// <summary>
-        /// Returns all entries contained in a compount file
+        /// Returns all entries contained in a compound file
         /// </summary>        
         internal ReadOnlyCollection<DirectoryEntry> GetAllEntries()
         {
@@ -269,7 +269,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
 
         /// <summary>
-        /// Returns all stream entries contained in a compount file
+        /// Returns all stream entries contained in a compound file
         /// </summary>        
         internal ReadOnlyCollection<DirectoryEntry> GetAllStreamEntries()
         {

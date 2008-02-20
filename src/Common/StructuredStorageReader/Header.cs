@@ -32,7 +32,7 @@ using System.Collections.Generic;
 namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 {
     /// <summary>
-    /// Encapsulates the header of a compount file
+    /// Encapsulates the header of a compound file
     /// Author: math
     /// </summary>
     internal class Header
@@ -217,7 +217,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="fileHandler">The Handle to the file handler of the compount file</param>
+        /// <param name="fileHandler">The Handle to the file handler of the compound file</param>
         public Header(FileHandler fileHandler)
         {
             _fileHandler = fileHandler;

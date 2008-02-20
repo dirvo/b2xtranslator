@@ -53,9 +53,9 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="fat">Handle to the Fat of the compount file</param>
-        /// <param name="header">Handle to the header of the compount file</param>
-        /// <param name="fileHandler">Handle to the file handler of the compount file</param>
+        /// <param name="fat">Handle to the Fat of the compound file</param>
+        /// <param name="header">Handle to the header of the compound file</param>
+        /// <param name="fileHandler">Handle to the file handler of the compound file</param>
         /// <param name="miniStreamStart">Address of the sector where the mini stream starts</param>
         internal MiniFat(Fat fat, Header header, FileHandler fileHandler, UInt32 miniStreamStart, UInt64 sizeOfMiniStream)
             : base(header, fileHandler)

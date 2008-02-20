@@ -48,8 +48,8 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="header">Handle to the header of the compount file</param>
-        /// <param name="fileHandler">Handle to the file handler of the compount file</param>
+        /// <param name="header">Handle to the header of the compound file</param>
+        /// <param name="fileHandler">Handle to the file handler of the compound file</param>
         internal Fat(Header header, FileHandler fileHandler)
             : base(header, fileHandler)
         {            

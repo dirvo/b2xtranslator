@@ -33,7 +33,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 {
 
     /// <summary>
-    /// Encapsulates a virtual stream in a compount file 
+    /// Encapsulates a virtual stream in a compound file 
     /// Author: math
     /// </summary>
     public class VirtualStream

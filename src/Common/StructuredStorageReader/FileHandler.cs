@@ -107,7 +107,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         
 
         /// <summary>
-        /// Seeks to a given sector in the compount file.
+        /// Seeks to a given sector in the compound file.
         /// May only be used after SetHeaderReference() is called.
         /// </summary>
         internal long SeekToSector(long sector)
@@ -132,7 +132,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
 
         /// <summary>
-        /// Seeks to a given sector and position in the compount file.
+        /// Seeks to a given sector and position in the compound file.
         /// May only be used after SetHeaderReference() is called.
         /// </summary>
         internal long SeekToPositionInSector(long sector, long position)
