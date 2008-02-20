@@ -83,13 +83,12 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// Determines the directory entries in a compount file recursively
         /// </summary>
         /// <param name="sid">start sid</param>
-        private List<DirectoryEntry> GetAllDirectoryEntriesRecursive(UInt32 sid, string path)
+        private void GetAllDirectoryEntriesRecursive(UInt32 sid, string path)
         {
             DirectoryEntry entry = ReadDirectoryEntry(sid, path);
             UInt32 left = entry.LeftSiblingSid;
             UInt32 right = entry.RightSiblingSid;
             UInt32 child = entry.ChildSiblingSid;
-            List<DirectoryEntry> result = new List<DirectoryEntry>();
 
             if (_directoryEntries.Contains(entry))
             {
@@ -97,26 +96,18 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             }
             _directoryEntries.Add(entry);
 
-            List<DirectoryEntry> leftTree = new  List<DirectoryEntry>();
             if (left != SectorId.NOSTREAM)
             {
-                leftTree = GetAllDirectoryEntriesRecursive(left, path);
+                GetAllDirectoryEntriesRecursive(left, path);
             }
-            List<DirectoryEntry> rightTree = new  List<DirectoryEntry>();
             if (right != SectorId.NOSTREAM)
             {
-                rightTree = GetAllDirectoryEntriesRecursive(right, path);
+                GetAllDirectoryEntriesRecursive(right, path);
             }
-            List<DirectoryEntry> childTree = new  List<DirectoryEntry>();
             if (child != SectorId.NOSTREAM)
             {
-                childTree = GetAllDirectoryEntriesRecursive(child ,path + ((sid == 0) ? "" : entry.Name) + "\\");
+                GetAllDirectoryEntriesRecursive(child ,path + ((sid == 0) ? "" : entry.Name) + "\\");
             }
-
-            _directoryEntries.AddRange(leftTree);
-            _directoryEntries.AddRange(rightTree);
-            _directoryEntries.AddRange(childTree);
-            return result;
         }
 
 

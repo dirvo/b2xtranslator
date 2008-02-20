@@ -37,6 +37,12 @@ using DIaLOGIKa.b2xtranslator.Utils;
 
 namespace CompoundFileExtractTest
 {
+
+
+    /// <summary>
+    /// Test application which extracts streams from compound files.
+    /// Author: math
+    /// </summary>
     class Program
     {
         static void Main(string[] args)
