@@ -36,7 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 {
 
     /// <summary>
-    /// Provides methods for accessing a compount file.
+    /// Provides methods for accessing a compound file.
     /// Author: math
     /// </summary>
     public class StorageReader
@@ -50,7 +50,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
 
         /// <summary>
-        /// List of all entry names contained in a compount file
+        /// List of all entry names contained in a compound file
         /// </summary>        
         public ReadOnlyCollection<string> NamesOfAllEntries
         {
@@ -59,7 +59,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
 
         /// <summary>
-        /// List of all stream entry names contained in a compount file
+        /// List of all stream entry names contained in a compound file
         /// </summary>        
         public ReadOnlyCollection<string> NamesOfAllStreamEntries
         {
@@ -68,7 +68,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
 
         /// <summary>
-        /// List of all entry names contained in a compount file
+        /// List of all entry names contained in a compound file
         /// </summary>        
         public ReadOnlyCollection<string> PathsOfAllEntries
         {
@@ -77,7 +77,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
 
         /// <summary>
-        /// List of all stream entry names contained in a compount file
+        /// List of all stream entry names contained in a compound file
         /// </summary>        
         public ReadOnlyCollection<string> PathsOfAllStreamEntries
         {
@@ -86,7 +86,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
 
         /// <summary>
-        /// List of all entries contained in a compount file
+        /// List of all entries contained in a compound file
         /// </summary> 
         public ReadOnlyCollection<DirectoryEntry> AllEntries
         {
@@ -95,7 +95,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
 
         /// <summary> 
-        /// List of all stream entries contained in a compount file
+        /// List of all stream entries contained in a compound file
         /// </summary> 
         public ReadOnlyCollection<DirectoryEntry> AllStreamEntries
         {
@@ -104,7 +104,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
 
         /// <summary>
-        /// Initalizes a handle to a compount file with the given name
+        /// Initalizes a handle to a compound file with the given name
         /// </summary>
         /// <param name="fileName">The name of the file including its path</param>
         public StorageReader(string fileName)
