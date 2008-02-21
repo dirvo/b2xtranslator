@@ -4,19 +4,13 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{4D78B8B7-FCEB-4249-BF3D-83B9A8059870}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{0F0F6BAF-BC5D-4DC6-AE53-8257305EE5CA}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DIaLOGIKa.b2xtranslator.DocFileFormatTest</RootNamespace>
-    <AssemblyName>Test</AssemblyName>
-    <SccProjectName>
-    </SccProjectName>
-    <SccLocalPath>
-    </SccLocalPath>
-    <SccAuxPath>
-    </SccAuxPath>
-    <SccProvider>
-    </SccProvider>
+    <RootNamespace>DIaLOGIKa.b2xtranslator.CommonTranslatorLib</RootNamespace>
+    <AssemblyName>DIaLOGIKa.b2xtranslator.CommonTranslatorLib</AssemblyName>
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -41,22 +35,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="AbstractOpenXmlMapping.cs" />
+    <Compile Include="IVisitable.cs" />
+    <Compile Include="IMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Common\CommonTranslatorLib\CommonTranslatorLib.csproj">
-      <Project>{0F0F6BAF-BC5D-4DC6-AE53-8257305EE5CA}</Project>
-      <Name>CommonTranslatorLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Common\StructuredStorageReader\StructuredStorageReader.csproj">
-      <Project>{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}</Project>
-      <Name>StructuredStorageReader</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\WordProcessing\DocFileFormat\DocFileFormat.csproj">
-      <Project>{70A244FD-C90E-4474-9E70-82BCF5147FF9}</Project>
-      <Name>DocFileFormat</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

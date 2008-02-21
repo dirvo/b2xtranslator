@@ -29,10 +29,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Collections;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class StyleSheetDescription
+    public class StyleSheetDescription : IVisitable
     {
         public enum StyleKind
         {
@@ -481,5 +482,14 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             
 
         }
+
+        #region IVisitable Members
+
+        public void Convert<T>(T mapping)
+        {
+            ((IMapping<StyleSheetDescription>)mapping).Apply(this);
+        }
+
+        #endregion
     }
 }

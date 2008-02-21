@@ -4,19 +4,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{4D78B8B7-FCEB-4249-BF3D-83B9A8059870}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{4C10271C-CD9B-49F5-9479-3C6EB7404E75}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DIaLOGIKa.b2xtranslator.DocFileFormatTest</RootNamespace>
-    <AssemblyName>Test</AssemblyName>
-    <SccProjectName>
-    </SccProjectName>
-    <SccLocalPath>
-    </SccLocalPath>
-    <SccAuxPath>
-    </SccAuxPath>
-    <SccProvider>
-    </SccProvider>
+    <RootNamespace>DIaLOGIKa.b2xtranslator.OpenXmlLib</RootNamespace>
+    <AssemblyName>DIaLOGIKa.b2xtranslator.OpenXmlLib</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -41,21 +33,35 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="CommentsPart.cs" />
+    <Compile Include="ContentTypes.cs" />
+    <Compile Include="CorePropertiesPart.cs" />
+    <Compile Include="CustomXmlPart.cs" />
+    <Compile Include="CustomXmlPropertiesPart.cs" />
+    <Compile Include="FontTablePart.cs" />
+    <Compile Include="FooterPart.cs" />
+    <Compile Include="HeaderPart.cs" />
+    <Compile Include="ImagePart.cs" />
+    <Compile Include="IUniquePart.cs" />
+    <Compile Include="MainDocumentPart.cs" />
+    <Compile Include="OpenXmlPackage.cs" />
+    <Compile Include="OpenXmlPart.cs" />
+    <Compile Include="OpenXmlPartContainer.cs" />
+    <Compile Include="OpenXmlWriter.cs" />
+    <Compile Include="Presentation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Spreadsheet.cs" />
+    <Compile Include="StyleDefinitionsPart.cs" />
+    <Compile Include="ThemePart.cs" />
+    <Compile Include="WordprocessingDocument.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\CommonTranslatorLib\CommonTranslatorLib.csproj">
-      <Project>{0F0F6BAF-BC5D-4DC6-AE53-8257305EE5CA}</Project>
-      <Name>CommonTranslatorLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Common\StructuredStorageReader\StructuredStorageReader.csproj">
-      <Project>{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}</Project>
-      <Name>StructuredStorageReader</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\WordProcessing\DocFileFormat\DocFileFormat.csproj">
-      <Project>{70A244FD-C90E-4474-9E70-82BCF5147FF9}</Project>
-      <Name>DocFileFormat</Name>
+    <None Include="ClassDiagramOpenXmlLib.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ZipUtils\ZipUtils.csproj">
+      <Project>{05A5C68E-B901-4AD0-87F1-5E43DDC759CE}</Project>
+      <Name>ZipUtils</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

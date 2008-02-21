@@ -29,10 +29,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class StyleSheet
+    public class StyleSheet : IVisitable
     {
         /// <summary>
         /// The StyleSheetInformation
@@ -88,5 +89,14 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             }
 
         }
+
+        #region IVisitable Members
+
+        public void Convert<T>(T mapping)
+        {
+            ((IMapping<StyleSheet>)mapping).Apply(this);
+        }
+
+        #endregion
     }
 }

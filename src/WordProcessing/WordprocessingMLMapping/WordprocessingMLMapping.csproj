@@ -4,19 +4,13 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{4D78B8B7-FCEB-4249-BF3D-83B9A8059870}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{A4EFE5FA-BDEB-452B-8751-1A495E5C9759}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DIaLOGIKa.b2xtranslator.DocFileFormatTest</RootNamespace>
-    <AssemblyName>Test</AssemblyName>
-    <SccProjectName>
-    </SccProjectName>
-    <SccLocalPath>
-    </SccLocalPath>
-    <SccAuxPath>
-    </SccAuxPath>
-    <SccProvider>
-    </SccProvider>
+    <RootNamespace>DIaLOGIKa.b2xtranslator.WordprocessingMLMapping</RootNamespace>
+    <AssemblyName>DIaLOGIKa.b2xtranslator.WordprocessingMLMapping</AssemblyName>
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -41,19 +35,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StyleSheetMapping.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\CommonTranslatorLib\CommonTranslatorLib.csproj">
       <Project>{0F0F6BAF-BC5D-4DC6-AE53-8257305EE5CA}</Project>
       <Name>CommonTranslatorLib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Common\StructuredStorageReader\StructuredStorageReader.csproj">
-      <Project>{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}</Project>
-      <Name>StructuredStorageReader</Name>
+    <ProjectReference Include="..\..\Common\OpenXmlLib\OpenXmlLib.csproj">
+      <Project>{4C10271C-CD9B-49F5-9479-3C6EB7404E75}</Project>
+      <Name>OpenXmlLib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\WordProcessing\DocFileFormat\DocFileFormat.csproj">
+    <ProjectReference Include="..\DocFileFormat\DocFileFormat.csproj">
       <Project>{70A244FD-C90E-4474-9E70-82BCF5147FF9}</Project>
       <Name>DocFileFormat</Name>
     </ProjectReference>

@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{205DC025-20F2-49B0-B3F3-BE1611EE2619}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DIaLOGIKa.b2xtranslator.OpenXml</RootNamespace>
+    <AssemblyName>OpenXml</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CommentsPart.cs" />
+    <Compile Include="ContentTypes.cs" />
+    <Compile Include="ContentTypesPart.cs" />
+    <Compile Include="CorePropertiesPart.cs" />
+    <Compile Include="CustomXmlPart.cs" />
+    <Compile Include="CustomXmlPropertiesPart.cs" />
+    <Compile Include="FontTablePart.cs" />
+    <Compile Include="FooterPart.cs" />
+    <Compile Include="HeaderPart.cs" />
+    <Compile Include="IdPartPair.cs" />
+    <Compile Include="ImagePart.cs" />
+    <Compile Include="IUniquePart.cs" />
+    <Compile Include="MainDocumentPart.cs" />
+    <Compile Include="OpenXmlPackage.cs" />
+    <Compile Include="OpenXmlPart.cs" />
+    <Compile Include="OpenXmlPartContainer.cs" />
+    <Compile Include="OpenXmlWriter.cs" />
+    <Compile Include="Presentation.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SchemaTypes\opc\CT_Types.cs" />
+    <Compile Include="SchemaTypes\OpenXmlNode.cs" />
+    <Compile Include="Spreadsheet.cs" />
+    <Compile Include="ThemePart.cs" />
+    <Compile Include="WordprocessingDocument.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ZipUtils\ZipUtils.csproj">
+      <Project>{6310B33B-CE20-4006-86BB-D3C1C9812D22}</Project>
+      <Name>ZipUtils</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -2,26 +2,106 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StructuredStorageReader", "Common\StructuredStorageReader\StructuredStorageReader.csproj", "{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompoundFileExtractTest", "Test\CompoundFileExtractTest\CompoundFileExtractTest.csproj", "{01308A7D-882B-4822-A78B-EBAD044044FC}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WordProcessing", "WordProcessing", "{6F47D61C-D3A4-4DC1-B19A-F97AD18E6E10}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{D8DB984C-ED04-4525-9923-798363B513FC}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{D30AEB63-809F-4791-8DEF-78FB718A0716}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shell", "Shell", "{B01712A7-034B-48C4-9997-8E3613908080}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Spreadsheet", "Spreadsheet", "{C7DD1BC2-02FA-40EB-810F-43B97D0B29C3}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{23B4E6F7-CF43-4B43-ABCE-26C39E173ABD}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocFileFormat", "WordProcessing\DocFileFormat\DocFileFormat.csproj", "{70A244FD-C90E-4474-9E70-82BCF5147FF9}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocFileFormatTest", "Test\DocFileFormatTest\DocFileFormatTest.csproj", "{4D78B8B7-FCEB-4249-BF3D-83B9A8059870}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenXmlLib", "Common\OpenXmlLib\OpenXmlLib.csproj", "{4C10271C-CD9B-49F5-9479-3C6EB7404E75}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZipUtils", "Common\ZipUtils\ZipUtils.csproj", "{05A5C68E-B901-4AD0-87F1-5E43DDC759CE}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenXmlLibTest", "Test\OpenXmlLibTest\OpenXmlLibTest.csproj", "{1855519D-6C8C-44B2-B197-DB40DD648FB6}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocTranslatorTest", "Test\DocTranslatorTest\DocTranslatorTest.csproj", "{5558D1F7-91D9-47A8-B39D-AE593B3AF812}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils", "Common\Utils\Utils.csproj", "{B44FAEE0-B32E-4682-AA42-618C893F14C6}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonTranslatorLib", "Common\CommonTranslatorLib\CommonTranslatorLib.csproj", "{0F0F6BAF-BC5D-4DC6-AE53-8257305EE5CA}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordprocessingMLMapping", "WordProcessing\WordprocessingMLMapping\WordprocessingMLMapping.csproj", "{A4EFE5FA-BDEB-452B-8751-1A495E5C9759}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,19 +125,49 @@ Global
 		{4D78B8B7-FCEB-4249-BF3D-83B9A8059870}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D78B8B7-FCEB-4249-BF3D-83B9A8059870}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D78B8B7-FCEB-4249-BF3D-83B9A8059870}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C10271C-CD9B-49F5-9479-3C6EB7404E75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C10271C-CD9B-49F5-9479-3C6EB7404E75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C10271C-CD9B-49F5-9479-3C6EB7404E75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C10271C-CD9B-49F5-9479-3C6EB7404E75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05A5C68E-B901-4AD0-87F1-5E43DDC759CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05A5C68E-B901-4AD0-87F1-5E43DDC759CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05A5C68E-B901-4AD0-87F1-5E43DDC759CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05A5C68E-B901-4AD0-87F1-5E43DDC759CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1855519D-6C8C-44B2-B197-DB40DD648FB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1855519D-6C8C-44B2-B197-DB40DD648FB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1855519D-6C8C-44B2-B197-DB40DD648FB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1855519D-6C8C-44B2-B197-DB40DD648FB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5558D1F7-91D9-47A8-B39D-AE593B3AF812}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5558D1F7-91D9-47A8-B39D-AE593B3AF812}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5558D1F7-91D9-47A8-B39D-AE593B3AF812}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5558D1F7-91D9-47A8-B39D-AE593B3AF812}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B44FAEE0-B32E-4682-AA42-618C893F14C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B44FAEE0-B32E-4682-AA42-618C893F14C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B44FAEE0-B32E-4682-AA42-618C893F14C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B44FAEE0-B32E-4682-AA42-618C893F14C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F0F6BAF-BC5D-4DC6-AE53-8257305EE5CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F0F6BAF-BC5D-4DC6-AE53-8257305EE5CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F0F6BAF-BC5D-4DC6-AE53-8257305EE5CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F0F6BAF-BC5D-4DC6-AE53-8257305EE5CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4EFE5FA-BDEB-452B-8751-1A495E5C9759}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4EFE5FA-BDEB-452B-8751-1A495E5C9759}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4EFE5FA-BDEB-452B-8751-1A495E5C9759}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4EFE5FA-BDEB-452B-8751-1A495E5C9759}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7} = {D8DB984C-ED04-4525-9923-798363B513FC}
+		{4C10271C-CD9B-49F5-9479-3C6EB7404E75} = {D8DB984C-ED04-4525-9923-798363B513FC}
+		{05A5C68E-B901-4AD0-87F1-5E43DDC759CE} = {D8DB984C-ED04-4525-9923-798363B513FC}
 		{B44FAEE0-B32E-4682-AA42-618C893F14C6} = {D8DB984C-ED04-4525-9923-798363B513FC}
+		{0F0F6BAF-BC5D-4DC6-AE53-8257305EE5CA} = {D8DB984C-ED04-4525-9923-798363B513FC}
 		{01308A7D-882B-4822-A78B-EBAD044044FC} = {23B4E6F7-CF43-4B43-ABCE-26C39E173ABD}
 		{4D78B8B7-FCEB-4249-BF3D-83B9A8059870} = {23B4E6F7-CF43-4B43-ABCE-26C39E173ABD}
+		{1855519D-6C8C-44B2-B197-DB40DD648FB6} = {23B4E6F7-CF43-4B43-ABCE-26C39E173ABD}
+		{5558D1F7-91D9-47A8-B39D-AE593B3AF812} = {23B4E6F7-CF43-4B43-ABCE-26C39E173ABD}
 		{70A244FD-C90E-4474-9E70-82BCF5147FF9} = {6F47D61C-D3A4-4DC1-B19A-F97AD18E6E10}
+		{A4EFE5FA-BDEB-452B-8751-1A495E5C9759} = {6F47D61C-D3A4-4DC1-B19A-F97AD18E6E10}
 	EndGlobalSection
 EndGlobal
