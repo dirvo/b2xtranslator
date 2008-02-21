@@ -44,7 +44,7 @@
     <Compile Include="ZlibZipWriter.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="zlibwapi.dll">
+    <Content Include="..\..\..\lib\zlibwapi.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
