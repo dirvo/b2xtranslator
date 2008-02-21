@@ -132,6 +132,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
             while (true)
             {
+                // Add all addresses contained in the current difat sector except the last address (it points to next difat sector)
                 for (int i = 0; i < _addressesPerSector - 1; i++)
                 {
                     UInt32 fatSector = _fileHandler.ReadUInt32();
@@ -148,6 +149,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
                     break;
                 }
 
+                // Last address in difat sector points to next difat sector
                 UInt32 nextDiFatSector = _fileHandler.ReadUInt32();
                 if (nextDiFatSector == SectorId.FREESECT || nextDiFatSector == SectorId.ENDOFCHAIN)
                 {

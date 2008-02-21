@@ -47,6 +47,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             set 
             { 
                 _sectorShift = value;
+                // Calculate sector size
                 _sectorSize = (UInt16)Math.Pow((double)2, (double)_sectorShift);
                 if (_sectorShift != 9 && _sectorShift != 12)
                 {
@@ -69,6 +70,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             set
             {
                 _miniSectorShift = value;
+                // Calculate mini sector size
                 _miniSectorSize = (UInt16)Math.Pow((double)2, (double)_miniSectorShift);
                 if (_miniSectorShift != 6)
                 {

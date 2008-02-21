@@ -37,6 +37,10 @@ using System.Collections.Generic;
 
 namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 {
+
+    /// <summary>
+    /// Constants used to identify sectors in fat, minifat and directory
+    /// </summary>
     internal static class SectorId
 	{      
         internal const UInt32 MAXREGSECT = 0xFFFFFFFA;
@@ -48,12 +52,20 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         internal const UInt32 NOSTREAM = 0xFFFFFFFF;
 	}
 
+
+    /// <summary>
+    /// Size constants 
+    /// </summary>
     internal static class Measures
     {
         internal const int DirectoryEntrySize = 128;
         internal const int HeaderSize = 512;
     }
 
+
+    /// <summary>
+    /// Type of a directory entry
+    /// </summary>
     public enum DirectoryEntryType
     {
         STGTY_INVALID = 0,
@@ -64,6 +76,10 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         STGTY_ROOT = 5    
     }
 
+
+    /// <summary>
+    /// Color of a directory entry in the red-black-tree
+    /// </summary>
     public enum DirectoryEntryColor
     {
         DE_RED = 0,

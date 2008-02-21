@@ -81,6 +81,8 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             while (true)
             {
                 UInt32 nextSectorInStream = this.GetNextSectorInChain(result[result.Count - 1]);
+
+                // Check for invalid sectors in chain
                 if (nextSectorInStream == SectorId.DIFSECT || nextSectorInStream == SectorId.FATSECT || nextSectorInStream == SectorId.FREESECT)
                 {
                     throw new InvalidSectorInChainException();
@@ -89,7 +91,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
                 {
                     break;
                 }
-
+                                
                 if (immediateCycleCheck)
                 {
                     if (result.Contains(nextSectorInStream))
@@ -100,6 +102,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
                 result.Add(nextSectorInStream);
                 
+                // Chain too long
                 if ((UInt64)(result.Count) > maxCount)
                 {
                     throw new ChainSizeMismatchException(name);

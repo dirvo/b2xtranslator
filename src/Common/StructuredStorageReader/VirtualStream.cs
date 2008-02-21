@@ -116,6 +116,8 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// <returns></returns>
         public int Read(byte[] array, int count, int position, int offset)
         {
+            // Checks whether reading is possible
+
             if (array.Length < 1 || count < 1 || position < 0 || offset < 0)
             {
                 return 0;
@@ -142,11 +144,12 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             int totalBytesRead = 0;
             int positionInArray = offset;
           
-            // read part in first relevant sector
+            // Read part in first relevant sector
             int positionInSector = position % _fat.SectorSize;
             _fat.SeekToPositionInSector(_sectors[sectorInChain], positionInSector);
             int bytesToReadInFirstSector = (count > _fat.SectorSize - positionInSector) ? (_fat.SectorSize - positionInSector) : count;
             bytesRead = _fat.UncheckedRead(array, positionInArray, bytesToReadInFirstSector);
+            // Update variables
             _position += bytesRead;
             positionInArray += bytesRead;
             totalBytesRead += bytesRead;
@@ -156,11 +159,13 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
                 return totalBytesRead;
             }
 
-            // read full sectors
+            // Read full sectors
             while (totalBytesRead + _fat.SectorSize < count)
             {
                 _fat.SeekToPositionInSector(_sectors[sectorInChain], 0);
                 bytesRead = _fat.UncheckedRead(array, positionInArray, _fat.SectorSize);
+
+                // Update variables
                 _position += bytesRead;
                 positionInArray += bytesRead;
                 totalBytesRead += bytesRead;
@@ -171,15 +176,18 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
                 }
             }
 
-            // finished reading
+            // Finished reading
             if (totalBytesRead >= count)
             {
                 return totalBytesRead;
             }
 
-            // read remaining part in last relevant sector
+            // Read remaining part in last relevant sector
             _fat.SeekToPositionInSector(_sectors[sectorInChain], 0);
+            
             bytesRead = _fat.UncheckedRead(array, positionInArray, count - totalBytesRead);
+
+            // Update variables
             _position += bytesRead;
             positionInArray += bytesRead;
             totalBytesRead += bytesRead;

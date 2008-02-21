@@ -211,6 +211,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
             if (_header.SectorSize == 512 && sizeHigh != 0x0)
             {
+                // Must be zero according to the specification. However, this requirement can be ommited.
                 TraceLogger.Warning("ul_SizeHigh of stream '" + Name + "' should be zero as sector size is 512.");
                 sizeHigh = 0x0;
             }

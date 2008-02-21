@@ -135,6 +135,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
                 throw new WrongDirectoryEntryTypeException();
             }
 
+            // Determine whether this stream is a "normal stream" or a stream in the mini stream
             if (entry.SizeOfStream < _header.MiniSectorCutoff)
             {
                 return new VirtualStream(_miniFat, entry.StartSector, entry.SizeOfStream, path);

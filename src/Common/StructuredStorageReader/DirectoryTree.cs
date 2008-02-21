@@ -90,20 +90,26 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             UInt32 right = entry.RightSiblingSid;
             UInt32 child = entry.ChildSiblingSid;
 
+            // Check for cycle
             if (_directoryEntries.Contains(entry))
             {
                 throw new ChainCycleDetectedException("DirectoryEntries");
             }
             _directoryEntries.Add(entry);
 
+            // Left sibling
             if (left != SectorId.NOSTREAM)
             {
                 GetAllDirectoryEntriesRecursive(left, path);
             }
+
+            // Right sibling
             if (right != SectorId.NOSTREAM)
             {
                 GetAllDirectoryEntriesRecursive(right, path);
             }
+
+            // Child
             if (child != SectorId.NOSTREAM)
             {
                 GetAllDirectoryEntriesRecursive(child ,path + ((sid == 0) ? "" : entry.Name) + "\\");
