@@ -72,7 +72,7 @@ namespace DocTranslatorTest
                 }
                 else
                 {
-                    Console.WriteLine(file + " has benn fast-saved. This format is currently not supported.");
+                    Console.WriteLine(file + " has been fast-saved. This format is currently not supported.");
                 }
 
                 reader.Close();
