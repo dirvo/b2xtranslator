@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2008, DIaLOGIKa
  * All rights reserved.
  *
@@ -35,16 +35,16 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
     public class Utils
     {
-        internal static bool BitmaskToBool(Int32 value, Int32 mask)
+        public static bool BitmaskToBool(Int32 value, Int32 mask)
         {
             return ((value & mask) == mask);
         }
 
-        internal static bool IntToBool(int value)
+        public static bool IntToBool(int value)
         {
             if (value == 1)
             {
-               return true;
+                return true;
             }
             else
             {
@@ -60,17 +60,17 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             return workFile;
         }
 
-        internal static char[] ClearCharArray(char[] values)
+        public static char[] ClearCharArray(char[] values)
         {
             char[] ret = new char[values.Length];
-            for(int i=0; i<values.Length; i++)
+            for (int i = 0; i < values.Length; i++)
             {
                 ret[i] = Convert.ToChar(0);
             }
             return ret;
         }
 
-        internal static int[] ClearIntArray(int[] values)
+        public static int[] ClearIntArray(int[] values)
         {
             int[] ret = new int[values.Length];
             for (int i = 0; i < values.Length; i++)
@@ -80,7 +80,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             return ret;
         }
 
-        internal static short[] ClearShortArray(ushort[] values)
+        public static short[] ClearShortArray(ushort[] values)
         {
             short[] ret = new short[values.Length];
             for (int i = 0; i < values.Length; i++)
@@ -93,7 +93,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public static UInt32 BitArrayToUInt32(BitArray bits)
         {
             double ret = 0;
-            for(int i=0; i<bits.Count; i++)
+            for (int i = 0; i < bits.Count; i++)
             {
                 if (bits[i])
                 {
@@ -136,6 +136,5 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             return ret;
         }
-
     }
 }

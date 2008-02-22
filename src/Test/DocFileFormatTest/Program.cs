@@ -63,6 +63,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
                 else
                     tableStream = reader.GetStream("0Table");
 
+                method = method.ToUpper();
+
                 //starting
                 if (!fib.fComplex)
                 {
@@ -78,9 +80,13 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
                     {
                         testSTSH();
                     }
-                    else if (method == "BIT")
+                    else if (method == "DOP")
                     {
-                        testBIT();
+                        testDOP();
+                    }
+                    else if (method == "PERF")
+                    {
+                        testPERF();
                     }
                     else
                     {
@@ -112,11 +118,54 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
             }
         }
 
-        private static void testBIT()
+        private static void testPERF()
         {
-            //10110
-            BitArray bits = new BitArray(new bool[] {true, false, true, true, false});
-            Console.WriteLine(Utils.BitArrayToUInt32(bits));
+            //start reading bytes
+            byte[] dopBytes = new byte[fib.lcbDop];
+            tableStream.Read(dopBytes, dopBytes.Length, fib.fcDop);
+            
+            //start parsing
+            
+            //FIB
+            DateTime fibStart = DateTime.Now;
+            FileInformationBlock fib2 = new FileInformationBlock(wordDocumentStream);
+            DateTime fibEnd = DateTime.Now;
+            TimeSpan fibDiff = fibEnd.Subtract(fibStart);
+
+            //DOP
+            DateTime dopStart = DateTime.Now;
+            DocumentProperties dop = new DocumentProperties(dopBytes);
+            DateTime dopEnd = DateTime.Now;
+            TimeSpan dopDiff = dopEnd.Subtract(dopStart);
+
+            //STSH
+            DateTime stshStart = DateTime.Now;
+            StyleSheet stsh = new StyleSheet(fib, tableStream);
+            DateTime stshEnd = DateTime.Now;
+            TimeSpan stshDiff = stshEnd.Subtract(stshStart);
+
+            //FKP
+            DateTime fkpStart = DateTime.Now;
+            FormattedDiskPagePAPX.GetAllPAPXFKPs(fib, wordDocumentStream, tableStream);
+            FormattedDiskPageCHPX.GetAllCHPXFKPs(fib, wordDocumentStream, tableStream);
+            DateTime fkpEnd = DateTime.Now;
+            TimeSpan fkpDiff = fkpEnd.Subtract(fkpStart);
+
+            Console.WriteLine(
+                "Parsed FIB in: " + fibDiff.TotalMilliseconds + "ms\n" +
+                "Parsed DOP in: " + dopDiff.TotalMilliseconds + "ms\n" +
+                "Parsed STSH in: " + stshDiff.TotalMilliseconds +"ms\n" +
+                "Parsed FKPs in: " + fkpDiff.TotalMilliseconds + "ms"
+                );
+        }
+
+        private static void testDOP()
+        {
+            byte[] dopBytes = new byte[fib.lcbDop];
+            tableStream.Read(dopBytes, dopBytes.Length, fib.fcDop);
+            DocumentProperties dop = new DocumentProperties(dopBytes);
+
+            Console.WriteLine("Initial Footnote number: " + dop.nFtn);
         }
 
         /// <summary>
@@ -146,7 +195,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
                 "methods can be:\n"+
                 "FKPPAPX: prints the formatted disk pages width paragraph properties\n"+
                 "FKPCHPX: prints the formatted disk pages width character properties\n"+
-                "STSH: prints the contents of the stylesheet");
+                "STSH: prints the contents of the stylesheet\n"+
+                "DOP: prints some properties of the document\n" +
+                "PERF: performs several benchmarks");
         }
 
         /// <summary>
@@ -165,9 +216,27 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
                 {
                     Console.WriteLine("\tIdentifier: " + std.sti);
                     Console.WriteLine("\tStyle Kind: " + std.stk);
-                    Console.WriteLine("\tBased On: " + std.istdBase);
-                    Console.WriteLine("\tSemi Hidden: " + std.fSemiHidden); 
+                    Console.WriteLine("\tBased On: " + std.istdBase); 
                     Console.WriteLine("\tName: " + std.xstzName);
+
+                    if (std.papx != null)
+                    {
+                        Console.WriteLine("\t\tPAPX modifier:");
+                        foreach (SinglePropertyModifier sprm in std.papx.grpprl)
+                        {
+                            Console.WriteLine(String.Format("\t\tSPRM: modifies " + sprm.Type + " property 0x{0:x4} (" + sprm.Arguments.Length + " bytes)", sprm.OpCode));
+                        }
+                    }
+
+                    if (std.chpx != null)
+                    {
+                        Console.WriteLine("\t\tCHPX modifier:");
+                        foreach (SinglePropertyModifier sprm in std.chpx.grpprl)
+                        {
+                            Console.WriteLine(String.Format("\t\tSPRM: modifies " + sprm.Type + " property 0x{0:x4} (" + sprm.Arguments.Length + " bytes)", sprm.OpCode));
+                        }
+                    }
+
                 }
                 else
                 {

@@ -43,11 +43,14 @@
   <ItemGroup>
     <Compile Include="AutoNumberedListDataDescriptor.cs" />
     <Compile Include="AutoNumberLevelDescriptor.cs" />
+    <Compile Include="AutoSummaryInfo.cs" />
     <Compile Include="BorderCode.cs" />
     <Compile Include="ByteParseException.cs" />
     <Compile Include="CharacterPropertyExceptions.cs" />
     <Compile Include="DateAndTime.cs" />
     <Compile Include="DocumentProperties.cs" />
+    <Compile Include="DocumentTypographyInfo.cs" />
+    <Compile Include="DrawingObjectGrid.cs" />
     <Compile Include="DropCapSpecifier.cs" />
     <Compile Include="FileInformationBlock.cs" />
     <Compile Include="FormattedDiskPage.cs" />

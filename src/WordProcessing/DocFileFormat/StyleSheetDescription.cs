@@ -450,8 +450,12 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                         //first upx is PAPX, second CHPX
                         switch (i)
                         {
-                            case 0: this.papx = new ParagraphPropertyExceptions(upxBytes); break;
-                            case 1: this.chpx = new CharacterPropertyExceptions(upxBytes); break;
+                            case 0: 
+                                this.papx = new ParagraphPropertyExceptions(upxBytes); 
+                                break;
+                            case 1: 
+                                this.chpx = new CharacterPropertyExceptions(upxBytes); 
+                                break;
                         }
                     }
                     else if (this.stk == StyleKind.list)
@@ -475,11 +479,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 //increase the offset for the next run
                 upxOffset += (2 + cbUPX );
             }
-
-            
-
-            
-            
 
         }
 
