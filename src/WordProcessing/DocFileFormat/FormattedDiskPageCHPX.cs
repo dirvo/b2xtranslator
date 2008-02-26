@@ -46,6 +46,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         public FormattedDiskPageCHPX(VirtualStream wordStream, Int32 offset)
         {
+            this.Type = FKPType.Character;
             this.WordStream = wordStream;
             this.Offset = offset;
 

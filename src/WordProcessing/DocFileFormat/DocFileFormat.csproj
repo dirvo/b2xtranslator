@@ -63,6 +63,8 @@
     <Compile Include="ParagraphHeight.cs" />
     <Compile Include="ParagraphProperties.cs" />
     <Compile Include="ParagraphPropertyExceptions.cs" />
+    <Compile Include="PieceDescriptor.cs" />
+    <Compile Include="PieceTable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SectionProperties.cs" />
     <Compile Include="ShadingDescriptor.cs" />
@@ -74,6 +76,7 @@
     <Compile Include="TablePropertyExceptions.cs" />
     <Compile Include="TextBoundary.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="WordDocument.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\CommonTranslatorLib\CommonTranslatorLib.csproj">

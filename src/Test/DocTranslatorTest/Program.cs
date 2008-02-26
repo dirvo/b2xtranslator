@@ -51,23 +51,29 @@ namespace DocTranslatorTest
                         xws.Indent = true;
                         xws.ConformanceLevel = ConformanceLevel.Document;
 
-                        Stream stream = doc.StyleDefinitionsPart.GetStream();
-                        XmlWriter writer = XmlWriter.Create(doc.StyleDefinitionsPart.GetStream(), xws);
-                        //writer = new XmlTextWriter(stream, Encoding.UTF8);
+                        XmlWriter writer = null;
 
-                        ////writer.WriteStartDocument();
-                        ////writer.WriteStartElement("styles", OpenXmlNamespaces.WordprocessingML);
-
-                        ////writer.WriteEndElement();
-                        ////writer.WriteEndDocument();
-                        
-                        ////writer.Flush();
-                        ////AddContent(writer);
+                        //Write Styles.xml
+                        writer = XmlWriter.Create(doc.StyleDefinitionsPart.GetStream(), xws);
                         StyleSheetMapping mapping = new StyleSheetMapping(writer);
                         StyleSheet stsh = new StyleSheet(fib, tableStream);
-
                         stsh.Convert(mapping);
                         writer.Flush();
+
+                        //Write Document.xml
+                        writer = XmlWriter.Create(doc.MainDocumentPart.GetStream(), xws);
+                        DocumentMapping docMapping = new DocumentMapping(writer);
+                        writer.WriteStartDocument();
+                        writer.WriteStartElement("w", "document", OpenXmlNamespaces.WordprocessingML);
+                        writer.WriteStartElement("w", "body", OpenXmlNamespaces.WordprocessingML);
+                        foreach(FormattedDiskPagePAPX fkp in FormattedDiskPagePAPX.GetAllPAPXFKPs(fib, wordDocumentStream, tableStream))
+                        {
+                            fkp.Convert(docMapping);
+                        }
+                        writer.WriteEndElement();
+                        writer.WriteEndElement();
+                        writer.WriteEndDocument();
+                        writer.Flush();   
                     }
                 }
                 else

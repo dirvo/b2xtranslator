@@ -482,6 +482,23 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         }
 
+        /// <summary>
+        /// Returns the style id.<br/>
+        /// This will be the value of the enum, if it is a default style.
+        /// </summary>
+        /// <returns>The id</returns>
+        public string getStyleIdentifier()
+        {
+            if (this.sti != StyleIdentifier.User)
+            {
+                return this.sti.ToString();
+            }
+            else
+            {
+                return this.xstzName.Replace(" ", "");
+            }
+        }
+
         #region IVisitable Members
 
         public void Convert<T>(T mapping)

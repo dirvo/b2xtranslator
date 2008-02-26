@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
@@ -54,6 +55,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         public FormattedDiskPagePAPX(VirtualStream wordStream, Int32 offset)
         {
+            this.Type = FKPType.Paragraph;
             this.WordStream = wordStream;
             this.Offset = offset;
 
@@ -135,7 +137,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             List<FormattedDiskPagePAPX> list = new List<FormattedDiskPagePAPX>();
 
             //get bintable for PAPX
-            //tableStream.Seek(fib.fcPlcfbtePapx, System.IO.SeekOrigin.Begin);
             byte[] binTablePapx = new byte[fib.lcbPlcfbtePapx];
             tableStream.Read(binTablePapx, binTablePapx.Length, (int)fib.fcPlcfbtePapx);
 
@@ -157,5 +158,14 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             return list;
         }
+
+        #region IVisitable Members
+
+        public void Convert<T>(T mapping)
+        {
+            ((IMapping<FormattedDiskPagePAPX>)mapping).Apply(this);
+        }
+
+        #endregion
     }
 }

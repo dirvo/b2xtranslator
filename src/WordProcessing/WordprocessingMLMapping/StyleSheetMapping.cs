@@ -24,7 +24,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _writer.WriteStartDocument();
             _writer.WriteStartElement("w", "styles", OpenXmlNamespaces.WordprocessingML);
 
-
             foreach (StyleSheetDescription style in visited.Styles)
             {
                 if (style != null)
@@ -36,12 +35,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _writer.WriteEndElement();
             _writer.WriteEndDocument();
         }
-
         
         public void Apply(StyleSheetDescription visited)
         {
             _writer.WriteStartElement("w", "style", OpenXmlNamespaces.WordprocessingML);
-            _writer.WriteAttributeString("w", "styleId", visited.xstzName);
+            
+            _writer.WriteAttributeString("w", "styleId", OpenXmlNamespaces.WordprocessingML, visited.getStyleIdentifier());
 
             _writer.WriteEndElement();
         }

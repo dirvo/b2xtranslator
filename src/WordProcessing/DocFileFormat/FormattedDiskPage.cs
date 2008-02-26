@@ -29,11 +29,23 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class FormattedDiskPage
+    public class FormattedDiskPage : IVisitable
     {
+        public enum FKPType
+        {
+            Character,
+            Paragraph
+        }
+
+        /// <summary>
+        /// Specifies the type of the FKP
+        /// </summary>
+        public FKPType Type;
+
         /// <summary>
         /// The WordDocument stream
         /// </summary>
@@ -67,5 +79,14 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             return Utils.GetHashDump(bytes);
         }
+
+        #region IVisitable Members
+
+        public void Convert<T>(T mapping)
+        {
+            ((IMapping<FormattedDiskPage>)mapping).Apply(this);
+        }
+
+        #endregion
     }
 }

@@ -88,6 +88,10 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
                     {
                         testPERF();
                     }
+                    else if (method == "PCT")
+                    {
+                        testPieceTable();
+                    }
                     else
                     {
                         printUsage();
@@ -115,6 +119,18 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
             {
                 if(reader != null)
                 reader.Close();
+            }
+        }
+
+        private static void testPieceTable()
+        {
+            PieceTable pct = new PieceTable(fib, tableStream);
+
+            Console.WriteLine("There are " + pct.Pieces.Count + " pieces in the table");
+            
+            foreach (PieceDescriptor pcd in pct.Pieces)
+            {
+                Console.WriteLine("\t"+pcd.cpStart + " - " + pcd.cpEnd + " : " + pcd.encoding.ToString() + " , starts at 0x" + String.Format("{0:x04}", pcd.fc));
             }
         }
 
@@ -146,16 +162,16 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
 
             //FKP
             DateTime fkpStart = DateTime.Now;
-            FormattedDiskPagePAPX.GetAllPAPXFKPs(fib, wordDocumentStream, tableStream);
-            FormattedDiskPageCHPX.GetAllCHPXFKPs(fib, wordDocumentStream, tableStream);
+            List<FormattedDiskPagePAPX> papxe = FormattedDiskPagePAPX.GetAllPAPXFKPs(fib, wordDocumentStream, tableStream);
+            List<FormattedDiskPageCHPX> chpxe = FormattedDiskPageCHPX.GetAllCHPXFKPs(fib, wordDocumentStream, tableStream);
             DateTime fkpEnd = DateTime.Now;
             TimeSpan fkpDiff = fkpEnd.Subtract(fkpStart);
 
             Console.WriteLine(
-                "Parsed FIB in: " + fibDiff.TotalMilliseconds + "ms\n" +
-                "Parsed DOP in: " + dopDiff.TotalMilliseconds + "ms\n" +
-                "Parsed STSH in: " + stshDiff.TotalMilliseconds +"ms\n" +
-                "Parsed FKPs in: " + fkpDiff.TotalMilliseconds + "ms"
+                "Parsed File Information Block in: " + fibDiff.TotalMilliseconds + "ms\n" +
+                "Parsed Document Properties in: " + dopDiff.TotalMilliseconds + "ms\n" +
+                "Parsed Stylesheet with " + stsh.Styles.Count + " styles in: " + stshDiff.TotalMilliseconds +"ms\n" +
+                "Parsed " + (papxe.Count + chpxe.Count) + " Formatted Disk Pages in: " + fkpDiff.TotalMilliseconds + "ms"
                 );
         }
 
@@ -193,6 +209,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
         {
             Console.WriteLine("Usage: Test {filename} {method}\n"+
                 "methods can be:\n"+
+                "PCT: prints the text pieces of the piece table" +
                 "FKPPAPX: prints the formatted disk pages width paragraph properties\n"+
                 "FKPCHPX: prints the formatted disk pages width character properties\n"+
                 "STSH: prints the contents of the stylesheet\n"+
