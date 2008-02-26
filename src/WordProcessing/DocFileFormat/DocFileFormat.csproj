@@ -66,6 +66,7 @@
     <Compile Include="PieceDescriptor.cs" />
     <Compile Include="PieceTable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyExceptions.cs" />
     <Compile Include="SectionProperties.cs" />
     <Compile Include="ShadingDescriptor.cs" />
     <Compile Include="SinglePropertyModifier.cs" />

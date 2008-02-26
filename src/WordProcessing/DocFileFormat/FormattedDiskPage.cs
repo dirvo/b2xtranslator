@@ -33,7 +33,7 @@ using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class FormattedDiskPage : IVisitable
+    public class FormattedDiskPage
     {
         public enum FKPType
         {
@@ -72,21 +72,10 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <returns>The hex dump of the FKP as string</returns>
         public override string ToString()
         {
-            int colCount = 16;
-
             byte[] bytes = new byte[512];
             this.WordStream.Read(bytes, 512, this.Offset);
 
             return Utils.GetHashDump(bytes);
         }
-
-        #region IVisitable Members
-
-        public void Convert<T>(T mapping)
-        {
-            ((IMapping<FormattedDiskPage>)mapping).Apply(this);
-        }
-
-        #endregion
     }
 }

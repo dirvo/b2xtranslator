@@ -92,6 +92,10 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
                     {
                         testPieceTable();
                     }
+                    else if (method == "TEXT")
+                    {
+                        testText();
+                    }
                     else
                     {
                         printUsage();
@@ -120,6 +124,14 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
                 if(reader != null)
                 reader.Close();
             }
+        }
+
+        private static void testText()
+        {
+            WordDocument doc = new WordDocument(file);
+            char[] chars = doc.TextPart.ToArray();
+            string s = new string(chars);
+            Console.WriteLine(s);
         }
 
         private static void testPieceTable()

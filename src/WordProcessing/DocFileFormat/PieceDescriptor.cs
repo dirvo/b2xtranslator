@@ -1,11 +1,11 @@
-﻿/*
+/*
  * Copyright (c) 2008, DIaLOGIKa
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
+ *        notice, this list of conditions and the following disclaimer.
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
@@ -24,56 +24,57 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Collections.Generic;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.OpenXmlLib;
+using System.Collections;
 
-namespace DIaLOGIKa.b2xtranslator.WordprocessingML
+namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public enum WordprocessingDocumentType
+    public class PieceDescriptor
     {
-        Document,
-        MacroEnabledDocument,
-        MacroEnabledTemplate,
-        Template
-    }
+        /// <summary>
+        /// File offset of beginning of piece. <br/>
+        /// This is relative to the beginning of the WordDocument stream.
+        /// </summary>
+        public UInt16 fc;
 
-    public class WordprocessingDocument : OpenXmlPackage
-    {
-        protected WordprocessingDocumentType _documentType;
-        protected CustomXmlPropertiesPart _customFilePropertiesPart;
-        protected MainDocumentPart _mainDocumentPart;
-        
-        protected WordprocessingDocument(string fileName)
-            : base(fileName)
+        /// <summary>
+        /// Character start position of this piece.<br/>
+        /// </summary>
+        public Int32 cpStart;
+
+        /// <summary>
+        /// Character end position of this piece<br/>
+        /// </summary>
+        public Int32 cpEnd;
+
+        /// <summary>
+        /// The encoding of the piece
+        /// </summary>
+        public Encoding encoding;
+
+        /// <summary>
+        /// Parses the bytes to retrieve a PieceDescriptor
+        /// </summary>
+        /// <param name="bytes">The bytes</param>
+        public PieceDescriptor(byte[] bytes)
         {
-            _mainDocumentPart = new MainDocumentPart(this);
-            this.AddPart(_mainDocumentPart);
-        }
+            int encodingMask = (int)System.BitConverter.ToUInt16(bytes, 4);
 
-        public static WordprocessingDocument Create(string fileName, WordprocessingDocumentType type)
-        {
-            WordprocessingDocument doc = new WordprocessingDocument(fileName);
-            doc.DocumentType = type;
-
-            return doc;
-        }
-
-        public WordprocessingDocumentType DocumentType
-        {
-            get { return _documentType; }
-            set { _documentType = value; }
-        }
-
-        public CustomXmlPropertiesPart CustomFilePropertiesPart
-        {
-            get { return _customFilePropertiesPart; }
-        }
-
-        public MainDocumentPart MainDocumentPart
-        {
-            get { return _mainDocumentPart; }
+            //find encoding and offset
+            encodingMask = encodingMask >> 14;
+            if (encodingMask == 1)
+            {
+                this.encoding = Encoding.GetEncoding(1252);
+                this.fc = (UInt16)(System.BitConverter.ToUInt16(bytes, 2) / 2);
+            }
+            else
+            {
+                this.encoding = Encoding.Unicode;
+                this.fc = System.BitConverter.ToUInt16(bytes, 2);
+            }
         }
     }
 }

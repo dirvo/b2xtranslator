@@ -33,9 +33,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingML
 {
     public class MainDocumentPart : OpenXmlPart, IUniquePart
     {
+        protected StyleDefinitionsPart _styleDefinitionsPart;
+        
         public MainDocumentPart(OpenXmlPartContainer parent)
             : base(parent)
         {
+            _styleDefinitionsPart = new StyleDefinitionsPart(this);
+            this.AddPart(_styleDefinitionsPart);
         }
 
         public override string ContentType
@@ -50,6 +54,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingML
 
         public override string TargetName { get { return "document"; } }
         public override string TargetDirectory { get { return "word"; } }
-        
+
+        public StyleDefinitionsPart StyleDefinitionsPart
+        {
+            get { return _styleDefinitionsPart; }
+        }
     }
 }

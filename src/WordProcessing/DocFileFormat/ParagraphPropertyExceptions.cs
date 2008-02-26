@@ -31,19 +31,13 @@ using System.Text;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class ParagraphPropertyExceptions
+    public class ParagraphPropertyExceptions : PropertyExceptions
     {
         /// <summary>
         /// Index to style descriptor of the style from which the 
         /// paragraph inherits its paragraph and character properties
         /// </summary>
         public UInt16 istd;
-
-        /// <summary>
-        /// A list of the sprms that encode the differences between 
-        /// PAP for a paragraph and the PAP for the style used.
-        /// </summary>
-        public List<SinglePropertyModifier> grpprl;
 
         /// <summary>
         /// Creates a PAPX wich doesn't modify anything.<br/>

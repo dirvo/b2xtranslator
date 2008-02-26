@@ -1,3 +1,29 @@
+/*
+ * Copyright (c) 2008, DIaLOGIKa
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *        notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of DIaLOGIKa nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY DIaLOGIKa ''AS IS'' AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL DIaLOGIKa BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,10 +39,7 @@ namespace DocTranslatorTest
 {
     class Program
     {
-        private static StorageReader reader;
-        private static VirtualStream wordDocumentStream, tableStream;
-        private static FileInformationBlock fib;
-        private static string file, method;
+        private static string file;
 
         static void Main(string[] args)
         {
@@ -25,24 +48,13 @@ namespace DocTranslatorTest
                 //parse arguments
                 parseArgs(args);
 
-                reader = new StorageReader(file);
-
-                //get the "WordDocument" stream
-                wordDocumentStream = reader.GetStream("WordDocument");
-
-                //parse the FIB
-                fib = new FileInformationBlock(wordDocumentStream);
+                //parse the document
+                WordDocument doc = new WordDocument(file);
 
                 //starting
-                if (!fib.fComplex)
+                if (!doc.FIB.fComplex)
                 {
-                    //get the tablestream
-                    if (fib.fWhichTblStm)
-                        tableStream = reader.GetStream("1Table");
-                    else
-                        tableStream = reader.GetStream("0Table");
-
-                    using (WordprocessingDocument doc = WordprocessingDocument.Create(file + "x", WordprocessingDocumentType.Document))
+                    using (WordprocessingDocument docx = WordprocessingDocument.Create(file + "x", WordprocessingDocumentType.Document))
                     {
                         XmlWriterSettings xws = new XmlWriterSettings();
                         xws.OmitXmlDeclaration = false;
@@ -54,34 +66,20 @@ namespace DocTranslatorTest
                         XmlWriter writer = null;
 
                         //Write Styles.xml
-                        writer = XmlWriter.Create(doc.StyleDefinitionsPart.GetStream(), xws);
-                        StyleSheetMapping mapping = new StyleSheetMapping(writer);
-                        StyleSheet stsh = new StyleSheet(fib, tableStream);
-                        stsh.Convert(mapping);
+                        writer = XmlWriter.Create(docx.MainDocumentPart.StyleDefinitionsPart.GetStream(), xws);
+                        doc.Styles.Convert(new StyleSheetMapping(writer));
                         writer.Flush();
 
                         //Write Document.xml
-                        writer = XmlWriter.Create(doc.MainDocumentPart.GetStream(), xws);
-                        DocumentMapping docMapping = new DocumentMapping(writer);
-                        writer.WriteStartDocument();
-                        writer.WriteStartElement("w", "document", OpenXmlNamespaces.WordprocessingML);
-                        writer.WriteStartElement("w", "body", OpenXmlNamespaces.WordprocessingML);
-                        foreach(FormattedDiskPagePAPX fkp in FormattedDiskPagePAPX.GetAllPAPXFKPs(fib, wordDocumentStream, tableStream))
-                        {
-                            fkp.Convert(docMapping);
-                        }
-                        writer.WriteEndElement();
-                        writer.WriteEndElement();
-                        writer.WriteEndDocument();
-                        writer.Flush();   
+                        writer = XmlWriter.Create(docx.MainDocumentPart.GetStream(), xws);
+                        doc.Convert(new TextPartMapping(writer));
+                        writer.Flush();
                     }
                 }
                 else
                 {
                     Console.WriteLine(file + " has been fast-saved. This format is currently not supported.");
                 }
-
-                reader.Close();
             //}
             //catch (ArgumentException ae)
             //{

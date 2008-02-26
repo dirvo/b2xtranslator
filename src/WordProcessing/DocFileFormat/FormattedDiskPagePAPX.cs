@@ -158,14 +158,5 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             return list;
         }
-
-        #region IVisitable Members
-
-        public void Convert<T>(T mapping)
-        {
-            ((IMapping<FormattedDiskPagePAPX>)mapping).Apply(this);
-        }
-
-        #endregion
     }
 }
