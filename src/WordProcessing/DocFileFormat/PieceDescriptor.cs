@@ -38,22 +38,16 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// File offset of beginning of piece. <br/>
         /// This is relative to the beginning of the WordDocument stream.
         /// </summary>
-        public UInt16 fc;
-
-        /// <summary>
-        /// Character start position of this piece.<br/>
-        /// </summary>
-        public Int32 cpStart;
-
-        /// <summary>
-        /// Character end position of this piece<br/>
-        /// </summary>
-        public Int32 cpEnd;
+        public UInt32 fc;
 
         /// <summary>
         /// The encoding of the piece
         /// </summary>
         public Encoding encoding;
+
+        public int cpStart;
+
+        public int cpEnd;
 
         /// <summary>
         /// Parses the bytes to retrieve a PieceDescriptor
@@ -61,19 +55,32 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <param name="bytes">The bytes</param>
         public PieceDescriptor(byte[] bytes)
         {
-            int encodingMask = (int)System.BitConverter.ToUInt16(bytes, 4);
-
-            //find encoding and offset
-            encodingMask = encodingMask >> 14;
-            if (encodingMask == 1)
+            if (bytes.Length == 8)
             {
-                this.encoding = Encoding.GetEncoding(1252);
-                this.fc = (UInt16)(System.BitConverter.ToUInt16(bytes, 2) / 2);
+                //get the fc value
+                UInt32 fcValue = System.BitConverter.ToUInt32(bytes, 2);
+
+                //get the flag
+                bool flag = Utils.BitmaskToBool((Int32)fcValue, 0x40000000);
+
+                //delete the flag
+                fcValue = fcValue & 0xBFFFFFFF;
+
+                ////find encoding and offset
+                if (flag)
+                {
+                    this.encoding = Encoding.GetEncoding(1252);
+                    this.fc = (UInt32)(fcValue / 2);
+                }
+                else
+                {
+                    this.encoding = Encoding.Unicode;
+                    this.fc = fcValue;
+                }
             }
             else
             {
-                this.encoding = Encoding.Unicode;
-                this.fc = System.BitConverter.ToUInt16(bytes, 2);
+                throw new ByteParseException("PCD");
             }
         }
     }

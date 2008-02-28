@@ -33,7 +33,7 @@ using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class StyleSheetDescription : IVisitable
+    public class StyleSheetDescription
     {
         public enum StyleKind
         {
@@ -245,7 +245,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// base style 
         /// </summary>
-        public StyleIdentifier istdBase;
+        public UInt32 istdBase;
 
         /// <summary>
         /// number of UPXs (and UPEs) 
@@ -255,7 +255,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// next style
         /// </summary>
-        public StyleIdentifier istdNext;
+        public UInt32 istdNext;
 
         /// <summary>
         /// offset to end of upx's, start of upe's 
@@ -321,7 +321,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// Is this style linked to another?
         /// </summary>
-        public StyleIdentifier istdLink;
+        public UInt32 istdLink;
 
         /// <summary>
         /// Style has RevMarking history 
@@ -356,68 +356,89 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public TablePropertyExceptions tapx;
 
-        public StyleSheetDescription(byte[] bytes)
+        public StyleSheetDescription(byte[] bytes, int cbStdBase)
         {
             BitArray bits = new BitArray(bytes);
 
-            //parsing the fix part
+            //parsing the base (fix part)
 
-            //sti
-            BitArray stiBits = Utils.BitArrayCopy(bits, 0, 12);
-            this.sti = (StyleIdentifier)Utils.BitArrayToUInt32(stiBits);
-            //flags
-            this.fScratch = bits[12];
-            this.fInvalHeight = bits[13];
-            this.fHasUpe = bits[14];
-            this.fMassCopy = bits[15];
-            //stk
-            BitArray stkBits = Utils.BitArrayCopy(bits, 16, 4);
-            this.stk = (StyleKind)Utils.BitArrayToUInt32(stkBits);
-            //istdBase
-            BitArray istdBits = Utils.BitArrayCopy(bits, 20, 12);
-            this.istdBase = (StyleIdentifier)Utils.BitArrayToUInt32(istdBits);
-            //cupx
-            BitArray cupxBits = Utils.BitArrayCopy(bits, 32, 4);
-            this.cupx = (UInt16)Utils.BitArrayToUInt32(cupxBits);
-            //istdNext
-            BitArray istdNextBits = Utils.BitArrayCopy(bits, 36, 12);
-            this.istdNext = (StyleIdentifier)Utils.BitArrayToUInt32(istdNextBits);
-            //bchUpe
-            BitArray bchBits = Utils.BitArrayCopy(bits, 48, 16);
-            this.bchUpe = (UInt16)Utils.BitArrayToUInt32(bchBits);
-            //flags
-            this.fAutoRedef = bits[64];
-            this.fHidden = bits[65];
-            this.f97LidsSet = bits[66];
-            this.fCopyLang = bits[67];
-            this.fPersonalCompose = bits[68];
-            this.fPersonalReply = bits[69];
-            this.fPersonal = bits[70];
-            this.fNoHtmlExport = bits[71];
-            this.fSemiHidden = bits[72];
-            this.fLocked = bits[73];
-            this.fInternalUse = bits[74];
-            //istdLink
-            BitArray istdLinkBits = Utils.BitArrayCopy(bits, 80, 12);
-            this.istdLink = (StyleIdentifier)Utils.BitArrayToUInt32(istdLinkBits);
-            //fHasOriginalStyle
-            this.fHasOriginalStyle = bits[92];
-            //rsid
-            BitArray rsidBits = Utils.BitArrayCopy(bits, 96, 32);
-            this.rsid = Utils.BitArrayToUInt32(rsidBits);
+            if (cbStdBase >= 2)
+            {
+                //sti
+                BitArray stiBits = Utils.BitArrayCopy(bits, 0, 12);
+                this.sti = (StyleIdentifier)Utils.BitArrayToUInt32(stiBits);
+                //flags
+                this.fScratch = bits[12];
+                this.fInvalHeight = bits[13];
+                this.fHasUpe = bits[14];
+                this.fMassCopy = bits[15];
+            }
+            if (cbStdBase >= 4)
+            {
+                //stk
+                BitArray stkBits = Utils.BitArrayCopy(bits, 16, 4);
+                this.stk = (StyleKind)Utils.BitArrayToUInt32(stkBits);
+                //istdBase
+                BitArray istdBits = Utils.BitArrayCopy(bits, 20, 12);
+                this.istdBase = (UInt32)Utils.BitArrayToUInt32(istdBits);
+            }
+            if (cbStdBase >= 6)
+            {
+                //cupx
+                BitArray cupxBits = Utils.BitArrayCopy(bits, 32, 4);
+                this.cupx = (UInt16)Utils.BitArrayToUInt32(cupxBits);
+                //istdNext
+                BitArray istdNextBits = Utils.BitArrayCopy(bits, 36, 12);
+                this.istdNext = (UInt32)Utils.BitArrayToUInt32(istdNextBits);
+            }
+            if (cbStdBase >= 8)
+            {
+                //bchUpe
+                BitArray bchBits = Utils.BitArrayCopy(bits, 48, 16);
+                this.bchUpe = (UInt16)Utils.BitArrayToUInt32(bchBits);
+            }
+            if (cbStdBase >= 10)
+            {
+                //flags
+                this.fAutoRedef = bits[64];
+                this.fHidden = bits[65];
+                this.f97LidsSet = bits[66];
+                this.fCopyLang = bits[67];
+                this.fPersonalCompose = bits[68];
+                this.fPersonalReply = bits[69];
+                this.fPersonal = bits[70];
+                this.fNoHtmlExport = bits[71];
+                this.fSemiHidden = bits[72];
+                this.fLocked = bits[73];
+                this.fInternalUse = bits[74];
+            }
+            if (cbStdBase >= 12)
+            {
+                //istdLink
+                BitArray istdLinkBits = Utils.BitArrayCopy(bits, 80, 12);
+                this.istdLink = (UInt32)Utils.BitArrayToUInt32(istdLinkBits);
+                //fHasOriginalStyle
+                this.fHasOriginalStyle = bits[92];
+            }
+            if (cbStdBase >= 16)
+            {
+                //rsid
+                BitArray rsidBits = Utils.BitArrayCopy(bits, 96, 32);
+                this.rsid = Utils.BitArrayToUInt32(rsidBits);
+            }
 
             //parsing the variable part
 
             //xstz
-            byte characterCount = bytes[18];
+            byte characterCount = bytes[cbStdBase];
             //characters are zero-terminated, so 1 char has 2 bytes:
             byte[] name = new byte[characterCount * 2];
-            Array.Copy(bytes, 20, name, 0, name.Length);
+            Array.Copy(bytes, cbStdBase+2, name, 0, name.Length);
             //remove zero-termination
             this.xstzName = Encoding.Unicode.GetString(name);
 
             //parse the UPX structs
-            int upxOffset = 18 + 1+ (characterCount * 2) + 2;
+            int upxOffset = cbStdBase + 1 + (characterCount * 2) + 2;
             for (int i = 0; i < this.cupx; i++)
             {
                 //find the next even byte border
@@ -481,31 +502,5 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             }
 
         }
-
-        /// <summary>
-        /// Returns the style id.<br/>
-        /// This will be the value of the enum, if it is a default style.
-        /// </summary>
-        /// <returns>The id</returns>
-        public string getStyleIdentifier()
-        {
-            if (this.sti != StyleIdentifier.User)
-            {
-                return this.sti.ToString();
-            }
-            else
-            {
-                return this.xstzName.Replace(" ", "");
-            }
-        }
-
-        #region IVisitable Members
-
-        public void Convert<T>(T mapping)
-        {
-            ((IMapping<StyleSheetDescription>)mapping).Apply(this);
-        }
-
-        #endregion
     }
 }

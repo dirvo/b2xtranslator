@@ -1,12 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StructuredStorageReader", "Common\StructuredStorageReader\StructuredStorageReader.csproj", "{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompoundFileExtractTest", "Test\CompoundFileExtractTest\CompoundFileExtractTest.csproj", "{01308A7D-882B-4822-A78B-EBAD044044FC}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
@@ -103,16 +97,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordprocessingMLMapping", "
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StructuredStorageReader", "Common\StructuredStorageReader\StructuredStorageReader.csproj", "{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{01308A7D-882B-4822-A78B-EBAD044044FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{01308A7D-882B-4822-A78B-EBAD044044FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01308A7D-882B-4822-A78B-EBAD044044FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -153,16 +149,20 @@ Global
 		{A4EFE5FA-BDEB-452B-8751-1A495E5C9759}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4EFE5FA-BDEB-452B-8751-1A495E5C9759}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4EFE5FA-BDEB-452B-8751-1A495E5C9759}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7} = {D8DB984C-ED04-4525-9923-798363B513FC}
 		{4C10271C-CD9B-49F5-9479-3C6EB7404E75} = {D8DB984C-ED04-4525-9923-798363B513FC}
 		{05A5C68E-B901-4AD0-87F1-5E43DDC759CE} = {D8DB984C-ED04-4525-9923-798363B513FC}
 		{B44FAEE0-B32E-4682-AA42-618C893F14C6} = {D8DB984C-ED04-4525-9923-798363B513FC}
 		{0F0F6BAF-BC5D-4DC6-AE53-8257305EE5CA} = {D8DB984C-ED04-4525-9923-798363B513FC}
+		{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7} = {D8DB984C-ED04-4525-9923-798363B513FC}
 		{01308A7D-882B-4822-A78B-EBAD044044FC} = {23B4E6F7-CF43-4B43-ABCE-26C39E173ABD}
 		{4D78B8B7-FCEB-4249-BF3D-83B9A8059870} = {23B4E6F7-CF43-4B43-ABCE-26C39E173ABD}
 		{1855519D-6C8C-44B2-B197-DB40DD648FB6} = {23B4E6F7-CF43-4B43-ABCE-26C39E173ABD}

@@ -80,7 +80,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     tableStream.Read(std);
 
                     //parse the STD
-                    this.Styles.Add(new StyleSheetDescription(std));
+                    this.Styles.Add(new StyleSheetDescription(std, (int)this.stshi.cbSTDBaseInFile));
                 }
                 else
                 {

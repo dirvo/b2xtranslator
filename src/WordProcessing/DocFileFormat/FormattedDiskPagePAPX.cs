@@ -126,6 +126,16 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         }
 
         /// <summary>
+        /// Returns the properties of the paragraph that starts at the given position
+        /// </summary>
+        /// <param name="start">The start of the paragraph as offset</param>
+        /// <returns>The properties of the Paragraph</returns>
+        public static ParagraphPropertyExceptions GetPAPX(int start)
+        {
+            return null;
+        }
+
+        /// <summary>
         /// Parses the 0Table (or 1Table) for FKP entries containing PAPX
         /// </summary>
         /// <param name="fib">The FileInformationBlock</param>

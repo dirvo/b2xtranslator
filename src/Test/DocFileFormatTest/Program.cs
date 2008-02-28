@@ -129,7 +129,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
         private static void testText()
         {
             WordDocument doc = new WordDocument(file);
-            char[] chars = doc.TextPart.ToArray();
+            char[] chars = doc.Text.ToArray();
             string s = new string(chars);
             Console.WriteLine(s);
         }
@@ -142,7 +142,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
             
             foreach (PieceDescriptor pcd in pct.Pieces)
             {
-                Console.WriteLine("\t"+pcd.cpStart + " - " + pcd.cpEnd + " : " + pcd.encoding.ToString() + " , starts at 0x" + String.Format("{0:x04}", pcd.fc));
+                //Console.WriteLine("\t"+pcd.cpStart + " - " + pcd.cpEnd + " : " + pcd.encoding.ToString() + " , starts at 0x" + String.Format("{0:x04}", pcd.fc));
+                Console.WriteLine("Piece starts at "+ String.Format("{0:X04}", pcd.fc) + " and hast encoding "+pcd.encoding.ToString());
             }
         }
 

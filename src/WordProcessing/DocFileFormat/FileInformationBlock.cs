@@ -252,7 +252,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// Length of header subdocument text stream
         /// </summary>
-        public Int32 ccpHdd;
+        public Int32 ccpHdr;
 
         /// <summary>
         /// Length of macro subdocument text stream, which should now always be 0
@@ -889,7 +889,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 lProductRevised = System.BitConverter.ToInt32(bytes, 72);
                 ccpText = System.BitConverter.ToInt32(bytes, 76);
                 ccpFtn = System.BitConverter.ToInt32(bytes, 80);
-                ccpHdd = System.BitConverter.ToInt32(bytes, 84);
+                ccpHdr = System.BitConverter.ToInt32(bytes, 84);
                 ccpMcr = System.BitConverter.ToInt32(bytes, 88);
                 ccpAtn = System.BitConverter.ToInt32(bytes, 92);
                 ccpEdn = System.BitConverter.ToInt32(bytes, 96);

@@ -76,7 +76,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                         for (int i = 0; i < n; i++)
                         {
                             byte[] pcdBytes = new byte[8];
-                            Array.Copy(piecetable, ((n+1)*4) + (i*8), pcdBytes, 0, 8);
+                            int index = ((n+1)*4) + (i*8);
+                            Array.Copy(piecetable, index, pcdBytes, 0, 8);
 
                             //build pcd
                             PieceDescriptor pcd = new PieceDescriptor(pcdBytes);

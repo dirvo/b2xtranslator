@@ -38,38 +38,102 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
     public class StyleSheetMapping 
         : AbstractOpenXmlMapping,
-          IMapping<StyleSheet>,
-          IMapping<StyleSheetDescription>
+          IMapping<StyleSheet>
     {
         public StyleSheetMapping(XmlWriter writer)
             : base(writer)
         {
         }
 
-        public void Apply(StyleSheet visited)
+        public void Apply(StyleSheet sheet)
         {
             _writer.WriteStartDocument();
             _writer.WriteStartElement("w", "styles", OpenXmlNamespaces.WordprocessingML);
 
-            foreach (StyleSheetDescription style in visited.Styles)
+            foreach (StyleSheetDescription style in sheet.Styles)
             {
                 if (style != null)
                 {
-                    style.Convert(this);
+                    _writer.WriteStartElement("w", "style", OpenXmlNamespaces.WordprocessingML);
+
+                    _writer.WriteAttributeString("w", "type", OpenXmlNamespaces.WordprocessingML, style.stk.ToString());
+                    _writer.WriteAttributeString("w", "styleId", OpenXmlNamespaces.WordprocessingML, makeStyleId(style.xstzName));
+                    
+                    // <w:name val="" />
+                    _writer.WriteStartElement("w", "name", OpenXmlNamespaces.WordprocessingML);
+                    _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, style.xstzName);
+                    _writer.WriteEndElement();
+
+                    // <w:basedOn val="" />
+                    if (style.istdBase != 4095)
+                    {
+                        _writer.WriteStartElement("w", "basedOn", OpenXmlNamespaces.WordprocessingML);
+                        _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, makeStyleId(sheet.Styles[(int)style.istdBase].xstzName));
+                        _writer.WriteEndElement();
+                    }
+
+                    // <w:next val="" />
+                    _writer.WriteStartElement("w", "next", OpenXmlNamespaces.WordprocessingML);
+                    _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, makeStyleId(sheet.Styles[(int)style.istdNext].xstzName));
+                    _writer.WriteEndElement();
+
+                    // <w:link val="" />
+                    _writer.WriteStartElement("w", "link", OpenXmlNamespaces.WordprocessingML);
+                    _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, makeStyleId(sheet.Styles[(int)style.istdLink].xstzName));
+                    _writer.WriteEndElement();
+
+                    // <w:locked/>
+                    if (style.fLocked)
+                    {
+                        _writer.WriteElementString("w", "locked", OpenXmlNamespaces.WordprocessingML, null);
+                    }
+
+                    // <w:hidden/>
+                    if (style.fHidden)
+                    {
+                        _writer.WriteElementString("w", "hidden", OpenXmlNamespaces.WordprocessingML, null);
+                    }
+
+                    // <w:semiHidden/>
+                    if (style.fSemiHidden)
+                    {
+                        _writer.WriteElementString("w", "semiHidden", OpenXmlNamespaces.WordprocessingML, null);
+                    }
+
+                    //write paragraph properties
+                    if (style.papx != null)
+                    {
+                        foreach (SinglePropertyModifier sprm in style.papx.grpprl)
+                        {
+                            
+                        }
+                    }
+                    
+                    //write character properties
+                    if (style.chpx != null)
+                    {
+                        foreach (SinglePropertyModifier sprm in style.chpx.grpprl)
+                        {
+
+                        }
+                    }
+
+                    _writer.WriteEndElement();
                 }
             }
 
             _writer.WriteEndElement();
             _writer.WriteEndDocument();
         }
-        
-        public void Apply(StyleSheetDescription visited)
-        {
-            _writer.WriteStartElement("w", "style", OpenXmlNamespaces.WordprocessingML);
-            
-            _writer.WriteAttributeString("w", "styleId", OpenXmlNamespaces.WordprocessingML, visited.getStyleIdentifier());
 
-            _writer.WriteEndElement();
+        /// <summary>
+        /// Generates a style id
+        /// </summary>
+        /// <param name="stylename">the name of the style</param>
+        /// <returns></returns>
+        private string makeStyleId(string stylename)
+        {
+            return stylename.Replace(" ", "");
         }
     }
 }

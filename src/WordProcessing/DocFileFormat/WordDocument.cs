@@ -47,7 +47,42 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// The text part of the Word document
         /// </summary>
-        public List<char> TextPart;
+        public List<char> Text;
+
+        /// <summary>
+        /// The macros of the Word document
+        /// </summary>
+        public List<char> Macros;
+
+        /// <summary>
+        /// The headers of the Word document
+        /// </summary>
+        public List<char> Header;
+
+        /// <summary>
+        /// The textboxes of the Word document
+        /// </summary>
+        public List<char> Textboxes;
+
+        /// <summary>
+        /// The annotations of the Word document
+        /// </summary>
+        public List<char> Annotations;
+
+        /// <summary>
+        /// The endnotes of the Word document
+        /// </summary>
+        public List<char> Endnotes;
+
+        /// <summary>
+        /// The footnotes of the Word document
+        /// </summary>
+        public List<char> Footnotes;
+
+        /// <summary>
+        /// The textboxes in headers of the Word document
+        /// </summary>
+        public List<char> HeaderTextboxes;
 
         /// <summary>
         /// The style sheet of the document
@@ -71,35 +106,52 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             //parse the stylesheet
             this.Styles = new StyleSheet(this.FIB, _tableStream);
 
-            //parse the piece table and construct the text part
-            TextPart = new List<char>();
+            //parse the piece table and construct a list that contains all chars
             _pieceTable = new PieceTable(this.FIB, _tableStream);
-            foreach (PieceDescriptor pcd in _pieceTable.Pieces)
+            List<char> allChars = new List<char>();
+            for(int i=0; i<_pieceTable.Pieces.Count; i++)
             {
-                int charCount = pcd.cpEnd - pcd.cpStart;
-                int byteCount = charCount;
-                if(pcd.encoding == Encoding.Unicode)
+                PieceDescriptor pcd = _pieceTable.Pieces[i];
+                int cb = 0;
+
+                //calculate the count of bytes
+                if (i != (_pieceTable.Pieces.Count - 1))
                 {
-                    byteCount *= 2;
+                    //use the begin of the next piece
+                    PieceDescriptor pcdNext = _pieceTable.Pieces[i + 1];
+                    cb = (Int32)pcdNext.fc - (Int32)pcd.fc;
+                }
+                else
+                {
+                    //for the last piece, use the fib.fcMac
+                    cb = (Int32)FIB.fcMac - (Int32)pcd.fc;
                 }
 
                 //read the bytes of that piece
-                byte[] bytesOfPiece = new byte[byteCount];
-                _wordDocumentStream.Read(bytesOfPiece, bytesOfPiece.Length, pcd.fc);
+                byte[] bytesOfPiece = new byte[cb];
+                _wordDocumentStream.Read(bytesOfPiece, cb, (Int32)pcd.fc);
 
                 //encode it
                 char[] chars = pcd.encoding.GetString(bytesOfPiece).ToCharArray();
-
+                
                 //append it
                 foreach (char c in chars)
                 {
-                    TextPart.Add(c);
+                    allChars.Add(c);
                 }
             }
 
+            //split the chars into the subdocuments
+            this.Text = allChars.GetRange(0, FIB.ccpText);
+            this.Footnotes = allChars.GetRange(FIB.ccpText, FIB.ccpFtn);
+            this.Header = allChars.GetRange(FIB.ccpText + FIB.ccpFtn, FIB.ccpHdr);
+            this.Annotations = allChars.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr, FIB.ccpAtn);
+            this.Endnotes = allChars.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr + FIB.ccpAtn, FIB.ccpEdn);
+            this.Textboxes = allChars.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr + FIB.ccpAtn + FIB.ccpEdn, FIB.ccpTxbx);
+            this.HeaderTextboxes = allChars.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr + FIB.ccpAtn + FIB.ccpEdn + FIB.ccpTxbx, FIB.ccpHdrTxbx);
+
             _reader.Close();
         }
-
 
         #region IVisitable Members
 

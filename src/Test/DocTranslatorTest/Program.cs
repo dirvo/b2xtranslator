@@ -50,7 +50,7 @@ namespace DocTranslatorTest
 
                 //parse the document
                 WordDocument doc = new WordDocument(file);
-
+                
                 //starting
                 if (!doc.FIB.fComplex)
                 {

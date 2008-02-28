@@ -54,7 +54,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             bool suppressNextChar = false;
 
             //walk through the characters
-            for(int i=0; i<visited.TextPart.Count; i++)
+            for(int i=0; i<visited.Text.Count; i++)
             {
                 if (i == 0)
                 {
@@ -65,7 +65,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     _writer.WriteStartElement("w", "t", OpenXmlNamespaces.WordprocessingML);
                 }
 
-                char c = visited.TextPart[i];
+                char c = visited.Text[i];
 
                 //check the char
                 if(c == TextBoundary.AnnotationReference)
@@ -146,8 +146,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 }
                 else if((int)c < 32)
                 {
-                    //char must be written as XML entity
-                    _writer.WriteString("&#"+(int)c+";");
+                    //this is a workaround until fSpec chars are implemented.
+                    //characters with special meanings should not be written at all.
                 }
                 else if (c != '\uFFFF' && !suppressNextChar)
                 {
@@ -159,6 +159,5 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _writer.WriteEndElement();
             _writer.WriteEndDocument();
         }
-    
     }
 }
