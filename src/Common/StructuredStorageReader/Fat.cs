@@ -62,7 +62,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// </summary>
         /// <param name="sector">The sector to seek to</param>
         /// <param name="position">The position in the sector to seek to</param>
-        /// <returns></returns>
+        /// <returns>The new position in the stream.</returns>
         override internal long SeekToPositionInSector(long sector, long position)
         {
             return _fileHandler.SeekToPositionInSector(sector, position);

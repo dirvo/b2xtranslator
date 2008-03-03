@@ -65,7 +65,6 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             return GetSectorChain(startSector, maxCount, name, false);
         }
 
-
         /// <summary>
         /// Returns the sectors in a chain which starts at a given sector
         /// </summary>

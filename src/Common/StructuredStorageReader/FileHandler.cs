@@ -135,6 +135,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// Seeks to a given sector and position in the compound file.
         /// May only be used after SetHeaderReference() is called.
         /// </summary>
+        /// <returns>The new position in the stream.</returns>
         internal long SeekToPositionInSector(long sector, long position)
         {
             if (_header == null)
@@ -160,6 +161,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// Reads a byte at the current position of the file stream.
         /// Advances the stream pointer accordingly.
         /// </summary>
+        /// <returns>The byte value read from the stream. </returns>
         internal byte ReadByte()
         {
             int result = _fileStream.ReadByte(); 
@@ -203,6 +205,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// Reads a byte at the current position of the file stream.
         /// Advances the stream pointer accordingly.
         /// </summary>
+        /// <returns>The byte cast to an int, or -1 if reading from the end of the stream. </returns>
         internal int UncheckedReadByte()
         {
             return _fileStream.ReadByte();            
@@ -215,7 +218,10 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// </summary>
         /// <param name="array">The array to read to</param>
         /// <param name="offset">The offset in the array to read to</param>
-        /// <param name="count">The number of bytes to read</param>        
+        /// <param name="count">The number of bytes to read</param>    
+        /// <returns>The total number of bytes read into the buffer. 
+        /// This might be less than the number of bytes requested if that number 
+        /// of bytes are not currently available, or zero if the end of the stream is reached. </returns>
         internal int UncheckedRead(byte[] array, int offset, int count)
         {
             return _fileStream.Read(array, offset, count);            
@@ -247,6 +253,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// May only be used after InitBitConverter() is called.
         /// Advances the stream pointer accordingly.
         /// </summary>
+        /// <returns>The UInt16 value read from the stream. </returns>
         internal UInt16 ReadUInt16()
         {
             if (_bitConverter == null)
@@ -265,6 +272,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// May only be used after InitBitConverter() is called.
         /// Advances the stream pointer accordingly.
         /// </summary>
+        /// <returns>The UInt32 value read from the stream. </returns>
         internal UInt32 ReadUInt32()
         {
             if (_bitConverter == null)
@@ -283,6 +291,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// May only be used after InitBitConverter() is called.
         /// Advances the stream pointer accordingly.
         /// </summary>
+        /// <returns>The UInt64 value read from the stream. </returns>
         internal UInt64 ReadUInt64()
         {
             if (_bitConverter == null)
@@ -301,6 +310,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// May only be used after InitBitConverter() is called.
         /// Advances the stream pointer accordingly.
         /// </summary>
+        /// <returns>The UInt16 value read at the given position. </returns>
         internal UInt16 ReadUInt16(long position)
         {
             if (_bitConverter == null)
@@ -323,6 +333,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// May only be used after InitBitConverter() is called.
         /// Advances the stream pointer accordingly.
         /// </summary>
+        /// <returns>The UInt32 value read at the given position. </returns>
         internal UInt32 ReadUInt32(long position)
         {
             if (_bitConverter == null)
@@ -345,6 +356,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// May only be used after InitBitConverter() is called.
         /// Advances the stream pointer accordingly.
         /// </summary>
+        /// <returns>The UInt64 value read at the given position. </returns>
         internal UInt64 ReadUInt64(long position)
         {
             if (_bitConverter == null)
@@ -363,7 +375,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
 
         /// <summary>
-        /// Reads a unicode string at the current position of the file stream.
+        /// Reads a UTF-16 encoded unicode string at the current position of the file stream.
         /// May only be used after InitBitConverter() is called.
         /// Advances the stream pointer accordingly.
         /// </summary>
