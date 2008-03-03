@@ -34,8 +34,9 @@ namespace DIaLOGIKa.b2xtranslator.Utils
 {
     public static class TraceLogger
     {
-        
-        public enum LoggingLevel {
+
+        public enum LoggingLevel
+        {
             DEBUG = 0,
             INFO,
             WARNING,
@@ -44,23 +45,23 @@ namespace DIaLOGIKa.b2xtranslator.Utils
 
 
         static LoggingLevel _logLevel = LoggingLevel.WARNING;
-        public static LoggingLevel LogLevel 
+        public static LoggingLevel LogLevel
         {
-          get { return TraceLogger._logLevel; }
-          set { TraceLogger._logLevel = value; }
+            get { return TraceLogger._logLevel; }
+            set { TraceLogger._logLevel = value; }
         }
 
 
         private static void WriteLine(string msg, LoggingLevel level)
         {
             if (_logLevel <= level)
-                System.Diagnostics.Trace.WriteLine(string.Format("{0} " + msg, System.DateTime.Now));            
+                System.Diagnostics.Trace.WriteLine(string.Format("{0} " + msg, System.DateTime.Now));
         }
 
 
         public static void Debug(string msg, params object[] objs)
         {
-            if (msg == null || msg == "") 
+            if (msg == null || msg == "")
                 return;
 
             WriteLine("[D] " + string.Format(msg, objs), LoggingLevel.DEBUG);
