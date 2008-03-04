@@ -49,44 +49,44 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         private DirectoryTree _directory;
 
 
-        /// <summary>
-        /// List of all entry names contained in a compound file
-        /// </summary>        
-        public ReadOnlyCollection<string> NamesOfAllEntries
-        {
-            get { return _directory.GetNamesOfAllEntries(); }
-        }
+        ///// <summary>
+        ///// Collection of all entry names contained in a compound file
+        ///// </summary>        
+        //public ReadOnlyCollection<string> NamesOfAllEntries
+        //{
+        //    get { return _directory.GetNamesOfAllEntries(); }
+        //}
+
+
+        ///// <summary>
+        ///// Collection of all stream entry names contained in a compound file
+        ///// </summary>        
+        //public ReadOnlyCollection<string> NamesOfAllStreamEntries
+        //{
+        //    get { return _directory.GetNamesOfAllStreamEntries(); }
+        //}
 
 
         /// <summary>
-        /// List of all stream entry names contained in a compound file
+        /// Collection of all entry names contained in a compound file
         /// </summary>        
-        public ReadOnlyCollection<string> NamesOfAllStreamEntries
-        {
-            get { return _directory.GetNamesOfAllStreamEntries(); }
-        }
-
-
-        /// <summary>
-        /// List of all entry names contained in a compound file
-        /// </summary>        
-        public ReadOnlyCollection<string> PathsOfAllEntries
+        public ReadOnlyCollection<string> FullNameOfAllEntries
         {
             get { return _directory.GetPathsOfAllEntries(); }
         }
 
 
         /// <summary>
-        /// List of all stream entry names contained in a compound file
+        /// Collection of all stream entry names contained in a compound file
         /// </summary>        
-        public ReadOnlyCollection<string> PathsOfAllStreamEntries
+        public ReadOnlyCollection<string> FullNameOfAllStreamEntries
         {
             get { return _directory.GetPathsOfAllStreamEntries(); }
         }
 
 
         /// <summary>
-        /// List of all entries contained in a compound file
+        /// Collection of all entries contained in a compound file
         /// </summary> 
         public ReadOnlyCollection<DirectoryEntry> AllEntries
         {
@@ -95,7 +95,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
 
         /// <summary> 
-        /// List of all stream entries contained in a compound file
+        /// Collection of all stream entries contained in a compound file
         /// </summary> 
         public ReadOnlyCollection<DirectoryEntry> AllStreamEntries
         {
@@ -123,6 +123,8 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// The characters '\' ( if not separators in the path) and '%' must be masked by '%XXXX'
         /// where 'XXXX' is the unicode in hex of '\' and '%', respectively
         /// </summary>
+        /// <param name="path">The path of the virtual stream.</param>
+        /// <returns>An object which enables access to the virtual stream.</returns>
         public VirtualStream GetStream(string path)
         {
             DirectoryEntry entry = _directory.GetDirectoryEntry(path);

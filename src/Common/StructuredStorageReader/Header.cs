@@ -220,7 +220,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// Constructor
         /// </summary>
         /// <param name="fileHandler">The Handle to the file handler of the compound file</param>
-        public Header(FileHandler fileHandler)
+        internal Header(FileHandler fileHandler)
         {
             _fileHandler = fileHandler;
             _fileHandler.SetHeaderReference(this);

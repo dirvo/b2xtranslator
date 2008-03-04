@@ -75,7 +75,10 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// Reads bytes from the current position in the virtual stream.
         /// The number of bytes to read is determined by the length of the array.
         /// </summary>
-        /// <param name="array">Array which will contain the read bytes after successful execution.</param>/// 
+        /// <param name="array">Array which will contain the read bytes after successful execution.</param>
+        /// <returns>The total number of bytes read into the buffer. 
+        /// This might be less than the length of the array if that number 
+        /// of bytes are not currently available, or zero if the end of the stream is reached.</returns>
         public int Read(byte[] array)
         {
             return Read(array, array.Length, _position, 0);
@@ -87,6 +90,9 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// </summary>
         /// <param name="array">Array which will contain the read bytes after successful execution.</param>
         /// <param name="count">Number of bytes to read.</param>
+        /// <returns>The total number of bytes read into the buffer. 
+        /// This might be less than the number of bytes requested if that number 
+        /// of bytes are not currently available, or zero if the end of the stream is reached.</returns>
         public int Read(byte[] array, int count)
         {
             return Read(array, count, _position, 0);
@@ -99,7 +105,9 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// <param name="array">Array which will contain the read bytes after successful execution.</param>
         /// <param name="count">Number of bytes to read.</param>
         /// <param name="position">Start position in the stream.</param>
-        /// <returns></returns>
+        /// <returns>The total number of bytes read into the buffer. 
+        /// This might be less than the number of bytes requested if that number 
+        /// of bytes are not currently available, or zero if the end of the stream is reached.</returns>
         public int Read(byte[] array, int count, int position)
         {
             return Read(array, count, position, 0);
@@ -113,7 +121,9 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// <param name="count">Number of bytes to read.</param>
         /// <param name="position">Start position in the stream.</param>
         /// <param name="offset">Offset in the array.</param>
-        /// <returns></returns>
+        /// <returns>The total number of bytes read into the buffer. 
+        /// This might be less than the number of bytes requested if that number 
+        /// of bytes are not currently available, or zero if the end of the stream is reached.</returns>
         public int Read(byte[] array, int count, int position, int offset)
         {
             // Checks whether reading is possible

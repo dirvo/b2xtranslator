@@ -42,13 +42,13 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         private bool _IsLittleEndian = true;
 
 
-        public InternalBitConverter(bool isLittleEndian)
+        internal InternalBitConverter(bool isLittleEndian)
         {
             _IsLittleEndian = isLittleEndian;
         }
 
 
-        public UInt64 ToUInt64(byte[] value)
+        internal UInt64 ToUInt64(byte[] value)
         {
             if (BitConverter.IsLittleEndian ^ _IsLittleEndian)
             {
@@ -58,7 +58,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         }
 
 
-        public UInt32 ToUInt32(byte[] value)
+        internal UInt32 ToUInt32(byte[] value)
         {
             if (BitConverter.IsLittleEndian ^ _IsLittleEndian)
             {
@@ -68,7 +68,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         }
 
 
-        public UInt16 ToUInt16(byte[] value)
+        internal UInt16 ToUInt16(byte[] value)
         {
             if (BitConverter.IsLittleEndian ^ _IsLittleEndian)
             {
@@ -78,7 +78,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         }
 
 
-        public string ToString(byte[] value)
+        internal string ToString(byte[] value)
         {
             if (BitConverter.IsLittleEndian ^ _IsLittleEndian)
             {
