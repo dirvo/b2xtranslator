@@ -77,7 +77,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 	    public UInt16[] rgftcStandardChpStsh;	
 
 	    /// <summary>
-	    /// size of each lsd in mpstilsd.<br/>
+	    /// Size of each lsd in mpstilsd<br/>
         /// The count of lsd's is stiMaxWhenSaved
 	    /// </summary>
         public UInt16 cbLSD;
