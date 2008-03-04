@@ -89,7 +89,7 @@ namespace CompoundFileExtractTest
                     }
 
                     // create output directory
-                    string outputDir = file.Replace('.', '_');
+                    string outputDir = '_' + file.Replace('.', '_');
                     Directory.CreateDirectory(outputDir);
 
                     // for each stream                    
