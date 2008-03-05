@@ -57,7 +57,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     _writer.WriteStartElement("w", "style", OpenXmlNamespaces.WordprocessingML);
 
                     _writer.WriteAttributeString("w", "type", OpenXmlNamespaces.WordprocessingML, style.stk.ToString());
-                    _writer.WriteAttributeString("w", "styleId", OpenXmlNamespaces.WordprocessingML, makeStyleId(style.xstzName));
+                    _writer.WriteAttributeString("w", "styleId", OpenXmlNamespaces.WordprocessingML, MakeStyleId(style.xstzName));
                     
                     // <w:name val="" />
                     _writer.WriteStartElement("w", "name", OpenXmlNamespaces.WordprocessingML);
@@ -68,18 +68,18 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     if (style.istdBase != 4095)
                     {
                         _writer.WriteStartElement("w", "basedOn", OpenXmlNamespaces.WordprocessingML);
-                        _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, makeStyleId(sheet.Styles[(int)style.istdBase].xstzName));
+                        _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, MakeStyleId(sheet.Styles[(int)style.istdBase].xstzName));
                         _writer.WriteEndElement();
                     }
 
                     // <w:next val="" />
                     _writer.WriteStartElement("w", "next", OpenXmlNamespaces.WordprocessingML);
-                    _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, makeStyleId(sheet.Styles[(int)style.istdNext].xstzName));
+                    _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, MakeStyleId(sheet.Styles[(int)style.istdNext].xstzName));
                     _writer.WriteEndElement();
 
                     // <w:link val="" />
                     _writer.WriteStartElement("w", "link", OpenXmlNamespaces.WordprocessingML);
-                    _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, makeStyleId(sheet.Styles[(int)style.istdLink].xstzName));
+                    _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, MakeStyleId(sheet.Styles[(int)style.istdLink].xstzName));
                     _writer.WriteEndElement();
 
                     // <w:locked/>
@@ -103,10 +103,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //write paragraph properties
                     if (style.papx != null)
                     {
+                        //Construct the PAP
+                        ParagraphProperties pap = new ParagraphProperties();
                         foreach (SinglePropertyModifier sprm in style.papx.grpprl)
                         {
-                            
+                            pap.Modify(sprm);
                         }
+                        pap.Convert(new ParagraphPropertiesMapping(_writer));
                     }
                     
                     //write character properties
@@ -131,7 +134,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// </summary>
         /// <param name="stylename">the name of the style</param>
         /// <returns></returns>
-        private string makeStyleId(string stylename)
+        public static string MakeStyleId(string stylename)
         {
             return stylename.Replace(" ", "");
         }

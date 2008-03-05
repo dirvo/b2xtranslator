@@ -52,6 +52,19 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             }
         }
 
+
+        public static bool ByteToBool(byte value)
+        {
+            if (value == 1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public static FileInfo WriteWorkingFile(string inputFile)
         {
             FileInfo inFile = new FileInfo(inputFile);

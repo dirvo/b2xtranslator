@@ -33,10 +33,74 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
     public class ShadingDescriptor
     {
+        public enum ShadingPattern
+        {
+            Automatic = 0,
+            Solid,
+            Percent_5,
+            Percent_10,
+            Percent_20,
+            Percent_25,
+            Percent_30,
+            Percent_40,
+            Percent_50,
+            Percent_60,
+            Percent_70,
+            Percent_75,
+            Percent_80,
+            Percent_90,
+            DarkHorizontal,
+            DarkVertical,
+            DarkForwardDiagonal,
+            DarkBackwardDiagonal,
+            DarkCross,
+            DarkDiagonalCross,
+            Horizontal,
+            Vertical,
+            ForwardDiagonal,
+            BackwardDiagonal,
+            Cross,
+            DiagonalCross,
+            Percent_2_5,
+            Percent_7_5,
+            Percent_12_5,
+            Percent_15,
+            Percent_17_5,
+            Percent_22_5,
+            Percent_27_5,
+            Percent_32_5,
+            Percent_35,
+            Percent_37_5,
+            Percent_42_5,
+            Percent_45,
+            Percent_47_5,
+            Percent_52_5,
+            Percent_55,
+            Percent_57_5,
+            Percent_62_5,
+            Percent_65,
+            Percent_67_5,
+            Percent_72_5,
+            Percent_77_5,
+            Percent_82_5,
+            Percent_85,
+            Percent_87_5,
+            Percent_92_5,
+            Percent_95,
+            Percent_97_5,
+            Percent_97
+        }
+
         /// <summary>
         /// 24-bit foreground color
         /// </summary>
         public Int32 cvFore;
+
+        /// <summary>
+        /// Foreground color.<br/>
+        /// Only used if cvFore is not set
+        /// </summary>
+        public Color.ColorIdentifier icoFore;
 
         /// <summary>
         /// 24-bit background color
@@ -44,9 +108,15 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public Int32 cvBack;
 
         /// <summary>
+        /// Background color.<br/>
+        /// Only used if cvBack is not set.
+        /// </summary>
+        public Color.ColorIdentifier icoBack;
+
+        /// <summary>
         /// Shading pattern
         /// </summary>
-        public UInt16 ipat;
+        public ShadingPattern ipat;
 
         /// <summary>
         /// Creates a new ShadingDescriptor with default values
@@ -64,9 +134,18 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         {
             if (bytes.Length == 10)
             {
+                //it's a Word 2000/2003 descriptor
                 this.cvFore = System.BitConverter.ToInt32(bytes, 0);
                 this.cvBack = System.BitConverter.ToInt32(bytes, 4);
-                this.ipat = System.BitConverter.ToUInt16(bytes, 8);
+                this.ipat = (ShadingPattern)System.BitConverter.ToUInt16(bytes, 8);
+            }
+            else if (bytes.Length == 2)
+            {
+                //it's a Word 97 SPRM
+                byte val = bytes[1];
+                this.icoFore = (Color.ColorIdentifier)(val & 0x001F);
+                this.icoBack = (Color.ColorIdentifier)((val & 0x03e0) >> 5);
+                this.ipat = (ShadingPattern)((val & 0xFC00) >> 10);
             }
             else
             {

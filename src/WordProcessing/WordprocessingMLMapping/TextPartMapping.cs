@@ -58,11 +58,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 if (i == 0)
                 {
-                    //write first paragraph
-                    _writer.WriteStartElement("w", "p", OpenXmlNamespaces.WordprocessingML);
-                    //write first run
-                    _writer.WriteStartElement("w", "r", OpenXmlNamespaces.WordprocessingML);
-                    _writer.WriteStartElement("w", "t", OpenXmlNamespaces.WordprocessingML);
+                    startNewParagraph(i, visited);
                 }
 
                 char c = visited.Text[i];
@@ -108,6 +104,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 }
                 else if (c == TextBoundary.HardLineBreak)
                 {
+                    _writer.WriteElementString("w", "br", OpenXmlNamespaces.WordprocessingML, null);
                 }
                 else if (c == TextBoundary.LineNumber)
                 {
@@ -132,17 +129,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     _writer.WriteEndElement();
                     //end paragraph
                     _writer.WriteEndElement();
-                    //and start new one
-                    _writer.WriteStartElement("w", "p", OpenXmlNamespaces.WordprocessingML);
-                    //and a new run
-                    _writer.WriteStartElement("w", "r", OpenXmlNamespaces.WordprocessingML);
-                    _writer.WriteStartElement("w", "t", OpenXmlNamespaces.WordprocessingML);
+
+                    startNewParagraph(i, visited);
                 }
                 else if (c == TextBoundary.Picture)
                 {
                 }
                 else if (c == TextBoundary.Tab)
                 {
+                    _writer.WriteElementString("w", "tab", OpenXmlNamespaces.WordprocessingML, null);
                 }
                 else if((int)c < 32)
                 {
@@ -158,6 +153,32 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _writer.WriteEndElement();
             _writer.WriteEndElement();
             _writer.WriteEndDocument();
+        }
+
+        private void startNewParagraph(int i, WordDocument doc)
+        {
+            //start new paragraph
+            _writer.WriteStartElement("w", "p", OpenXmlNamespaces.WordprocessingML);
+
+            //load the matching paragraph properties
+            int fc = doc.FIB.fcMin + i;
+            if(i!=0)
+               fc += 1;
+            ParagraphProperties pap = new ParagraphProperties(fc, doc.FIB, doc.WordDocumentStream, doc.TableStream);
+
+            //write the paragraph properties
+            _writer.WriteStartElement("w", "pPr", OpenXmlNamespaces.WordprocessingML);
+            string styleId = StyleSheetMapping.MakeStyleId(doc.Styles.Styles[pap.istd].xstzName);
+            _writer.WriteStartElement("w", "pStyle", OpenXmlNamespaces.WordprocessingML);
+            _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, styleId);
+            _writer.WriteEndElement();
+            pap.Convert(new ParagraphPropertiesMapping(_writer));
+            _writer.WriteEndElement();
+
+            //start new run
+            _writer.WriteStartElement("w", "r", OpenXmlNamespaces.WordprocessingML);
+            //start new text
+            _writer.WriteStartElement("w", "t", OpenXmlNamespaces.WordprocessingML);
         }
     }
 }

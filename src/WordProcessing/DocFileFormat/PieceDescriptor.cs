@@ -66,7 +66,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 //delete the flag
                 fcValue = fcValue & 0xBFFFFFFF;
 
-                ////find encoding and offset
+                //find encoding and offset
                 if (flag)
                 {
                     this.encoding = Encoding.GetEncoding(1252);

@@ -32,7 +32,7 @@ using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class SinglePropertyModifier
+    public class SinglePropertyModifier 
     {
         /// <summary>
         /// Identifies the type of a SPRM

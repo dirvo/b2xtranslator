@@ -36,8 +36,17 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
     public class WordDocument : IVisitable
     {
         private StorageReader _reader;
-        private VirtualStream _wordDocumentStream, _tableStream;
         private PieceTable _pieceTable;
+
+        /// <summary>
+        /// The stream "WordDocument"
+        /// </summary>
+        public VirtualStream WordDocumentStream;
+
+        /// <summary>
+        /// The stream "0Table" or "1Table"
+        /// </summary>
+        public VirtualStream TableStream;
 
         /// <summary>
         /// The file information block of the word document
@@ -57,7 +66,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// The headers of the Word document
         /// </summary>
-        public List<char> Header;
+        public List<char> Headers;
 
         /// <summary>
         /// The textboxes of the Word document
@@ -89,25 +98,24 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public StyleSheet Styles;
 
-        public WordDocument(string filename)
+        public WordDocument(StorageReader reader)
         {
-            _reader = new StorageReader(filename);
-            _wordDocumentStream = _reader.GetStream("WordDocument");
+            this.WordDocumentStream = reader.GetStream("WordDocument");
 
             //parse FIB
-            this.FIB = new FileInformationBlock(_wordDocumentStream);
+            this.FIB = new FileInformationBlock(this.WordDocumentStream);
 
             //get the table stream
             if (this.FIB.fWhichTblStm)
-                _tableStream = _reader.GetStream("1Table");
+                this.TableStream = reader.GetStream("1Table");
             else
-                _tableStream = _reader.GetStream("0Table");
+                this.TableStream = reader.GetStream("0Table");
 
             //parse the stylesheet
-            this.Styles = new StyleSheet(this.FIB, _tableStream);
+            this.Styles = new StyleSheet(this.FIB, this.TableStream);
 
             //parse the piece table and construct a list that contains all chars
-            _pieceTable = new PieceTable(this.FIB, _tableStream);
+            _pieceTable = new PieceTable(this.FIB, this.TableStream);
             List<char> allChars = new List<char>();
             for(int i=0; i<_pieceTable.Pieces.Count; i++)
             {
@@ -129,13 +137,13 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
                 //read the bytes of that piece
                 byte[] bytesOfPiece = new byte[cb];
-                _wordDocumentStream.Read(bytesOfPiece, cb, (Int32)pcd.fc);
+                this.WordDocumentStream.Read(bytesOfPiece, cb, (Int32)pcd.fc);
 
                 //encode it
                 char[] chars = pcd.encoding.GetString(bytesOfPiece).ToCharArray();
                 
                 //append it
-                foreach (char c in chars)
+                foreach(char c in chars)
                 {
                     allChars.Add(c);
                 }
@@ -144,13 +152,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             //split the chars into the subdocuments
             this.Text = allChars.GetRange(0, FIB.ccpText);
             this.Footnotes = allChars.GetRange(FIB.ccpText, FIB.ccpFtn);
-            this.Header = allChars.GetRange(FIB.ccpText + FIB.ccpFtn, FIB.ccpHdr);
+            this.Headers = allChars.GetRange(FIB.ccpText + FIB.ccpFtn, FIB.ccpHdr);
             this.Annotations = allChars.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr, FIB.ccpAtn);
             this.Endnotes = allChars.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr + FIB.ccpAtn, FIB.ccpEdn);
             this.Textboxes = allChars.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr + FIB.ccpAtn + FIB.ccpEdn, FIB.ccpTxbx);
             this.HeaderTextboxes = allChars.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr + FIB.ccpAtn + FIB.ccpEdn + FIB.ccpTxbx, FIB.ccpHdrTxbx);
-
-            _reader.Close();
         }
 
         #region IVisitable Members

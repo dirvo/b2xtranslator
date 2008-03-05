@@ -43,57 +43,46 @@ namespace DocTranslatorTest
 
         static void Main(string[] args)
         {
-            //try
-            //{
-                //parse arguments
-                parseArgs(args);
+            //parse arguments
+            parseArgs(args);
 
-                //parse the document
-                WordDocument doc = new WordDocument(file);
-                
-                //starting
-                if (!doc.FIB.fComplex)
+            //open the reader
+            StorageReader reader = new StorageReader(file);
+
+            //parse the document
+            WordDocument doc = new WordDocument(reader);
+            
+            //starting
+            if (!doc.FIB.fComplex)
+            {
+                using (WordprocessingDocument docx = WordprocessingDocument.Create(file + "x", WordprocessingDocumentType.Document))
                 {
-                    using (WordprocessingDocument docx = WordprocessingDocument.Create(file + "x", WordprocessingDocumentType.Document))
-                    {
-                        XmlWriterSettings xws = new XmlWriterSettings();
-                        xws.OmitXmlDeclaration = false;
-                        xws.CloseOutput = true;
-                        xws.Encoding = Encoding.UTF8;
-                        xws.Indent = true;
-                        xws.ConformanceLevel = ConformanceLevel.Document;
+                    XmlWriterSettings xws = new XmlWriterSettings();
+                    xws.OmitXmlDeclaration = false;
+                    xws.CloseOutput = true;
+                    xws.Encoding = Encoding.UTF8;
+                    xws.Indent = true;
+                    xws.ConformanceLevel = ConformanceLevel.Document;
 
-                        XmlWriter writer = null;
+                    XmlWriter writer = null;
 
-                        //Write Styles.xml
-                        writer = XmlWriter.Create(docx.MainDocumentPart.StyleDefinitionsPart.GetStream(), xws);
-                        doc.Styles.Convert(new StyleSheetMapping(writer));
-                        writer.Flush();
+                    //Write Styles.xml
+                    writer = XmlWriter.Create(docx.MainDocumentPart.StyleDefinitionsPart.GetStream(), xws);
+                    doc.Styles.Convert(new StyleSheetMapping(writer));
+                    writer.Flush();
 
-                        //Write Document.xml
-                        writer = XmlWriter.Create(docx.MainDocumentPart.GetStream(), xws);
-                        doc.Convert(new TextPartMapping(writer));
-                        writer.Flush();
-                    }
+                    //Write Document.xml
+                    writer = XmlWriter.Create(docx.MainDocumentPart.GetStream(), xws);
+                    doc.Convert(new TextPartMapping(writer));
+                    writer.Flush();
                 }
-                else
-                {
-                    Console.WriteLine(file + " has been fast-saved. This format is currently not supported.");
-                }
-            //}
-            //catch (ArgumentException ae)
-            //{
-            //    printUsage();
-            //}
-            //catch (Exception e)
-            //{
-            //    Console.WriteLine(e.ToString());
-            //}
-            //finally
-            //{
-            //    if (reader != null)
-            //        reader.Close();
-            //}
+            }
+            else
+            {
+                Console.WriteLine(file + " has been fast-saved. This format is currently not supported.");
+            }
+
+            reader.Close();
         }
 
         public static void AddContent(XmlWriter writer)

@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using System.IO;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
@@ -64,7 +65,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     if (type == 2)
                     {
                         Int32 lcb = System.BitConverter.ToInt32(bytes, pos + 1);
-
+  
                         //read the piece table
                         byte[] piecetable = new byte[lcb];
                         Array.Copy(bytes, pos + 5, piecetable, 0, piecetable.Length);
