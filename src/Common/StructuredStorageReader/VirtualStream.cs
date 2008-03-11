@@ -40,6 +40,10 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
     {
         AbstractFat _fat;
         int _position;
+        public int Position
+        {
+            get { return _position; }
+        }
 
         UInt64 _sizeOfStream;
         public UInt64 SizeOfStream
@@ -113,6 +117,17 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             return Read(array, count, position, 0);
         }
 
+        public UInt16 ReadUInt16()
+        {
+            byte[] buffer = new byte[sizeof(UInt16)];
+            
+            if (sizeof(UInt16) != Read(buffer))
+            {
+                throw new ReadBytesAmountMismatchException();
+            }
+            
+            return BitConverter.ToUInt16(buffer, 0);
+        }
 
         /// <summary>
         /// Reads bytes from the virtual stream.
@@ -230,6 +245,12 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             }
             
             int sectorInChain = (int)(position / _fat.SectorSize);
+
+            if (sectorInChain >= _sectors.Count)
+            {
+                return -1;
+            }
+
             _fat.SeekToPositionInSector(_sectors[sectorInChain], position % _fat.SectorSize);
             return _fat.UncheckedReadByte();
         }
