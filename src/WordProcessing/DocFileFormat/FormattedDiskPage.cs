@@ -33,7 +33,7 @@ using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class FormattedDiskPage
+    public class FormattedDiskPage 
     {
         public enum FKPType
         {
@@ -77,5 +77,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             return Utils.GetHashDump(bytes);
         }
+
+        
     }
 }

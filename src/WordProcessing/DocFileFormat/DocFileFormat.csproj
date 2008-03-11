@@ -61,7 +61,6 @@
     <Compile Include="NumberRevisionMarkData.cs" />
     <Compile Include="OutlineLiSTData.cs" />
     <Compile Include="ParagraphHeight.cs" />
-    <Compile Include="ParagraphProperties.cs" />
     <Compile Include="ParagraphPropertyExceptions.cs" />
     <Compile Include="PieceDescriptor.cs" />
     <Compile Include="PieceTable.cs" />

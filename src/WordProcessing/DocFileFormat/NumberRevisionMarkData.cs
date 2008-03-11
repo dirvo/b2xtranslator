@@ -129,7 +129,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 j = 0;
                 for (int i = 64; i < 128; i += 2)
                 {
-                    this.xst[j] = Convert.ToChar(System.BitConverter.ToInt16(bytes, i));
+                    this.xst[j] = Convert.ToChar(System.BitConverter.ToUInt16(bytes, i));
                     j++;
                 }
             }

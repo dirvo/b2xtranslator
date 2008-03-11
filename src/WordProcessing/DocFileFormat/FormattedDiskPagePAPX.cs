@@ -126,16 +126,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         }
 
         /// <summary>
-        /// Returns the properties of the paragraph that starts at the given position
-        /// </summary>
-        /// <param name="start">The start of the paragraph as offset</param>
-        /// <returns>The properties of the Paragraph</returns>
-        public static ParagraphPropertyExceptions GetPAPX(int start)
-        {
-            return null;
-        }
-
-        /// <summary>
         /// Parses the 0Table (or 1Table) for FKP entries containing PAPX
         /// </summary>
         /// <param name="fib">The FileInformationBlock</param>
@@ -168,5 +158,70 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             return list;
         }
+
+        public static List<Int32> GetAllFCs(FileInformationBlock fib, VirtualStream wordStream, VirtualStream tableStream)
+        {
+            List<Int32> list = new List<Int32>();
+
+            //get bintable for PAPX
+            byte[] binTablePapx = new byte[fib.lcbPlcfbtePapx];
+            tableStream.Read(binTablePapx, binTablePapx.Length, (int)fib.fcPlcfbtePapx);
+
+            //there are n offsets and n-1 fkp's in the bin table
+            int n = (((int)fib.lcbPlcfbtePapx - 4) / 8) + 1;
+
+            //Get the indexed PAPX FKPs
+            for (int i = (n * 4); i < binTablePapx.Length; i += 4)
+            {
+                //indexed FKP is the xth 512byte page
+                int fkpnr = System.BitConverter.ToInt32(binTablePapx, i);
+
+                //so starts at:
+                int offset = fkpnr * 512;
+
+                //parse the FKP and add offset to the list
+                FormattedDiskPagePAPX fkp = new FormattedDiskPagePAPX(wordStream, offset);
+                foreach (int fc in fkp.rgfc)
+                {
+                    //don't add the duplicated values of the FKP boundaries
+                    if(!list.Contains(fc))
+                        list.Add(fc);
+                }
+            }
+
+            return list;
+        }
+
+        public static List<ParagraphPropertyExceptions> GetAllPAPX(FileInformationBlock fib, VirtualStream wordStream, VirtualStream tableStream)
+        {
+            List<ParagraphPropertyExceptions> list = new List<ParagraphPropertyExceptions>();
+
+            //get bintable for PAPX
+            byte[] binTablePapx = new byte[fib.lcbPlcfbtePapx];
+            tableStream.Read(binTablePapx, binTablePapx.Length, (int)fib.fcPlcfbtePapx);
+
+            //there are n offsets and n-1 fkp's in the bin table
+            int n = (((int)fib.lcbPlcfbtePapx - 4) / 8) + 1;
+
+            //Get the indexed PAPX FKPs
+            for (int i = (n * 4); i < binTablePapx.Length; i += 4)
+            {
+                //indexed FKP is the xth 512byte page
+                int fkpnr = System.BitConverter.ToInt32(binTablePapx, i);
+
+                //so starts at:
+                int offset = fkpnr * 512;
+
+                //parse the FKP and add PAPX to the list
+                FormattedDiskPagePAPX fkp = new FormattedDiskPagePAPX(wordStream, offset);
+                foreach (ParagraphPropertyExceptions papx in fkp.grppapx)
+                {
+                    list.Add(papx);
+                }
+            }
+
+            return list;
+        }
+
     }
 }

@@ -103,22 +103,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //write paragraph properties
                     if (style.papx != null)
                     {
-                        //Construct the PAP
-                        ParagraphProperties pap = new ParagraphProperties();
-                        foreach (SinglePropertyModifier sprm in style.papx.grpprl)
-                        {
-                            pap.Modify(sprm);
-                        }
-                        pap.Convert(new ParagraphPropertiesMapping(_writer));
+                        style.papx.Convert(new ParagraphPropertiesMapping(_writer, sheet));
                     }
                     
                     //write character properties
                     if (style.chpx != null)
                     {
-                        foreach (SinglePropertyModifier sprm in style.chpx.grpprl)
-                        {
-
-                        }
                     }
 
                     _writer.WriteEndElement();

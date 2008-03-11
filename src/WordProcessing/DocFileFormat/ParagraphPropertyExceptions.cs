@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
@@ -64,7 +65,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 bool goOn = true;
                 while (goOn)
                 {
-                    try
+                    //enough bytes to read?
+                    if(sprmStart+2 < bytes.Length)
                     {
                         //make spra
                         UInt16 opCode = System.BitConverter.ToUInt16(bytes, sprmStart);
@@ -82,23 +84,40 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
                         //copy sprm to array
                         byte[] sprm = new byte[2 + lenByte + opSize];
-                        Array.Copy(bytes, sprmStart, sprm, 0, sprm.Length);
 
-                        //parse and save
-                        grpprl.Add(new SinglePropertyModifier(sprm));
+                        if (bytes.Length >= sprmStart + sprm.Length)
+                        {
+                            Array.Copy(bytes, sprmStart, sprm, 0, sprm.Length);
+                            //parse and save
+                            grpprl.Add(new SinglePropertyModifier(sprm));
 
-                        sprmStart += sprm.Length;
+                            sprmStart += sprm.Length;
+                        }
+                        else
+                        {
+                            goOn = false;
+                        }
                     }
-                    catch (ArgumentException)
+                    else
                     {
                         goOn = false;
                     }
                 }
+                
             }
             else
             {
                 throw new ByteParseException("PAPX");
             }
         }
+
+        #region IVisitable Members
+
+        public void Convert<T>(T mapping)
+        {
+            ((IMapping<ParagraphPropertyExceptions>)mapping).Apply(this);
+        }
+
+        #endregion
     }
 }

@@ -28,11 +28,42 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class BorderCode
+    public class BorderCode : IVisitable
     {
+        public enum BorderType
+        {
+            none = 0,
+            single,
+            thick,
+            Double,
+            unused,
+            hairline,
+            dotted,
+            dashed,
+            dotDash,
+            dotDotDash,
+            triple,
+            thinThickSmallGap,
+            tickThinSmallGap,
+            thinThickThinSmallGap,
+            thinThickMediumGap,
+            thickThinMediumGap,
+            thinThickThinMediumGap,
+            thinThickLargeGap,
+            thickThinLargeGap,
+            thinThickThinLargeGap,
+            wave,
+            doubleWave,
+            dashSmallGap,
+            dashDotStroked,
+            threeDEmboss,
+            threeDEngrave
+        }
+
         /// <summary>
         /// 24-bit border color
         /// </summary>
@@ -41,7 +72,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// Width of a single line in 1/8pt, max of 32pt
         /// </summary>
-        public Int32 dptLineWidth;
+        public byte dptLineWidth;
 
         /// <summary>
         /// Border type code:
@@ -71,7 +102,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// 24 emboss 3D
         /// 25 engrave 3D
         /// </summary>
-        public Int32 brcType;
+        public BorderType brcType;
 
         /// <summary>
         /// The color of the Border.
@@ -113,10 +144,14 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 //it's a border code of Word 2000/2003
                 this.cv = System.BitConverter.ToInt32(bytes, 0);
                 this.ico = Color.ColorIdentifier.Auto;
-                Int32 val = System.BitConverter.ToInt32(bytes, 4);
-                this.dptLineWidth = val & 0x000000FF;
-                this.brcType = val & 0x0000FF00;
-                this.dptSpace = val & 0x001F0000;
+
+                this.dptLineWidth = bytes[4];
+                this.brcType = (BorderType)bytes[5];
+ 
+                Int16 val = System.BitConverter.ToInt16(bytes, 6);
+                this.dptSpace = val & 0x001F;
+
+                //possibly wrong:
                 this.fShadow = Utils.BitmaskToBool(val, 0x00200000);
                 this.fFrame = Utils.BitmaskToBool(val, 0x00400000);
             }
@@ -124,8 +159,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             {
                 //it's a border code of Word 97
                 UInt16 val = System.BitConverter.ToUInt16(bytes, 0);
-                this.dptLineWidth = val & 0x00FF;
-                this.brcType = (val & 0xFF00) >> 8;
+                this.dptLineWidth = (byte)(val & 0x00FF);
+                this.brcType = (BorderType)((val & 0xFF00) >> 8);
                 val = System.BitConverter.ToUInt16(bytes, 2);
                 this.ico = (Color.ColorIdentifier)(val & 0x00FF);
                 this.dptSpace = (val & 0x1F00) >> 8;
@@ -138,7 +173,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         private void setDefaultValues()
         {
-            this.brcType = 0;
+            this.brcType = BorderType.none;
             this.cv = 0;
             this.ico = Color.ColorIdentifier.Auto;
             this.dptLineWidth = 0;
@@ -146,5 +181,14 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.fFrame = false;
             this.fShadow = false;
         }
+
+        #region IVisitable Members
+
+        public void Convert<T>(T mapping)
+        {
+            ((IMapping<BorderCode>)mapping).Apply(this);
+        }
+
+        #endregion
     }
 }

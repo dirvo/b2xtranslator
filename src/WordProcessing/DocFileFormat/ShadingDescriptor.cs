@@ -28,10 +28,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
+using System.Collections;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class ShadingDescriptor
+    public class ShadingDescriptor : IVisitable
     {
         public enum ShadingPattern
         {
@@ -94,7 +96,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// 24-bit foreground color
         /// </summary>
-        public Int32 cvFore;
+        public UInt32 cvFore;
 
         /// <summary>
         /// Foreground color.<br/>
@@ -105,7 +107,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// 24-bit background color
         /// </summary>
-        public Int32 cvBack;
+        public UInt32 cvBack;
 
         /// <summary>
         /// Background color.<br/>
@@ -135,8 +137,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             if (bytes.Length == 10)
             {
                 //it's a Word 2000/2003 descriptor
-                this.cvFore = System.BitConverter.ToInt32(bytes, 0);
-                this.cvBack = System.BitConverter.ToInt32(bytes, 4);
+                this.cvFore = Utils.BitArrayToUInt32(new BitArray(new byte[] { bytes[2], bytes[1], bytes[0] }));
+
+                this.cvBack = Utils.BitArrayToUInt32(new BitArray(new byte[] { bytes[6], bytes[5], bytes[4] }));
+                //3302550
+
                 this.ipat = (ShadingPattern)System.BitConverter.ToUInt16(bytes, 8);
             }
             else if (bytes.Length == 2)
@@ -157,7 +162,18 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         {
             this.cvBack = 0;
             this.cvFore = 0;
-            this.ipat = 0;
+            this.icoBack = Color.ColorIdentifier.Auto;
+            this.icoFore = Color.ColorIdentifier.Auto;
+            this.ipat = ShadingPattern.Automatic;
         }
+
+        #region IVisitable Members
+
+        public void Convert<T>(T mapping)
+        {
+            ((IMapping<ShadingDescriptor>)mapping).Apply(this);
+        }
+
+        #endregion
     }
 }

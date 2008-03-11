@@ -46,8 +46,12 @@ namespace DocTranslatorTest
             //parse arguments
             parseArgs(args);
 
+            //start time
+            DateTime start = DateTime.Now;
+
             //open the reader
             StorageReader reader = new StorageReader(file);
+            Console.WriteLine("Parsing document ...");
 
             //parse the document
             WordDocument doc = new WordDocument(reader);
@@ -57,6 +61,7 @@ namespace DocTranslatorTest
             {
                 using (WordprocessingDocument docx = WordprocessingDocument.Create(file + "x", WordprocessingDocumentType.Document))
                 {
+                    Console.WriteLine("Converting document ...");
                     XmlWriterSettings xws = new XmlWriterSettings();
                     xws.OmitXmlDeclaration = false;
                     xws.CloseOutput = true;
@@ -73,8 +78,12 @@ namespace DocTranslatorTest
 
                     //Write Document.xml
                     writer = XmlWriter.Create(docx.MainDocumentPart.GetStream(), xws);
-                    doc.Convert(new TextPartMapping(writer));
+                    doc.Convert(new DocumentMapping(writer));
                     writer.Flush();
+
+                    DateTime end = DateTime.Now;
+                    TimeSpan diff = end.Subtract(start);
+                    Console.WriteLine("Conversion finished in "  + diff.ToString());
                 }
             }
             else

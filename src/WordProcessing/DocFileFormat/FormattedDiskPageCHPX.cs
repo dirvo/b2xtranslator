@@ -133,5 +133,70 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             return list;
         }
+
+        public static List<Int32> GetAllFCs(FileInformationBlock fib, VirtualStream wordStream, VirtualStream tableStream)
+        {
+            List<Int32> list = new List<Int32>();
+
+            //get bintable for CHPX
+            byte[] binTableChpx = new byte[fib.lcbPlcfbteChpx];
+            tableStream.Read(binTableChpx, binTableChpx.Length, (int)fib.fcPlcfbteChpx);
+
+            //there are n offsets and n-1 fkp's in the bin table
+            int n = (((int)fib.lcbPlcfbteChpx - 4) / 8) + 1;
+
+            //Get the indexed CHPX FKPs
+            for (int i = (n * 4); i < binTableChpx.Length; i += 4)
+            {
+                //indexed FKP is the 6th 512byte page
+                int fkpnr = System.BitConverter.ToInt32(binTableChpx, i);
+
+                //so starts at:
+                int offset = fkpnr * 512;
+
+                //parse the FKP and add offset to the list
+                FormattedDiskPageCHPX fkp = new FormattedDiskPageCHPX(wordStream, offset);
+                foreach (int fc in fkp.rgfc)
+                {
+                    //don't add the duplicated values of the FKP boundaries
+                    if (!list.Contains(fc))
+                        list.Add(fc);
+                }
+            }
+
+            return list;
+        }
+
+
+        public static List<CharacterPropertyExceptions> GetAllCHPX(FileInformationBlock fib, VirtualStream wordStream, VirtualStream tableStream)
+        {
+            List<CharacterPropertyExceptions> list = new List<CharacterPropertyExceptions>();
+
+            //get bintable for CHPX
+            byte[] binTableChpx = new byte[fib.lcbPlcfbteChpx];
+            tableStream.Read(binTableChpx, binTableChpx.Length, (int)fib.fcPlcfbteChpx);
+
+            //there are n offsets and n-1 fkp's in the bin table
+            int n = (((int)fib.lcbPlcfbteChpx - 4) / 8) + 1;
+
+            //Get the indexed CHPX FKPs
+            for (int i = (n * 4); i < binTableChpx.Length; i += 4)
+            {
+                //indexed FKP is the 6th 512byte page
+                int fkpnr = System.BitConverter.ToInt32(binTableChpx, i);
+
+                //so starts at:
+                int offset = fkpnr * 512;
+
+                //parse the FKP and add CHPX to the list
+                FormattedDiskPageCHPX fkp = new FormattedDiskPageCHPX(wordStream, offset);
+                foreach (CharacterPropertyExceptions chpx in fkp.grpchpx)
+                {
+                    list.Add(chpx);
+                }
+            }
+
+            return list;
+        }
     }
 }

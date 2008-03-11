@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class PropertyExceptions
+    public class PropertyExceptions : IVisitable
     {
         /// <summary>
         /// A list of the sprms that encode the differences between 
@@ -12,5 +13,15 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public List<SinglePropertyModifier> grpprl;
 
+        #region IVisitable Members
+
+        public void Convert<T>(T mapping)
+        {
+            ((IMapping<PropertyExceptions>)mapping).Apply(this);
+        }
+
+        #endregion
+
     }
+
 }

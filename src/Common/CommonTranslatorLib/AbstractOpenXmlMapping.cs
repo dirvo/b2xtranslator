@@ -8,10 +8,12 @@ namespace DIaLOGIKa.b2xtranslator.CommonTranslatorLib
     public class AbstractOpenXmlMapping
     {
         protected XmlWriter _writer;
+        protected XmlDocument _nodeFactory;
 
         public AbstractOpenXmlMapping(XmlWriter writer)
         {
             _writer = writer;
+            _nodeFactory = new XmlDocument();
         }
     }
 }

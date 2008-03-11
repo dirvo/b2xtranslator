@@ -441,7 +441,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// Array of positions of itbdMa´c tab stops
         /// </summary>
-        public Int16[] rgdxaTab;
+        public List<Int16> rgdxaTab;
 
         /// <summary>
         /// When true, absolutely positioned paragraph cannot 
@@ -539,7 +539,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// Array of itbdMac tab descriptors
         /// </summary>
-        public TabDescriptor[] rgtbd;
+        public List<TabDescriptor> rgtbd;
 
         /// <summary>
         /// Paragraph numbering revision mark data
@@ -572,12 +572,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <param name="fib">The fib</param>
         /// <param name="wordDocumentStream">The WordDocument stream</param>
         /// <param name="tableStream">The 0TableStream</param>
-        public ParagraphProperties(Int32 fc, FileInformationBlock fib, VirtualStream wordDocumentStream, VirtualStream tableStream)
+        public ParagraphProperties(Int32 fc, List<FormattedDiskPagePAPX> papxFkps)
         {
             setDefaultValue();
 
             //get all FKPs
-            List<FormattedDiskPagePAPX> papxFkps = FormattedDiskPagePAPX.GetAllPAPXFKPs(fib, wordDocumentStream, tableStream);
             foreach (FormattedDiskPagePAPX fkp in papxFkps)
             {
                 for (int i = 0; i < fkp.grppapx.Length; i++)
@@ -591,6 +590,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                         {
                             this.Modify(sprm);
                         }
+                        break;
                     }
                 }
             }
@@ -602,350 +602,15 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <param name="sprm">The SinglePropertyModifier</param>
         public void Modify(SinglePropertyModifier sprm)
         {
-            //only modify the PAP if the sprm modifies a PAP
-            if (sprm.Type == SinglePropertyModifier.SprmType.PAP)
-            {
-                switch (sprm.OpCode)
-                {
-                    case 0x4600:
-                        this.istd = System.BitConverter.ToUInt16(sprm.Arguments, 0);
-                        break;
-                    case 0x2461:
-                        this.jc = (JustificationCode)sprm.Arguments[0];
-                        break;
-                    case 0x2403:
-                        this.jc = (JustificationCode)sprm.Arguments[0];
-                        break;
-                    case 0x2404:
-                        this.fSideBySide = Utils.ByteToBool(sprm.Arguments[0]);
-                        break;
-                    case 0x2405:
-                        this.fKeep = Utils.ByteToBool(sprm.Arguments[0]);
-                        break;
-                    case 0x2406:
-                        this.fKeepFollow = Utils.ByteToBool(sprm.Arguments[0]);
-                        break;
-                    case 0x2407:
-                        this.fPageBreakBefore = Utils.ByteToBool(sprm.Arguments[0]);
-                        break;
-                    case 0x2408:
-                        this.brcl = sprm.Arguments[0];
-                        break;
-                    case 0x2409:
-                        this.brcp = sprm.Arguments[0];
-                        break;
-                    case 0x260A:
-                        this.ilvl = sprm.Arguments[0];
-                        break;
-                    case 0x460B:
-                        this.ilfo = sprm.Arguments[0];
-                        break;
-                    case 0x240C:
-                        this.fNoLynn = Utils.IntToBool((int)sprm.Arguments[0]);
-                        break;
-                    case 0xC60D:
-                        //needs complex modification
-                        break;
-                    case 0x845e :
-                        this.dxaLeft = (Int32)System.BitConverter.ToInt16(sprm.Arguments, 0);
-                        break;
-                    case 0x840F:
-                        this.dxaLeft = (Int32)System.BitConverter.ToInt16(sprm.Arguments, 0);
-                        break;
-                    case 0x4456:
-                        this.dxaLeft = (Int32)System.BitConverter.ToInt16(sprm.Arguments, 0);
-                        break;
-                    case 0x465F:
-                        this.dxaLeft = (Int32)System.BitConverter.ToInt16(sprm.Arguments, 0);
-                        break;
-                    case 0x4610:
-                        this.dxaLeft = (Int32)System.BitConverter.ToInt16(sprm.Arguments, 0);
-                        break;
-                    case 0x8460:
-                        this.dxaLeft1 = (Int32)System.BitConverter.ToInt16(sprm.Arguments, 0);
-                        break;
-                    case 0x8411:
-                        this.dxaLeft1 = (Int32)System.BitConverter.ToInt16(sprm.Arguments, 0);
-                        break;
-                    case 0x4457:
-                        this.dxaLeft1 = (Int32)System.BitConverter.ToInt16(sprm.Arguments, 0);
-                        break;
-                    case 0x845D:
-                        this.dxaRight = (Int32)System.BitConverter.ToInt16(sprm.Arguments, 0);
-                        break;
-                    case 0x840E:
-                        this.dxaRight = (Int32)System.BitConverter.ToInt16(sprm.Arguments, 0);
-                        break;
-                    case 0x4455:
-                        this.dxaRight = (Int32)System.BitConverter.ToInt16(sprm.Arguments, 0);
-                        break;
-                    case 0x6412:
-                        this.lspd = new LineSpacingDescriptor(sprm.Arguments);
-                        break;
-                    case 0xA413:
-                        this.dyaBefore = System.BitConverter.ToUInt16(sprm.Arguments, 0);
-                        break;
-                    case 0xA414:
-                        this.dyaAfter = System.BitConverter.ToUInt16(sprm.Arguments, 0);
-                        break;
-                    case 0x245C:
-                        this.fDyaAfterAuto = Utils.ByteToBool(sprm.Arguments[0]);
-                        break;
-                    case 0x245B:
-                        this.fDyaBeforeAuto = Utils.ByteToBool(sprm.Arguments[0]);
-                        break;
-                    case 0x4459:
-                        this.dylAfter = System.BitConverter.ToInt16(sprm.Arguments, 0);
-                        break;
-                    case 0x4458:
-                        this.dylBefore = System.BitConverter.ToInt16(sprm.Arguments, 0);
-                        break;
-                    case 0xC615:
-                        //needs complex modification
-                        break;
-                    case 0x2416:
-                        this.fInTableW97 = Utils.ByteToBool(sprm.Arguments[0]);
-                        break;
-                    case 0x2417:
-                        this.fTtp = Utils.ByteToBool(sprm.Arguments[0]);
-                        break;
-                    case 0x8418:
-                        this.dxaAbs = (Int32)System.BitConverter.ToInt16(sprm.Arguments, 0);
-                        break;
-                    case 0x8419:
-                        this.dyaAbs = (Int32)System.BitConverter.ToInt16(sprm.Arguments, 0);
-                        break;
-                    case 0x841A:
-                        this.dxaWidth = (Int32)System.BitConverter.ToInt16(sprm.Arguments, 0);
-                        break;
-                    case 0x261B:
-                        //needs complex handling;
-                        break;
-                    case 0x461C:
-                        this.brcTop = new BorderCode(sprm.Arguments);
-                        break;
-                    case 0x461D:
-                        this.brcLeft = new BorderCode(sprm.Arguments);
-                        break;
-                    case 0x461E:
-                        this.brcBottom = new BorderCode(sprm.Arguments);
-                        break;
-                    case 0x461F:
-                        this.brcRight = new BorderCode(sprm.Arguments);
-                        break;
-                    case 0x4620:
-                        this.brcBetween = new BorderCode(sprm.Arguments);
-                        break;
-                    case 0x4621:
-                        this.brcBar = new BorderCode(sprm.Arguments);
-                        break;
-                    case 0x4622:
-                        this.dxaFromText = (Int32)System.BitConverter.ToInt16(sprm.Arguments, 0);
-                        break;
-                    case 0x2423:
-                        this.wr = sprm.Arguments[0];
-                        break;
-                    case 0xC653:
-                        this.brcBar = new BorderCode(sprm.Arguments);
-                        break;
-                    case 0x4629:
-                        this.brcBar = new BorderCode(sprm.Arguments);
-                        break;
-                    case 0x6629:
-                        this.brcBar = new BorderCode(sprm.Arguments);
-                        break;
-                    case 0xC652:
-                        this.brcBetween = new BorderCode(sprm.Arguments);
-                        break;
-                    case 0x4428:
-                        this.brcBetween = new BorderCode(sprm.Arguments);
-                        break;
-                    case 0x6428:
-                        this.brcBetween = new BorderCode(sprm.Arguments);
-                        break;
-                    case 0xC650:
-                        this.brcBottom = new BorderCode(sprm.Arguments);
-                        break;
-                    case 0x4426:
-                        this.brcBottom = new BorderCode(sprm.Arguments);
-                        break;
-                    case 0x6426:
-                        this.brcBottom = new BorderCode(sprm.Arguments);
-                        break;
-                    case 0xC64F:
-                        this.brcLeft = new BorderCode(sprm.Arguments);
-                        break;
-                    case 0x4425:
-                        this.brcLeft = new BorderCode(sprm.Arguments);
-                        break;
-                    case 0x6425:
-                        this.brcLeft = new BorderCode(sprm.Arguments);
-                        break;
-                    case 0xC651:
-                        this.brcRight = new BorderCode(sprm.Arguments);
-                        break;
-                    case 0x4427:
-                        this.brcRight = new BorderCode(sprm.Arguments);
-                        break;
-                    case 0x6427:
-                        this.brcRight = new BorderCode(sprm.Arguments);
-                        break;
-                    case 0xC64E:
-                        this.brcTop = new BorderCode(sprm.Arguments);
-                        break;
-                    case 0x4424:
-                        this.brcTop = new BorderCode(sprm.Arguments);
-                        break;
-                    case 0x6424:
-                        this.brcTop = new BorderCode(sprm.Arguments);
-                        break;
-                    case 0x242A:
-                        this.fNoAutoHyph = Utils.ByteToBool(sprm.Arguments[0]);
-                        break;
-                    case 0x442B:
-                        this.wHeightAbs = System.BitConverter.ToUInt16(sprm.Arguments, 0);
-                        break;
-                    case 0x442c:
-                        this.dcs = new DropCapSpecifier(sprm.Arguments);
-                        break;
-                    case 0x442D:
-                        this.shd = new ShadingDescriptor(sprm.Arguments);
-                        break;
-                    case 0x842E:
-                        this.dyaFromText =  (Int32)System.BitConverter.ToInt16(sprm.Arguments, 0);
-                        break;
-                    case 0x842F:
-                        this.dxaFromText = (Int32)System.BitConverter.ToInt16(sprm.Arguments, 0);
-                        break;
-                    case 0x2430:
-                        this.fLocked = Utils.ByteToBool(sprm.Arguments[0]);
-                        break;
-                    case 0x2431:
-                        this.fWindowControl = Utils.ByteToBool(sprm.Arguments[0]);
-                        break;
-                    case 0xC632:
-                        //not specified
-                        break;
-                    case 0x2433:
-                        this.fKinsoku = Utils.ByteToBool(sprm.Arguments[0]);
-                        break;
-                    case 0x2434:
-                        this.fWordWrap = Utils.ByteToBool(sprm.Arguments[0]);
-                        break;
-                    case 0x2435:
-                        this.fOverflowPunct = Utils.ByteToBool(sprm.Arguments[0]);
-                        break;
-                    case 0x2436:
-                        this.fTopLinePunct = Utils.ByteToBool(sprm.Arguments[0]);
-                        break;
-                    case 0x2437:
-                        this.fAutoSpaceDE = Utils.ByteToBool(sprm.Arguments[0]);
-                        break;
-                    case 0x2438:
-                        this.fAutoSpaceDN = Utils.ByteToBool(sprm.Arguments[0]);
-                        break;
-                    case 0x4439:
-                        this.wAlignFont = System.BitConverter.ToUInt16(sprm.Arguments, 0);
-                        break;
-                    case 0x443A:
-                        //complex
-                        break;
-                    case 0x243B:
-                        //obsolete
-                        break;
-                    case 0xC63E:
-                        this.anld = new AutoNumberedListDataDescriptor(sprm.Arguments);
-                        break;
-                    case 0x6654:
-                        this.anld.anlv.cv = System.BitConverter.ToInt32(sprm.Arguments, 0);
-                        break;
-                    case 0xC63F:
-                        //complex;
-                        break;
-                    case 0x2640:
-                        this.lvl = sprm.Arguments[0];
-                        break;
-                    case 0x2441:
-                        this.fBiDi = Utils.ByteToBool(sprm.Arguments[0]);
-                        break;
-                    case 0x2443:
-                        this.fNumRMins = Utils.ByteToBool(sprm.Arguments[0]);
-                        break;
-                    case 0xC645:
-                        this.numrm = new NumberRevisionMarkData(sprm.Arguments);
-                        break;
-                    case 0x6645:
-                        //pointer to the huge papx
-                        break;
-                    case 0x2447:
-                        this.fUsePgsuSettings = Utils.ByteToBool(sprm.Arguments[0]);
-                        break;
-                    case 0x2448:
-                        this.fAdjustRight = Utils.ByteToBool(sprm.Arguments[0]);
-                        break;
-                    case 0x664a:
-                        this.itap = System.BitConverter.ToInt32(sprm.Arguments, 0);
-                        if(this.itap == 0)
-                            this.fInTableW97 = false;
-                        else
-                            this.fInTableW97 = true;
-                        break;
-                    case 0x244b:
-                        this.fInnerTableCell = Utils.ByteToBool(sprm.Arguments[0]);
-                        break;
-                    case 0x244c:
-                        //see description
-                        break;
-                    case 0x2462:
-                        this.fNoAllowOverlap = Utils.ByteToBool(sprm.Arguments[0]);
-                        break;
-                    case 0x6649:
-                        this.itap = System.BitConverter.ToInt32(sprm.Arguments, 0);
-                        if(this.itap == 0)
-                            this.fInTableW97 = false;
-                        else
-                            this.fInTableW97 = true;
-                        break;
-                    case 0x2664:
-                        this.fHasOldProps = Utils.ByteToBool(sprm.Arguments[0]);
-                        break;
-                    case 0x6465:
-                        this.ipgp = System.BitConverter.ToUInt16(sprm.Arguments, 0);
-                        break;
-                    case 0xc666:
-                        //
-                        break;
-                    case 0x6467:
-                        this.rsid = System.BitConverter.ToUInt32(sprm.Arguments, 0);
-                        break;
-                    case 0x4468:
-                        this.istdList = System.BitConverter.ToUInt16(sprm.Arguments, 0);
-                        break;
-                    case 0xc669:
-                        this.istdList = System.BitConverter.ToUInt16(sprm.Arguments, 0);
-                        break;
-                    case 0xa46a:
-                        this.dyaBefore = System.BitConverter.ToUInt16(sprm.Arguments, 0);
-                        break;
-                    case 0x646b:
-                        //tab parsing is not yet implemented
-                        break;
-                    case 0xc66c:
-                        //tab parsing is not yet implemented
-                        break;
-                    case 0x246D:
-                        this.fContextualSpacing = Utils.ByteToBool(sprm.Arguments[0]);
-                        break;
-                    case 0x246E:
-                        //revision pane flags
-                        break;
-                    case 0xC66F:
-                        // needs complex handling
-                        break;
-                    default:
-                        break;
-                }
-            }
+          
+        }
+
+        private void modifyTabs(byte[] args)
+        {
+            int pos = 0;
+            
+            //todo
+
         }
 
         private void setDefaultValue()
@@ -1021,18 +686,19 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.wHeightAbs = 0;
             this.wr = 0;
             this.anld = new AutoNumberedListDataDescriptor();
-            this.brcBar = new BorderCode();
-            this.brcBetween = new BorderCode();
-            this.brcBottom = new BorderCode();
-            this.brcLeft = new BorderCode();
-            this.brcRight = new BorderCode();
-            this.brcTop = new BorderCode();
+            this.brcBar = null;
+            this.brcBetween = null;
+            this.brcBottom = null;
+            this.brcLeft = null;
+            this.brcRight = null;
+            this.brcTop = null;
             this.dcs = new DropCapSpecifier();
             this.dttmPropMark = new DateAndTime();
             this.numrm = new NumberRevisionMarkData();
             this.phe = new ParagraphHeight();
-            this.rgdxaTab = Utils.ClearShortArray(new UInt16[64]);
-            this.shd = new ShadingDescriptor();
+            this.rgdxaTab = null;
+            this.rgtbd = null;
+            this.shd = null;
 
             //except ...
             this.fWindowControl = true;

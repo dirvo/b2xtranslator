@@ -57,18 +57,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// Parses the bytes to retrieve a TabDescriptor
         /// </summary>
-        /// <param name="bytes">The bytes</param>
-        public TabDescriptor(byte[] bytes)
+        /// <param name="b">The byte</param>
+        public TabDescriptor(byte b)
         {
-            if (bytes.Length == 1)
-            {
-                this.jc = Convert.ToByte(Convert.ToInt32(bytes[0]) & 0x07);
-                this.tlc = Convert.ToByte(Convert.ToInt32(bytes[0]) & 0x38);
-            }
-            else
-            {
-                throw new ByteParseException("TBD");
-            }
+          this.jc = Convert.ToByte(Convert.ToInt32(b) & 0x07);
+          this.tlc = Convert.ToByte(Convert.ToInt32(b) & 0x38);
         }
     }
 }
