@@ -60,10 +60,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         public void Apply(WordDocument doc)
         {
             _doc = doc;
+
             _allChpxOffsets = FormattedDiskPageCHPX.GetAllFCs(doc.FIB, doc.WordDocumentStream, doc.TableStream);
-            _allChpx = FormattedDiskPageCHPX.GetAllCHPX(doc.FIB, doc.WordDocumentStream, doc.TableStream);
+            _allChpx = FormattedDiskPageCHPX.GetAllCHPX(doc.FIB.fcMin, doc.FIB.fcMin+doc.FIB.ccpText, doc.FIB, doc.WordDocumentStream, doc.TableStream);
             _allPapxOffsets = FormattedDiskPagePAPX.GetAllFCs(doc.FIB, doc.WordDocumentStream, doc.TableStream);
-            _allPapx = FormattedDiskPagePAPX.GetAllPAPX(doc.FIB, doc.WordDocumentStream, doc.TableStream);
+            _allPapx = FormattedDiskPagePAPX.GetAllPAPX(doc.FIB.fcMin, doc.FIB.fcMin + doc.FIB.ccpText, doc.FIB, doc.WordDocumentStream, doc.TableStream);
 
             _writer.WriteStartDocument();
             _writer.WriteStartElement("w", "document", OpenXmlNamespaces.WordprocessingML);
@@ -77,7 +78,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             for (int i = 0; i < doc.Text.Count; i++)
             {
-
                 //PAPX starts here
                 if (fc == nextPapxOffset)
                 {
@@ -95,7 +95,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //increase index for the next time
                     _papxIndex++;
                     nextPapxOffset = _allPapxOffsets[_papxIndex];
-
                 }
 
                 //CHPX starts here
@@ -262,8 +261,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
         private void startNewParagraph()
         {
-            drawTextProgressBar(_papxIndex, _allPapx.Count);
-
             //write new paragraph
             _writer.WriteStartElement("w", "p", OpenXmlNamespaces.WordprocessingML);
 
@@ -298,6 +295,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
         private void startNewRun()
         {
+            //drawTextProgressBar(_chpxIndex + 1, _allChpx.Count);
+
             //write new run
             _writer.WriteStartElement("w", "r", OpenXmlNamespaces.WordprocessingML);
             //write new text

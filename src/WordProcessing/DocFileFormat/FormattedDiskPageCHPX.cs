@@ -167,8 +167,22 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             return list;
         }
 
-
-        public static List<CharacterPropertyExceptions> GetAllCHPX(FileInformationBlock fib, VirtualStream wordStream, VirtualStream tableStream)
+        /// <summary>
+        /// Returnes a list of all CharacterPropertyExceptions which correspond to text 
+        /// between the given offsets.
+        /// </summary>
+        /// <param name="fcStart"></param>
+        /// <param name="fcEnd"></param>
+        /// <param name="fib"></param>
+        /// <param name="wordStream"></param>
+        /// <param name="tableStream"></param>
+        /// <returns></returns>
+        public static List<CharacterPropertyExceptions> GetAllCHPX(
+            Int32 fcStart,
+            Int32 fcEnd,
+            FileInformationBlock fib,
+            VirtualStream wordStream,
+            VirtualStream tableStream)
         {
             List<CharacterPropertyExceptions> list = new List<CharacterPropertyExceptions>();
 
@@ -190,9 +204,12 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
                 //parse the FKP and add CHPX to the list
                 FormattedDiskPageCHPX fkp = new FormattedDiskPageCHPX(wordStream, offset);
-                foreach (CharacterPropertyExceptions chpx in fkp.grpchpx)
+                for (int j = 0; j < fkp.grpchpx.Length; j++)
                 {
-                    list.Add(chpx);
+                    if (fkp.rgfc[j] >= fcStart && fkp.rgfc[j] < fcEnd)
+                    {
+                        list.Add(fkp.grpchpx[j]);
+                    }
                 }
             }
 

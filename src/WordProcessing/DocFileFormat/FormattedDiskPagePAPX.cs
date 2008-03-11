@@ -192,7 +192,22 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             return list;
         }
 
-        public static List<ParagraphPropertyExceptions> GetAllPAPX(FileInformationBlock fib, VirtualStream wordStream, VirtualStream tableStream)
+        /// <summary>
+        /// Returnes a list of all ParagraphPropertyExceptions which correspond to text 
+        /// between the given offsets.
+        /// </summary>
+        /// <param name="fcStart"></param>
+        /// <param name="fcEnd"></param>
+        /// <param name="fib"></param>
+        /// <param name="wordStream"></param>
+        /// <param name="tableStream"></param>
+        /// <returns></returns>
+        public static List<ParagraphPropertyExceptions> GetAllPAPX(
+            Int32 fcStart,
+            Int32 fcEnd,
+            FileInformationBlock fib, 
+            VirtualStream wordStream, 
+            VirtualStream tableStream)
         {
             List<ParagraphPropertyExceptions> list = new List<ParagraphPropertyExceptions>();
 
@@ -214,9 +229,12 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
                 //parse the FKP and add PAPX to the list
                 FormattedDiskPagePAPX fkp = new FormattedDiskPagePAPX(wordStream, offset);
-                foreach (ParagraphPropertyExceptions papx in fkp.grppapx)
+                for (int j = 0; j < fkp.grppapx.Length; j++)
                 {
-                    list.Add(papx);
+                    if (fkp.rgfc[j] >= fcStart && fkp.rgfc[j] < fcEnd)
+                    {
+                        list.Add(fkp.grppapx[j]);
+                    }
                 }
             }
 
