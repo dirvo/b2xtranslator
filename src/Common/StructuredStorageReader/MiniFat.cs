@@ -38,8 +38,8 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
     /// </summary>
     internal class MiniFat : AbstractFat
     {
-        List<UInt32> _sectorsUsedByMiniFat;
-        List<UInt32> _sectorsUsedByMiniStream;
+        List<UInt32> _sectorsUsedByMiniFat = new List<UInt32>();
+        List<UInt32> _sectorsUsedByMiniStream = new List<UInt32>();
         Fat _fat;
         UInt32 _miniStreamStart;
         UInt64 _sizeOfMiniStream;
