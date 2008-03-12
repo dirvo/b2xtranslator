@@ -98,6 +98,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public StyleSheet Styles;
 
+        /// <summary>
+        /// A list of all font names, used in the doucument
+        /// </summary>
+        public List<FontFamilyName> FontTable;
+
         public WordDocument(StorageReader reader)
         {
             this.WordDocumentStream = reader.GetStream("WordDocument");
@@ -113,6 +118,22 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             //parse the stylesheet
             this.Styles = new StyleSheet(this.FIB, this.TableStream);
+
+            //read font table
+            this.FontTable = new List<FontFamilyName>();
+            byte[] ftBytes = new byte[this.FIB.lcbSttbfffn];
+            this.TableStream.Read(ftBytes, ftBytes.Length, this.FIB.fcSttbfffn);
+
+            //parse the font table
+            Int32 ffnCount = System.BitConverter.ToInt32(ftBytes, 0);
+            int pos = 4;
+            for (int i = 0; i < ffnCount; i++)
+            {
+                byte[] ffnBytes = new byte[ftBytes[pos]+1];
+                Array.Copy(ftBytes, pos, ffnBytes, 0, ffnBytes.Length);
+                this.FontTable.Add(new FontFamilyName(ffnBytes));
+                pos += ffnBytes.Length ;
+            }
 
             //parse the piece table and construct a list that contains all chars
             _pieceTable = new PieceTable(this.FIB, this.TableStream);

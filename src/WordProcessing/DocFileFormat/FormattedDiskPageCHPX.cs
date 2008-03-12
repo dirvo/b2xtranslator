@@ -134,7 +134,21 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             return list;
         }
 
-        public static List<Int32> GetAllFCs(FileInformationBlock fib, VirtualStream wordStream, VirtualStream tableStream)
+        /// <summary>
+        /// Returns a list of all CHPX FCs between they given boundaries.
+        /// </summary>
+        /// <param name="fcMin">The lower boundary</param>
+        /// <param name="fcMax">The upper boundary</param>
+        /// <param name="fib">The FileInformationBlock</param>
+        /// <param name="wordStream">The VirtualStream "WordStream"</param>
+        /// <param name="tableStream">The VirtualStream "0Table" or "1Table"</param>
+        /// <returns>The FCs</returns>
+        public static List<Int32> GetFileCharacterPositions(
+            Int32 fcMin,
+            Int32 fcMax,
+            FileInformationBlock fib, 
+            VirtualStream wordStream, 
+            VirtualStream tableStream)
         {
             List<Int32> list = new List<Int32>();
 
@@ -156,11 +170,17 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
                 //parse the FKP and add offset to the list
                 FormattedDiskPageCHPX fkp = new FormattedDiskPageCHPX(wordStream, offset);
-                foreach (int fc in fkp.rgfc)
+
+                //don't add the duplicated values of the FKP boundaries (Length-1)
+                int max = fkp.rgfc.Length - 1;
+
+                //last fkp?use full table
+                if (i == binTableChpx.Length - 4)
+                    max = fkp.rgfc.Length;
+
+                for (int j = 0; j < max; j++)
                 {
-                    //don't add the duplicated values of the FKP boundaries
-                    if (!list.Contains(fc))
-                        list.Add(fc);
+                    list.Add(fkp.rgfc[j]);
                 }
             }
 
@@ -169,17 +189,17 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         /// <summary>
         /// Returnes a list of all CharacterPropertyExceptions which correspond to text 
-        /// between the given offsets.
+        /// between the given boundaries.
         /// </summary>
-        /// <param name="fcStart"></param>
-        /// <param name="fcEnd"></param>
-        /// <param name="fib"></param>
-        /// <param name="wordStream"></param>
-        /// <param name="tableStream"></param>
-        /// <returns></returns>
-        public static List<CharacterPropertyExceptions> GetAllCHPX(
-            Int32 fcStart,
-            Int32 fcEnd,
+        /// <param name="fcMin">The lower boundary</param>
+        /// <param name="fcMax">The upper boundary</param>
+        /// <param name="fib">The FileInformationBlock</param>
+        /// <param name="wordStream">The VirtualStream "WordStream"</param>
+        /// <param name="tableStream">The VirtualStream "0Table" or "1Table"</param>
+        /// <returns>The FCs</returns>
+        public static List<CharacterPropertyExceptions> GetCharacterPropertyExceptions(
+            Int32 fcMin,
+            Int32 fcMax,
             FileInformationBlock fib,
             VirtualStream wordStream,
             VirtualStream tableStream)
@@ -206,7 +226,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 FormattedDiskPageCHPX fkp = new FormattedDiskPageCHPX(wordStream, offset);
                 for (int j = 0; j < fkp.grpchpx.Length; j++)
                 {
-                    if (fkp.rgfc[j] >= fcStart && fkp.rgfc[j] < fcEnd)
+                    if (fkp.rgfc[j] >= fcMin && fkp.rgfc[j] < fcMax)
                     {
                         list.Add(fkp.grpchpx[j]);
                     }

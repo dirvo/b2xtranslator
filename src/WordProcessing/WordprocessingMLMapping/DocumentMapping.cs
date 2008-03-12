@@ -61,10 +61,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             _doc = doc;
 
-            _allChpxOffsets = FormattedDiskPageCHPX.GetAllFCs(doc.FIB, doc.WordDocumentStream, doc.TableStream);
-            _allChpx = FormattedDiskPageCHPX.GetAllCHPX(doc.FIB.fcMin, doc.FIB.fcMin+doc.FIB.ccpText, doc.FIB, doc.WordDocumentStream, doc.TableStream);
-            _allPapxOffsets = FormattedDiskPagePAPX.GetAllFCs(doc.FIB, doc.WordDocumentStream, doc.TableStream);
-            _allPapx = FormattedDiskPagePAPX.GetAllPAPX(doc.FIB.fcMin, doc.FIB.fcMin + doc.FIB.ccpText, doc.FIB, doc.WordDocumentStream, doc.TableStream);
+            int fcMin = doc.FIB.fcMin;
+            int fcMax = doc.FIB.fcMin + doc.FIB.ccpText;
+
+            _allChpxOffsets = FormattedDiskPageCHPX.GetFileCharacterPositions(fcMin, fcMax, doc.FIB, doc.WordDocumentStream, doc.TableStream);
+            _allChpx = FormattedDiskPageCHPX.GetCharacterPropertyExceptions(fcMin, fcMax, doc.FIB, doc.WordDocumentStream, doc.TableStream);
+            _allPapxOffsets = FormattedDiskPagePAPX.GetFileCharacterPositions(fcMin, fcMax, doc.FIB, doc.WordDocumentStream, doc.TableStream);
+            _allPapx = FormattedDiskPagePAPX.GetParagraphPropertyExceptions(fcMin, fcMax, doc.FIB, doc.WordDocumentStream, doc.TableStream);
 
             _writer.WriteStartDocument();
             _writer.WriteStartElement("w", "document", OpenXmlNamespaces.WordprocessingML);
@@ -135,7 +138,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 {
                     _writer.WriteElementString("w", "br", OpenXmlNamespaces.WordprocessingML, null);
                 }
-                
                 else if (c == TextBoundary.NonBreakingHyphen)
                 {
                 }
@@ -180,12 +182,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 else if (_charIsSpecial && c == TextBoundary.HandAnnotationPicture)
                 {
                 }
-                else if((int)c < 32)
-                {
-                    //this is a workaround until fSpec chars are implemented.
-                    //characters with special meanings should not be written at all.
-                }
-                else if (c != '\uFFFF' && !suppressNextChar)
+                else if (c != '\uFFFF' && !suppressNextChar && (int)c > 31)
                 {
                     _writer.WriteString(new string(c, 1));
                 }
@@ -226,39 +223,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _writer.WriteEndDocument();
         }
 
-        private static void drawTextProgressBar(int progress, int total)
-        {
-            //draw empty progress bar
-            Console.CursorLeft = 0;
-            Console.Write("["); //start
-            Console.CursorLeft = 32;
-            Console.Write("]"); //end
-            Console.CursorLeft = 1;
-            float onechunk = 30.0f / total;
-
-            //draw filled part
-            int position = 1;
-            for (int i = 0; i < onechunk * progress; i++)
-            {
-                Console.BackgroundColor = ConsoleColor.Gray;
-                Console.CursorLeft = position++;
-                Console.Write(" ");
-            }
-
-            //draw unfilled part
-            for (int i = position; i < 31; i++)
-            {
-                Console.BackgroundColor = ConsoleColor.Black;
-                Console.CursorLeft = position++;
-                Console.Write(" ");
-            }
-
-            //draw totals
-            Console.CursorLeft = 35;
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.Write(progress.ToString() + " of " + total.ToString() + "    "); //blanks at the end remove any excess
-        }
-
         private void startNewParagraph()
         {
             //write new paragraph
@@ -269,38 +233,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             //convert it
             papx.Convert(new ParagraphPropertiesMapping(_writer, _doc.Styles));
-
-            #region oldcode
-            ////find the matching PAPX in the FKPs
-            //foreach (FormattedDiskPagePAPX fkp in _papxFkps)
-            //{
-            //   for (int i = 0; i < fkp.grppapx.Length; i++)
-            //   {
-            //       if (fkp.rgfc[i] == fc)
-            //       {
-            //           ParagraphPropertyExceptions papx = fkp.grppapx[i];
-
-            //           //convert the properties
-            //           papx.Convert(new ParagraphPropertiesMapping(_writer, doc.Styles));
-
-            //           //set offset of next paragraph
-            //           _nextParaOffset = fkp.rgfc[i + 1];
-
-            //           break;
-            //       }
-            //   }
-            //}
-            #endregion
         }
 
         private void startNewRun()
         {
-            //drawTextProgressBar(_chpxIndex + 1, _allChpx.Count);
-
             //write new run
             _writer.WriteStartElement("w", "r", OpenXmlNamespaces.WordprocessingML);
             //write new text
             _writer.WriteStartElement("w", "t", OpenXmlNamespaces.WordprocessingML);
+            _writer.WriteAttributeString("xml", "space", "", "preserve");
 
             //get chpx
             CharacterPropertyExceptions chpx = _allChpx[_chpxIndex];
@@ -314,37 +255,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
 
             //convert the chpx
-            chpx.Convert(new CharacterPropertiesMapping(_writer, _doc.Styles));
-
-            #region oldcode
-            ////find the matching CHPX in the FKPs
-            //foreach (FormattedDiskPageCHPX fkp in _chpxFkps)
-            //{
-            //    for (int i = 0; i < fkp.grpchpx.Length; i++)
-            //    {
-            //        if (fkp.rgfc[i] == fc)
-            //        {
-            //            CharacterPropertyExceptions chpx = fkp.grpchpx[i];
-
-            //            //check if the fSpec flag is set
-            //            _charIsSpecial = false;
-            //            foreach (SinglePropertyModifier sprm in chpx.grpprl)
-            //            {
-            //                if (sprm.OpCode == 0x0855 && sprm.Arguments[0] == 1)
-            //                    _charIsSpecial = true;
-            //            }
-                        
-            //            //convert the properties
-            //            chpx.Convert(new CharacterPropertiesMapping(_writer, doc.Styles));
-
-            //            //set offset of next run
-            //            _nextRunOffset = fkp.rgfc[i + 1];
-
-            //            break;
-            //        }
-            //    }
-            //}
-            #endregion
+            chpx.Convert(new CharacterPropertiesMapping(_writer, _doc.Styles, _doc.FontTable));
         }
     }
 }

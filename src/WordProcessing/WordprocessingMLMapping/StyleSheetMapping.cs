@@ -40,15 +40,34 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         : AbstractOpenXmlMapping,
           IMapping<StyleSheet>
     {
-        public StyleSheetMapping(XmlWriter writer)
+        WordDocument _doc;
+
+        public StyleSheetMapping(XmlWriter writer, WordDocument doc)
             : base(writer)
         {
+            _doc = doc;
         }
 
         public void Apply(StyleSheet sheet)
         {
             _writer.WriteStartDocument();
             _writer.WriteStartElement("w", "styles", OpenXmlNamespaces.WordprocessingML);
+
+            _writer.WriteStartElement("w", "docDefaults", OpenXmlNamespaces.WordprocessingML);
+            _writer.WriteStartElement("w", "rPrDefault", OpenXmlNamespaces.WordprocessingML);
+            _writer.WriteStartElement("w", "rPr", OpenXmlNamespaces.WordprocessingML);
+
+            //write default fonts
+            _writer.WriteStartElement("w", "rFonts", OpenXmlNamespaces.WordprocessingML);
+            _writer.WriteAttributeString("w", "ascii", OpenXmlNamespaces.WordprocessingML, _doc.FontTable[sheet.stshi.rgftcStandardChpStsh[0]].xszFtn);
+            _writer.WriteAttributeString("w", "eastAsia", OpenXmlNamespaces.WordprocessingML, _doc.FontTable[sheet.stshi.rgftcStandardChpStsh[1]].xszFtn);
+            _writer.WriteAttributeString("w", "hAnsi", OpenXmlNamespaces.WordprocessingML, _doc.FontTable[sheet.stshi.rgftcStandardChpStsh[2]].xszFtn);
+            _writer.WriteAttributeString("w", "cs", OpenXmlNamespaces.WordprocessingML, _doc.FontTable[sheet.stshi.rgftcStandardChpStsh[3]].xszFtn);
+            _writer.WriteEndElement();
+
+            _writer.WriteEndElement();
+            _writer.WriteEndElement();
+            _writer.WriteEndElement();
 
             foreach (StyleSheetDescription style in sheet.Styles)
             {
@@ -109,6 +128,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //write character properties
                     if (style.chpx != null)
                     {
+                        style.chpx.Convert(new CharacterPropertiesMapping(_writer, sheet, _doc.FontTable));
                     }
 
                     _writer.WriteEndElement();

@@ -103,12 +103,13 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.stiMaxWhenSaved = System.BitConverter.ToUInt16(bytes, 6);
             this.istdMaxFixedWhenSaved = System.BitConverter.ToUInt16(bytes, 8);
             this.nVerBuiltInNamesWhenSaved = System.BitConverter.ToUInt16(bytes, 10);
-            
-            //this.rgftcStandardChpStsh = new UInt16[3];
-            //this.rgftcStandardChpStsh[0] = System.BitConverter.ToUInt16(bytes, 12);
-            //this.rgftcStandardChpStsh[1] = System.BitConverter.ToUInt16(bytes, 14);
-            //this.rgftcStandardChpStsh[2] = System.BitConverter.ToUInt16(bytes, 16);
-            //this.mpstilsd = new LSD[this.stiMaxWhenSaved];
+
+            this.rgftcStandardChpStsh = new UInt16[4];
+            this.rgftcStandardChpStsh[0] = System.BitConverter.ToUInt16(bytes, 12);
+            this.rgftcStandardChpStsh[1] = System.BitConverter.ToUInt16(bytes, 14);
+            this.rgftcStandardChpStsh[2] = System.BitConverter.ToUInt16(bytes, 16);
+            //this.rgftcStandardChpStsh[3] = System.BitConverter.ToUInt16(bytes, 18);
+            this.mpstilsd = new LSD[this.stiMaxWhenSaved];
         }
     }
 }

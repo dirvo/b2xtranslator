@@ -44,7 +44,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             XmlElement jc = null;
             XmlElement shd = null;
 
-
             //append style id 
             XmlElement pStyle = _nodeFactory.CreateElement("w", "pStyle", OpenXmlNamespaces.WordprocessingML);
             XmlAttribute styleId = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
@@ -184,7 +183,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //justification code
                     case 0x2461:
                     case 0x2403:
-                        jc = _nodeFactory.CreateElement("w", "val", OpenXmlNamespaces.WordprocessingML);
+                        jc = _nodeFactory.CreateElement("w", "jc", OpenXmlNamespaces.WordprocessingML);
                         XmlAttribute jcVal = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
                         jcVal.Value = ((JustificationCode)sprm.Arguments[0]).ToString();
                         jc.Attributes.Append(jcVal);

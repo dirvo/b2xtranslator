@@ -102,7 +102,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// Foreground color.<br/>
         /// Only used if cvFore is not set
         /// </summary>
-        public Color.ColorIdentifier icoFore;
+        public Global.ColorIdentifier icoFore;
 
         /// <summary>
         /// 24-bit background color
@@ -113,7 +113,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// Background color.<br/>
         /// Only used if cvBack is not set.
         /// </summary>
-        public Color.ColorIdentifier icoBack;
+        public Global.ColorIdentifier icoBack;
 
         /// <summary>
         /// Shading pattern
@@ -148,8 +148,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             {
                 //it's a Word 97 SPRM
                 byte val = bytes[1];
-                this.icoFore = (Color.ColorIdentifier)(val & 0x001F);
-                this.icoBack = (Color.ColorIdentifier)((val & 0x03e0) >> 5);
+                this.icoFore = (Global.ColorIdentifier)(val & 0x001F);
+                this.icoBack = (Global.ColorIdentifier)((val & 0x03e0) >> 5);
                 this.ipat = (ShadingPattern)((val & 0xFC00) >> 10);
             }
             else
@@ -162,8 +162,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         {
             this.cvBack = 0;
             this.cvFore = 0;
-            this.icoBack = Color.ColorIdentifier.Auto;
-            this.icoFore = Color.ColorIdentifier.Auto;
+            this.icoBack = Global.ColorIdentifier.auto;
+            this.icoFore = Global.ColorIdentifier.auto;
             this.ipat = ShadingPattern.Automatic;
         }
 

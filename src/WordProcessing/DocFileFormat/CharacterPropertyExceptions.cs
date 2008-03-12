@@ -34,6 +34,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
     public class CharacterPropertyExceptions : PropertyExceptions
     {
+              
         /// <summary>
         /// Creates a CHPX wich doesn't modify anything.<br/>
         /// The grpprl list is null

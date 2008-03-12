@@ -108,7 +108,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// The color of the Border.
         /// Unused if cv is set.
         /// </summary>
-        public Color.ColorIdentifier ico;
+        public Global.ColorIdentifier ico;
 
         /// <summary>
         /// Width of space to maintain between border and text within border
@@ -143,7 +143,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             {
                 //it's a border code of Word 2000/2003
                 this.cv = System.BitConverter.ToInt32(bytes, 0);
-                this.ico = Color.ColorIdentifier.Auto;
+                this.ico = Global.ColorIdentifier.auto;
 
                 this.dptLineWidth = bytes[4];
                 this.brcType = (BorderType)bytes[5];
@@ -162,7 +162,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 this.dptLineWidth = (byte)(val & 0x00FF);
                 this.brcType = (BorderType)((val & 0xFF00) >> 8);
                 val = System.BitConverter.ToUInt16(bytes, 2);
-                this.ico = (Color.ColorIdentifier)(val & 0x00FF);
+                this.ico = (Global.ColorIdentifier)(val & 0x00FF);
                 this.dptSpace = (val & 0x1F00) >> 8;
             }
             else
@@ -175,7 +175,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         {
             this.brcType = BorderType.none;
             this.cv = 0;
-            this.ico = Color.ColorIdentifier.Auto;
+            this.ico = Global.ColorIdentifier.auto;
             this.dptLineWidth = 0;
             this.dptSpace = 0;
             this.fFrame = false;
