@@ -176,36 +176,22 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             VirtualStream tableStream)
         {
             List<Int32> list = new List<Int32>();
+            List<FormattedDiskPagePAPX> fkps = FormattedDiskPagePAPX.GetAllPAPXFKPs(fib, wordStream, tableStream);
 
-            //get bintable for PAPX
-            byte[] binTablePapx = new byte[fib.lcbPlcfbtePapx];
-            tableStream.Read(binTablePapx, binTablePapx.Length, (int)fib.fcPlcfbtePapx);
-
-            //there are n offsets and n-1 fkp's in the bin table
-            int n = (((int)fib.lcbPlcfbtePapx - 4) / 8) + 1;
-
-            //Get the indexed PAPX FKPs
-            for (int i = (n * 4); i < binTablePapx.Length; i += 4)
+            for (int i = 0; i < fkps.Count; i++ )
             {
-                //indexed FKP is the xth 512byte page
-                int fkpnr = System.BitConverter.ToInt32(binTablePapx, i);
+                FormattedDiskPage fkp = fkps[i];
 
-                //so starts at:
-                int offset = fkpnr * 512;
-
-                //parse the FKP and add offset to the list
-                FormattedDiskPagePAPX fkp = new FormattedDiskPagePAPX(wordStream, offset);
-                
-                //don't add the duplicated values of the FKP boundaries (Length-1)
-                int max = fkp.rgfc.Length - 1;
-
-                //last fkp?use full table
-                if (i == binTablePapx.Length - 4)
-                    max = fkp.rgfc.Length;
+                //the last entry of each is always the same as the first entry of the next FKP
+                //so, ignore all last entries except for the last FKP.
+                int max = fkp.rgfc.Length;
+                if (i < fkps.Count - 1)
+                    max--;
 
                 for (int j = 0; j < max; j++)
                 {
-                    list.Add(fkp.rgfc[j]);
+                    if(fkp.rgfc[j] >= fcMin && fkp.rgfc[j] < fcMax)
+                        list.Add(fkp.rgfc[j]);
                 }
             }
 
@@ -230,31 +216,16 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             VirtualStream tableStream)
         {
             List<ParagraphPropertyExceptions> list = new List<ParagraphPropertyExceptions>();
+            List<FormattedDiskPagePAPX> fkps = FormattedDiskPagePAPX.GetAllPAPXFKPs(fib, wordStream, tableStream);
 
-            //get bintable for PAPX
-            byte[] binTablePapx = new byte[fib.lcbPlcfbtePapx];
-            tableStream.Read(binTablePapx, binTablePapx.Length, (int)fib.fcPlcfbtePapx);
-
-            //there are n offsets and n-1 fkp's in the bin table
-            int n = (((int)fib.lcbPlcfbtePapx - 4) / 8) + 1;
-
-            //Get the indexed PAPX FKPs
-            for (int i = (n * 4); i < binTablePapx.Length; i += 4)
+            for (int i = 0; i < fkps.Count; i++)
             {
-                //indexed FKP is the xth 512byte page
-                int fkpnr = System.BitConverter.ToInt32(binTablePapx, i);
+                FormattedDiskPagePAPX fkp = fkps[i];
 
-                //so starts at:
-                int offset = fkpnr * 512;
-
-                //parse the FKP and add PAPX to the list
-                FormattedDiskPagePAPX fkp = new FormattedDiskPagePAPX(wordStream, offset);
                 for (int j = 0; j < fkp.grppapx.Length; j++)
                 {
                     if (fkp.rgfc[j] >= fcMin && fkp.rgfc[j] < fcMax)
-                    {
                         list.Add(fkp.grppapx[j]);
-                    }
                 }
             }
 

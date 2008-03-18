@@ -34,79 +34,27 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
     public class CharacterPropertyExceptions : PropertyExceptions
     {
-              
         /// <summary>
         /// Creates a CHPX wich doesn't modify anything.<br/>
-        /// The grpprl list is null
+        /// The grpprl list is empty
         /// </summary>
         public CharacterPropertyExceptions()
+            : base()
         {
-            grpprl = new List<SinglePropertyModifier>();
         }
 
         /// <summary>
         /// Parses the bytes to retrieve a CHPX
         /// </summary>
         /// <param name="bytes">The bytes starting with the istd</param>
-        public CharacterPropertyExceptions(byte[] bytes)
+        public CharacterPropertyExceptions(byte[] bytes) 
+            : base(bytes)
         {
-            if (bytes.Length != 0)
-            {
-                //read the sprms
-                grpprl = new List<SinglePropertyModifier>();
-                int sprmStart = 0;
-                bool goOn = true;
-                while (goOn)
-                {
-                     //enough bytes to read?
-                    if(sprmStart+2 < bytes.Length)
-                    {
-                        //make spra
-                        UInt16 opCode = System.BitConverter.ToUInt16(bytes, sprmStart);
-                        byte spra = (byte)((Int32)opCode >> 13);
-
-                        // get size of operand
-                        byte opSize = SinglePropertyModifier.GetOperandSize(spra);
-                        byte lenByte = 0;
-                        if (opSize == 255)
-                        {
-                            //the variable length stand in the byte after the opcode
-                            lenByte = 1;
-                            opSize = bytes[sprmStart + 2];
-                        }
-
-                        //copy sprm to array
-                        byte[] sprm = new byte[2 + lenByte + opSize];
-
-                        if (bytes.Length >= sprmStart + sprm.Length)
-                        {
-                            Array.Copy(bytes, sprmStart, sprm, 0, sprm.Length);
-
-                            //parse and save
-                            grpprl.Add(new SinglePropertyModifier(sprm));
-
-                            sprmStart += sprm.Length;
-                        }
-                        else
-                        {
-                            goOn = false;
-                        }
-                    }
-                    else
-                    {
-                        goOn = false;
-                    }
-                }
-            }
-            else
-            {
-                throw new ByteParseException("CHPX");
-            }
         }
 
         #region IVisitable Members
 
-        public void Convert<T>(T mapping)
+        public override void Convert<T>(T mapping)
         {
             ((IMapping<CharacterPropertyExceptions>)mapping).Apply(this);
         }

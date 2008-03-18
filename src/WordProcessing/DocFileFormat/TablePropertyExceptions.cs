@@ -28,13 +28,42 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class TablePropertyExceptions
+    public class TablePropertyExceptions : PropertyExceptions
     {
-        public TablePropertyExceptions(byte[] bytes)
+        /// <summary>
+        /// Creates a TAPX wich doesn't modify anything.<br/>
+        /// The grpprl list is empty
+        /// </summary>
+        public TablePropertyExceptions()
+            : base()
         {
         }
+
+        /// <summary>
+        /// Parses the bytes to retrieve a TAPX
+        /// </summary>
+        /// <param name="bytes">The bytes starting with the istd</param>
+        public TablePropertyExceptions(byte[] bytes)
+            : base(bytes)
+        {
+        }
+
+        public TablePropertyExceptions(ParagraphPropertyExceptions papx)
+        {
+            this.grpprl = papx.grpprl;
+        }
+
+        #region IVisitable Members
+
+        public override void Convert<T>(T mapping)
+        {
+            ((IMapping<TablePropertyExceptions>)mapping).Apply(this);
+        }
+
+        #endregion
     }
 }

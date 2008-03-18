@@ -125,7 +125,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     this.fVolatile = Utils.BitmaskToBool(System.BitConverter.ToInt16(bytes, 0), 0x0001);
                     this.fUnk = Utils.BitmaskToBool(System.BitConverter.ToInt16(bytes, 0), 0x0002);
                     this.fDiffLines = Utils.BitmaskToBool(System.BitConverter.ToInt16(bytes, 0), 0x0004);
-                    this.clMac = System.Convert.ToInt16(((int)System.BitConverter.ToInt16(bytes, 0)) & 0xFF00);
+                    this.clMac = System.Convert.ToInt16(((int)System.BitConverter.ToUInt16(bytes, 0)) & 0x00FF);
+
                     this.dxaCol = System.BitConverter.ToInt32(bytes, 4);
                     this.dymLine = System.BitConverter.ToInt32(bytes, 8);
                     this.dymHeight = System.BitConverter.ToInt32(bytes, 8);

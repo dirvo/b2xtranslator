@@ -39,18 +39,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         AbstractOpenXmlMapping,
         IMapping<WordDocument>
     {
-
-        private List<FormattedDiskPagePAPX> _papxFkps;
-        private List<FormattedDiskPageCHPX> _chpxFkps;
-        private List<Int32> _allPapxOffsets, _allChpxOffsets;
-        private List<ParagraphPropertyExceptions> _allPapx;
-        private List<CharacterPropertyExceptions> _allChpx;
-
-        private bool _charIsSpecial;
+        private int _papxIndex, _nextPapxFc;
         private WordDocument _doc;
-
-        private int _chpxIndex = 0;
-        private int _papxIndex = 0;
+        private List<Int32> _allPapxOffsets;
+        private List<ParagraphPropertyExceptions> _allPapx;
 
         public DocumentMapping(XmlWriter writer)
             : base(writer)
@@ -61,201 +53,378 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             _doc = doc;
 
-            int fcMin = doc.FIB.fcMin;
-            int fcMax = doc.FIB.fcMin + doc.FIB.ccpText;
-
-            _allChpxOffsets = FormattedDiskPageCHPX.GetFileCharacterPositions(fcMin, fcMax, doc.FIB, doc.WordDocumentStream, doc.TableStream);
-            _allChpx = FormattedDiskPageCHPX.GetCharacterPropertyExceptions(fcMin, fcMax, doc.FIB, doc.WordDocumentStream, doc.TableStream);
-            _allPapxOffsets = FormattedDiskPagePAPX.GetFileCharacterPositions(fcMin, fcMax, doc.FIB, doc.WordDocumentStream, doc.TableStream);
-            _allPapx = FormattedDiskPagePAPX.GetParagraphPropertyExceptions(fcMin, fcMax, doc.FIB, doc.WordDocumentStream, doc.TableStream);
-
             _writer.WriteStartDocument();
             _writer.WriteStartElement("w", "document", OpenXmlNamespaces.WordprocessingML);
             _writer.WriteStartElement("w", "body", OpenXmlNamespaces.WordprocessingML);
 
-            bool suppressNextChar = false;
+            Int32 fcMin = _doc.FIB.fcMin;
+            Int32 fcMax = _doc.FIB.fcMin + _doc.FIB.ccpText;
 
-            int fc = doc.FIB.fcMin;
-            int nextChpxOffset = fc;
-            int nextPapxOffset = fc;
+            _doc = doc;
+            _allPapx = FormattedDiskPagePAPX.GetParagraphPropertyExceptions(fcMin, fcMax, doc.FIB, doc.WordDocumentStream, doc.TableStream);
+            _allPapxOffsets = FormattedDiskPagePAPX.GetFileCharacterPositions(fcMin, fcMax, doc.FIB, doc.WordDocumentStream, doc.TableStream);
+            _allPapxOffsets.Add(fcMax);
 
-            for (int i = 0; i < doc.Text.Count; i++)
+            Int32 cp = 0;
+            while (cp < _doc.Text.Count)
             {
-                //PAPX starts here
-                if (fc == nextPapxOffset)
+                Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
+                ParagraphPropertyExceptions papx = _allPapx[_papxIndex];
+                TableInfo tai = new TableInfo(papx);
+                _nextPapxFc = _allPapxOffsets[_papxIndex];
+                
+                if (tai.fInTable)
                 {
-                    startNewParagraph();
+                    //this PAPX is for a table
+                    cp = writeTable(cp);
+                }
+                else
+                {
+                    //this PAPX is for a normal paragraph
+                    cp = writeParagraph(papx, cp);
+                }
 
-                    //but no chpx starts here:
-                    if (nextPapxOffset != nextChpxOffset)
-                    {
-                        //That means, that the text is formatted with the same 
-                        //chpx as the previous paragraph.
-                        //write new run, but don't increase the index
-                        startNewRun();
-                    }
-
-                    //increase index for the next time
+                //If this FC started a new PAPX, take next PAPX next time.
+                if (fc == _nextPapxFc && _papxIndex < (_allPapx.Count-1))
+                {
                     _papxIndex++;
-                    nextPapxOffset = _allPapxOffsets[_papxIndex];
                 }
+            }
 
-                //CHPX starts here
-                if (fc == nextChpxOffset)
-                {
-                    startNewRun();
-
-                    //increase index for the next time
-                    _chpxIndex++;
-                    nextChpxOffset = _allChpxOffsets[_chpxIndex];
-                }
-
-                #region char handling
-                char c = doc.Text[i];
-
-                //check the char
-                if (c == TextBoundary.BreakingHyphen)
-                {
-                }
-                else if (c == TextBoundary.CellOrRowMark)
-                {
-                }
-                else if (c == TextBoundary.ColumnBreak)
-                {
-                }
-                else if (c == TextBoundary.FieldBeginMark)
-                {
-                    suppressNextChar = true;
-                }
-                else if (c == TextBoundary.FieldEndMark)
-                {
-                    suppressNextChar = false;
-                }
-                else if (c == TextBoundary.FieldSeperator)
-                {
-                }
-                else if (c == TextBoundary.HardLineBreak)
-                {
-                    _writer.WriteElementString("w", "br", OpenXmlNamespaces.WordprocessingML, null);
-                }
-                else if (c == TextBoundary.NonBreakingHyphen)
-                {
-                }
-                else if (c == TextBoundary.NonBreakingSpace)
-                {
-                }
-                else if (c == TextBoundary.NonRequiredHyphen)
-                {
-                }
-                else if (c == TextBoundary.PageBreakOrSectionMark)
-                {
-                }
-                else if (c == TextBoundary.ParagraphEnd)
-                {
-                    //see pararagraph end handling below
-                }
-                else if (c == TextBoundary.Tab)
-                {
-                    _writer.WriteElementString("w", "tab", OpenXmlNamespaces.WordprocessingML, null);
-                }
-                else if (_charIsSpecial && c == TextBoundary.CurrentPageNumber)
-                {
-                }
-                else if (_charIsSpecial && c == TextBoundary.Picture)
-                {
-                }
-                else if (_charIsSpecial && c == TextBoundary.AutoNumberedFootnoteReference)
-                {
-                }
-                else if (_charIsSpecial && c == TextBoundary.FootnoteContinuation)
-                {
-                }
-                else if (_charIsSpecial && c == TextBoundary.FootnoteSeparator)
-                {
-                }
-                else if (_charIsSpecial && c == TextBoundary.AnnotationReference)
-                {
-                }
-                else if (_charIsSpecial && c == TextBoundary.LineNumber)
-                {
-                }
-                else if (_charIsSpecial && c == TextBoundary.HandAnnotationPicture)
-                {
-                }
-                else if (c != '\uFFFF' && !suppressNextChar && (int)c > 31)
-                {
-                    _writer.WriteString(new string(c, 1));
-                }
-                #endregion
-
-                //CHPX ends here
-                if (fc == nextChpxOffset-1)
-                {
-                    //close w:t
-                    _writer.WriteEndElement();
-                    //close w:r
-                    _writer.WriteEndElement();
-                }
-
-                //PAPX ends here
-                if(fc == nextPapxOffset-1)
-                {
-                    //but no CHPX ended here
-                    if (nextPapxOffset != nextChpxOffset)
-                    {
-                        //close w:t
-                        _writer.WriteEndElement();
-                        //close w:r
-                        _writer.WriteEndElement();
-                    }
-
-                    //close w:p
-                    _writer.WriteEndElement();
-                }
-
-                fc++;
-            }         
-
-            //end body
             _writer.WriteEndElement();
-            //end document
             _writer.WriteEndElement();
             _writer.WriteEndDocument();
         }
 
-        private void startNewParagraph()
+        /// <summary>
+        /// Writes the table starts at the given cp value
+        /// </summary>
+        /// <param name="cp">The cp at where the table begins</param>
+        /// <returns>The character pointer to the first character after this table</returns>
+        private Int32 writeTable(Int32 initialCp)
         {
-            //write new paragraph
-            _writer.WriteStartElement("w", "p", OpenXmlNamespaces.WordprocessingML);
-
-            //get papx
+            //initial values
+            Int32 cp = initialCp;
             ParagraphPropertyExceptions papx = _allPapx[_papxIndex];
+            TableInfo tai = new TableInfo(papx);
 
-            //convert it
-            papx.Convert(new ParagraphPropertiesMapping(_writer, _doc.Styles));
-        }
+            //start table
+            _writer.WriteStartElement("w", "tbl", OpenXmlNamespaces.WordprocessingML);
 
-        private void startNewRun()
-        {
-            //write new run
-            _writer.WriteStartElement("w", "r", OpenXmlNamespaces.WordprocessingML);
-            //write new text
-            _writer.WriteStartElement("w", "t", OpenXmlNamespaces.WordprocessingML);
-            _writer.WriteAttributeString("xml", "space", "", "preserve");
-
-            //get chpx
-            CharacterPropertyExceptions chpx = _allChpx[_chpxIndex];
-
-            //check if the fSpec flag is set
-            _charIsSpecial = false;
-            foreach (SinglePropertyModifier sprm in chpx.grpprl)
+            //find the first row end PAPX, because it holds the TAP SPRMs
+            int tapxIndex = _papxIndex;
+            ParagraphPropertyExceptions tablePapx = _allPapx[_papxIndex];
+            while (!(new TableInfo(tablePapx).fTtp))
             {
-                if (sprm.OpCode == 0x0855 && sprm.Arguments[0] == 1)
-                    _charIsSpecial = true;
+                tablePapx = _allPapx[tapxIndex];
+                tapxIndex++;
+            }
+            //cast it to a TAPX and convert it
+            TablePropertyExceptions tapx = new TablePropertyExceptions(tablePapx);
+            tapx.Convert(new TablePropertiesMapping(_writer));
+
+            //convert all rows
+            while (tai.fInTable)
+            {
+                cp = writeTableRow(cp);
+
+                //each row has it's own PAPX
+                _papxIndex++;
+                papx = _allPapx[_papxIndex];
+                tai = new TableInfo(papx);
             }
 
-            //convert the chpx
+            //close w:tbl
+            _writer.WriteEndElement();
+
+            return cp;
+        }
+
+        /// <summary>
+        /// Writes the table row that starts at the given cp value and ends at the next row end mark
+        /// </summary>
+        /// <param name="initialCp">The cp at where the row begins</param>
+        /// <returns>The character pointer to the first character after this row</returns>
+        private Int32 writeTableRow(Int32 initialCp)
+        {
+            Int32 cp = initialCp;
+            ParagraphPropertyExceptions papx = _allPapx[_papxIndex];
+            TableInfo  tai = new TableInfo(papx);
+
+            //start w:tr
+            _writer.WriteStartElement("w", "tr", OpenXmlNamespaces.WordprocessingML);
+
+            while (!(_doc.Text[cp] == TextBoundary.CellOrRowMark && tai.fTtp))
+            {
+                cp = writeTableCell(cp);
+
+                //each cell has it's own PAPX
+                _papxIndex++;
+                papx = _allPapx[_papxIndex];
+                tai = new TableInfo(papx);
+            }
+
+            //end w:tr
+            _writer.WriteEndElement();
+
+            //skip the row end mark
+            cp++;
+
+            return cp;
+        }
+
+        /// <summary>
+        /// Writes the table cell that starts at the given cp value and ends at the next cell end mark
+        /// </summary>
+        /// <param name="initialCp">The cp at where the cell begins</param>
+        /// <returns>The character pointer to the first character after this cell</returns>
+        private Int32 writeTableCell(Int32 initialCp)
+        {
+            Int32 cp = initialCp;
+
+            //start w:tc
+            _writer.WriteStartElement("w", "tc", OpenXmlNamespaces.WordprocessingML);
+
+            //find cell end
+            Int32 cpCellEnd = initialCp;
+            while (_doc.Text[cpCellEnd] != TextBoundary.CellOrRowMark)
+            {
+                cpCellEnd++;
+            }
+
+            //copy the chars of the cell
+            List<char> remainingChars = _doc.Text.GetRange(initialCp, cpCellEnd - initialCp);
+            while(remainingChars.Contains('\r'))
+            {
+                Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
+                //if this paragraph has a new PAPX
+                if (fc == _allPapxOffsets[_papxIndex + 1])
+                    _papxIndex++;
+
+                cp = writeParagraph(_allPapx[_papxIndex], cp);
+                remainingChars = _doc.Text.GetRange(cp, cpCellEnd - cp);
+            }
+
+            //if the remaining chars have an own PAPX
+            Int32 fcRemaining = _doc.PieceTable.FileCharacterPositions[cp];
+            if (fcRemaining == _allPapxOffsets[_papxIndex + 1])
+                _papxIndex++;
+
+            //write the remaining chars as paragraph
+            _writer.WriteStartElement("w", "p", OpenXmlNamespaces.WordprocessingML);
+            _allPapx[_papxIndex].Convert(new ParagraphPropertiesMapping(_writer, _doc.Styles));
+
+            //write all runs for the remaining chars
+            Int32 fcCellEnd = _doc.PieceTable.FileCharacterPositions[cpCellEnd];
+
+            //get all CHPX between these boundaries
+            List<CharacterPropertyExceptions> chpxs = FormattedDiskPageCHPX.GetCharacterPropertyExceptions(
+                fcRemaining,
+                fcCellEnd,
+                _doc.FIB,
+                _doc.WordDocumentStream,
+                _doc.TableStream);
+            List<Int32> chpxFcs = FormattedDiskPageCHPX.GetFileCharacterPositions(
+                fcRemaining,
+                fcCellEnd,
+                _doc.FIB,
+                _doc.WordDocumentStream,
+                _doc.TableStream);
+            chpxFcs.Add(fcCellEnd);
+
+            //write runs for all CHPX
+            for (int i = 0; i < chpxs.Count; i++)
+            {
+                //get the chars of this CHPX
+                int fcChpxStart = chpxFcs[i];
+                int fcChpxEnd = chpxFcs[i + 1];
+
+                //it's the first chpx and it starts before the paragraph
+                if (i == 0 && fcChpxStart < fcRemaining)
+                {
+                    //so use the FC of the paragraph
+                    fcChpxStart = fcRemaining;
+                }
+
+                //it's the last chpx and it exceeds the paragraph
+                if (i == (chpxs.Count - 1) && fcChpxEnd > fcCellEnd)
+                {
+                    //so use the FC of the paragraph
+                    fcChpxEnd = fcCellEnd;
+                }
+
+                //read the chars that are formatted via this CHPX
+                List<char> chpxChars = _doc.PieceTable.GetChars(fcChpxStart, fcChpxEnd, _doc.WordDocumentStream);
+                
+                //write the run
+                if (chpxChars.Count > 0)
+                    writeRun(chpxChars, chpxs[i]);
+
+                //increase the pointer
+                cp += chpxChars.Count;
+            }
+
+            //end w:p
+            _writer.WriteEndElement();
+
+            //end w:tc
+            _writer.WriteEndElement();
+
+            //skip cell end mark
+            cp++;
+
+            return cp;
+        }
+
+
+        /// <summary>
+        /// Writes a Paragraph for the given PAPX
+        /// </summary>
+        private Int32 writeParagraph(ParagraphPropertyExceptions papx, Int32 cp) 
+        {
+            //start paragraph
+            _writer.WriteStartElement("w", "p", OpenXmlNamespaces.WordprocessingML);
+
+            //write properties
+            papx.Convert(new ParagraphPropertiesMapping(_writer, _doc.Styles));
+
+            //search the paragraph end
+            Int32 cpParaEnd = cp;
+            while (_doc.Text[cpParaEnd] != TextBoundary.ParagraphEnd)
+            {
+                cpParaEnd++;
+            }
+            cpParaEnd++;
+
+            //get the physical boundaries (FC) of that paragraph
+            Int32 fcStart = _doc.PieceTable.FileCharacterPositions[cp];
+            Int32 fcEnd = _doc.PieceTable.FileCharacterPositions[cpParaEnd];
+
+            //get all CHPX between these boundaries
+            List<CharacterPropertyExceptions> chpxs = FormattedDiskPageCHPX.GetCharacterPropertyExceptions(
+                fcStart,
+                fcEnd,
+                _doc.FIB,
+                _doc.WordDocumentStream,
+                _doc.TableStream);
+            List<Int32> chpxFcs = FormattedDiskPageCHPX.GetFileCharacterPositions(
+                fcStart,
+                fcEnd,
+                _doc.FIB,
+                _doc.WordDocumentStream,
+                _doc.TableStream);
+            chpxFcs.Add(fcEnd);
+
+            //write runs for all CHPX
+            for (int i = 0; i < chpxs.Count; i++)
+            {
+                //get the chars of this CHPX
+                int fcChpxStart = chpxFcs[i];
+                int fcChpxEnd = chpxFcs[i + 1];
+
+                //it's the first chpx and it starts before the paragraph
+                if (i == 0 && fcChpxStart < fcStart)
+                {
+                    //so use the FC of the paragraph
+                    fcChpxStart = fcStart;
+                }
+                
+                //it's the last chpx and it exceeds the paragraph
+                if (i == (chpxs.Count - 1) && fcChpxEnd > fcEnd)
+                {
+                    //so use the FC of the paragraph
+                    fcChpxEnd = fcEnd;
+                }
+
+                //read the chars that are formatted via this CHPX
+                List<char> chpxChars = _doc.PieceTable.GetChars(fcChpxStart, fcChpxEnd, _doc.WordDocumentStream);
+
+                //write the run
+                if(chpxChars.Count > 0)
+                    writeRun(chpxChars, chpxs[i]);
+            }
+
+            //end paragraph
+            _writer.WriteEndElement();
+
+            return cpParaEnd++;
+        }
+
+        /// <summary>
+        /// Writes a run with the given characters and CHPX
+        /// </summary>
+        private void writeRun(List<char> chars, CharacterPropertyExceptions chpx)
+        {
+            //start run
+            _writer.WriteStartElement("w", "r", OpenXmlNamespaces.WordprocessingML);
+
+            //write properties
             chpx.Convert(new CharacterPropertiesMapping(_writer, _doc.Styles, _doc.FontTable));
+
+            //start text
+            _writer.WriteStartElement("w", "t", OpenXmlNamespaces.WordprocessingML);
+
+            if ((int)chars[0] == 32 || (int)chars[chars.Count - 1] == 32)
+            {
+                _writer.WriteAttributeString("xml", "space", "", "preserve");
+            }
+
+            //write text
+            foreach(char c in chars)
+            {
+                if (c == TextBoundary.Tab)
+                {
+                    _writer.WriteElementString("w", "tab", OpenXmlNamespaces.WordprocessingML, "");
+                }
+                else if (c == TextBoundary.HardLineBreak)
+                {
+                    _writer.WriteElementString("w", "br", OpenXmlNamespaces.WordprocessingML, "");
+                }
+                else if(c == TextBoundary.Picture)
+                {
+                    _writer.WriteString("[PICTURE]");
+                }
+                else if (c == TextBoundary.ParagraphEnd)
+                {
+                    //do nothing
+                }
+                else if (c == TextBoundary.PageBreakOrSectionMark)
+                {
+                    //do nothing
+                }
+                else if (c == TextBoundary.ColumnBreak)
+                {
+                    //do nothing
+                }
+                else if (c == TextBoundary.FieldBeginMark)
+                {
+                    _writer.WriteStartElement("w", "fldChar", OpenXmlNamespaces.WordprocessingML);
+                    _writer.WriteAttributeString("w", "fldCharType", OpenXmlNamespaces.WordprocessingML, "begin");
+                    _writer.WriteEndElement();
+                }
+                else if (c == TextBoundary.FieldSeperator)
+                {
+                    _writer.WriteStartElement("w", "fldChar", OpenXmlNamespaces.WordprocessingML);
+                    _writer.WriteAttributeString("w", "fldCharType", OpenXmlNamespaces.WordprocessingML, "separate");
+                    _writer.WriteEndElement();
+                }
+                else if (c == TextBoundary.FieldEndMark)
+                {
+                    _writer.WriteStartElement("w", "fldChar", OpenXmlNamespaces.WordprocessingML);
+                    _writer.WriteAttributeString("w", "fldCharType", OpenXmlNamespaces.WordprocessingML, "end");
+                    _writer.WriteEndElement();
+                }
+                else if  ((int)c > 31 && (int)c != 0xFFFF)
+                {
+                     _writer.WriteString(new String(c, 1));
+                }
+            }
+
+            //end run
+            _writer.WriteEndElement();
+
+            //end run
+            _writer.WriteEndElement();
         }
     }
 }

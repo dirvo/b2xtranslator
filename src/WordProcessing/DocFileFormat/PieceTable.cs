@@ -41,6 +41,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public List<PieceDescriptor> Pieces;
 
         /// <summary>
+        /// A dictionary with character positions as keys and the matching FCs as values
+        /// </summary>
+        public Dictionary<Int32, Int32> FileCharacterPositions;
+
+        /// <summary>
         /// Parses the pice table and creates a list of PieceDescriptors.
         /// </summary>
         /// <param name="fib">The FIB</param>
@@ -52,6 +57,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             tableStream.Read(bytes, (int)fib.lcbClx, (int)fib.fcClx);
 
             this.Pieces = new List<PieceDescriptor>();
+            this.FileCharacterPositions = new Dictionary<int, int>();
 
             int pos = 0;
             bool goon = true;
@@ -84,9 +90,25 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                             PieceDescriptor pcd = new PieceDescriptor(pcdBytes);
                             pcd.cpStart = System.BitConverter.ToInt32(piecetable, i * 4);
                             pcd.cpEnd = System.BitConverter.ToInt32(piecetable, (i+1) * 4);
-
+                            
+                            //add pcd
                             this.Pieces.Add(pcd);
+
+                            //add positions
+                            Int32 f = (Int32)pcd.fc;
+                            Int32 multi = 1;
+                            if (pcd.encoding == Encoding.Unicode)
+                            {
+                                multi = 2;
+                            }
+                            for (int c = pcd.cpStart; c < pcd.cpEnd; c++)
+                            {
+                                this.FileCharacterPositions.Add(c, f);
+                                f+=multi;
+                            }
                         }
+                        this.FileCharacterPositions.Add(this.FileCharacterPositions.Count, fib.fcMac);
+
 
                         //piecetable was found
                         goon = false;
@@ -102,11 +124,125 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                         goon = false;
                     }
                 }
-                catch(Exception)
+                catch(Exception e)
                 {
                     goon = false;
                 }
             }
         }
+
+        public List<char> GetChars(Int32 fcStart, Int32 fcEnd, VirtualStream wordStream)
+        {
+            List<char> chars = new List<char>();
+            for (int i = 0; i < this.Pieces.Count; i++)
+            {
+                PieceDescriptor pcd = this.Pieces[i];
+
+                //get the FC end of this piece
+                Int32 pcdFcEnd = pcd.cpEnd - pcd.cpStart;
+                if(pcd.encoding == Encoding.Unicode)
+                    pcdFcEnd*=2;
+                pcdFcEnd += (Int32)pcd.fc;
+
+                if(pcdFcEnd < fcStart)
+                {
+                    //this piece is before the requested range
+                    continue;
+                }
+                else if (fcStart >= pcd.fc && fcEnd > pcdFcEnd)
+                {
+                    //requested char range starts at this piece
+                    //read from fcStart to pcdFcEnd
+
+                    //get count of bytes
+                    int cb = pcdFcEnd - fcStart;
+                    byte[] bytes = new byte[cb];
+
+                    //read all bytes 
+                    wordStream.Read(bytes, cb, (Int32)fcStart);
+
+                    //get the chars
+                    char[] plainChars = pcd.encoding.GetString(bytes).ToCharArray();
+
+                    //add to list
+                    foreach (char c in plainChars)
+                    {
+                        chars.Add(c);
+                    }
+                }
+                else if (fcStart <= pcd.fc && fcEnd >= pcdFcEnd)
+                {
+                    //the full piece is part of the requested range
+                    //read from pc.fc to pcdFcEnd
+
+                    //get count of bytes
+                    int cb = pcdFcEnd - (Int32)pcd.fc;
+                    byte[] bytes = new byte[cb];
+
+                    //read all bytes 
+                    wordStream.Read(bytes, cb, (Int32)pcd.fc);
+
+                    //get the chars
+                    char[] plainChars = pcd.encoding.GetString(bytes).ToCharArray();
+
+                    //add to list
+                    foreach (char c in plainChars)
+                    {
+                        chars.Add(c);
+                    }
+                }
+                else if (fcStart < pcd.fc && fcEnd <= pcdFcEnd)
+                {
+                    //requested char range ends at this piece
+                    //read from pcd.fc to fcEnd
+
+                    //get count of bytes
+                    int cb = fcEnd - (Int32)pcd.fc;
+                    byte[] bytes = new byte[cb];
+
+                    //read all bytes 
+                    wordStream.Read(bytes, cb, (Int32)pcd.fc);
+
+                    //get the chars
+                    char[] plainChars = pcd.encoding.GetString(bytes).ToCharArray();
+
+                    //add to list
+                    foreach (char c in plainChars)
+                    {
+                        chars.Add(c);
+                    }
+
+                    break;
+                }
+                else if (fcStart >= pcd.fc && fcEnd <= pcdFcEnd)
+                {
+                    //requested chars are completly in this piece
+                    //read from fcStart to fcEnd
+
+                    //get count of bytes
+                    int cb = fcEnd - fcStart;
+                    byte[] bytes = new byte[cb];
+
+                    //read all bytes 
+                    wordStream.Read(bytes, cb, (Int32)fcStart);
+
+                    //get the chars
+                    char[] plainChars = pcd.encoding.GetString(bytes).ToCharArray();
+
+                    //set the list
+                    chars = new List<char>(plainChars);
+
+                    break;
+                }
+                else if (fcEnd < pcd.fc)
+                {
+                    //this piece is beyond the requested range
+                    break;
+                }
+            }
+            return chars;
+        }
+
+
     }
 }

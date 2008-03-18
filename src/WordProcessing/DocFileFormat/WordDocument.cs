@@ -36,7 +36,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
     public class WordDocument : IVisitable
     {
         private StorageReader _reader;
-        private PieceTable _pieceTable;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public PieceTable PieceTable;
 
         /// <summary>
         /// The stream "WordDocument"
@@ -136,39 +140,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             }
 
             //parse the piece table and construct a list that contains all chars
-            _pieceTable = new PieceTable(this.FIB, this.TableStream);
-            List<char> allChars = new List<char>();
-            for(int i=0; i<_pieceTable.Pieces.Count; i++)
-            {
-                PieceDescriptor pcd = _pieceTable.Pieces[i];
-                int cb = 0;
-
-                //calculate the count of bytes
-                if (i != (_pieceTable.Pieces.Count - 1))
-                {
-                    //use the begin of the next piece
-                    PieceDescriptor pcdNext = _pieceTable.Pieces[i + 1];
-                    cb = (Int32)pcdNext.fc - (Int32)pcd.fc;
-                }
-                else
-                {
-                    //for the last piece, use the fib.fcMac
-                    cb = (Int32)FIB.fcMac - (Int32)pcd.fc;
-                }
-
-                //read the bytes of that piece
-                byte[] bytesOfPiece = new byte[cb];
-                this.WordDocumentStream.Read(bytesOfPiece, cb, (Int32)pcd.fc);
-
-                //encode it
-                char[] chars = pcd.encoding.GetString(bytesOfPiece).ToCharArray();
-                
-                //append it
-                foreach(char c in chars)
-                {
-                    allChars.Add(c);
-                }
-            }
+            this.PieceTable = new PieceTable(this.FIB, this.TableStream);
+            List<char> allChars = this.PieceTable.GetChars(this.FIB.fcMin, this.FIB.fcMac, this.WordDocumentStream);
 
             //split the chars into the subdocuments
             this.Text = allChars.GetRange(0, FIB.ccpText);

@@ -8,12 +8,12 @@ using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
-    public class CharacterPropertiesMapping : AbstractOpenXmlMapping,
+    public class CharacterPropertiesMapping : PropertiesMapping,
           IMapping<CharacterPropertyExceptions>
     {
         private StyleSheet _styleSheet;
         private List<FontFamilyName> _fontTable;
-        private XmlNode _rPr;
+        private XmlElement _rPr;
         private UInt16 _currentIstd;
 
         public CharacterPropertiesMapping(XmlWriter writer, StyleSheet styles, List<FontFamilyName> fontTable)
@@ -21,7 +21,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             _styleSheet = styles;
             _fontTable = fontTable;
-            _rPr = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "rPr", OpenXmlNamespaces.WordprocessingML);
+            _rPr = _nodeFactory.CreateElement("w", "rPr", OpenXmlNamespaces.WordprocessingML);
         }
 
         public void Apply(CharacterPropertyExceptions chpx)
@@ -39,7 +39,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //style id 
                     case 0x4A30:
                         _currentIstd = System.BitConverter.ToUInt16(sprm.Arguments, 0);
-                        appendValueElement("rStyle", StyleSheetMapping.MakeStyleId(_styleSheet.Styles[_currentIstd].xstzName));
+                        appendValueElement(_rPr, "rStyle", StyleSheetMapping.MakeStyleId(_styleSheet.Styles[_currentIstd].xstzName));
                         break;
 
                     //Element flags
@@ -109,23 +109,23 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     //highlightning
                     case 0x2A0C:
-                        appendValueElement("highlight", ((Global.ColorIdentifier)sprm.Arguments[0]).ToString());
+                        appendValueElement(_rPr, "highlight", ((Global.ColorIdentifier)sprm.Arguments[0]).ToString());
                         break;
 
                     //spacing
                     case 0x8840:
-                        appendValueElement("spacing", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
+                        appendValueElement(_rPr, "spacing", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
 
                     //font size
                     case 0x4A43:
-                        appendValueElement("sz", sprm.Arguments[0].ToString());
+                        appendValueElement(_rPr, "sz", sprm.Arguments[0].ToString());
                         break;
                     case 0x484B:
-                        appendValueElement("kern", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
+                        appendValueElement(_rPr, "kern", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
                     case 0x4A61:
-                        appendValueElement("szCs", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
+                        appendValueElement(_rPr, "szCs", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
 
                     //font family
@@ -147,17 +147,17 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     //Underlining
                     case 0x2A3E:
-                        appendValueElement("u", lowerFirstChar(((Global.UnderlineCode)sprm.Arguments[0]).ToString()));
+                        appendValueElement(_rPr, "u", lowerFirstChar(((Global.UnderlineCode)sprm.Arguments[0]).ToString()));
                         break;
 
                     //char width
                     case 0x4852:
-                        appendValueElement("w", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
+                        appendValueElement(_rPr, "w", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
 
                     //animation
                     case 0x2859:
-                        appendValueElement("effect", ((Global.TextAnimation)sprm.Arguments[0]).ToString());
+                        appendValueElement(_rPr, "effect", ((Global.TextAnimation)sprm.Arguments[0]).ToString());
                         break;
 
                     default:
@@ -190,36 +190,36 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             return s.Substring(0, 1).ToLower() + s.Substring(1, s.Length - 1);
         }
 
-        private void appendValueElement(string elementName, string elementValue)
-        {
-            XmlElement ele = _nodeFactory.CreateElement("w", elementName, OpenXmlNamespaces.WordprocessingML);
-            XmlAttribute val = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
-            val.Value = elementValue;
-            ele.Attributes.Append(val);
-            _rPr.AppendChild(ele);
-        }
-
         private void appendFlagElement(SinglePropertyModifier sprm, string elementName)
         {
             byte b = sprm.Arguments[0];
 
+            //value 
             if(b == 129)
             {
-                //value is set to the negation of the style's value
+                byte bStyle = 0;
+
+                //find style's value
                 foreach (SinglePropertyModifier sprmStyle in _styleSheet.Styles[_currentIstd].chpx.grpprl)
                 {
-                    switch (sprmStyle.Arguments[0])
+                    if(sprm.OpCode == sprmStyle.OpCode)
                     {
-                        case 0:
-                            b = 1;
-                            break;
-                        case 1:
-                            b = 0;
-                            break;
-		                default:
-                            b = sprmStyle.Arguments[0];
-                            break;
-	                }
+                        bStyle = sprmStyle.Arguments[0];
+                    }
+                }
+
+                //value is set to the negation of the style's value
+                switch (bStyle)
+                {
+                    case 0:
+                        b = 1;
+                        break;
+                    case 1:
+                        b = 0;
+                        break;
+                    default:
+                        b = bStyle;
+                        break;
                 }
             }
             

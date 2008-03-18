@@ -8,31 +8,17 @@ using DIaLOGIKa.b2xtranslator.DocFileFormat;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
-    public class ParagraphPropertiesMapping : AbstractOpenXmlMapping,
+    public class ParagraphPropertiesMapping : PropertiesMapping,
           IMapping<ParagraphPropertyExceptions>
     {
         private StyleSheet _styleSheet;
-        private XmlNode _pPr;
-
-        public enum JustificationCode
-        {
-            left = 0,
-            center,
-            right,
-            both,
-            distribute,
-            mediumKashida,
-            numTab,
-            highKashida,
-            lowKashida,
-            thaiDistribute,
-        }
+        private XmlElement _pPr;
 
         public ParagraphPropertiesMapping(XmlWriter writer, StyleSheet styles)
             : base(writer)
         {
             _styleSheet = styles;
-            _pPr = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "pPr", OpenXmlNamespaces.WordprocessingML);
+            _pPr = _nodeFactory.CreateElement("w", "pPr", OpenXmlNamespaces.WordprocessingML);
         }
 
         public void Apply(ParagraphPropertyExceptions papx)
@@ -62,51 +48,51 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         _pPr.Attributes.Append(divId);
                         break;
                     case 0x2437:
-                        appendAttributeFlag(sprm, "autoSpaceDE");
+                        appendFlagAttribute(_pPr, sprm, "autoSpaceDE");
                         break;
                     case 0x2438:
-                        appendAttributeFlag(sprm, "autoSpaceDN");
+                        appendFlagAttribute(_pPr, sprm, "autoSpaceDN");
                         break;
                     case 0x2441:
-                        appendAttributeFlag(sprm, "bidi");
+                        appendFlagAttribute(_pPr, sprm, "bidi");
                         break;
                     case 0x246D:
-                        appendAttributeFlag(sprm, "contextualSpacing");
+                        appendFlagAttribute(_pPr, sprm, "contextualSpacing");
                         break;
                     
                     //element flags
                     case 0x2405:
-                        appendElementFlag(sprm, "keepLines");
+                        appendFlagElement(_pPr, sprm, "keepLines");
                         break;
                     case 0x2406:
-                        appendElementFlag(sprm, "keepNext");
+                        appendFlagElement(_pPr, sprm, "keepNext");
                         break;
                     case 0x2433:
-                        appendElementFlag(sprm, "kinsoku");
+                        appendFlagElement(_pPr, sprm, "kinsoku");
                         break;
                     case 0x2435:
-                        appendElementFlag(sprm, "overflowPunct");
+                        appendFlagElement(_pPr, sprm, "overflowPunct");
                         break;
                     case 0x2407:
-                        appendElementFlag(sprm, "pageBreakBefore");
+                        appendFlagElement(_pPr, sprm, "pageBreakBefore");
                         break;
                     case 0x242A:
-                        appendElementFlag(sprm, "su_pPressAutoHyphens");
+                        appendFlagElement(_pPr, sprm, "su_pPressAutoHyphens");
                         break;
                     case 0x240C:
-                        appendElementFlag(sprm, "su_pPressLineNumbers");
+                        appendFlagElement(_pPr, sprm, "su_pPressLineNumbers");
                         break;
                     case 0x2462:
-                        appendElementFlag(sprm, "su_pPressOverlap");
+                        appendFlagElement(_pPr, sprm, "su_pPressOverlap");
                         break;
                     case 0x2436:
-                        appendElementFlag(sprm, "topLinePunct");
+                        appendFlagElement(_pPr, sprm, "topLinePunct");
                         break;
                     case 0x2431:
-                        appendElementFlag(sprm, "widowControl");
+                        appendFlagElement(_pPr, sprm, "widowControl");
                         break;    
                     case 0x2434:
-                        appendElementFlag(sprm, "wordWrap");
+                        appendFlagElement(_pPr, sprm, "wordWrap");
                         break;
 
                     //indentation
@@ -185,7 +171,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0x2403:
                         jc = _nodeFactory.CreateElement("w", "jc", OpenXmlNamespaces.WordprocessingML);
                         XmlAttribute jcVal = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
-                        jcVal.Value = ((JustificationCode)sprm.Arguments[0]).ToString();
+                        jcVal.Value = ((Global.JustificationCode)sprm.Arguments[0]).ToString();
                         jc.Attributes.Append(jcVal);
                         break;
 
@@ -204,7 +190,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0x4424:
                     case 0x6424:
                         XmlNode topBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "top", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(sprm, topBorder, _nodeFactory);
+                        appendBorderAttributes(sprm.Arguments, topBorder);
                         addOrSetBorder(pBdr, topBorder);
                         break;
                     case 0x461D:
@@ -212,7 +198,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0x4425:
                     case 0x6425:
                         XmlNode leftBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "left", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(sprm, leftBorder, _nodeFactory);
+                        appendBorderAttributes(sprm.Arguments, leftBorder);
                         addOrSetBorder(pBdr, leftBorder);
                         break;
                     case 0x461E:
@@ -220,7 +206,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0x4426:
                     case 0x6426:
                         XmlNode bottomBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "bottom", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(sprm, bottomBorder, _nodeFactory);
+                        appendBorderAttributes(sprm.Arguments, bottomBorder);
                         addOrSetBorder(pBdr, bottomBorder);
                         break;
                     case 0x461F:
@@ -228,7 +214,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0x4427:
                     case 0x6427:
                         XmlNode rightBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "right", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(sprm, rightBorder, _nodeFactory);
+                        appendBorderAttributes(sprm.Arguments, rightBorder);
                         addOrSetBorder(pBdr, rightBorder);
                         break;
                     case 0x4620:
@@ -236,7 +222,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0x4428:
                     case 0x6428:
                         XmlNode betweenBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "between", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(sprm, betweenBorder, _nodeFactory);
+                        appendBorderAttributes(sprm.Arguments, betweenBorder);
                         addOrSetBorder(pBdr, betweenBorder);
                         break;
                     case 0x4621:
@@ -244,7 +230,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0x4629:
                     case 0x6629:
                         XmlNode barBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "bar", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(sprm, barBorder, _nodeFactory);
+                        appendBorderAttributes(sprm.Arguments, barBorder);
                         addOrSetBorder(pBdr, barBorder);
                         break;
                     
@@ -311,61 +297,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 _pPr.WriteTo(_writer);
             }
-        }
-
-        private void appendAttributeFlag(SinglePropertyModifier sprm, string attributeName)
-        {
-            XmlAttribute att = _nodeFactory.CreateAttribute("w", attributeName, OpenXmlNamespaces.WordprocessingML);
-            att.Value = sprm.Arguments[0].ToString();
-            _pPr.Attributes.Append(att);
-        }
-
-        private void appendElementFlag(SinglePropertyModifier sprm, string elementName)
-        {
-            XmlElement ele = _nodeFactory.CreateElement("w", elementName, OpenXmlNamespaces.WordprocessingML);
-            XmlAttribute val = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
-            val.Value = sprm.Arguments[0].ToString();
-            ele.Attributes.Append(val);
-            _pPr.AppendChild(ele);
-        }
-
-        private void addOrSetBorder(XmlNode pBdr, XmlNode border)
-        {
-            //remove old border if it exist
-            foreach (XmlNode bdr in pBdr.ChildNodes)
-            {
-                if (bdr.Name == border.Name)
-                {
-                    pBdr.RemoveChild(bdr);
-                    break;
-                }
-            }
-
-            //add new
-            pBdr.AppendChild(border);
-        }
-
-        private void appendBorderAttributes(SinglePropertyModifier sprm, XmlNode border, XmlDocument _nodeFactory)
-        {
-            //parse the border code
-            BorderCode brc = new BorderCode(sprm.Arguments);
-
-            //create xml
-            XmlAttribute val =  _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
-            val.Value = brc.brcType.ToString();
-            border.Attributes.Append(val);
-
-            XmlAttribute color =  _nodeFactory.CreateAttribute("w", "color", OpenXmlNamespaces.WordprocessingML);
-            color.Value = String.Format("{0:x6}", brc.cv);
-            border.Attributes.Append(color);
-
-            XmlAttribute space =  _nodeFactory.CreateAttribute("w", "space", OpenXmlNamespaces.WordprocessingML);
-            space.Value = brc.dptSpace.ToString();
-            border.Attributes.Append(space);
-
-            XmlAttribute sz =  _nodeFactory.CreateAttribute("w", "sz", OpenXmlNamespaces.WordprocessingML);
-            sz.Value = brc.dptLineWidth.ToString();
-            border.Attributes.Append(sz);
         }
 
         private string getShadingPattern(ShadingDescriptor shd)

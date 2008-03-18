@@ -135,7 +135,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         }
 
         /// <summary>
-        /// Returns a list of all CHPX FCs between they given boundaries.
+        /// Returns a list of all CHPX which are valid for the given FCs.
         /// </summary>
         /// <param name="fcMin">The lower boundary</param>
         /// <param name="fcMax">The upper boundary</param>
@@ -159,6 +159,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             //there are n offsets and n-1 fkp's in the bin table
             int n = (((int)fib.lcbPlcfbteChpx - 4) / 8) + 1;
 
+            int lastFc = 0;
+
             //Get the indexed CHPX FKPs
             for (int i = (n * 4); i < binTableChpx.Length; i += 4)
             {
@@ -174,13 +176,22 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 //don't add the duplicated values of the FKP boundaries (Length-1)
                 int max = fkp.rgfc.Length - 1;
 
-                //last fkp?use full table
+                //last fkp? use full table
                 if (i == binTableChpx.Length - 4)
                     max = fkp.rgfc.Length;
 
                 for (int j = 0; j < max; j++)
                 {
-                    list.Add(fkp.rgfc[j]);
+                    if (fkp.rgfc[j] < fcMin && fkp.rgfc[j + 1] > fcMin)
+                    {
+                        //this chpx starts before fcMin
+                        list.Add(fkp.rgfc[j]);
+                    }
+                    else if (fkp.rgfc[j] >= fcMin && fkp.rgfc[j] < fcMax)
+                    {
+                        //this chpx is in the range
+                        list.Add(fkp.rgfc[j]);
+                    }
                 }
             }
 
@@ -213,6 +224,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             //there are n offsets and n-1 fkp's in the bin table
             int n = (((int)fib.lcbPlcfbteChpx - 4) / 8) + 1;
 
+            int lastFc = 0;
+            CharacterPropertyExceptions lastChpx = null;
+
             //Get the indexed CHPX FKPs
             for (int i = (n * 4); i < binTableChpx.Length; i += 4)
             {
@@ -222,12 +236,20 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 //so starts at:
                 int offset = fkpnr * 512;
 
-                //parse the FKP and add CHPX to the list
+                //parse the FKP
                 FormattedDiskPageCHPX fkp = new FormattedDiskPageCHPX(wordStream, offset);
+
+                //geht the CHPX
                 for (int j = 0; j < fkp.grpchpx.Length; j++)
                 {
-                    if (fkp.rgfc[j] >= fcMin && fkp.rgfc[j] < fcMax)
+                    if (fkp.rgfc[j] < fcMin && fkp.rgfc[j + 1] > fcMin)
                     {
+                        //this chpx starts before fcMin
+                        list.Add(fkp.grpchpx[j]);
+                    }
+                    else if (fkp.rgfc[j] >= fcMin && fkp.rgfc[j] < fcMax)
+                    {
+                        //this chpx is in the range
                         list.Add(fkp.grpchpx[j]);
                     }
                 }

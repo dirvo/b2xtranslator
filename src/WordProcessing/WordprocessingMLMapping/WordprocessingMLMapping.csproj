@@ -38,8 +38,11 @@
     <Compile Include="CharacterPropertiesMapping.cs" />
     <Compile Include="ParagraphPropertiesMapping.cs" />
     <Compile Include="DocumentMapping.cs" />
+    <Compile Include="PropertiesMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StyleSheetMapping.cs" />
+    <Compile Include="TableInfo.cs" />
+    <Compile Include="TablePropertiesMapping.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\CommonTranslatorLib\CommonTranslatorLib.csproj">

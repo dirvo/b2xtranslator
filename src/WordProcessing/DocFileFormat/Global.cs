@@ -7,6 +7,20 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
 	public class Global
 	{
+        public enum JustificationCode
+        {
+            left = 0,
+            center,
+            right,
+            both,
+            distribute,
+            mediumKashida,
+            numTab,
+            highKashida,
+            lowKashida,
+            thaiDistribute,
+        }
+
         public enum ColorIdentifier
         {
             auto = 0,

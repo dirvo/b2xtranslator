@@ -45,9 +45,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public Encoding encoding;
 
-        public int cpStart;
+        public Int32 cpStart;
 
-        public int cpEnd;
+        public Int32 cpEnd;
 
         /// <summary>
         /// Parses the bytes to retrieve a PieceDescriptor

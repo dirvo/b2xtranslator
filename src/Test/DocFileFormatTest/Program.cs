@@ -284,10 +284,10 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
                     FormattedDiskPagePAPX.BX bx = fkp.rgbx[i];
                     ParagraphPropertyExceptions papx = fkp.grppapx[i];
                     Console.WriteLine("PAPX: has style " + papx.istd);
-                    foreach (SinglePropertyModifier sprm in papx.grpprl)
-                    {
-                        Console.WriteLine(String.Format("\tSPRM: modifies " + sprm.Type + " property 0x{0:x4} (" + sprm.Arguments.Length + " bytes)", sprm.OpCode));
-                    }
+                    //foreach (SinglePropertyModifier sprm in papx.grpprl)
+                    //{
+                    //    Console.WriteLine(String.Format("\tSPRM: modifies " + sprm.Type + " property 0x{0:x4} (" + sprm.Arguments.Length + " bytes)", sprm.OpCode));
+                    //}
                 }
                 Console.WriteLine("");
             }
@@ -312,10 +312,10 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
                 {
                     Console.WriteLine("CHPX:");
                     CharacterPropertyExceptions chpx = fkp.grpchpx[i];
-                    foreach (SinglePropertyModifier sprm in chpx.grpprl)
-                    {
-                        Console.WriteLine(String.Format("\tSPRM: modifies " + sprm.Type + " property 0x{0:x4} (" + sprm.Arguments.Length + " bytes)", sprm.OpCode));
-                    }
+                    //foreach (SinglePropertyModifier sprm in chpx.grpprl)
+                    //{
+                    //    Console.WriteLine(String.Format("\tSPRM: modifies " + sprm.Type + " property 0x{0:x4} (" + sprm.Arguments.Length + " bytes)", sprm.OpCode));
+                    //}
                 }
             }
         }
