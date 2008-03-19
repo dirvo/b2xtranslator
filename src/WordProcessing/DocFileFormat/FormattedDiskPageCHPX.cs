@@ -159,8 +159,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             //there are n offsets and n-1 fkp's in the bin table
             int n = (((int)fib.lcbPlcfbteChpx - 4) / 8) + 1;
 
-            int lastFc = 0;
-
             //Get the indexed CHPX FKPs
             for (int i = (n * 4); i < binTableChpx.Length; i += 4)
             {
@@ -172,6 +170,20 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
                 //parse the FKP and add offset to the list
                 FormattedDiskPageCHPX fkp = new FormattedDiskPageCHPX(wordStream, offset);
+
+                //if the last fc of this fkp is smaller the fcMin
+                //this fkp is before the requested range
+                if (fkp.rgfc[fkp.rgfc.Length - 1] < fcMin)
+                {
+                    continue;
+                }
+                
+                //if the first fc of this fkp is larger the Max
+                //this fkp is beyond the requested range
+                if (fkp.rgfc[0] > fcMax)
+                {
+                    break;
+                }
 
                 //don't add the duplicated values of the FKP boundaries (Length-1)
                 int max = fkp.rgfc.Length - 1;

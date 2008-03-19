@@ -56,7 +56,6 @@
     <Compile Include="FormattedDiskPage.cs" />
     <Compile Include="FormattedDiskPageCHPX.cs" />
     <Compile Include="FormattedDiskPagePAPX.cs" />
-    <Compile Include="LanguageID.cs" />
     <Compile Include="LineSpacingDescriptor.cs" />
     <Compile Include="NumberRevisionMarkData.cs" />
     <Compile Include="OutlineLiSTData.cs" />
@@ -90,7 +89,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FontFamilyName.cs" />
-    <Compile Include="FormattedDiskPageTAPX.cs" />
     <Compile Include="Global.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

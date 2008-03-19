@@ -131,6 +131,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         style.chpx.Convert(new CharacterPropertiesMapping(_writer, sheet, _doc.FontTable));
                     }
 
+                    //write table properties
+                    if (style.tapx != null)
+                    {
+                        style.tapx.Convert(new TablePropertiesMapping(_writer));
+                    }
+
                     _writer.WriteEndElement();
                 }
             }

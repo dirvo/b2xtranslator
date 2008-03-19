@@ -39,10 +39,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         AbstractOpenXmlMapping,
         IMapping<WordDocument>
     {
-        private int _papxIndex, _nextPapxFc;
         private WordDocument _doc;
-        private List<Int32> _allPapxOffsets;
-        private List<ParagraphPropertyExceptions> _allPapx;
 
         public DocumentMapping(XmlWriter writer)
             : base(writer)
@@ -57,22 +54,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _writer.WriteStartElement("w", "document", OpenXmlNamespaces.WordprocessingML);
             _writer.WriteStartElement("w", "body", OpenXmlNamespaces.WordprocessingML);
 
-            Int32 fcMin = _doc.FIB.fcMin;
-            Int32 fcMax = _doc.FIB.fcMin + _doc.FIB.ccpText;
-
-            _doc = doc;
-            _allPapx = FormattedDiskPagePAPX.GetParagraphPropertyExceptions(fcMin, fcMax, doc.FIB, doc.WordDocumentStream, doc.TableStream);
-            _allPapxOffsets = FormattedDiskPagePAPX.GetFileCharacterPositions(fcMin, fcMax, doc.FIB, doc.WordDocumentStream, doc.TableStream);
-            _allPapxOffsets.Add(fcMax);
-
             Int32 cp = 0;
             while (cp < _doc.Text.Count)
             {
                 Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
-                ParagraphPropertyExceptions papx = _allPapx[_papxIndex];
+                ParagraphPropertyExceptions papx = _doc.FindValidPapx(fc);
                 TableInfo tai = new TableInfo(papx);
-                _nextPapxFc = _allPapxOffsets[_papxIndex];
-                
+
                 if (tai.fInTable)
                 {
                     //this PAPX is for a table
@@ -81,13 +69,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 else
                 {
                     //this PAPX is for a normal paragraph
-                    cp = writeParagraph(papx, cp);
-                }
-
-                //If this FC started a new PAPX, take next PAPX next time.
-                if (fc == _nextPapxFc && _papxIndex < (_allPapx.Count-1))
-                {
-                    _papxIndex++;
+                    cp = writeParagraph(cp);
                 }
             }
 
@@ -103,34 +85,42 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// <returns>The character pointer to the first character after this table</returns>
         private Int32 writeTable(Int32 initialCp)
         {
-            //initial values
             Int32 cp = initialCp;
-            ParagraphPropertyExceptions papx = _allPapx[_papxIndex];
+            Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
+            ParagraphPropertyExceptions papx = _doc.FindValidPapx(fc);
             TableInfo tai = new TableInfo(papx);
 
             //start table
             _writer.WriteStartElement("w", "tbl", OpenXmlNamespaces.WordprocessingML);
 
-            //find the first row end PAPX, because it holds the TAP SPRMs
-            int tapxIndex = _papxIndex;
-            ParagraphPropertyExceptions tablePapx = _allPapx[_papxIndex];
-            while (!(new TableInfo(tablePapx).fTtp))
+            //find the first row end to get and convert the TAPX
+            while (!tai.fTtp)
             {
-                tablePapx = _allPapx[tapxIndex];
-                tapxIndex++;
+                while (_doc.Text[cp] != TextBoundary.CellOrRowMark)
+                {
+                    cp++;
+                }
+                fc = _doc.PieceTable.FileCharacterPositions[cp];
+                papx = _doc.FindValidPapx(fc);
+                tai = new TableInfo(papx);
+                cp++;
             }
-            //cast it to a TAPX and convert it
-            TablePropertyExceptions tapx = new TablePropertyExceptions(tablePapx);
+            TablePropertyExceptions tapx = new TablePropertyExceptions(papx);
             tapx.Convert(new TablePropertiesMapping(_writer));
+
+            //reset initial values
+            cp = initialCp;
+            fc = _doc.PieceTable.FileCharacterPositions[cp];
+            papx = _doc.FindValidPapx(fc);
+            tai = new TableInfo(papx);
 
             //convert all rows
             while (tai.fInTable)
             {
                 cp = writeTableRow(cp);
 
-                //each row has it's own PAPX
-                _papxIndex++;
-                papx = _allPapx[_papxIndex];
+                fc = _doc.PieceTable.FileCharacterPositions[cp];
+                papx = _doc.FindValidPapx(fc);
                 tai = new TableInfo(papx);
             }
 
@@ -148,7 +138,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private Int32 writeTableRow(Int32 initialCp)
         {
             Int32 cp = initialCp;
-            ParagraphPropertyExceptions papx = _allPapx[_papxIndex];
+            Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
+            ParagraphPropertyExceptions papx = _doc.FindValidPapx(fc);
             TableInfo  tai = new TableInfo(papx);
 
             //start w:tr
@@ -159,8 +150,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 cp = writeTableCell(cp);
 
                 //each cell has it's own PAPX
-                _papxIndex++;
-                papx = _allPapx[_papxIndex];
+                fc = _doc.PieceTable.FileCharacterPositions[cp];
+                papx = _doc.FindValidPapx(fc);
                 tai = new TableInfo(papx);
             }
 
@@ -181,6 +172,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private Int32 writeTableCell(Int32 initialCp)
         {
             Int32 cp = initialCp;
+            Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
 
             //start w:tc
             _writer.WriteStartElement("w", "tc", OpenXmlNamespaces.WordprocessingML);
@@ -194,78 +186,17 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             //copy the chars of the cell
             List<char> remainingChars = _doc.Text.GetRange(initialCp, cpCellEnd - initialCp);
+
+            //write paragaphs for each paragraph in the cell
             while(remainingChars.Contains('\r'))
             {
-                Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
-                //if this paragraph has a new PAPX
-                if (fc == _allPapxOffsets[_papxIndex + 1])
-                    _papxIndex++;
-
-                cp = writeParagraph(_allPapx[_papxIndex], cp);
+                fc = _doc.PieceTable.FileCharacterPositions[cp];
+                cp = writeParagraph(cp);
                 remainingChars = _doc.Text.GetRange(cp, cpCellEnd - cp);
             }
 
-            //if the remaining chars have an own PAPX
-            Int32 fcRemaining = _doc.PieceTable.FileCharacterPositions[cp];
-            if (fcRemaining == _allPapxOffsets[_papxIndex + 1])
-                _papxIndex++;
-
-            //write the remaining chars as paragraph
-            _writer.WriteStartElement("w", "p", OpenXmlNamespaces.WordprocessingML);
-            _allPapx[_papxIndex].Convert(new ParagraphPropertiesMapping(_writer, _doc.Styles));
-
-            //write all runs for the remaining chars
-            Int32 fcCellEnd = _doc.PieceTable.FileCharacterPositions[cpCellEnd];
-
-            //get all CHPX between these boundaries
-            List<CharacterPropertyExceptions> chpxs = FormattedDiskPageCHPX.GetCharacterPropertyExceptions(
-                fcRemaining,
-                fcCellEnd,
-                _doc.FIB,
-                _doc.WordDocumentStream,
-                _doc.TableStream);
-            List<Int32> chpxFcs = FormattedDiskPageCHPX.GetFileCharacterPositions(
-                fcRemaining,
-                fcCellEnd,
-                _doc.FIB,
-                _doc.WordDocumentStream,
-                _doc.TableStream);
-            chpxFcs.Add(fcCellEnd);
-
-            //write runs for all CHPX
-            for (int i = 0; i < chpxs.Count; i++)
-            {
-                //get the chars of this CHPX
-                int fcChpxStart = chpxFcs[i];
-                int fcChpxEnd = chpxFcs[i + 1];
-
-                //it's the first chpx and it starts before the paragraph
-                if (i == 0 && fcChpxStart < fcRemaining)
-                {
-                    //so use the FC of the paragraph
-                    fcChpxStart = fcRemaining;
-                }
-
-                //it's the last chpx and it exceeds the paragraph
-                if (i == (chpxs.Count - 1) && fcChpxEnd > fcCellEnd)
-                {
-                    //so use the FC of the paragraph
-                    fcChpxEnd = fcCellEnd;
-                }
-
-                //read the chars that are formatted via this CHPX
-                List<char> chpxChars = _doc.PieceTable.GetChars(fcChpxStart, fcChpxEnd, _doc.WordDocumentStream);
-                
-                //write the run
-                if (chpxChars.Count > 0)
-                    writeRun(chpxChars, chpxs[i]);
-
-                //increase the pointer
-                cp += chpxChars.Count;
-            }
-
-            //end w:p
-            _writer.WriteEndElement();
+            //write the remaining chars as own paragraph
+            cp = writeParagraph(cp, cpCellEnd);
 
             //end w:tc
             _writer.WriteEndElement();
@@ -276,18 +207,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             return cp;
         }
 
-
         /// <summary>
-        /// Writes a Paragraph for the given PAPX
+        /// Writes a Paragraph that starts at the given cp and 
+        /// ends at the next paragraph end mark or section mark
         /// </summary>
-        private Int32 writeParagraph(ParagraphPropertyExceptions papx, Int32 cp) 
+        /// <param name="cp"></param>
+        private Int32 writeParagraph(Int32 cp) 
         {
-            //start paragraph
-            _writer.WriteStartElement("w", "p", OpenXmlNamespaces.WordprocessingML);
-
-            //write properties
-            papx.Convert(new ParagraphPropertiesMapping(_writer, _doc.Styles));
-
             //search the paragraph end
             Int32 cpParaEnd = cp;
             while (_doc.Text[cpParaEnd] != TextBoundary.ParagraphEnd)
@@ -296,26 +222,44 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
             cpParaEnd++;
 
-            //get the physical boundaries (FC) of that paragraph
-            Int32 fcStart = _doc.PieceTable.FileCharacterPositions[cp];
-            Int32 fcEnd = _doc.PieceTable.FileCharacterPositions[cpParaEnd];
+            return writeParagraph(cp, cpParaEnd);
+        }
 
-            //get all CHPX between these boundaries
+        /// <summary>
+        /// Writes a Paragraph that starts at the given cpStart and 
+        /// ends at the given cpEnd
+        /// </summary>
+        /// <param name="cpStart"></param>
+        /// <param name="cpEnd"></param>
+        /// <returns></returns>
+        private Int32 writeParagraph(Int32 cp, Int32 cpEnd)
+        {
+            Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
+            Int32 fcEnd = _doc.PieceTable.FileCharacterPositions[cpEnd];
+            ParagraphPropertyExceptions papx = _doc.FindValidPapx(fc);
+
+            //start paragraph
+            _writer.WriteStartElement("w", "p", OpenXmlNamespaces.WordprocessingML);
+
+            //write properties
+            papx.Convert(new ParagraphPropertiesMapping(_writer, _doc.Styles));
+
+            //get all CHPX between these boundaries to determine the count of runs
             List<CharacterPropertyExceptions> chpxs = FormattedDiskPageCHPX.GetCharacterPropertyExceptions(
-                fcStart,
+                fc,
                 fcEnd,
                 _doc.FIB,
                 _doc.WordDocumentStream,
                 _doc.TableStream);
             List<Int32> chpxFcs = FormattedDiskPageCHPX.GetFileCharacterPositions(
-                fcStart,
+                fc,
                 fcEnd,
                 _doc.FIB,
                 _doc.WordDocumentStream,
                 _doc.TableStream);
             chpxFcs.Add(fcEnd);
 
-            //write runs for all CHPX
+            //write a rus for each CHPX
             for (int i = 0; i < chpxs.Count; i++)
             {
                 //get the chars of this CHPX
@@ -323,12 +267,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 int fcChpxEnd = chpxFcs[i + 1];
 
                 //it's the first chpx and it starts before the paragraph
-                if (i == 0 && fcChpxStart < fcStart)
+                if (i == 0 && fcChpxStart < fc)
                 {
                     //so use the FC of the paragraph
-                    fcChpxStart = fcStart;
+                    fcChpxStart = fc;
                 }
-                
+
                 //it's the last chpx and it exceeds the paragraph
                 if (i == (chpxs.Count - 1) && fcChpxEnd > fcEnd)
                 {
@@ -340,14 +284,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 List<char> chpxChars = _doc.PieceTable.GetChars(fcChpxStart, fcChpxEnd, _doc.WordDocumentStream);
 
                 //write the run
-                if(chpxChars.Count > 0)
+                if (chpxChars.Count > 0)
                     writeRun(chpxChars, chpxs[i]);
             }
 
             //end paragraph
             _writer.WriteEndElement();
 
-            return cpParaEnd++;
+            return cpEnd++;
         }
 
         /// <summary>

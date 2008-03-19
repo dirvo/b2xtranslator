@@ -107,6 +107,12 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public List<FontFamilyName> FontTable;
 
+        /// <summary>
+        /// A dictionary with all ParagraphPropertyExceptions.<br/>
+        /// The key is the offset where the PAPX starts.
+        /// </summary>
+        public Dictionary<Int32, ParagraphPropertyExceptions> AllPapx;
+
         public WordDocument(StorageReader reader)
         {
             this.WordDocumentStream = reader.GetStream("WordDocument");
@@ -139,6 +145,17 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 pos += ffnBytes.Length ;
             }
 
+            //parse all PAPX and build the dictionary
+            this.AllPapx = new Dictionary<int, ParagraphPropertyExceptions>();
+            List<FormattedDiskPagePAPX> allPapxFkps = FormattedDiskPagePAPX.GetAllPAPXFKPs(FIB, WordDocumentStream, TableStream);
+            for (int i=0; i<allPapxFkps.Count; i++)
+            {
+                for (int j = 0; j < allPapxFkps[i].grppapx.Length; j++)
+                {
+                    this.AllPapx.Add(allPapxFkps[i].rgfc[j], allPapxFkps[i].grppapx[j]);
+                }
+            }
+
             //parse the piece table and construct a list that contains all chars
             this.PieceTable = new PieceTable(this.FIB, this.TableStream);
             List<char> allChars = this.PieceTable.GetChars(this.FIB.fcMin, this.FIB.fcMac, this.WordDocumentStream);
@@ -151,6 +168,29 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.Endnotes = allChars.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr + FIB.ccpAtn, FIB.ccpEdn);
             this.Textboxes = allChars.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr + FIB.ccpAtn + FIB.ccpEdn, FIB.ccpTxbx);
             this.HeaderTextboxes = allChars.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr + FIB.ccpAtn + FIB.ccpEdn + FIB.ccpTxbx, FIB.ccpHdrTxbx);
+        }
+
+        /// <summary>
+        /// Finds the PAPX that is valid for the given FC.
+        /// </summary>
+        /// <param name="fc"></param>
+        /// <returns></returns>
+        public ParagraphPropertyExceptions FindValidPapx(Int32 fc)
+        {
+            ParagraphPropertyExceptions ret = null;
+
+            while(ret == null)
+            {
+                try
+                {
+                    ret = AllPapx[fc];
+                }
+                catch (KeyNotFoundException){
+                    fc--;
+                }
+            }
+
+            return ret;
         }
 
         #region IVisitable Members
