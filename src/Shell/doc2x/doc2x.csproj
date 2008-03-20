@@ -1,0 +1,80 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2427A407-3161-401A-A7C4-545A7AC90E36}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DIaLOGIKa.b2xtranslator.doc2x</RootNamespace>
+    <AssemblyName>doc2x</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\CommonTranslatorLib\CommonTranslatorLib.csproj">
+      <Project>{0F0F6BAF-BC5D-4DC6-AE53-8257305EE5CA}</Project>
+      <Name>CommonTranslatorLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\OpenXmlLib\OpenXmlLib.csproj">
+      <Project>{4C10271C-CD9B-49F5-9479-3C6EB7404E75}</Project>
+      <Name>OpenXmlLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\StructuredStorageReader\StructuredStorageReader.csproj">
+      <Project>{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}</Project>
+      <Name>StructuredStorageReader</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\Utils\Utils.csproj">
+      <Project>{B44FAEE0-B32E-4682-AA42-618C893F14C6}</Project>
+      <Name>Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\ZipUtils\ZipUtils.csproj">
+      <Project>{05A5C68E-B901-4AD0-87F1-5E43DDC759CE}</Project>
+      <Name>ZipUtils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\WordProcessing\DocFileFormat\DocFileFormat.csproj">
+      <Project>{70A244FD-C90E-4474-9E70-82BCF5147FF9}</Project>
+      <Name>DocFileFormat</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\WordProcessing\WordprocessingMLMapping\WordprocessingMLMapping.csproj">
+      <Project>{A4EFE5FA-BDEB-452B-8751-1A495E5C9759}</Project>
+      <Name>WordprocessingMLMapping</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(SolutionDir)..\lib\zlibwapi.dll" "$(TargetDir)zlibwapi.dll"</PostBuildEvent>
+  </PropertyGroup>
+</Project>

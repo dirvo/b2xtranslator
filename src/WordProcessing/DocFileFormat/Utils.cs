@@ -65,14 +65,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             }
         }
 
-        public static FileInfo WriteWorkingFile(string inputFile)
-        {
-            FileInfo inFile = new FileInfo(inputFile);
-            FileInfo workFile = inFile.CopyTo(System.IO.Path.GetTempFileName(), true);
-            workFile.IsReadOnly = false;
-            return workFile;
-        }
-
         public static char[] ClearCharArray(char[] values)
         {
             char[] ret = new char[values.Length];
