@@ -50,6 +50,7 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
             Debug
         }
 
+        private static bool printHelp = false;
         private static string inputFile;
         private static string outputFile;
         private static VerboseLevel verboseLvl = VerboseLevel.Error;
@@ -59,36 +60,24 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
             //parse arguments
             parseArgs(args);
 
-            //check input file
-            FileInfo fi = new FileInfo(inputFile);
-            if (!fi.Exists)
-            {
-                if (verboseLvl > VerboseLevel.None)
-                {
-                    Console.WriteLine("The selected input file does not exist.");
-                }
-                Environment.Exit(1);
-            }
-
-            //copy processing file
-            ProcessingFile procFile = new ProcessingFile(inputFile);
-
-            //make output file name
-            if (outputFile == null)
-            {
-                if (inputFile.Contains("."))
-                {
-                    outputFile = inputFile.Remove(inputFile.LastIndexOf(".")) + ".docx";
-                }
-                else
-                {
-                    outputFile = inputFile + ".docx";
-                }
-            }
-
-            #region conversion
             try
-            {               
+            {
+                //copy processing file
+                ProcessingFile procFile = new ProcessingFile(inputFile);
+
+                //make output file name
+                if (outputFile == null)
+                {
+                    if (inputFile.Contains("."))
+                    {
+                        outputFile = inputFile.Remove(inputFile.LastIndexOf(".")) + ".docx";
+                    }
+                    else
+                    {
+                        outputFile = inputFile + ".docx";
+                    }
+                }
+
                 //start time
                 DateTime start = DateTime.Now;
 
@@ -133,12 +122,33 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                 {
                     Console.WriteLine(inputFile + " has been fast-saved. This format is currently not supported.");
                 }
+
+            }
+            catch(DirectoryNotFoundException)
+            {
+                if (verboseLvl > VerboseLevel.None)
+                    Console.WriteLine("The input file does not exist.");
+            }
+            catch (FileNotFoundException)
+            {
+                if (verboseLvl > VerboseLevel.None)
+                    Console.WriteLine("The input file does not exist.");
+            }
+            catch (ReadBytesAmountMismatchException)
+            {
+                if (verboseLvl > VerboseLevel.None)
+                    Console.WriteLine("The input file is no valid .doc file");
+            }
+            catch (MagicNumberException)
+            {
+                if (verboseLvl > VerboseLevel.None)
+                    Console.WriteLine("The input file is no valid .doc file");
             }
             catch (ZipCreationException)
             {
                 if (verboseLvl > VerboseLevel.None)
                 {
-                    Console.WriteLine("Could not create the outputfile.");
+                    Console.WriteLine("Could not create the output file.");
                     Console.WriteLine("Perhaps the specified outputfile was a directory or contained invalid characters.");
                 }
             }
@@ -147,7 +157,6 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                 if (verboseLvl > VerboseLevel.None)
                     Console.WriteLine(e.ToString());
             }
-            #endregion
         }
 
         /// <summary>
@@ -158,7 +167,15 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
         {
             try
             {
-                inputFile = args[0];              
+                if (args[0] == "-?")
+                {
+                    printUsage();
+                    Environment.Exit(0);
+                }
+                else
+                {
+                    inputFile = args[0];
+                }
 
                 for (int i = 1; i < args.Length; i++)
                 {
