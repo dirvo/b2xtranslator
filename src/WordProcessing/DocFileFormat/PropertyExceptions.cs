@@ -65,16 +65,47 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                         byte spra = (byte)((Int32)opCode >> 13);
 
                         // get size of operand
-                        byte opSize = SinglePropertyModifier.GetOperandSize(spra);
+                        Int16 opSize = (Int16)SinglePropertyModifier.GetOperandSize(spra);
                         byte lenByte = 0;
+                        int lenModificator = 0;
+
+                        //operand has variable size
                         if (opSize == 255)
                         {
-                            //the variable length stand in the byte after the opcode
-                            lenByte = 1;
-                            opSize = bytes[sprmStart + 2];
+                            //some opCode need special treatment
+                            switch (opCode)
+                            {
+                                case (UInt16)SinglePropertyModifier.SpecialSprm.sprmTDefTable:
+                                case (UInt16)SinglePropertyModifier.SpecialSprm.sprmTDefTable10:
+                                    //The opSize of the table definition is stored in 2 bytes instead of 1
+                                    lenByte = 2;
+                                    opSize = System.BitConverter.ToInt16(bytes, sprmStart + 2);
+                                    //Word adds an additional byte to the opSize to compensate the additional
+                                    //byte needed for the length
+                                    opSize--;
+                                    break;
+                                case (UInt16)SinglePropertyModifier.SpecialSprm.sprmPChgTabs:
+                                    //The tab operand can be bigger than 255 bytes (length byte is set to 255).
+                                    //In this case a special calculation of the opSize is needed
+                                    lenByte = 1;
+                                    opSize = bytes[sprmStart + 2];
+                                    if (opSize == 255)
+                                    {
+                                        byte itbdDelMax = bytes[sprmStart + 3];
+                                        byte itbdAddMax = bytes[sprmStart + 3 + 2 * itbdDelMax];
+                                        opSize = (Int16)((itbdDelMax * 4 + itbdAddMax * 3) - 1);
+                                    }
+                                    break;
+                                default:
+                                    //The variable length stand in the byte after the opcode
+                                    lenByte = 1;
+                                    opSize = bytes[sprmStart + 2];
+                                    break;
+                            }
                         }
 
                         //copy sprm to array
+                        //length is 2byte for the opCode, lenByte for the length, opSize for the length of the operand
                         byte[] sprm = new byte[2 + lenByte + opSize];
 
                         if (bytes.Length >= sprmStart + sprm.Length)

@@ -33,7 +33,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingML
 {
     public class FontTablePart : OpenXmlPart
     {
-        protected FontTablePart(OpenXmlPartContainer parent)
+        public FontTablePart(OpenXmlPartContainer parent)
             : base(parent)
         {
         }
@@ -49,6 +49,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingML
         }
 
         public override string TargetName { get { return "fontTable"; } }
-        public override string TargetDirectory { get { return @"word"; } }
+        public override string TargetDirectory { get { return ""; } }
     }
 }

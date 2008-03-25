@@ -89,6 +89,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FontFamilyName.cs" />
+    <Compile Include="FontTable.cs" />
     <Compile Include="Global.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

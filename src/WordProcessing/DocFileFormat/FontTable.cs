@@ -1,11 +1,11 @@
-﻿/*
+/*
  * Copyright (c) 2008, DIaLOGIKa
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
+ *        notice, this list of conditions and the following disclaimer.
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
@@ -24,49 +24,23 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Collections.Generic;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.OpenXmlLib;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
-namespace DIaLOGIKa.b2xtranslator.WordprocessingML
+namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class MainDocumentPart : OpenXmlPart, IUniquePart
+    public class FontTable : List<FontFamilyName>, IVisitable
     {
-        protected StyleDefinitionsPart _styleDefinitionsPart;
-        protected FontTablePart _fontTablePart;
-        
-        public MainDocumentPart(OpenXmlPartContainer parent)
-            : base(parent)
-        {
-            _styleDefinitionsPart = new StyleDefinitionsPart(this);
-            this.AddPart(_styleDefinitionsPart);
+        #region IVisitable Members
 
-            _fontTablePart = new FontTablePart(this);
-            this.AddPart(_fontTablePart);
+        public void Convert<T>(T mapping)
+        {
+            ((IMapping<FontTable>)mapping).Apply(this);
         }
 
-        public override string ContentType
-        {
-            get { return OpenXmlContentTypes.MainDocument; }
-        }
-
-        public override string RelationshipType
-        {
-            get { return OpenXmlRelationshipTypes.MainDocument; }
-        }
-
-        public override string TargetName { get { return "document"; } }
-        public override string TargetDirectory { get { return "word"; } }
-
-        public StyleDefinitionsPart StyleDefinitionsPart
-        {
-            get { return _styleDefinitionsPart; }
-        }
-
-        public FontTablePart FontTablePart
-        {
-            get { return _fontTablePart; }
-        }
+        #endregion
     }
 }

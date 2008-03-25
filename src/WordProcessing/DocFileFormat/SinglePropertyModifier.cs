@@ -47,6 +47,16 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         }
 
         /// <summary>
+        /// Some SinglePropertyModifier need special treatment
+        /// </summary>
+        public enum SpecialSprm
+        {
+            sprmPChgTabs = 0xC615,
+            sprmTDefTable = 0xD608,
+            sprmTDefTable10 = 0xD606
+        }
+
+        /// <summary>
         /// The operation code identifies the property of the 
         /// PAP/CHP/PIC/SEP/TAP which sould be modified
         /// </summary>
@@ -94,11 +104,28 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             byte opSize = GetOperandSize(spra);
             if (opSize == 255)
             {
-                //the variable length stand in the byte after the opcode (byte2)
-                opSize = bytes[2];
-                //and the arguments start at the byte after that (byte3)
-                this.Arguments = new byte[opSize];
-                Array.Copy(bytes, 3, this.Arguments, 0, Arguments.Length);
+                switch (OpCode)
+                {
+                    case (UInt16)SpecialSprm.sprmTDefTable:
+                    case (UInt16)SpecialSprm.sprmTDefTable10:
+                        //the variable length stand in the bytes 2 and 3
+                        Int16 opSizeTable = System.BitConverter.ToInt16(bytes, 2);
+                        //and the arguments start at the byte after that (byte3)
+                        this.Arguments = new byte[opSizeTable-1];
+                        //Arguments start at byte 4
+                        Array.Copy(bytes, 4, this.Arguments, 0, Arguments.Length);
+                        break;
+                    case (UInt16)SpecialSprm.sprmPChgTabs:
+                        //not yet implemented
+                        break;
+                    default:
+                        //the variable length stand in the byte after the opcode (byte2)
+                        opSize = bytes[2];
+                        //and the arguments start at the byte after that (byte3)
+                        this.Arguments = new byte[opSize];
+                        Array.Copy(bytes, 3, this.Arguments, 0, Arguments.Length);
+                        break;
+                }
             }
             else
             {

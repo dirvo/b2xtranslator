@@ -105,6 +105,11 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                         doc.Styles.Convert(new StyleSheetMapping(writer, doc));
                         writer.Flush();
 
+                        //Write fontTable.xml
+                        writer = XmlWriter.Create(docx.MainDocumentPart.FontTablePart.GetStream(), xws);
+                        doc.FontTable.Convert(new FontTableMapping(writer));
+                        writer.Flush();
+
                         //Write Document.xml
                         writer = XmlWriter.Create(docx.MainDocumentPart.GetStream(), xws);
                         doc.Convert(new DocumentMapping(writer));
@@ -137,12 +142,17 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
             catch (ReadBytesAmountMismatchException)
             {
                 if (verboseLvl > VerboseLevel.None)
-                    Console.WriteLine("The input file is no valid .doc file");
+                    Console.WriteLine("The input file is no valid .doc file.");
             }
             catch (MagicNumberException)
             {
                 if (verboseLvl > VerboseLevel.None)
-                    Console.WriteLine("The input file is no valid .doc file");
+                    Console.WriteLine("The input file is no valid .doc file.");
+            }
+            catch (ByteParseException)
+            {
+                if (verboseLvl > VerboseLevel.None)
+                    Console.WriteLine("The input file is no valid .doc file.");
             }
             catch (ZipCreationException)
             {
@@ -155,6 +165,8 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
             catch (Exception e)
             {
                 if (verboseLvl > VerboseLevel.None)
+                    Console.WriteLine("Conversion failed.");
+                if (verboseLvl > VerboseLevel.Info)
                     Console.WriteLine(e.ToString());
             }
         }

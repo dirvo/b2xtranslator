@@ -28,15 +28,16 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Collections;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
     public class StyleSheetInformation
     {
-        public struct LSD
+        public struct LatentStyleData
         {
-            UInt16 grflsd;
-            bool fLocked;
+            public UInt32 grflsd;
+            public bool fLocked;
         }
 
         /// <summary>
@@ -85,7 +86,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// latent style data (size == stiMaxWhenSaved upon save!)
         /// </summary>
-	    public LSD[] mpstilsd;	
+	    public LatentStyleData[] mpstilsd;	
 
         /// <summary>
         /// Parses the bytes to retrieve a StyleSheetInformation
@@ -108,8 +109,21 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.rgftcStandardChpStsh[0] = System.BitConverter.ToUInt16(bytes, 12);
             this.rgftcStandardChpStsh[1] = System.BitConverter.ToUInt16(bytes, 14);
             this.rgftcStandardChpStsh[2] = System.BitConverter.ToUInt16(bytes, 16);
-            //this.rgftcStandardChpStsh[3] = System.BitConverter.ToUInt16(bytes, 18);
-            this.mpstilsd = new LSD[this.stiMaxWhenSaved];
+            this.rgftcStandardChpStsh[3] = System.BitConverter.ToUInt16(bytes, 18);
+
+            //not all stylesheet contain latent styles
+            if (bytes.Length > 20)
+            {
+                this.cbLSD = System.BitConverter.ToUInt16(bytes, 20);
+                this.mpstilsd = new LatentStyleData[this.stiMaxWhenSaved];
+                for (int i = 0; i < this.mpstilsd.Length; i++)
+                {
+                    LatentStyleData lsd = new LatentStyleData();
+                    lsd.grflsd = System.BitConverter.ToUInt32(bytes, 22 + (i * cbLSD));
+                    lsd.fLocked = Utils.BitmaskToBool((int)lsd.grflsd, 0x1);
+                    this.mpstilsd[i] = lsd;
+                }
+            }
         }
     }
 }

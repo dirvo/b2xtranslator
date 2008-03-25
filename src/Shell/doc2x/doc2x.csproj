@@ -9,6 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DIaLOGIKa.b2xtranslator.doc2x</RootNamespace>
     <AssemblyName>doc2x</AssemblyName>
+    <ApplicationIcon>doc2x.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -65,6 +66,9 @@
       <Project>{A4EFE5FA-BDEB-452B-8751-1A495E5C9759}</Project>
       <Name>WordprocessingMLMapping</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="doc2x.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

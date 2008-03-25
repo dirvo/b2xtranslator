@@ -70,6 +70,30 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         _tblPr.AppendChild(tblW);
                         break;
 
+                    //grid
+                    case 0xD608:
+                        byte itcMac = sprm.Arguments[0];
+                        for (int i = 0; i < itcMac; i++)
+                        {
+                            Int16 boundary2 = System.BitConverter.ToInt16(sprm.Arguments, 1 + ((i+1) * 2));
+                            Int16 boundary1 = System.BitConverter.ToInt16(sprm.Arguments, 1 + (i * 2));
+                            XmlElement gridCol = _nodeFactory.CreateElement("w", "gridCol", OpenXmlNamespaces.WordprocessingML);
+                            XmlAttribute gridColW = _nodeFactory.CreateAttribute("w", "w", OpenXmlNamespaces.WordprocessingML);
+                            gridColW.Value = "" + (boundary2 - boundary1);
+                            gridCol.Attributes.Append(gridColW);
+                            _tblGrid.AppendChild(gridCol);
+                        }
+                        break;
+
+                    //table look
+                    case 0x740A:
+                        XmlElement tblLook = _nodeFactory.CreateElement("w", "tblLook", OpenXmlNamespaces.WordprocessingML);
+                        XmlAttribute lookVal = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
+                        lookVal.Value = String.Format("{0:x4}", System.BitConverter.ToInt16(sprm.Arguments, 2));
+                        tblLook.Attributes.Append(lookVal);
+                        _tblPr.AppendChild(tblLook);
+                        break;
+
                     //autofit
                     case 0x3615:
                         XmlElement tblLayout = _nodeFactory.CreateElement("w", "tblLayout", OpenXmlNamespaces.WordprocessingML);
@@ -182,6 +206,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             if (_tblPr.ChildNodes.Count > 0 || _tblPr.Attributes.Count > 0)
             {
                 _tblPr.WriteTo(_writer);
+            }
+
+            //write grid
+            if (_tblGrid.ChildNodes.Count > 0)
+            {
+                _tblGrid.WriteTo(_writer);
             }
         }
     }

@@ -28,11 +28,22 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Collections;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
     public class FontFamilyName
     {
+        public struct FontSignature
+        {
+            public UInt32 UnicodeSubsetBitfield0;
+            public UInt32 UnicodeSubsetBitfield1;
+            public UInt32 UnicodeSubsetBitfield2;
+            public UInt32 UnicodeSubsetBitfield3;
+            public UInt32 CodePageBitfield0;
+            public UInt32 CodePageBitfield1;
+        }
+
         /// <summary>
         /// When true, font is a TrueType font
         /// </summary>
@@ -54,9 +65,24 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public byte chs;
 
         /// <summary>
+        /// Pitch request
+        /// </summary>
+        public byte prq;
+
+        /// <summary>
         /// Name of font
         /// </summary>
         public String xszFtn;
+
+        /// <summary>
+        /// Panose
+        /// </summary>
+        public byte[] panose;
+
+        /// <summary>
+        /// Font sinature
+        /// </summary>
+        public FontSignature fs;
 
         /// <summary>
         /// Parses the byte to retrieve a FFN structure
@@ -66,15 +92,46 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         {
             if (bytes.Length > 40)
             {
+                int cbFfnM1 = bytes[0];
+
+                //unmask byte 1
+                int req = (int)bytes[1];
+                req = req << 6;
+                req = req >> 6;
+                this.prq = (byte)req;
+
+                this.fTrueType = Utils.BitmaskToBool((int)bytes[1], 0x04);
+
+                int family = (int)bytes[1];
+                family = family << 1;
+                family = family >> 4;
+                this.ff = (byte)family;
+
+                //byte 2 and 3
                 this.wWeight = System.BitConverter.ToInt16(bytes, 2);
+
+                //byte 4
                 this.chs = bytes[4];
 
-                //copy name to array
+                //byte 5
+
+                //byte 6-15
+                this.panose = new byte[10];
+                Array.Copy(bytes, 6, panose, 0, 10);
+
+                //byte 16 - 39
+                this.fs = new FontSignature();
+                this.fs.UnicodeSubsetBitfield0 = System.BitConverter.ToUInt32(bytes, 16);
+                this.fs.UnicodeSubsetBitfield1 = System.BitConverter.ToUInt32(bytes, 20);
+                this.fs.UnicodeSubsetBitfield2 = System.BitConverter.ToUInt32(bytes, 24);
+                this.fs.UnicodeSubsetBitfield3 = System.BitConverter.ToUInt32(bytes, 28);
+                this.fs.CodePageBitfield0 = System.BitConverter.ToUInt32(bytes, 32);
+                this.fs.CodePageBitfield1 = System.BitConverter.ToUInt32(bytes, 36);
+
+                //byte 40 - x (name)
                 byte[] name = new byte[bytes.Length - 40];
                 Array.Copy(bytes, 40, name, 0, name.Length);
                 this.xszFtn = Encoding.Unicode.GetString(name);
-
-                //replace zero termination
                 this.xszFtn = this.xszFtn.Replace("\0", "");
             }
         }

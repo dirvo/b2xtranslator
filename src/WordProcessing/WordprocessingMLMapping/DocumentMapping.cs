@@ -93,26 +93,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //start table
             _writer.WriteStartElement("w", "tbl", OpenXmlNamespaces.WordprocessingML);
 
-            //find the first row end to get and convert the TAPX
-            while (!tai.fTtp)
-            {
-                while (_doc.Text[cp] != TextBoundary.CellOrRowMark)
-                {
-                    cp++;
-                }
-                fc = _doc.PieceTable.FileCharacterPositions[cp];
-                papx = _doc.FindValidPapx(fc);
-                tai = new TableInfo(papx);
-                cp++;
-            }
-            TablePropertyExceptions tapx = new TablePropertyExceptions(papx);
-            tapx.Convert(new TablePropertiesMapping(_writer));
+            //find first row end TAPX
+            TablePropertyExceptions row1Tapx = findRowEndTapx(cp);
 
-            //reset initial values
-            cp = initialCp;
-            fc = _doc.PieceTable.FileCharacterPositions[cp];
-            papx = _doc.FindValidPapx(fc);
-            tai = new TableInfo(papx);
+            //Convert it
+            row1Tapx.Convert(new TablePropertiesMapping(_writer));
 
             //convert all rows
             while (tai.fInTable)
@@ -145,9 +130,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //start w:tr
             _writer.WriteStartElement("w", "tr", OpenXmlNamespaces.WordprocessingML);
 
+            TablePropertyExceptions tapx = findRowEndTapx(cp);
+
+            int cellIndex = 0;
             while (!(_doc.Text[cp] == TextBoundary.CellOrRowMark && tai.fTtp))
             {
-                cp = writeTableCell(cp);
+                cp = writeTableCell(cp, cellIndex, tapx);
+                cellIndex++;
 
                 //each cell has it's own PAPX
                 fc = _doc.PieceTable.FileCharacterPositions[cp];
@@ -165,17 +154,49 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         }
 
         /// <summary>
+        /// Finds the TAPX that formast the next row end mark.
+        /// </summary>
+        /// <param name="cp"></param>
+        /// <returns></returns>
+        private TablePropertyExceptions findRowEndTapx(int initialCp)
+        {
+            int cp = initialCp;
+            Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
+            ParagraphPropertyExceptions papx = _doc.FindValidPapx(fc);
+            TableInfo tai = new TableInfo(papx);
+
+            while (!tai.fTtp)
+            {
+                while (_doc.Text[cp] != TextBoundary.CellOrRowMark)
+                {
+                    cp++;
+                }
+                fc = _doc.PieceTable.FileCharacterPositions[cp];
+                papx = _doc.FindValidPapx(fc);
+                tai = new TableInfo(papx);
+                cp++;
+            }
+
+            return new TablePropertyExceptions(papx);
+        }
+
+        /// <summary>
         /// Writes the table cell that starts at the given cp value and ends at the next cell end mark
         /// </summary>
         /// <param name="initialCp">The cp at where the cell begins</param>
+        /// <param name="cellIndex">The index of this cell. The first cell's index should be 0</param>
+        /// <param name="initialCp">The TAPX that formats the row to which the cell belongs</param>
         /// <returns>The character pointer to the first character after this cell</returns>
-        private Int32 writeTableCell(Int32 initialCp)
+        private Int32 writeTableCell(Int32 initialCp, int cellIndex, TablePropertyExceptions tapx)
         {
             Int32 cp = initialCp;
             Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
 
             //start w:tc
             _writer.WriteStartElement("w", "tc", OpenXmlNamespaces.WordprocessingML);
+
+            //convert the properties
+            tapx.Convert(new TableCellPropertiesMapping(_writer, cellIndex));
 
             //find cell end
             Int32 cpCellEnd = initialCp;

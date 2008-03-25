@@ -75,6 +75,11 @@ namespace DocTranslatorTest
                     doc.Styles.Convert(new StyleSheetMapping(writer, doc));
                     writer.Flush();
 
+                    //Write fontTable.xml
+                    writer = XmlWriter.Create(docx.MainDocumentPart.FontTablePart.GetStream(), xws);
+                    doc.FontTable.Convert(new FontTableMapping(writer));
+                    writer.Flush();
+
                     //Write Document.xml
                     writer = XmlWriter.Create(docx.MainDocumentPart.GetStream(), xws);
                     doc.Convert(new DocumentMapping(writer));

@@ -105,7 +105,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// A list of all font names, used in the doucument
         /// </summary>
-        public List<FontFamilyName> FontTable;
+        public FontTable FontTable;
 
         /// <summary>
         /// A dictionary with all ParagraphPropertyExceptions.<br/>
@@ -130,7 +130,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.Styles = new StyleSheet(this.FIB, this.TableStream);
 
             //read font table
-            this.FontTable = new List<FontFamilyName>();
+            this.FontTable = new FontTable();
             byte[] ftBytes = new byte[this.FIB.lcbSttbfffn];
             this.TableStream.Read(ftBytes, ftBytes.Length, this.FIB.fcSttbfffn);
 
