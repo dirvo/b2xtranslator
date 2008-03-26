@@ -78,6 +78,8 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                     }
                 }
 
+                Console.WriteLine("Converting file {0}", inputFile);
+                
                 //start time
                 DateTime start = DateTime.Now;
 
@@ -243,14 +245,14 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
         {
             StringBuilder usage = new StringBuilder();
             usage.AppendLine("Usage: doc2x filename [-o filename] [-v level] [-?]");
-            usage.AppendLine("-o: change output filename");
-            usage.AppendLine("-v: verbose level");
-            usage.AppendLine("\tnone (0): prints nothing");
-            usage.AppendLine("\terror (1): prints all errors (default)");
-            usage.AppendLine("\twarning (2): prints all errors and warnings");
-            usage.AppendLine("\tinfo (3): prints all errors, warnings and infos");
-            usage.AppendLine("\tdebug (4): prints all errors, warnings, infos and debug informations");
-            usage.AppendLine("-?: prints this help");
+            usage.AppendLine("-o <filename>   change output filename");
+            usage.AppendLine("-v <level>      set trace level, where <level> is one of the following:");
+            usage.AppendLine("    none (0)    print nothing");
+            usage.AppendLine("    error (1)   print all errors (default)");
+            usage.AppendLine("    warning (2) print all errors and warnings");
+            usage.AppendLine("    info (3)    print all errors, warnings and infos");
+            usage.AppendLine("    debug (4)   print all errors, warnings, infos and debug messages");
+            usage.AppendLine("-?              print this help");
             Console.WriteLine(usage.ToString());
         }
     }
