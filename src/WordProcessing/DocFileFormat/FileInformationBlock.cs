@@ -848,7 +848,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 st.Read(bytes, 1472, 0);
 
                 //start parsing the variables
-                wIdent = System.BitConverter.ToUInt16(bytes, 2);
+                wIdent = System.BitConverter.ToUInt16(bytes, 0);
+                nFib = System.BitConverter.ToUInt16(bytes, 2);
                 nProduct = System.BitConverter.ToUInt16(bytes, 4);
                 Lid = System.BitConverter.ToUInt16(bytes, 6);
                 pnNext = System.BitConverter.ToInt16(bytes, 8);
@@ -1206,7 +1207,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 fcAfd = System.BitConverter.ToInt32(bytes, 1458);
                 lcbAfd = System.BitConverter.ToUInt32(bytes, 162);
                 cswNew = System.BitConverter.ToUInt16(bytes, 1466);
-                nFib = System.BitConverter.ToUInt16(bytes, 1468);
+                //nFib = System.BitConverter.ToUInt16(bytes, 1468);
                 cQuickSavesNew = System.BitConverter.ToUInt16(bytes, 1470);
             }
             catch(Exception)

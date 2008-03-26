@@ -60,6 +60,10 @@
       <Project>{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}</Project>
       <Name>StructuredStorageReader</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Common\Utils\Utils.csproj">
+      <Project>{B44FAEE0-B32E-4682-AA42-618C893F14C6}</Project>
+      <Name>Utils</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DocFileFormat\DocFileFormat.csproj">
       <Project>{70A244FD-C90E-4474-9E70-82BCF5147FF9}</Project>
       <Name>DocFileFormat</Name>

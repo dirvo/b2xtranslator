@@ -160,7 +160,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     //overlap
                     case 0x3465:
-                        bool noOverlap = Utils.ByteToBool(sprm.Arguments[0]);
+                        bool noOverlap = DIaLOGIKa.b2xtranslator.DocFileFormat.Utils.ByteToBool(sprm.Arguments[0]);
                         string tblOverlapVal = "overlap";
                         if (noOverlap)
                             tblOverlapVal = "never";
