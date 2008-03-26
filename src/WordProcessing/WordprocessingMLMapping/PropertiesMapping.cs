@@ -67,6 +67,18 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             node.AppendChild(ele);
         }
 
+        protected void appendDxaElement(XmlElement node, string elementName, string elementValue)
+        {
+            XmlElement ele = _nodeFactory.CreateElement("w", elementName, OpenXmlNamespaces.WordprocessingML);
+            XmlAttribute val = _nodeFactory.CreateAttribute("w", "w", OpenXmlNamespaces.WordprocessingML);
+            val.Value = elementValue;
+            ele.Attributes.Append(val);
+            XmlAttribute type = _nodeFactory.CreateAttribute("w", "type", OpenXmlNamespaces.WordprocessingML);
+            type.Value = "dxa";
+            ele.Attributes.Append(type);
+            node.AppendChild(ele);
+        }
+
         protected void addOrSetBorder(XmlNode pBdr, XmlNode border)
         {
             //remove old border if it exist

@@ -134,7 +134,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //write table properties
                     if (style.tapx != null)
                     {
-                        style.tapx.Convert(new TablePropertiesMapping(_writer));
+                        style.tapx.Convert(new TablePropertiesMapping(_writer, sheet));
                     }
 
                     _writer.WriteEndElement();

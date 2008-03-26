@@ -5,6 +5,7 @@ using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using DIaLOGIKa.b2xtranslator.DocFileFormat;
 using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
+using System.Collections;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
@@ -14,11 +15,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
     {
         private int _cellIndex;
         private XmlElement _tcPr;
+        private XmlElement _tcMar;
 
         public TableCellPropertiesMapping(XmlWriter writer, int cellIndex)
             : base(writer)
         {
             _tcPr = _nodeFactory.CreateElement("w", "tcPr", OpenXmlNamespaces.WordprocessingML);
+            _tcMar = _nodeFactory.CreateElement("w", "tcMar", OpenXmlNamespaces.WordprocessingML);
             _cellIndex = cellIndex;
         }
 
@@ -28,6 +31,39 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 switch (sprm.OpCode)
 	            {
+                    //width
+                    case 0xD608:
+                        Int16 boundary2 = System.BitConverter.ToInt16(sprm.Arguments, 1 + ((_cellIndex + 1) * 2));
+                        Int16 boundary1 = System.BitConverter.ToInt16(sprm.Arguments, 1 + (_cellIndex * 2));
+                        appendDxaElement(_tcPr, "tcW", "" + (boundary2 - boundary1));
+                        break;
+                    
+                    //margins
+                    case 0xd632:
+                        byte first = sprm.Arguments[0];
+                        byte lim = sprm.Arguments[1];
+                        byte ftsMargin = sprm.Arguments[3];
+                        Int16 wMargin = System.BitConverter.ToInt16(sprm.Arguments, 4);
+                        if (_cellIndex >= first && _cellIndex < lim)
+                        {
+                            BitArray borderBits = new BitArray(new byte[] { sprm.Arguments[2] });
+                            if (borderBits[0] == true)
+                                appendDxaElement(_tcMar, "top", wMargin.ToString());
+                            if (borderBits[1] == true)
+                                appendDxaElement(_tcMar, "left", wMargin.ToString());
+                            if (borderBits[2] == true)
+                                appendDxaElement(_tcMar, "bottom", wMargin.ToString());
+                            if (borderBits[3] == true)
+                                appendDxaElement(_tcMar, "right", wMargin.ToString());
+                        }
+                        break;
+
+                    //vertical alignment
+                    case 0xD62C:
+                        first = sprm.Arguments[0];
+                        lim = sprm.Arguments[1];
+                        break;
+
                     //shading
                     case 0xD612:
                         //cell shading for cells 0-20
@@ -42,6 +78,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         apppendCellShading(sprm.Arguments, _cellIndex - 43);
                         break;
 	            }
+            }
+
+            //append margins
+            if (_tcMar.ChildNodes.Count > 0)
+            {
+                _tcPr.AppendChild(_tcMar);
             }
 
             //write Properties

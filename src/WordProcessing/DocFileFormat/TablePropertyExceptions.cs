@@ -50,11 +50,21 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public TablePropertyExceptions(byte[] bytes)
             : base(bytes)
         {
+            //not yet implemented
         }
 
+        /// <summary>
+        /// Extracts the TAPX SPRMs out of a PAPX
+        /// </summary>
+        /// <param name="papx"></param>
         public TablePropertyExceptions(ParagraphPropertyExceptions papx)
         {
-            this.grpprl = papx.grpprl;
+            this.grpprl = new List<SinglePropertyModifier>();
+            foreach (SinglePropertyModifier sprm in papx.grpprl)
+            {
+                if (sprm.Type == SinglePropertyModifier.SprmType.TAP)
+                    this.grpprl.Add(sprm);
+            }
         }
 
         #region IVisitable Members

@@ -41,10 +41,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
     {
         private XmlElement _tblPr;
         private XmlElement _tblGrid;
+        private StyleSheet _styles;
 
-        public TablePropertiesMapping(XmlWriter writer)
+        public TablePropertiesMapping(XmlWriter writer, StyleSheet styles)
             : base(writer)
         {
+            _styles = styles;
             _tblPr = _nodeFactory.CreateElement("w", "tblPr", OpenXmlNamespaces.WordprocessingML);
             _tblGrid = _nodeFactory.CreateElement("w", "tblGrid", OpenXmlNamespaces.WordprocessingML);
         }
@@ -58,11 +60,23 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 switch (sprm.OpCode)
                 {
+                    //style
+                    case 0x563a:
+                    case 0xd63d:
+                        appendValueElement(_tblPr, "tblStyle", StyleSheetMapping.MakeStyleId(_styles.Styles[System.BitConverter.ToInt16(sprm.Arguments, 0)].xstzName));
+                        break;
+
+                    //bidi
+                    case 0x560B:
+                        appendValueElement(_tblPr, "bidiVisual", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
+                        break;
+
                     //preferred table width
                     case 0xF614:
+                        Int16 width = System.BitConverter.ToInt16(sprm.Arguments, 1);
                         XmlElement tblW = _nodeFactory.CreateElement("w", "tblW", OpenXmlNamespaces.WordprocessingML);
                         XmlAttribute w = _nodeFactory.CreateAttribute("w", "w", OpenXmlNamespaces.WordprocessingML);
-                        w.Value = System.BitConverter.ToInt16(sprm.Arguments, 1).ToString();
+                        w.Value = width.ToString();
                         XmlAttribute type = _nodeFactory.CreateAttribute("w", "type", OpenXmlNamespaces.WordprocessingML);
                         type.Value = "dxa";
                         tblW.Attributes.Append(type);
@@ -87,11 +101,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     //table look
                     case 0x740A:
-                        XmlElement tblLook = _nodeFactory.CreateElement("w", "tblLook", OpenXmlNamespaces.WordprocessingML);
-                        XmlAttribute lookVal = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
-                        lookVal.Value = String.Format("{0:x4}", System.BitConverter.ToInt16(sprm.Arguments, 2));
-                        tblLook.Attributes.Append(lookVal);
-                        _tblPr.AppendChild(tblLook);
+                        appendValueElement(_tblPr, "tblLook", String.Format("{0:x4}", System.BitConverter.ToInt16(sprm.Arguments, 2)));
                         break;
 
                     //autofit
@@ -104,6 +114,18 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                             layoutType.Value = "fixed";
                         tblLayout.Attributes.Append(layoutType);
                         _tblPr.AppendChild(tblLayout);
+                        break;
+
+                    //indent
+                    case 0xF661:
+                        XmlElement tblInd = _nodeFactory.CreateElement("w", "tblInd", OpenXmlNamespaces.WordprocessingML);
+                        XmlAttribute tblIndW = _nodeFactory.CreateAttribute("w", "w", OpenXmlNamespaces.WordprocessingML);
+                        tblIndW.Value = System.BitConverter.ToInt16(sprm.Arguments, 1).ToString();
+                        tblInd.Attributes.Append(tblIndW);
+                        XmlAttribute tblIndType = _nodeFactory.CreateAttribute("w", "type", OpenXmlNamespaces.WordprocessingML);
+                        tblIndType.Value = "dxa";
+                        tblInd.Attributes.Append(tblIndType);
+                        _tblPr.AppendChild(tblInd);
                         break;
 
                     //justification
@@ -126,6 +148,31 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         //not yet implemented
                         break;
 
+                    //row count
+                    case 0x3488:
+                        appendValueElement(_tblPr, "tblStyleRowBandSize", sprm.Arguments[0].ToString());
+                        break;
+
+                    //col count
+                    case 0x3489:
+                        appendValueElement(_tblPr, "tblStyleColBandSize", sprm.Arguments[0].ToString());
+                        break;
+
+                    //overlap
+                    case 0x3465:
+                        bool noOverlap = Utils.ByteToBool(sprm.Arguments[0]);
+                        string tblOverlapVal = "overlap";
+                        if (noOverlap)
+                            tblOverlapVal = "never";
+                        appendValueElement(_tblPr, "tblOverlap", tblOverlapVal);
+                        break;
+
+                    //shading
+                    case 0xD660:
+                        ShadingDescriptor desc = new ShadingDescriptor(sprm.Arguments);
+                        appendShading(_tblPr, desc);
+                        break;
+
                     //borders
                     case 0xD613:
                         byte[] brc = new byte[8];
@@ -134,16 +181,16 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         XmlNode topBorder1 = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "top", OpenXmlNamespaces.WordprocessingML);
                         appendBorderAttributes(brc, topBorder1);
                         addOrSetBorder(tblBorders, topBorder1);
-                        //bottom
-                        Array.Copy(sprm.Arguments, 16, brc, 0, 8);
-                        XmlNode bottomBorder1 = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "bottom", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(brc, bottomBorder1);
-                        addOrSetBorder(tblBorders, bottomBorder1);
                         //left
                         Array.Copy(sprm.Arguments, 8, brc, 0, 8);
                         XmlNode leftBorder1 = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "left", OpenXmlNamespaces.WordprocessingML);
                         appendBorderAttributes(brc, leftBorder1);
                         addOrSetBorder(tblBorders, leftBorder1);
+                        //bottom
+                        Array.Copy(sprm.Arguments, 16, brc, 0, 8);
+                        XmlNode bottomBorder1 = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "bottom", OpenXmlNamespaces.WordprocessingML);
+                        appendBorderAttributes(brc, bottomBorder1);
+                        addOrSetBorder(tblBorders, bottomBorder1);
                         //right
                         Array.Copy(sprm.Arguments, 24, brc, 0, 8);
                         XmlNode rightBorder1 = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "right", OpenXmlNamespaces.WordprocessingML);

@@ -79,7 +79,7 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                 }
 
                 Console.WriteLine("Converting file {0}", inputFile);
-                
+
                 //start time
                 DateTime start = DateTime.Now;
 
@@ -131,7 +131,7 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                 }
 
             }
-            catch(DirectoryNotFoundException)
+            catch (DirectoryNotFoundException)
             {
                 if (verboseLvl > VerboseLevel.None)
                     Console.WriteLine("The input file does not exist.");
@@ -150,6 +150,11 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
             {
                 if (verboseLvl > VerboseLevel.None)
                     Console.WriteLine("The input file is no valid .doc file.");
+            }
+            catch (InvalidFileException)
+            {
+                if (verboseLvl > VerboseLevel.None)
+                    Console.WriteLine("Doc2x doesn't support file older than Word 97.");
             }
             catch (ByteParseException)
             {

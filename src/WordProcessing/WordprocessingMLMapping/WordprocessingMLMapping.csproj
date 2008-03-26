@@ -45,6 +45,7 @@
     <Compile Include="TableCellPropertiesMapping.cs" />
     <Compile Include="TableInfo.cs" />
     <Compile Include="TablePropertiesMapping.cs" />
+    <Compile Include="TableRowPropertiesMapping.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\CommonTranslatorLib\CommonTranslatorLib.csproj">

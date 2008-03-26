@@ -461,9 +461,15 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                         //first upx is TAPX; second PAPX, third CHPX
                         switch (i)
                         {
-                            case 0: this.tapx = new TablePropertyExceptions(upxBytes); break;
-                            case 1: this.papx = new ParagraphPropertyExceptions(upxBytes); break;
-                            case 2: this.chpx = new CharacterPropertyExceptions(upxBytes); break;
+                            case 0:
+                                this.tapx = new TablePropertyExceptions(upxBytes); 
+                                break;
+                            case 1: 
+                                this.papx = new ParagraphPropertyExceptions(upxBytes);
+                                break;
+                            case 2: 
+                                this.chpx = new CharacterPropertyExceptions(upxBytes); 
+                                break;
                         }
                     }
                     else if (this.stk == StyleKind.paragraph)

@@ -97,7 +97,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             TablePropertyExceptions row1Tapx = findRowEndTapx(cp);
 
             //Convert it
-            row1Tapx.Convert(new TablePropertiesMapping(_writer));
+            row1Tapx.Convert(new TablePropertiesMapping(_writer, _doc.Styles));
 
             //convert all rows
             while (tai.fInTable)
@@ -130,7 +130,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //start w:tr
             _writer.WriteStartElement("w", "tr", OpenXmlNamespaces.WordprocessingML);
 
+            //convert the properties
             TablePropertyExceptions tapx = findRowEndTapx(cp);
+            tapx.Convert(new TableRowPropertiesMapping(_writer));
 
             int cellIndex = 0;
             while (!(_doc.Text[cp] == TextBoundary.CellOrRowMark && tai.fTtp))
