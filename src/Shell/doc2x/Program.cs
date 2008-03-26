@@ -230,7 +230,7 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
             }
             catch (Exception)
             {
-                Console.WriteLine("At least one of the required arguments was not set or was used wrongly\n");
+                Console.WriteLine("At least one of the required arguments was not correctly set.\n");
                 printUsage();
                 Environment.Exit(1);
             }
