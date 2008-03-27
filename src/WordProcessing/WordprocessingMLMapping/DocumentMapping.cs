@@ -349,7 +349,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 }
                 else if(c == TextBoundary.Picture)
                 {
-                    
+                    PictureDescriptor pict = new PictureDescriptor(chpx, _doc.DataStream);
+                    pict.Convert(new PictureMapping(_writer));
                 }
                 else if (c == TextBoundary.ParagraphEnd)
                 {

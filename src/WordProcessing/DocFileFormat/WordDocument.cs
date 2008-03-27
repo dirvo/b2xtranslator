@@ -180,17 +180,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 }
             }
 
-            //parse all CHPX and build dictionary
-            this.AllChpx = new Dictionary<Int32, CharacterPropertyExceptions>();
-            List<FormattedDiskPageCHPX> allChpxFkps = FormattedDiskPageCHPX.GetAllCHPXFKPs(FIB, WordDocumentStream, TableStream);
-            for (int i = 0; i < allChpxFkps.Count; i++)
-            {
-                for (int j = 0; j < allChpxFkps[i].grpchpx.Length; j++)
-                {
-                    this.AllChpx.Add(allChpxFkps[i].rgfc[j], allChpxFkps[i].grpchpx[j]);
-                }
-            }
-
             //parse the piece table and construct a list that contains all chars
             this.PieceTable = new PieceTable(this.FIB, this.TableStream);
             List<char> allChars = this.PieceTable.GetChars(this.FIB.fcMin, this.FIB.fcMac, this.WordDocumentStream);
@@ -221,30 +210,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     ret = AllPapx[fc];
                 }
                 catch (KeyNotFoundException){
-                    fc--;
-                }
-            }
-
-            return ret;
-        }
-
-        /// <summary>
-        /// Finds the CHPX that is valid for the given FC.
-        /// </summary>
-        /// <param name="fc"></param>
-        /// <returns></returns>
-        public CharacterPropertyExceptions FindValidChpx(Int32 fc)
-        {
-            CharacterPropertyExceptions ret = null;
-
-            while (ret == null)
-            {
-                try
-                {
-                    ret = AllChpx[fc];
-                }
-                catch (KeyNotFoundException)
-                {
                     fc--;
                 }
             }
