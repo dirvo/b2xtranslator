@@ -53,7 +53,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             public ParagraphHeight phe;
         }
 
-        public FormattedDiskPagePAPX(VirtualStream wordStream, Int32 offset)
+        public FormattedDiskPagePAPX(VirtualStream wordStream, Int32 offset, VirtualStream dataStream)
         {
             this.Type = FKPType.Paragraph;
             this.WordStream = wordStream;
@@ -114,7 +114,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                         Array.Copy(bytes, (bx.wordOffset * 2) + padbyte + 1, papx, 0, papx.Length);
 
                         //parse PAPX and fill grppapx
-                        this.grppapx[i] = new ParagraphPropertyExceptions(papx);
+                        this.grppapx[i] = new ParagraphPropertyExceptions(papx, dataStream);
                     }
                 }
                 else
@@ -132,7 +132,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <param name="wordStream">The WordDocument stream</param>
         /// <param name="tableStream">The 0Table stream</param>
         /// <returns></returns>
-        public static List<FormattedDiskPagePAPX> GetAllPAPXFKPs(FileInformationBlock fib, VirtualStream wordStream, VirtualStream tableStream)
+        public static List<FormattedDiskPagePAPX> GetAllPAPXFKPs(FileInformationBlock fib, VirtualStream wordStream, VirtualStream tableStream, VirtualStream dataStream)
         {
             List<FormattedDiskPagePAPX> list = new List<FormattedDiskPagePAPX>();
 
@@ -153,7 +153,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 int offset = fkpnr * 512;
 
                 //parse the FKP and add it to the list
-                list.Add(new FormattedDiskPagePAPX(wordStream, offset));
+                list.Add(new FormattedDiskPagePAPX(wordStream, offset, dataStream));
             }
 
             return list;
@@ -173,10 +173,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             Int32 fcMax,
             FileInformationBlock fib, 
             VirtualStream wordStream, 
-            VirtualStream tableStream)
+            VirtualStream tableStream,
+            VirtualStream dataStream)
         {
             List<Int32> list = new List<Int32>();
-            List<FormattedDiskPagePAPX> fkps = FormattedDiskPagePAPX.GetAllPAPXFKPs(fib, wordStream, tableStream);
+            List<FormattedDiskPagePAPX> fkps = FormattedDiskPagePAPX.GetAllPAPXFKPs(fib, wordStream, tableStream, dataStream);
 
             for (int i = 0; i < fkps.Count; i++ )
             {
@@ -213,10 +214,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             Int32 fcMax,
             FileInformationBlock fib, 
             VirtualStream wordStream, 
-            VirtualStream tableStream)
+            VirtualStream tableStream,
+            VirtualStream dataStream)
         {
             List<ParagraphPropertyExceptions> list = new List<ParagraphPropertyExceptions>();
-            List<FormattedDiskPagePAPX> fkps = FormattedDiskPagePAPX.GetAllPAPXFKPs(fib, wordStream, tableStream);
+            List<FormattedDiskPagePAPX> fkps = FormattedDiskPagePAPX.GetAllPAPXFKPs(fib, wordStream, tableStream, dataStream);
 
             for (int i = 0; i < fkps.Count; i++)
             {

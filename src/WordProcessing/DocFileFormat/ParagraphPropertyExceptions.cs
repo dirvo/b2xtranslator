@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
+using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
@@ -52,12 +53,38 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// Parses the bytes to retrieve a PAPX
         /// </summary>
         /// <param name="bytes">The bytes starting with the istd</param>
-        public ParagraphPropertyExceptions(byte[] bytes)
+        public ParagraphPropertyExceptions(byte[] bytes, VirtualStream dataStream)
             : base(new List<byte>(bytes).GetRange(2, bytes.Length-2).ToArray())
         {
             if (bytes.Length != 0)
             {
                 this.istd = System.BitConverter.ToUInt16(bytes, 0);
+            }
+
+            //There is a SPRM that points to an offset in the data stream, 
+            //where a list of SPRM is saved.
+            foreach (SinglePropertyModifier sprm in this.grpprl)
+            {
+                if (sprm.OpCode == 0x6645 || sprm.OpCode == 0x6646)
+                {
+                    UInt32 fc = System.BitConverter.ToUInt32(sprm.Arguments, 0);
+
+                    //parse the size of the external grpprl
+                    byte[] sizebytes = new byte[2];
+                    dataStream.Read(sizebytes, 2, (int)fc);
+                    UInt16 size = System.BitConverter.ToUInt16(sizebytes, 0);
+                    
+                    //parse the external grpprl
+                    byte[] grpprlBytes = new byte[size];
+                    dataStream.Read(grpprlBytes);
+                    PropertyExceptions externalPx = new PropertyExceptions(grpprlBytes);
+
+                    //assign the external grpprl
+                    this.grpprl = externalPx.grpprl;
+
+                    //remove the sprmPHugePapx
+                    this.grpprl.Remove(sprm);
+                }
             }
         }
 

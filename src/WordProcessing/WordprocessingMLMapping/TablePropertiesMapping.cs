@@ -63,12 +63,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //style
                     case 0x563a:
                     case 0xd63d:
-                        appendValueElement(_tblPr, "tblStyle", StyleSheetMapping.MakeStyleId(_styles.Styles[System.BitConverter.ToInt16(sprm.Arguments, 0)].xstzName));
+                        appendValueElement(_tblPr, "tblStyle", StyleSheetMapping.MakeStyleId(_styles.Styles[System.BitConverter.ToInt16(sprm.Arguments, 0)].xstzName), true);
                         break;
 
                     //bidi
                     case 0x560B:
-                        appendValueElement(_tblPr, "bidiVisual", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
+                        appendValueElement(_tblPr, "bidiVisual", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString(), true);
                         break;
 
                     //preferred table width
@@ -101,7 +101,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     //table look
                     case 0x740A:
-                        appendValueElement(_tblPr, "tblLook", String.Format("{0:x4}", System.BitConverter.ToInt16(sprm.Arguments, 2)));
+                        appendValueElement(_tblPr, "tblLook", String.Format("{0:x4}", System.BitConverter.ToInt16(sprm.Arguments, 2)), true);
                         break;
 
                     //autofit
@@ -131,17 +131,17 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //justification
                     case 0x5400:
                     case 0x548A:
-                        appendValueElement(_tblPr, "jc", ((Global.JustificationCode)sprm.Arguments[0]).ToString());
+                        appendValueElement(_tblPr, "jc", ((Global.JustificationCode)sprm.Arguments[0]).ToString(), true);
                         break;
 
-                    //cell padding
+                    //default cell padding
                     case 0xD632:
                     case 0xD634:
                     case 0xD638:
                         //not yet implemented
                         break;
 
-                    //cell spacing
+                    //default cell spacing
                     case 0xD631:
                     case 0xD633:
                     case 0xD637:
@@ -150,12 +150,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     //row count
                     case 0x3488:
-                        appendValueElement(_tblPr, "tblStyleRowBandSize", sprm.Arguments[0].ToString());
+                        appendValueElement(_tblPr, "tblStyleRowBandSize", sprm.Arguments[0].ToString(), true);
                         break;
 
                     //col count
                     case 0x3489:
-                        appendValueElement(_tblPr, "tblStyleColBandSize", sprm.Arguments[0].ToString());
+                        appendValueElement(_tblPr, "tblStyleColBandSize", sprm.Arguments[0].ToString(), true);
                         break;
 
                     //overlap
@@ -164,7 +164,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         string tblOverlapVal = "overlap";
                         if (noOverlap)
                             tblOverlapVal = "never";
-                        appendValueElement(_tblPr, "tblOverlap", tblOverlapVal);
+                        appendValueElement(_tblPr, "tblOverlap", tblOverlapVal, true);
                         break;
 
                     //shading

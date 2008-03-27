@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Collections;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
+using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
@@ -356,7 +357,13 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public TablePropertyExceptions tapx;
 
-        public StyleSheetDescription(byte[] bytes, int cbStdBase)
+        /// <summary>
+        /// Parses the bytes to retrieve a StyleSheetDescription
+        /// </summary>
+        /// <param name="bytes">The bytes</param>
+        /// <param name="cbStdBase"></param>
+        /// <param name="dataStream">The "Data" stream (optional, can be null)</param>
+        public StyleSheetDescription(byte[] bytes, int cbStdBase, VirtualStream dataStream)
         {
             BitArray bits = new BitArray(bytes);
 
@@ -464,8 +471,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                             case 0:
                                 this.tapx = new TablePropertyExceptions(upxBytes); 
                                 break;
-                            case 1: 
-                                this.papx = new ParagraphPropertyExceptions(upxBytes);
+                            case 1:
+                                this.papx = new ParagraphPropertyExceptions(upxBytes, dataStream);
                                 break;
                             case 2: 
                                 this.chpx = new CharacterPropertyExceptions(upxBytes); 
@@ -477,8 +484,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                         //first upx is PAPX, second CHPX
                         switch (i)
                         {
-                            case 0: 
-                                this.papx = new ParagraphPropertyExceptions(upxBytes); 
+                            case 0:
+                                this.papx = new ParagraphPropertyExceptions(upxBytes, dataStream); 
                                 break;
                             case 1: 
                                 this.chpx = new CharacterPropertyExceptions(upxBytes); 
@@ -490,7 +497,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                         //list styles have only one PAPX
                         switch (i)
                         {
-                            case 0: this.papx = new ParagraphPropertyExceptions(upxBytes); break;
+                            case 0: this.papx = new ParagraphPropertyExceptions(upxBytes, dataStream); break;
                         }
                     }
                     else if (this.stk == StyleKind.character)

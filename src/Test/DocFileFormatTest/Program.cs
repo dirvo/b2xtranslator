@@ -38,7 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
     class Program
     {
         private static StorageReader reader;
-        private static VirtualStream wordDocumentStream, tableStream;
+        private static VirtualStream wordDocumentStream, tableStream, dataStream;
         private static FileInformationBlock fib;
         private static string file, method;
 
@@ -62,6 +62,17 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
                     tableStream = reader.GetStream("1Table");
                 else
                     tableStream = reader.GetStream("0Table");
+
+                //get the data stream
+                try
+                {
+                    dataStream = reader.GetStream("DataStream");
+                }
+                catch (StreamNotFoundException)
+                {
+                    dataStream = null;
+                }
+
 
                 method = method.ToUpper();
 
@@ -157,13 +168,13 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
 
             //STSH
             DateTime stshStart = DateTime.Now;
-            StyleSheet stsh = new StyleSheet(fib, tableStream);
+            StyleSheet stsh = new StyleSheet(fib, tableStream, dataStream);
             DateTime stshEnd = DateTime.Now;
             TimeSpan stshDiff = stshEnd.Subtract(stshStart);
 
             //FKP
             DateTime fkpStart = DateTime.Now;
-            List<FormattedDiskPagePAPX> papxe = FormattedDiskPagePAPX.GetAllPAPXFKPs(fib, wordDocumentStream, tableStream);
+            List<FormattedDiskPagePAPX> papxe = FormattedDiskPagePAPX.GetAllPAPXFKPs(fib, wordDocumentStream, tableStream, dataStream);
             List<FormattedDiskPageCHPX> chpxe = FormattedDiskPageCHPX.GetAllCHPXFKPs(fib, wordDocumentStream, tableStream);
             DateTime fkpEnd = DateTime.Now;
             TimeSpan fkpDiff = fkpEnd.Subtract(fkpStart);
@@ -223,7 +234,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
         /// </summary>
         private static void testSTSH()
         {
-            StyleSheet stsh = new StyleSheet(fib, tableStream);
+            StyleSheet stsh = new StyleSheet(fib, tableStream, dataStream);
             Console.WriteLine("Stylesheet contains " + stsh.Styles.Count + " Styles");
 
             for (int i=0; i<stsh.Styles.Count; i++)
@@ -269,7 +280,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
         private static void testFKPPAPX()
         {
             //Get all PAPX FKPs
-            List<FormattedDiskPagePAPX> papxFkps = FormattedDiskPagePAPX.GetAllPAPXFKPs(fib, wordDocumentStream, tableStream);
+            List<FormattedDiskPagePAPX> papxFkps = FormattedDiskPagePAPX.GetAllPAPXFKPs(fib, wordDocumentStream, tableStream, dataStream);
             Console.WriteLine("There are " + papxFkps.Count + " FKPs with PAPX in this file: \n");
             foreach (FormattedDiskPagePAPX fkp in papxFkps)
             {

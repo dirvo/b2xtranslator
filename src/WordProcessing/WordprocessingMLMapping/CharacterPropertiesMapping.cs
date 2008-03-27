@@ -66,7 +66,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //style id 
                     case 0x4A30:
                         _currentIstd = System.BitConverter.ToUInt16(sprm.Arguments, 0);
-                        appendValueElement(_rPr, "rStyle", StyleSheetMapping.MakeStyleId(_styleSheet.Styles[_currentIstd].xstzName));
+                        appendValueElement(_rPr, "rStyle", StyleSheetMapping.MakeStyleId(_styleSheet.Styles[_currentIstd].xstzName), true);
                         break;
 
                     //Element flags
@@ -163,23 +163,23 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     //highlightning
                     case 0x2A0C:
-                        appendValueElement(_rPr, "highlight", ((Global.ColorIdentifier)sprm.Arguments[0]).ToString());
+                        appendValueElement(_rPr, "highlight", ((Global.ColorIdentifier)sprm.Arguments[0]).ToString(), true);
                         break;
 
                     //spacing
                     case 0x8840:
-                        appendValueElement(_rPr, "spacing", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
+                        appendValueElement(_rPr, "spacing", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString(), true);
                         break;
 
                     //font size
                     case 0x4A43:
-                        appendValueElement(_rPr, "sz", sprm.Arguments[0].ToString());
+                        appendValueElement(_rPr, "sz", sprm.Arguments[0].ToString(), true);
                         break;
                     case 0x484B:
-                        appendValueElement(_rPr, "kern", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
+                        appendValueElement(_rPr, "kern", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString(), true);
                         break;
                     case 0x4A61:
-                        appendValueElement(_rPr, "szCs", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
+                        appendValueElement(_rPr, "szCs", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString(), true);
                         break;
 
                     //font family
@@ -201,17 +201,17 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     //Underlining
                     case 0x2A3E:
-                        appendValueElement(_rPr, "u", lowerFirstChar(((Global.UnderlineCode)sprm.Arguments[0]).ToString()));
+                        appendValueElement(_rPr, "u", lowerFirstChar(((Global.UnderlineCode)sprm.Arguments[0]).ToString()), true);
                         break;
 
                     //char width
                     case 0x4852:
-                        appendValueElement(_rPr, "w", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
+                        appendValueElement(_rPr, "w", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString(), true);
                         break;
 
                     //animation
                     case 0x2859:
-                        appendValueElement(_rPr, "effect", ((Global.TextAnimation)sprm.Arguments[0]).ToString());
+                        appendValueElement(_rPr, "effect", ((Global.TextAnimation)sprm.Arguments[0]).ToString(), true);
                         break;
 
                     default:

@@ -89,37 +89,37 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     
                     //element flags
                     case 0x2405:
-                        appendFlagElement(_pPr, sprm, "keepLines");
+                        appendFlagElement(_pPr, sprm, "keepLines", true);
                         break;
                     case 0x2406:
-                        appendFlagElement(_pPr, sprm, "keepNext");
+                        appendFlagElement(_pPr, sprm, "keepNext", true);
                         break;
                     case 0x2433:
-                        appendFlagElement(_pPr, sprm, "kinsoku");
+                        appendFlagElement(_pPr, sprm, "kinsoku", true);
                         break;
                     case 0x2435:
-                        appendFlagElement(_pPr, sprm, "overflowPunct");
+                        appendFlagElement(_pPr, sprm, "overflowPunct", true);
                         break;
                     case 0x2407:
-                        appendFlagElement(_pPr, sprm, "pageBreakBefore");
+                        appendFlagElement(_pPr, sprm, "pageBreakBefore", true);
                         break;
                     case 0x242A:
-                        appendFlagElement(_pPr, sprm, "su_pPressAutoHyphens");
+                        appendFlagElement(_pPr, sprm, "su_pPressAutoHyphens", true);
                         break;
                     case 0x240C:
-                        appendFlagElement(_pPr, sprm, "su_pPressLineNumbers");
+                        appendFlagElement(_pPr, sprm, "su_pPressLineNumbers", true);
                         break;
                     case 0x2462:
-                        appendFlagElement(_pPr, sprm, "su_pPressOverlap");
+                        appendFlagElement(_pPr, sprm, "su_pPressOverlap", true);
                         break;
                     case 0x2436:
-                        appendFlagElement(_pPr, sprm, "topLinePunct");
+                        appendFlagElement(_pPr, sprm, "topLinePunct", true);
                         break;
                     case 0x2431:
-                        appendFlagElement(_pPr, sprm, "widowControl");
+                        appendFlagElement(_pPr, sprm, "widowControl", true);
                         break;    
                     case 0x2434:
-                        appendFlagElement(_pPr, sprm, "wordWrap");
+                        appendFlagElement(_pPr, sprm, "wordWrap", true);
                         break;
 
                     //indentation

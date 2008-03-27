@@ -53,6 +53,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public VirtualStream TableStream;
 
         /// <summary>
+        /// The stream called "Data"
+        /// </summary>
+        public VirtualStream DataStream;
+
+        /// <summary>
         /// The file information block of the word document
         /// </summary>
         public FileInformationBlock FIB;
@@ -113,6 +118,12 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public Dictionary<Int32, ParagraphPropertyExceptions> AllPapx;
 
+        /// <summary>
+        /// A dictionary with all CharacterPropertyExceptions.<br/>
+        /// The key is the offset where the CHPX starts.
+        /// </summary>
+        public Dictionary<Int32, CharacterPropertyExceptions> AllChpx;
+
         public WordDocument(StorageReader reader)
         {
             this.WordDocumentStream = reader.GetStream("WordDocument");
@@ -129,8 +140,18 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             else
                 this.TableStream = reader.GetStream("0Table");
 
+            //get the data stream
+            try
+            {
+                this.DataStream = reader.GetStream("Data");
+            }
+            catch (StreamNotFoundException)
+            {
+                this.DataStream = null;
+            }
+
             //parse the stylesheet
-            this.Styles = new StyleSheet(this.FIB, this.TableStream);
+            this.Styles = new StyleSheet(this.FIB, this.TableStream, this.DataStream);
 
             //read font table
             this.FontTable = new FontTable();
@@ -149,13 +170,24 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             }
 
             //parse all PAPX and build the dictionary
-            this.AllPapx = new Dictionary<int, ParagraphPropertyExceptions>();
-            List<FormattedDiskPagePAPX> allPapxFkps = FormattedDiskPagePAPX.GetAllPAPXFKPs(FIB, WordDocumentStream, TableStream);
-            for (int i=0; i<allPapxFkps.Count; i++)
+            this.AllPapx = new Dictionary<Int32, ParagraphPropertyExceptions>();
+            List<FormattedDiskPagePAPX> allPapxFkps = FormattedDiskPagePAPX.GetAllPAPXFKPs(FIB, WordDocumentStream, TableStream, DataStream);
+            for (int i=0; i < allPapxFkps.Count; i++)
             {
                 for (int j = 0; j < allPapxFkps[i].grppapx.Length; j++)
                 {
                     this.AllPapx.Add(allPapxFkps[i].rgfc[j], allPapxFkps[i].grppapx[j]);
+                }
+            }
+
+            //parse all CHPX and build dictionary
+            this.AllChpx = new Dictionary<Int32, CharacterPropertyExceptions>();
+            List<FormattedDiskPageCHPX> allChpxFkps = FormattedDiskPageCHPX.GetAllCHPXFKPs(FIB, WordDocumentStream, TableStream);
+            for (int i = 0; i < allChpxFkps.Count; i++)
+            {
+                for (int j = 0; j < allChpxFkps[i].grpchpx.Length; j++)
+                {
+                    this.AllChpx.Add(allChpxFkps[i].rgfc[j], allChpxFkps[i].grpchpx[j]);
                 }
             }
 
@@ -189,6 +221,30 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     ret = AllPapx[fc];
                 }
                 catch (KeyNotFoundException){
+                    fc--;
+                }
+            }
+
+            return ret;
+        }
+
+        /// <summary>
+        /// Finds the CHPX that is valid for the given FC.
+        /// </summary>
+        /// <param name="fc"></param>
+        /// <returns></returns>
+        public CharacterPropertyExceptions FindValidChpx(Int32 fc)
+        {
+            CharacterPropertyExceptions ret = null;
+
+            while (ret == null)
+            {
+                try
+                {
+                    ret = AllChpx[fc];
+                }
+                catch (KeyNotFoundException)
+                {
                     fc--;
                 }
             }

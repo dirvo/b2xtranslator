@@ -135,7 +135,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             tapx.Convert(new TableRowPropertiesMapping(_writer));
 
             int cellIndex = 0;
-            while (!(_doc.Text[cp] == TextBoundary.CellOrRowMark && tai.fTtp))
+            while (!(_doc.Text[cp] == TextBoundary.CellOrRowMark && tai.fTtp) && tai.fInTable)
             {
                 cp = writeTableCell(cp, cellIndex, tapx);
                 cellIndex++;
@@ -156,7 +156,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         }
 
         /// <summary>
-        /// Finds the TAPX that formast the next row end mark.
+        /// Finds the TAPX that formats the next row end mark.
         /// </summary>
         /// <param name="cp"></param>
         /// <returns></returns>
@@ -167,7 +167,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             ParagraphPropertyExceptions papx = _doc.FindValidPapx(fc);
             TableInfo tai = new TableInfo(papx);
 
-            while (!tai.fTtp)
+            while (tai.fTtp==false && tai.fInTable==true)
             {
                 while (_doc.Text[cp] != TextBoundary.CellOrRowMark)
                 {
@@ -179,7 +179,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 cp++;
             }
 
-            return new TablePropertyExceptions(papx);
+            return new TablePropertyExceptions(papx, _doc.DataStream);
         }
 
         /// <summary>
@@ -197,15 +197,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //start w:tc
             _writer.WriteStartElement("w", "tc", OpenXmlNamespaces.WordprocessingML);
 
-            //convert the properties
-            tapx.Convert(new TableCellPropertiesMapping(_writer, cellIndex));
-
             //find cell end
             Int32 cpCellEnd = initialCp;
             while (_doc.Text[cpCellEnd] != TextBoundary.CellOrRowMark)
             {
                 cpCellEnd++;
             }
+
+            //convert the properties
+            tapx.Convert(new TableCellPropertiesMapping(_writer, cellIndex));
 
             //copy the chars of the cell
             List<char> remainingChars = _doc.Text.GetRange(initialCp, cpCellEnd - initialCp);
@@ -349,7 +349,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 }
                 else if(c == TextBoundary.Picture)
                 {
-                    _writer.WriteString("[PICTURE]");
+                    
                 }
                 else if (c == TextBoundary.ParagraphEnd)
                 {

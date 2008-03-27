@@ -32,7 +32,7 @@ using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public abstract class PropertyExceptions : IVisitable
+    public class PropertyExceptions : IVisitable
     {
         /// <summary>
         /// A list of the sprms that encode the differences between 
@@ -106,16 +106,19 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
                         //copy sprm to array
                         //length is 2byte for the opCode, lenByte for the length, opSize for the length of the operand
-                        byte[] sprm = new byte[2 + lenByte + opSize];
+                        byte[] sprmBytes = new byte[2 + lenByte + opSize];
 
-                        if (bytes.Length >= sprmStart + sprm.Length)
+                        if (bytes.Length >= sprmStart + sprmBytes.Length)
                         {
-                            Array.Copy(bytes, sprmStart, sprm, 0, sprm.Length);
+                            Array.Copy(bytes, sprmStart, sprmBytes, 0, sprmBytes.Length);
 
-                            //parse and save
-                            grpprl.Add(new SinglePropertyModifier(sprm));
+                            //parse
+                            SinglePropertyModifier sprm = new SinglePropertyModifier(sprmBytes);
 
-                            sprmStart += sprm.Length;
+                            //save
+                            grpprl.Add(sprm);
+
+                            sprmStart += sprmBytes.Length;
                         }
                         else
                         {
@@ -130,7 +133,14 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             }
         }
 
-        public abstract void Convert<T>(T mapping);
+        #region IVisitable Members
+
+        public virtual void Convert<T>(T mapping)
+        {
+            ((IMapping<PropertyExceptions>)mapping).Apply(this);
+        }
+
+        #endregion
     }
 
 }

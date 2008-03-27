@@ -50,25 +50,47 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             node.Attributes.Append(att);
         }
 
-        protected void appendFlagElement(XmlElement node, SinglePropertyModifier sprm, string elementName)
+        protected void appendFlagElement(XmlElement node, SinglePropertyModifier sprm, string elementName, bool unique)
         {
             XmlElement ele = _nodeFactory.CreateElement("w", elementName, OpenXmlNamespaces.WordprocessingML);
             XmlAttribute val = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
             val.Value = sprm.Arguments[0].ToString();
             ele.Attributes.Append(val);
+            if (unique)
+            {
+                foreach (XmlElement exEle in node.ChildNodes)
+                {
+                    if (exEle.Name == ele.Name)
+                    {
+                        node.RemoveChild(exEle);
+                        break;
+                    }
+                }
+            }
             node.AppendChild(ele);
         }
 
-        protected void appendValueElement(XmlElement node, string elementName, string elementValue)
+        protected void appendValueElement(XmlElement node, string elementName, string elementValue, bool unique)
         {
             XmlElement ele = _nodeFactory.CreateElement("w", elementName, OpenXmlNamespaces.WordprocessingML);
             XmlAttribute val = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
             val.Value = elementValue;
             ele.Attributes.Append(val);
+            if (unique)
+            {
+                foreach (XmlElement exEle in node.ChildNodes)
+                {
+                    if (exEle.Name == ele.Name)
+                    {
+                        node.RemoveChild(exEle);
+                        break;
+                    }
+                }
+            }
             node.AppendChild(ele);
         }
 
-        protected void appendDxaElement(XmlElement node, string elementName, string elementValue)
+        protected void appendDxaElement(XmlElement node, string elementName, string elementValue, bool unique)
         {
             XmlElement ele = _nodeFactory.CreateElement("w", elementName, OpenXmlNamespaces.WordprocessingML);
             XmlAttribute val = _nodeFactory.CreateAttribute("w", "w", OpenXmlNamespaces.WordprocessingML);
@@ -77,6 +99,17 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             XmlAttribute type = _nodeFactory.CreateAttribute("w", "type", OpenXmlNamespaces.WordprocessingML);
             type.Value = "dxa";
             ele.Attributes.Append(type);
+            if (unique)
+            {
+                foreach (XmlElement exEle in node.ChildNodes)
+                {
+                    if (exEle.Name == ele.Name)
+                    {
+                        node.RemoveChild(exEle);
+                        break;
+                    }
+                }
+            }
             node.AppendChild(ele);
         }
 

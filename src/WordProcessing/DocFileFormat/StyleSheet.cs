@@ -50,7 +50,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         /// <param name="fib">The FileInformationBlock</param>
         /// <param name="tableStream">The 0Table or 1Table stream</param>
-        public StyleSheet(FileInformationBlock fib, VirtualStream tableStream)
+        public StyleSheet(FileInformationBlock fib, VirtualStream tableStream, VirtualStream dataStream)
         {
             //read size of the STSHI
             byte[] stshiLengthBytes = new byte[2];
@@ -80,7 +80,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     tableStream.Read(std);
 
                     //parse the STD
-                    this.Styles.Add(new StyleSheetDescription(std, (int)this.stshi.cbSTDBaseInFile));
+                    this.Styles.Add(new StyleSheetDescription(std, (int)this.stshi.cbSTDBaseInFile, dataStream));
                 }
                 else
                 {
