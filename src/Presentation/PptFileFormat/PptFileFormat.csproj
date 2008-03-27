@@ -4,16 +4,31 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{5558D1F7-91D9-47A8-B39D-AE593B3AF812}</ProjectGuid>
+    <ProjectGuid>{6EAD0A6A-8DF0-4CA3-8D5E-3C871E7FCB62}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DocTranslatorTest</RootNamespace>
-    <AssemblyName>DocTranslatorTest</AssemblyName>
+    <RootNamespace>PptFileFormat</RootNamespace>
+    <AssemblyName>PptFileFormat</AssemblyName>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>2.0</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -38,34 +53,41 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PowerpointDocument.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Records.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\CommonTranslatorLib\CommonTranslatorLib.csproj">
       <Project>{0F0F6BAF-BC5D-4DC6-AE53-8257305EE5CA}</Project>
       <Name>CommonTranslatorLib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Common\OpenXmlLib\OpenXmlLib.csproj">
-      <Project>{4C10271C-CD9B-49F5-9479-3C6EB7404E75}</Project>
-      <Name>OpenXmlLib</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Common\StructuredStorageReader\StructuredStorageReader.csproj">
       <Project>{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}</Project>
       <Name>StructuredStorageReader</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Common\ZipUtils\ZipUtils.csproj">
-      <Project>{05A5C68E-B901-4AD0-87F1-5E43DDC759CE}</Project>
-      <Name>ZipUtils</Name>
+    <ProjectReference Include="..\..\Common\Utils\Utils.csproj">
+      <Project>{B44FAEE0-B32E-4682-AA42-618C893F14C6}</Project>
+      <Name>Utils</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\WordProcessing\DocFileFormat\DocFileFormat.csproj">
-      <Project>{70A244FD-C90E-4474-9E70-82BCF5147FF9}</Project>
-      <Name>DocFileFormat</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\WordProcessing\WordprocessingMLMapping\WordprocessingMLMapping.csproj">
-      <Project>{A4EFE5FA-BDEB-452B-8751-1A495E5C9759}</Project>
-      <Name>WordprocessingMLMapping</Name>
-    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -129,6 +129,42 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             return BitConverter.ToUInt16(buffer, 0);
         }
 
+        public short ReadInt16()
+        {
+            byte[] buffer = new byte[sizeof(Int16)];
+
+            if (sizeof(Int16) != Read(buffer))
+            {
+                throw new ReadBytesAmountMismatchException();
+            }
+
+            return BitConverter.ToInt16(buffer, 0);
+        }
+
+        public UInt32 ReadUInt32()
+        {
+            byte[] buffer = new byte[sizeof(UInt32)];
+
+            if (sizeof(UInt32) != Read(buffer))
+            {
+                throw new ReadBytesAmountMismatchException();
+            }
+
+            return BitConverter.ToUInt32(buffer, 0);
+        }
+
+        public Int32 ReadInt32()
+        {
+            byte[] buffer = new byte[sizeof(Int32)];
+
+            if (sizeof(Int32) != Read(buffer))
+            {
+                throw new ReadBytesAmountMismatchException();
+            }
+
+            return BitConverter.ToInt32(buffer, 0);
+        }
+
         /// <summary>
         /// Reads bytes from the virtual stream.
         /// </summary>
@@ -218,6 +254,20 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             totalBytesRead += bytesRead;
 
             return totalBytesRead;
+        }
+
+        /// <summary>
+        /// Skips bytes in the virtual stream.
+        /// </summary>
+        /// <param name="count">Number of bytes to skip.</param>
+        /// <returns>The total number of bytes skipped. 
+        /// This might be less than the number of bytes requested if that number 
+        /// of bytes are not currently available, or zero if the end of the stream is reached.</returns>
+        public int Skip(uint count)
+        {
+            // TODO: Someone more familiar with StructuredStorageReader
+            // than I am is free to do a more efficient implementation of this. -- flgr
+            return this.Read(new byte[count]);
         }
 
 
