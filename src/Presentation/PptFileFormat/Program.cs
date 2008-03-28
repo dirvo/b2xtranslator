@@ -4,6 +4,8 @@ using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using DIaLOGIKa.b2xtranslator.Utils;
+using PptFileFormat.Records;
+using System.IO;
 
 namespace PptFileFormat
 {
@@ -11,6 +13,13 @@ namespace PptFileFormat
     {
         static void Main(string[] args)
         {
+            const string outputDir = "dumps";
+
+            if (Directory.Exists(outputDir))
+                Directory.Delete(outputDir, true);
+            
+            Directory.CreateDirectory(outputDir);
+
             string inputFile = args[0];
             ProcessingFile procFile = new ProcessingFile(inputFile);
 
@@ -23,6 +32,23 @@ namespace PptFileFormat
             System.Console.WriteLine();
 
             PowerpointDocument pptDoc = new PowerpointDocument(reader);
+
+            foreach (Record record in pptDoc.RootRecord)
+            {
+                UnknownRecord unknownRecord = record as UnknownRecord;
+
+                if (unknownRecord != null)
+                {
+                    string filename = String.Format(@"{0}\{1}.record", outputDir, unknownRecord.GetIdentifier());
+
+                    using (FileStream fs = new FileStream(filename, FileMode.Create))
+                    {
+                        unknownRecord.DumpToStream(fs);
+                    }
+                }
+            }
+
+            System.Console.WriteLine(pptDoc.RootRecord);
 
             System.Console.ReadLine();
         }

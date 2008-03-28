@@ -40,12 +40,12 @@ namespace PptFileFormat
         /// The stream "PowerPoint Document"
         /// </summary>
         public VirtualStream PowerpointDocumentStream;
+        public Record RootRecord;
 
         public PowerpointDocument(StorageReader reader)
         {
             this.PowerpointDocumentStream = reader.GetStream("PowerPoint Document");
-
-            System.Console.WriteLine(Record.readRecord(this.PowerpointDocumentStream));
+            this.RootRecord = Record.readRecord(this.PowerpointDocumentStream);
         }
 
         #region IVisitable Members
