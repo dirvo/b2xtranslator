@@ -100,7 +100,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 
         // WordprocessingML namespaces
         public const string WordprocessingML = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
-
+        public const string VectorML = "urn:schemas-microsoft-com:vml";
     }
 
     public static class OpenXmlRelationshipTypes

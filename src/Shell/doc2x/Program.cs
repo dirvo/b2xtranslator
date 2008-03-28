@@ -31,7 +31,7 @@ using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 using DIaLOGIKa.b2xtranslator.DocFileFormat;
 using System.Xml;
-using DIaLOGIKa.b2xtranslator.WordprocessingML;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
 using DIaLOGIKa.b2xtranslator.WordprocessingMLMapping;
 using System.IO;
 using DIaLOGIKa.b2xtranslator.ZipUtils;
@@ -96,26 +96,17 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                         XmlWriterSettings xws = new XmlWriterSettings();
                         xws.OmitXmlDeclaration = false;
                         xws.CloseOutput = true;
-                        xws.Encoding = Encoding.UTF8;
-                        //xws.Indent = true;
+                        xws.Encoding = Encoding.UTF8;                  
                         xws.ConformanceLevel = ConformanceLevel.Document;
 
-                        XmlWriter writer = null;
-
                         //Write Styles.xml
-                        writer = XmlWriter.Create(docx.MainDocumentPart.StyleDefinitionsPart.GetStream(), xws);
-                        doc.Styles.Convert(new StyleSheetMapping(writer, doc));
-                        writer.Flush();
+                        doc.Styles.Convert(new StyleSheetMapping(docx.MainDocumentPart.StyleDefinitionsPart, xws, doc));
 
                         //Write fontTable.xml
-                        writer = XmlWriter.Create(docx.MainDocumentPart.FontTablePart.GetStream(), xws);
-                        doc.FontTable.Convert(new FontTableMapping(writer));
-                        writer.Flush();
+                        doc.FontTable.Convert(new FontTableMapping(docx.MainDocumentPart.FontTablePart, xws));
 
                         //Write Document.xml
-                        writer = XmlWriter.Create(docx.MainDocumentPart.GetStream(), xws);
-                        doc.Convert(new DocumentMapping(writer));
-                        writer.Flush();
+                        doc.Convert(new DocumentMapping(docx.MainDocumentPart, xws));
 
                         DateTime end = DateTime.Now;
                         TimeSpan diff = end.Subtract(start);

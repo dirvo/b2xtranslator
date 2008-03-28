@@ -33,6 +33,7 @@ using System.Xml;
 using DIaLOGIKa.b2xtranslator.DocFileFormat;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using System.Diagnostics;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
@@ -42,8 +43,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
     {
         WordDocument _doc;
 
-        public StyleSheetMapping(XmlWriter writer, WordDocument doc)
-            : base(writer)
+        public StyleSheetMapping(StyleDefinitionsPart stylePart, XmlWriterSettings xws, WordDocument doc)
+            : base(XmlWriter.Create(stylePart.GetStream(), xws))
         {
             _doc = doc;
         }
@@ -143,6 +144,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             _writer.WriteEndElement();
             _writer.WriteEndDocument();
+
+            _writer.Flush();
         }
 
         /// <summary>

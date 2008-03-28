@@ -32,6 +32,7 @@ using DIaLOGIKa.b2xtranslator.DocFileFormat;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
@@ -40,10 +41,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         IMapping<WordDocument>
     {
         private WordDocument _doc;
+        private MainDocumentPart _docPart;
+        private XmlWriterSettings _xws;
 
-        public DocumentMapping(XmlWriter writer)
-            : base(writer)
+        public DocumentMapping(MainDocumentPart docPart, XmlWriterSettings xws)
+            : base(XmlWriter.Create(docPart.GetStream(), xws))
         {
+            _xws = xws;
+            _docPart = docPart;
         }
 
         public void Apply(WordDocument doc)
@@ -76,6 +81,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _writer.WriteEndElement();
             _writer.WriteEndElement();
             _writer.WriteEndDocument();
+
+            _writer.Flush();
         }
 
         /// <summary>
@@ -350,6 +357,29 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 else if(c == TextBoundary.Picture)
                 {
                     PictureDescriptor pict = new PictureDescriptor(chpx, _doc.DataStream);
+                    
+                    //create the image part
+                    ImagePart imgPart = null;
+                    switch (pict.Type)
+                    {
+                        case PictureDescriptor.PictureType.jpg:
+                            imgPart = _docPart.AddImagePart(ImagePartType.Jpeg);
+                            break;
+                        case PictureDescriptor.PictureType.png:
+                            imgPart = _docPart.AddImagePart(ImagePartType.Png);
+                            break;
+                        case PictureDescriptor.PictureType.wmf:
+                            imgPart = _docPart.AddImagePart(ImagePartType.Wmf);
+                            break;
+                        default:
+                            imgPart = _docPart.AddImagePart(ImagePartType.Png);
+                            break;
+                    }
+
+                    //write the picture
+                    imgPart.GetStream().Write(pict.Picture, 0, pict.Picture.Length);
+
+                    //convert the picture xml
                     pict.Convert(new PictureMapping(_writer));
                 }
                 else if (c == TextBoundary.ParagraphEnd)

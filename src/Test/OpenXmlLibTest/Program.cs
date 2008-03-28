@@ -30,7 +30,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Collections;
-using DIaLOGIKa.b2xtranslator.WordprocessingML;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
 using System.Xml;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest

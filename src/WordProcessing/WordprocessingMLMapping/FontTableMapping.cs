@@ -32,6 +32,7 @@ using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using System.Xml;
 using DIaLOGIKa.b2xtranslator.DocFileFormat;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
@@ -48,8 +49,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             swiss
         }
 
-        public FontTableMapping(XmlWriter writer)
-            : base(writer)
+        public FontTableMapping(FontTablePart fontPart, XmlWriterSettings xws)
+            : base(XmlWriter.Create(fontPart.GetStream(), xws))
         {
         }
 
@@ -109,6 +110,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
 
             _writer.WriteEndElement();
+
+            _writer.Flush();
         }
     }
 }
