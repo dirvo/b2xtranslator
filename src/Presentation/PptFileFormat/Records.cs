@@ -386,6 +386,7 @@ namespace PptFileFormat.Records
 
     public class TextBytesAtom : Record
     {
+        public static Encoding ENCODING = Encoding.GetEncoding("iso-8859-1");
         public string Text;
 
         public TextBytesAtom(VirtualStream source, uint size, uint type, uint version, uint instance)
@@ -393,11 +394,7 @@ namespace PptFileFormat.Records
             byte[] bytes = new byte[size];
             source.Read(bytes, (int) size);
 
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < size; i++)
-                sb.Append((char) bytes[i]);
-
-            this.Text = sb.ToString();
+            this.Text = new String(ENCODING.GetChars(bytes));
         }
 
         public override string ToString(uint depth)
