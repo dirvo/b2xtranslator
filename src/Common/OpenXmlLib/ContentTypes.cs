@@ -45,14 +45,18 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string ExtendedProperties = "application/vnd.openxmlformats-officedocument.extended-properties+xml";
         public const string Theme = "application/vnd.openxmlformats-officedocument.theme+xml";
 
+        public const string CustomXmlProperties = "application/vnd.openxmlformats-officedocument.customXmlProperties+xml";
+
+    }
+     
+    public static class WordprocessingMLContentTypes
+    {
         // WordprocessingML content types
         public const string MainDocument = "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml";
         public const string Styles = "application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml";
         public const string FontTable = "application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml";
         public const string WebSettings = "application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml";
         public const string Settings = "application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml";
-
-        public const string CustomXmlProperties = "application/vnd.openxmlformats-officedocument.customXmlProperties+xml";
 
         public const string Comments = "application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml";
   
@@ -61,6 +65,29 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 
         public const string Header = "application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml";
         public const string Footer = "application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml";
+    }
+
+    public static class SpreadsheetMLContentTypes
+    {
+        // SpreadsheetML content types
+        public const string Workbook = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"; 
+        public const string Styles = "application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml";
+        public const string Worksheet = "application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml";
+        public const string SharedStrings = "application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml";
+        public const string Connections = "application/vnd.openxmlformats-officedocument.spreadsheetml.connections+xml";
+    }
+
+    public static class PresentationMLContentTypes
+    {
+        // PresentationML content types
+        public const string Presentation = "application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml";
+        public const string Slide = "application/vnd.openxmlformats-officedocument.presentationml.slide+xml";
+        public const string SlideMaster = "application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml";
+        public const string NotesSlide = "application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml";
+        public const string SlideLayout = "application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml";
+        public const string TableStyles = "application/vnd.openxmlformats-officedocument.presentationml.tableStyles+xml";
+        public const string ViewProps = "application/vnd.openxmlformats-officedocument.presentationml.viewProps+xml";
+        public const string PresProps = "application/vnd.openxmlformats-officedocument.presentationml.presProps+xml";
     }
 
     public static class OpenXmlNamespaces
@@ -82,7 +109,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 
         public const string Theme = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme";
 
-        public const string MainDocument = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument";
+        public const string OfficeDocument = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument";
         public const string Styles="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles";
         public const string FontTable = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable"; 
         public const string WebSettings = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings";

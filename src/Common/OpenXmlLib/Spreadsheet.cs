@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
+namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
 {
     public class SpreadsheetDocument : OpenXmlPackage
     {
@@ -40,7 +40,6 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public static SpreadsheetDocument Create(string fileName)
         {
             SpreadsheetDocument spreadsheet = new SpreadsheetDocument(fileName);
-            
             return spreadsheet;
         }
     }

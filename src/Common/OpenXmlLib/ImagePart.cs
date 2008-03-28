@@ -31,17 +31,57 @@ using System.IO;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 {
+    public enum ImagePartType
+    {
+        Bmp,
+        Emf,
+        Gif,
+        Icon,
+        Jpeg,
+        //Pcx,
+        Png,
+        Tiff,
+        Wmf
+    }
+
     public class ImagePart : OpenXmlPart
     {
-        internal ImagePart(OpenXmlPartContainer parent)
+        protected ImagePartType _type;
+
+        internal ImagePart(ImagePartType type, OpenXmlPartContainer parent)
             : base(parent)
         {
+            _type = type;
         }
-        
+
         public override string ContentType
         {
-            // TODO: return correct content type, e.g. image/jpeg
-            get { return ""; }
+            get 
+            {
+                switch (_type)
+                {
+                    case ImagePartType.Bmp:
+                        return "image/bmp";
+                    case ImagePartType.Emf:
+                        return "image/x-emf";
+                    case ImagePartType.Gif:
+                        return "image/gif";
+                    case ImagePartType.Icon:
+                        return "image/x-icon";
+                    case ImagePartType.Jpeg:
+                        return "image/jpeg";
+                    //case ImagePartType.Pcx:
+                    //    return "image/pcx";
+                    case ImagePartType.Png:
+                        return "image/png";
+                    case ImagePartType.Tiff:
+                        return "image/tiff";
+                    case ImagePartType.Wmf:
+                        return "image/x-wmf";
+                    default:
+                        return "image/png";
+                }
+            }
         }
 
         public override string RelationshipType
@@ -49,7 +89,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
             get { return OpenXmlRelationshipTypes.Image; }
         }
 
-        public override string TargetName { get { return "image"; } }
+        public override string TargetName { get { return "image" + this.RelId; } }
         public override string TargetDirectory { get { return Path.Combine(Parent.TargetDirectory, "media"); } }
         public override string TargetExt
         {

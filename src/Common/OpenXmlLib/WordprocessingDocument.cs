@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 
-namespace DIaLOGIKa.b2xtranslator.WordprocessingML
+namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
 {
     public enum WordprocessingDocumentType
     {
@@ -45,18 +45,18 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingML
         protected CustomXmlPropertiesPart _customFilePropertiesPart;
         protected MainDocumentPart _mainDocumentPart;
         
-        protected WordprocessingDocument(string fileName)
+        protected WordprocessingDocument(string fileName, WordprocessingDocumentType type)
             : base(fileName)
         {
             _mainDocumentPart = new MainDocumentPart(this);
+            _documentType = type;
             this.AddPart(_mainDocumentPart);
         }
 
         public static WordprocessingDocument Create(string fileName, WordprocessingDocumentType type)
         {
-            WordprocessingDocument doc = new WordprocessingDocument(fileName);
-            doc.DocumentType = type;
-
+            WordprocessingDocument doc = new WordprocessingDocument(fileName, type);
+            
             return doc;
         }
 
@@ -71,6 +71,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingML
             get { return _customFilePropertiesPart; }
         }
 
+        
         public MainDocumentPart MainDocumentPart
         {
             get { return _mainDocumentPart; }

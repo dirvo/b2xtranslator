@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 
-namespace DIaLOGIKa.b2xtranslator.WordprocessingML
+namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
 {
     public class CustomXmlPropertiesPart : OpenXmlPart
     {

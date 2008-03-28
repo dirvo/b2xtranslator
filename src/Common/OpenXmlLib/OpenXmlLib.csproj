@@ -59,6 +59,7 @@
     <Compile Include="StyleDefinitionsPart.cs" />
     <Compile Include="ThemePart.cs" />
     <Compile Include="WordprocessingDocument.cs" />
+    <Compile Include="WorkbookPart.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagramOpenXmlLib.cd" />

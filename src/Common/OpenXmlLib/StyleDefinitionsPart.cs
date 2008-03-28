@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 
-namespace DIaLOGIKa.b2xtranslator.WordprocessingML
+namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
 {
     public class StyleDefinitionsPart : OpenXmlPart, IUniquePart
     {
@@ -40,7 +40,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingML
 
         public override string ContentType
         {
-            get { return OpenXmlContentTypes.Styles; }
+            get { return WordprocessingMLContentTypes.Styles; }
         }
 
         public override string RelationshipType

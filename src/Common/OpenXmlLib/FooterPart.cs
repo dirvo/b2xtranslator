@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 
-namespace DIaLOGIKa.b2xtranslator.WordprocessingML
+namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
 {
     public class FooterPart : OpenXmlPart
     {
@@ -40,7 +40,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingML
 
         public override string ContentType
         {
-            get { return OpenXmlContentTypes.Footer; }
+            get { return WordprocessingMLContentTypes.Footer; }
         }
 
         public override string RelationshipType
@@ -48,7 +48,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingML
             get { return OpenXmlRelationshipTypes.Footer; }
         }
 
-        public override string TargetName { get { return "footer"; } }
+        public override string TargetName { get { return "footer" + this.RelId; } }
         public override string TargetDirectory { get { return Parent.TargetDirectory; } }
     }
 }

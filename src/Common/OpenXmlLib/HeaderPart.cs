@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
+namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
 {
     public class HeaderPart : OpenXmlPart
     {
@@ -39,7 +39,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 
         public override string ContentType
         {
-            get { return OpenXmlContentTypes.Header; }
+            get { return WordprocessingMLContentTypes.Header; }
         }
 
         public override string RelationshipType

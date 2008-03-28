@@ -43,7 +43,7 @@
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAgAAAQACAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="DIaLOGIKa.b2xtranslator.WordprocessingML.CustomXmlPart" Collapsed="true">
+  <Class Name="DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML.CustomXmlPart" Collapsed="true">
     <Position X="9" Y="6" Width="1.5" />
     <TypeIdentifier>
       <FileName>CustomXmlPart.cs</FileName>
@@ -79,7 +79,7 @@
       <HashCode>AAEAAAAAAAAgAAQAAAAAAAAAACQAAAAAAAAAAADAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="DIaLOGIKa.b2xtranslator.WordprocessingML.MainDocumentPart" Collapsed="true">
+  <Class Name="DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML.MainDocumentPart" Collapsed="true">
     <Position X="9" Y="5" Width="1.5" />
     <TypeIdentifier>
       <FileName>MainDocumentPart.cs</FileName>
@@ -87,35 +87,35 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="DIaLOGIKa.b2xtranslator.WordprocessingML.WordprocessingDocument" Collapsed="true">
+  <Class Name="DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML.WordprocessingDocument" Collapsed="true">
     <Position X="0.5" Y="3" Width="1.5" />
     <TypeIdentifier>
       <FileName>WordprocessingDocument.cs</FileName>
       <HashCode>AAAAAAAABAAAAAAAEAAAAAAIgAAACEAgQAAAAGAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="DIaLOGIKa.b2xtranslator.WordprocessingML.FooterPart" Collapsed="true">
+  <Class Name="DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML.FooterPart" Collapsed="true">
     <Position X="9" Y="7" Width="1.5" />
     <TypeIdentifier>
       <FileName>FooterPart.cs</FileName>
       <HashCode>AAAAAAAABAAAAAAAAAAAAAAIAAAAAAAgAAAQAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="DIaLOGIKa.b2xtranslator.WordprocessingML.FontTablePart" Collapsed="true">
+  <Class Name="DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML.FontTablePart" Collapsed="true">
     <Position X="7" Y="9" Width="1.5" />
     <TypeIdentifier>
       <FileName>FontTablePart.cs</FileName>
       <HashCode>AAAAAAAABAAAAAAAAAAAAAAIAAAAAAAgAAAQAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Class Name="DIaLOGIKa.b2xtranslator.WordprocessingML.CustomXmlPropertiesPart" Collapsed="true">
+  <Class Name="DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML.CustomXmlPropertiesPart" Collapsed="true">
     <Position X="9" Y="9" Width="1.5" />
     <TypeIdentifier>
       <FileName>CustomXmlPropertiesPart.cs</FileName>
       <HashCode>AAAAAAAABAAAAAAAAAAAAAAIAAAAAAAgAAAQAAAAAAA=</HashCode>
     </TypeIdentifier>
   </Class>
-  <Enum Name="DIaLOGIKa.b2xtranslator.WordprocessingML.WordprocessingDocumentType" Collapsed="true">
+  <Enum Name="DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML.WordprocessingDocumentType" Collapsed="true">
     <Position X="0.5" Y="6.5" Width="1.5" />
     <TypeIdentifier>
       <FileName>WordprocessingDocument.cs</FileName>

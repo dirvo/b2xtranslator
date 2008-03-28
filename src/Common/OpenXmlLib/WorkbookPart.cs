@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2008, DIaLOGIKa
  * All rights reserved.
  *
@@ -28,22 +28,20 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
 
-namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
+namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
 {
-    public class MainDocumentPart : OpenXmlPart, IUniquePart
+    public class WorkbookPart : OpenXmlPart, IUniquePart
     {
-        protected StyleDefinitionsPart _styleDefinitionsPart;
-        protected FontTablePart _fontTablePart;
-        
-        public MainDocumentPart(OpenXmlPartContainer parent)
+        public WorkbookPart(OpenXmlPartContainer parent)
             : base(parent)
         {
         }
 
         public override string ContentType
         {
-            get { return WordprocessingMLContentTypes.MainDocument; }
+            get { return SpreadsheetMLContentTypes.Workbook; }
         }
 
         public override string RelationshipType
@@ -51,35 +49,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
             get { return OpenXmlRelationshipTypes.OfficeDocument; }
         }
 
-        public override string TargetName { get { return "document"; } }
-        public override string TargetDirectory { get { return "word"; } }
-
-
-        public StyleDefinitionsPart AddStyleDefinitionsPart()
-        {
-            _styleDefinitionsPart = new StyleDefinitionsPart(this);
-            return this.AddPart(_styleDefinitionsPart);
-        }
-
-        public StyleDefinitionsPart StyleDefinitionsPart
-        {
-            get { return _styleDefinitionsPart; }
-        }
-
-        public FontTablePart AddFontTablePart()
-        {
-            _fontTablePart = new FontTablePart(this);
-            return this.AddPart(_fontTablePart);
-        }
-
-        public FontTablePart FontTablePart
-        {
-            get { return _fontTablePart; }
-        }
-
-        public ImagePart AddImagePart(ImagePartType type)
-        {
-            return this.AddPart(new ImagePart(type, this));
-        }
+        public override string TargetName { get { return "workbook"; } }
+        public override string TargetDirectory { get { return "xl"; } }
     }
 }
+

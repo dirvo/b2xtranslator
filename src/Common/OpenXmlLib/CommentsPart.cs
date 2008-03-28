@@ -39,7 +39,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 
         public override string ContentType
         {
-            get { return OpenXmlContentTypes.Comments; }
+            get { return WordprocessingMLContentTypes.Comments; }
         }
 
         public override string RelationshipType
