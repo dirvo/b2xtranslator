@@ -100,10 +100,10 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                         xws.ConformanceLevel = ConformanceLevel.Document;
 
                         //Write Styles.xml
-                        doc.Styles.Convert(new StyleSheetMapping(docx.MainDocumentPart.StyleDefinitionsPart, xws, doc));
+                        doc.Styles.Convert(new StyleSheetMapping(docx.MainDocumentPart.AddStyleDefinitionsPart(), xws, doc));
 
                         //Write fontTable.xml
-                        doc.FontTable.Convert(new FontTableMapping(docx.MainDocumentPart.FontTablePart, xws));
+                        doc.FontTable.Convert(new FontTableMapping(docx.MainDocumentPart.AddFontTablePart(), xws));
 
                         //Write Document.xml
                         doc.Convert(new DocumentMapping(docx.MainDocumentPart, xws));

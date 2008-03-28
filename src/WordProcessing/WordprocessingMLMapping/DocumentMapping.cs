@@ -380,7 +380,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     imgPart.GetStream().Write(pict.Picture, 0, pict.Picture.Length);
 
                     //convert the picture xml
-                    pict.Convert(new PictureMapping(_writer));
+                    pict.Convert(new PictureMapping(_writer, imgPart));
                 }
                 else if (c == TextBoundary.ParagraphEnd)
                 {
