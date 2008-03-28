@@ -90,7 +90,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         }
 
         public override string TargetName { get { return "image" + this.RelId; } }
-        public override string TargetDirectory { get { return Path.Combine(Parent.TargetDirectory, "media"); } }
+        public override string TargetDirectory { get { return "media"; } }
         public override string TargetExt
         {
             get
