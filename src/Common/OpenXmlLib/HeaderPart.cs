@@ -47,7 +47,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
             get { return OpenXmlRelationshipTypes.Header; }
         }
 
-        public override string TargetName { get { return "header"; } }
+        public override string TargetName { get { return "header" + this.RelId; } }
         public override string TargetDirectory { get { return Parent.TargetDirectory; } }
     }
 }

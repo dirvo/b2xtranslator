@@ -95,8 +95,29 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         {
             get
             {
-                // TODO: return proper image extension
-                return base.TargetExt;
+                switch (_type)
+                {
+                    case ImagePartType.Bmp:
+                        return ".bmp";
+                    case ImagePartType.Emf:
+                        return ".emf";
+                    case ImagePartType.Gif:
+                        return ".gif";
+                    case ImagePartType.Icon:
+                        return ".ico";
+                    case ImagePartType.Jpeg:
+                        return ".jpg";
+                    //case ImagePartType.Pcx:
+                    //    return ".pcx";
+                    case ImagePartType.Png:
+                        return ".png";
+                    case ImagePartType.Tiff:
+                        return ".tif";
+                    case ImagePartType.Wmf:
+                        return ".wmf";
+                    default:
+                        return ".png";
+                }
             }
         }
     }
