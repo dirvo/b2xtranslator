@@ -34,18 +34,38 @@ using PptFileFormat.Records;
 
 namespace PptFileFormat
 {
-    class PowerpointDocument : IVisitable
+    class PowerpointDocument : IVisitable, IEnumerable<Record>
     {
         /// <summary>
         /// The stream "PowerPoint Document"
         /// </summary>
         public VirtualStream PowerpointDocumentStream;
-        public Record RootRecord;
+
+        public List<Record> RootRecords = new List<Record>();
 
         public PowerpointDocument(StorageReader reader)
         {
             this.PowerpointDocumentStream = reader.GetStream("PowerPoint Document");
-            this.RootRecord = Record.readRecord(this.PowerpointDocumentStream);
+
+            while ((ulong) this.PowerpointDocumentStream.Position != this.PowerpointDocumentStream.SizeOfStream)
+            {
+                this.RootRecords.Add(Record.readRecord(this.PowerpointDocumentStream));
+            }
+        }
+
+        override public string ToString()
+        {
+            StringBuilder result = new StringBuilder(base.ToString());
+
+            foreach (Record record in this.RootRecords)
+            {
+                result.AppendLine();
+                result.AppendLine();
+                result.Append("Root Record: ");
+                result.Append(record.ToString());
+            }
+
+            return result.ToString();
         }
 
         #region IVisitable Members
@@ -53,6 +73,27 @@ namespace PptFileFormat
         public void Convert<T>(T mapping)
         {
             throw new Exception("The method or operation is not implemented.");
+        }
+
+        #endregion
+
+        #region IEnumerable<Record> Members
+
+        public IEnumerator<Record> GetEnumerator()
+        {
+            foreach (Record rootRecord in this.RootRecords)
+                foreach (Record record in rootRecord)
+                    yield return record;
+        }
+
+        #endregion
+
+        #region IEnumerable Members
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            foreach (Record record in this)
+                yield return record;
         }
 
         #endregion

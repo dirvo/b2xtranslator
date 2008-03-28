@@ -22,7 +22,7 @@ namespace PptFileFormat
 
             string inputFile = args[0];
             ProcessingFile procFile = new ProcessingFile(inputFile);
-
+            
             //open the reader
             StorageReader reader = new StorageReader(procFile.File.FullName);
 
@@ -33,7 +33,7 @@ namespace PptFileFormat
 
             PowerpointDocument pptDoc = new PowerpointDocument(reader);
 
-            foreach (Record record in pptDoc.RootRecord)
+            foreach (Record record in pptDoc)
             {
                 UnknownRecord unknownRecord = record as UnknownRecord;
 
@@ -48,9 +48,11 @@ namespace PptFileFormat
                 }
             }
 
-            System.Console.WriteLine(pptDoc.RootRecord);
+            System.Console.WriteLine(pptDoc);
 
-            System.Console.ReadLine();
+            // Let's make development as easy as pie.
+            System.Diagnostics.Debugger.Break();
         }
     }
 }
+

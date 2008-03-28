@@ -114,11 +114,21 @@ namespace PptFileFormat.Records
             // PowerPoint records
             result.Add(1000, typeof(PptDocumentRecord));
             result.Add(1001, typeof(DocumentAtom));
+            result.Add(1006, typeof(Slide));
+            result.Add(1016, typeof(List));
             result.Add(1035, typeof(PPDrawingGroup));
+            result.Add(1036, typeof(PPDrawing));
+            result.Add(4008, typeof(TextBytesAtom));
+            result.Add(4080, typeof(SlideListWithText));
 
             // Drawing records
             result.Add(0xF000, typeof(DrawingGroup));
+            result.Add(0xF002, typeof(DrawingContainer));
+            result.Add(0xF003, typeof(GroupContainer));
+            result.Add(0xF004, typeof(ShapeContainer));
             result.Add(0xF006, typeof(DrawingGroupRecord));
+            result.Add(0xF00D, typeof(ClientTextbox));
+            result.Add(0xF011, typeof(ClientData));
 
             return result;
         }
@@ -344,11 +354,59 @@ namespace PptFileFormat.Records
         }
     }
 
+    public class PPDrawing : RegularContainer
+    {
+        public PPDrawing(VirtualStream source, uint size, uint type, uint version, uint instance)
+            : base(source, size, type, version, instance) { }
+    }
+
     public class PPDrawingGroup : RegularContainer
     {
         public PPDrawingGroup(VirtualStream source, uint size, uint type, uint version, uint instance)
             : base(source, size, type, version, instance) { }
     }
+
+    public class SlideListWithText : RegularContainer
+    {
+        public SlideListWithText(VirtualStream source, uint size, uint type, uint version, uint instance)
+            : base(source, size, type, version, instance) { }
+    }
+
+    public class List : RegularContainer
+    {
+        public List(VirtualStream source, uint size, uint type, uint version, uint instance)
+            : base(source, size, type, version, instance) { }
+    }
+
+    public class Slide : RegularContainer
+    {
+        public Slide(VirtualStream source, uint size, uint type, uint version, uint instance)
+            : base(source, size, type, version, instance) { }
+    }
+
+    public class TextBytesAtom : Record
+    {
+        public string Text;
+
+        public TextBytesAtom(VirtualStream source, uint size, uint type, uint version, uint instance)
+            : base(source, size, type, version, instance) {
+            byte[] bytes = new byte[size];
+            source.Read(bytes, (int) size);
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < size; i++)
+                sb.Append((char) bytes[i]);
+
+            this.Text = sb.ToString();
+        }
+
+        public override string ToString(uint depth)
+        {
+            return String.Format("{0}\n{1}Text = {2}",
+                base.ToString(depth), IndentationForDepth(depth + 1),  this.Text);
+        }
+    }
+
     #endregion
 
     #region Drawing records
@@ -437,5 +495,36 @@ namespace PptFileFormat.Records
             return result.ToString();
         }
     }
+
+    public class DrawingContainer : RegularContainer
+    {
+        public DrawingContainer(VirtualStream source, uint size, uint type, uint version, uint instance)
+            : base(source, size, type, version, instance) { }
+    }
+
+    public class GroupContainer : RegularContainer
+    {
+        public GroupContainer(VirtualStream source, uint size, uint type, uint version, uint instance)
+            : base(source, size, type, version, instance) { }
+    }
+
+    public class ShapeContainer : RegularContainer
+    {
+        public ShapeContainer(VirtualStream source, uint size, uint type, uint version, uint instance)
+            : base(source, size, type, version, instance) { }
+    }
+
+    public class ClientTextbox : RegularContainer
+    {
+        public ClientTextbox(VirtualStream source, uint size, uint type, uint version, uint instance)
+            : base(source, size, type, version, instance) { }
+    }
+
+    public class ClientData : RegularContainer
+    {
+        public ClientData(VirtualStream source, uint size, uint type, uint version, uint instance)
+            : base(source, size, type, version, instance) { }
+    }
+
     #endregion
 }
