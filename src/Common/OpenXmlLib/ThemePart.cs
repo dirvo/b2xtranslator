@@ -30,7 +30,7 @@ using System.Text;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 {
-    public class ThemePart : OpenXmlPart, IUniquePart
+    public class ThemePart : UniqueOpenXmlPart
     {
         public ThemePart(OpenXmlPartContainer parent)
             : base(parent)

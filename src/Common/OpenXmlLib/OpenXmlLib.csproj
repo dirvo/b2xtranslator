@@ -39,6 +39,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PresentationML\PresentationPart.cs" />
+    <Compile Include="PresentationML\SlideLayoutPart.cs" />
+    <Compile Include="PresentationML\SlideMasterPart.cs" />
+    <Compile Include="PresentationML\SlidePart.cs" />
     <Compile Include="WordprocessingML\CommentsPart.cs" />
     <Compile Include="ContentTypes.cs" />
     <Compile Include="CorePropertiesPart.cs" />
@@ -48,7 +51,7 @@
     <Compile Include="WordprocessingML\FooterPart.cs" />
     <Compile Include="WordprocessingML\HeaderPart.cs" />
     <Compile Include="ImagePart.cs" />
-    <Compile Include="IUniquePart.cs" />
+    <Compile Include="UniqueOpenXmlPart.cs" />
     <Compile Include="WordprocessingML\MainDocumentPart.cs" />
     <Compile Include="OpenXmlPackage.cs" />
     <Compile Include="OpenXmlPart.cs" />

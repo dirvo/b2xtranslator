@@ -31,7 +31,7 @@ using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
 {
-    public class FontTablePart : OpenXmlPart
+    public class FontTablePart : UniqueOpenXmlPart
     {
         public FontTablePart(OpenXmlPartContainer parent)
             : base(parent)

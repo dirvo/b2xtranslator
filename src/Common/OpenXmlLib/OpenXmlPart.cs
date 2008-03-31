@@ -36,12 +36,14 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
     public abstract class OpenXmlPart : OpenXmlPartContainer
     {
         protected int _relId = 0;
+        protected int _partIndex = 0;
         protected MemoryStream _stream;
         protected XmlWriter _xmlWriter;
 
-        public OpenXmlPart(OpenXmlPartContainer parent)
+        public OpenXmlPart(OpenXmlPartContainer parent, int partIndex)
         {
             _parent = parent;
+            _partIndex = partIndex;
             _stream = new MemoryStream();
 
             XmlWriterSettings xws = new XmlWriterSettings();
@@ -84,6 +86,11 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public string RelIdToString
         {
             get { return REL_PREFIX + _relId.ToString(); }
+        }
+
+        protected int PartIndex
+        {
+            get { return _partIndex; }
         }
 
         public OpenXmlPackage Package

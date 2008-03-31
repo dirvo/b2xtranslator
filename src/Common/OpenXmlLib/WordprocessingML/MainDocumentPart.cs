@@ -31,10 +31,12 @@ using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
 {
-    public class MainDocumentPart : OpenXmlPart, IUniquePart
+    public class MainDocumentPart : UniqueOpenXmlPart
     {
         protected StyleDefinitionsPart _styleDefinitionsPart;
         protected FontTablePart _fontTablePart;
+
+        protected int _imagePartCount = 0;
         
         public MainDocumentPart(OpenXmlPartContainer parent)
             : base(parent)
@@ -79,7 +81,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
 
         public ImagePart AddImagePart(ImagePartType type)
         {
-            return this.AddPart(new ImagePart(type, this));
+            return this.AddPart(new ImagePart(type, this, ++_imagePartCount));
         }
     }
 }

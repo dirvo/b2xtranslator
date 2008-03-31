@@ -31,7 +31,7 @@ using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
 {
-    public class StyleDefinitionsPart : OpenXmlPart, IUniquePart
+    public class StyleDefinitionsPart : UniqueOpenXmlPart
     {
         public StyleDefinitionsPart(OpenXmlPartContainer parent)
             : base(parent)

@@ -32,8 +32,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
 {
     public class HeaderPart : OpenXmlPart
     {
-        public HeaderPart(OpenXmlPackage package, int relId)
-            : base(package)
+        public HeaderPart(OpenXmlPackage package, int partIndex)
+            : base(package, partIndex)
         {
         }
 
@@ -47,7 +47,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
             get { return OpenXmlRelationshipTypes.Header; }
         }
 
-        public override string TargetName { get { return "header" + this.RelId; } }
+        public override string TargetName { get { return "header" + this.PartIndex; } }
         public override string TargetDirectory { get { return Parent.TargetDirectory; } }
     }
 }

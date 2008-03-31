@@ -127,5 +127,10 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string Footer = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer";
 
         public const string Image = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image";
+
+        // PresentationML
+        public const string SlideLayout = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout";
+        public const string Slide = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide";
+        public const string SlideMaster = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster";
     }
 }

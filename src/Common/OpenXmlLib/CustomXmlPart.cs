@@ -33,8 +33,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
 {
     public class CustomXmlPart : OpenXmlPart
     {
-        public CustomXmlPart(OpenXmlPackage package)
-            : base(package)
+        public CustomXmlPart(OpenXmlPackage package, int partIndex)
+            : base(package, partIndex)
         {
         }
 
@@ -48,7 +48,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
             get { return OpenXmlRelationshipTypes.CustomXml; }
         }
 
-        public override string TargetName { get { return "item"; } }
+        public override string TargetName { get { return "item" + this.PartIndex; } }
         public override string TargetDirectory { get { return @"customXml"; } }
     }
 }

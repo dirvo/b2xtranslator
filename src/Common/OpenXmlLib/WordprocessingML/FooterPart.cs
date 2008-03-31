@@ -33,8 +33,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
 {
     public class FooterPart : OpenXmlPart
     {
-        protected FooterPart(OpenXmlPartContainer parent)
-            : base(parent)
+        protected FooterPart(OpenXmlPartContainer parent, int partIndex)
+            : base(parent, partIndex)
         {
         }
 
@@ -48,7 +48,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
             get { return OpenXmlRelationshipTypes.Footer; }
         }
 
-        public override string TargetName { get { return "footer" + this.RelId; } }
+        public override string TargetName { get { return "footer" + this.PartIndex; } }
         public override string TargetDirectory { get { return Parent.TargetDirectory; } }
     }
 }

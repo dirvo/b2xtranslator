@@ -28,9 +28,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
+namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
 {
-    public class CommentsPart : OpenXmlPart
+    public class CommentsPart : UniqueOpenXmlPart
     {
         internal CommentsPart(OpenXmlPartContainer parent)
             : base(parent)

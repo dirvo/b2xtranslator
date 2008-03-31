@@ -48,8 +48,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
     {
         protected ImagePartType _type;
 
-        internal ImagePart(ImagePartType type, OpenXmlPartContainer parent)
-            : base(parent)
+        internal ImagePart(ImagePartType type, OpenXmlPartContainer parent, int partIndex)
+            : base(parent, partIndex)
         {
             _type = type;
         }
@@ -89,7 +89,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
             get { return OpenXmlRelationshipTypes.Image; }
         }
 
-        public override string TargetName { get { return "image" + this.RelId; } }
+        public override string TargetName { get { return "image" + this.PartIndex; } }
         public override string TargetDirectory { get { return "media"; } }
         public override string TargetExt
         {
