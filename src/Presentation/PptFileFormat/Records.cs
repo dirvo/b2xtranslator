@@ -99,6 +99,19 @@ namespace PptFileFormat.Records
             return this.ToString(0);
         }
 
+        public void VerifyReadToEnd()
+        {
+            long streamPos = this.Reader.BaseStream.Position;
+            long streamLen = this.Reader.BaseStream.Length;
+
+            if (streamPos != streamLen)
+            {
+                throw new Exception(String.Format(
+                    "Record didn't read to end: (stream position: {1} of {2})\n{0}",
+                    this, streamPos, streamLen));
+            }
+        }
+
         #region IEnumerable<Record> Members
 
         public virtual IEnumerator<Record> GetEnumerator()
@@ -220,6 +233,8 @@ namespace PptFileFormat.Records
                 result = new UnknownRecord(reader, size, typeCode, version, instance);
             }
 
+            result.VerifyReadToEnd();
+
             return result;
         }
 
@@ -229,7 +244,10 @@ namespace PptFileFormat.Records
     public class UnknownRecord : Record
     {
         public UnknownRecord(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
-            : base(_reader, size, typeCode, version, instance) { }
+            : base(_reader, size, typeCode, version, instance)
+        {
+            this.Reader.ReadBytes((int)size);
+        }
     }
 
     /// <summary>
@@ -399,7 +417,6 @@ namespace PptFileFormat.Records
         public List(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance) { }
     }
-
 
     [OfficeRecord(TypeCode = 1035)]
     public class PPDrawingGroup : RegularContainer
