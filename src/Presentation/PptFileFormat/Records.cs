@@ -415,19 +415,17 @@ namespace PptFileFormat.Records
             : base(_reader, size, typeCode, version, instance) { }
     }
 
-    [OfficeRecord(TypeCode = 4008)]
-    public class TextBytesAtom : Record
+    public class TextAtom : Record
     {
-        public static Encoding ENCODING = Encoding.GetEncoding("iso-8859-1");
         public string Text;
 
-        public TextBytesAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+        public TextAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance, Encoding encoding)
             : base(_reader, size, typeCode, version, instance)
         {
             byte[] bytes = new byte[size];
             this.Reader.Read(bytes, 0, (int)size);
 
-            this.Text = new String(ENCODING.GetChars(bytes));
+            this.Text = new String(encoding.GetChars(bytes));
         }
 
         public override string ToString(uint depth)
@@ -435,6 +433,24 @@ namespace PptFileFormat.Records
             return String.Format("{0}\n{1}Text = {2}",
                 base.ToString(depth), IndentationForDepth(depth + 1), this.Text);
         }
+    }
+
+    [OfficeRecord(TypeCode = 4000)]
+    public class TextCharsAtom : TextAtom
+    {
+        public static Encoding ENCODING = Encoding.Unicode;
+
+        public TextCharsAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance, ENCODING) { }
+    }
+
+    [OfficeRecord(TypeCode = 4008)]
+    public class TextBytesAtom : TextAtom
+    {
+        public static Encoding ENCODING = Encoding.GetEncoding("iso-8859-1");
+
+        public TextBytesAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance, ENCODING) { }
     }
 
     [OfficeRecord(TypeCode = 4080)]

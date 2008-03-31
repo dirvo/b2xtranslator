@@ -27,12 +27,13 @@ namespace PptFileFormat
             StorageReader reader = new StorageReader(procFile.File.FullName);
 
             foreach (DirectoryEntry entry in reader.AllStreamEntries)
-                System.Console.WriteLine(entry.Path);
+                Console.WriteLine(entry.Path);
 
-            System.Console.WriteLine();
+            Console.WriteLine();
 
             PowerpointDocument pptDoc = new PowerpointDocument(reader);
 
+            // Dump unknown records
             foreach (Record record in pptDoc)
             {
                 UnknownRecord unknownRecord = record as UnknownRecord;
@@ -48,7 +49,39 @@ namespace PptFileFormat
                 }
             }
 
-            System.Console.WriteLine(pptDoc);
+            // Output record tree
+            Console.WriteLine(pptDoc);
+            Console.WriteLine();
+
+            // Output text for each slide
+            int slideNo = 0;
+            foreach (Record record in pptDoc)
+            {
+                Slide slide = record as Slide;
+
+                if (slide != null)
+                {
+                    slideNo++;
+                    Console.WriteLine("Text for slide #{0}:", slideNo);
+
+                    bool textFound = false;
+                    foreach (Record trecord in slide)
+                    {
+                        TextAtom text = trecord as TextAtom;
+
+                        if (text != null)
+                        {
+                            Console.WriteLine("  * {0}", text.Text);
+                            textFound = true;
+                        }
+                    }
+
+                    if (!textFound)
+                        Console.WriteLine("  No text found");
+
+                    Console.WriteLine();
+                }
+            }
 
             // Let's make development as easy as pie.
             System.Diagnostics.Debugger.Break();
