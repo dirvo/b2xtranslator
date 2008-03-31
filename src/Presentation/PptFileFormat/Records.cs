@@ -31,16 +31,32 @@ namespace PptFileFormat.Records
         public uint HeaderSize = HEADER_SIZE_IN_BYTES;
         public uint BodySize;
 
+        public byte[] RawData;
+
+        protected BinaryReader Reader;
+
         public uint TypeCode;
         public uint Version;
         public uint Instance;
 
-        public Record(VirtualStream source, uint bodySize, uint typeCode, uint version, uint instance)
+        public Record(BinaryReader _reader, uint bodySize, uint typeCode, uint version, uint instance)
         {
             this.BodySize = bodySize;
             this.TypeCode = typeCode;
             this.Version = version;
             this.Instance = instance;
+
+            this.RawData = _reader.ReadBytes((int)this.BodySize);
+
+            this.Reader = new BinaryReader(new MemoryStream(this.RawData));
+        }
+
+        public void DumpToStream(Stream output)
+        {
+            using (BinaryWriter writer = new BinaryWriter(output))
+            {
+                writer.Write(this.RawData, 0, this.RawData.Length);
+            }
         }
 
         public string GetIdentifier()
@@ -155,14 +171,19 @@ namespace PptFileFormat.Records
             return result;
         }
 
-        public static Record readRecord(VirtualStream source)
+        public static Record readRecord(Stream stream)
         {
-            UInt16 verAndInstance = source.ReadUInt16();
+            return readRecord(new BinaryReader(stream));
+        }
+
+        public static Record readRecord(BinaryReader reader)
+        {
+            UInt16 verAndInstance = reader.ReadUInt16();
             uint version = verAndInstance & 0x000FU;         // first 4 bit of field verAndInstance
             uint instance = (verAndInstance & 0xFFF0U) >> 4; // last 12 bit of field verAndInstance
 
-            UInt16 typeCode = source.ReadUInt16();
-            UInt32 size = source.ReadUInt32();
+            UInt16 typeCode = reader.ReadUInt16();
+            UInt32 size = reader.ReadUInt32();
 
             bool isContainer = (version == 0xF);
 
@@ -172,7 +193,7 @@ namespace PptFileFormat.Records
             if (TypeToRecordClassMapping.TryGetValue(typeCode, out cls))
             {
                 ConstructorInfo constructor = cls.GetConstructor(new Type[] {
-                    typeof(VirtualStream), typeof(uint), typeof(uint), typeof(uint), typeof(uint) 
+                    typeof(BinaryReader), typeof(uint), typeof(uint), typeof(uint), typeof(uint) 
                 });
 
                 if (constructor == null)
@@ -185,7 +206,7 @@ namespace PptFileFormat.Records
                 try
                 {
                     result = (Record)constructor.Invoke(new object[] {
-                        source, size, typeCode, version, instance
+                        reader, size, typeCode, version, instance
                     });
                 }
                 catch (TargetInvocationException e)
@@ -196,7 +217,7 @@ namespace PptFileFormat.Records
             }
             else
             {
-                result = new UnknownRecord(source, size, typeCode, version, instance);
+                result = new UnknownRecord(reader, size, typeCode, version, instance);
             }
 
             return result;
@@ -207,22 +228,8 @@ namespace PptFileFormat.Records
 
     public class UnknownRecord : Record
     {
-        public byte[] RawData;
-
-        public UnknownRecord(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
-            : base(source, size, typeCode, version, instance)
-        {
-            this.RawData = new byte[this.BodySize];
-            source.Read(this.RawData);
-        }
-
-        public void DumpToStream(Stream output)
-        {
-            using (BinaryWriter writer = new BinaryWriter(output))
-            {
-                writer.Write(this.RawData, 0, this.RawData.Length);
-            }
-        }
+        public UnknownRecord(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance) { }
     }
 
     /// <summary>
@@ -234,13 +241,14 @@ namespace PptFileFormat.Records
     {
         public List<Record> Children = new List<Record>();
 
-        public RegularContainer(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
-            : base(source, size, typeCode, version, instance)
+        public RegularContainer(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance)
         {
             uint readSize = 0;
+
             while (readSize < this.BodySize)
             {
-                Record child = Record.readRecord(source);
+                Record child = Record.readRecord(this.Reader);
 
                 this.Children.Add(child);
                 child.ParentRecord = this;
@@ -289,8 +297,8 @@ namespace PptFileFormat.Records
     [OfficeRecord(TypeCode = 1000)]
     public class PptDocumentRecord : RegularContainer
     {
-        public PptDocumentRecord(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
-            : base(source, size, typeCode, version, instance) { }
+        public PptDocumentRecord(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance) { }
     }
 
     [OfficeRecord(TypeCode = 1001)]
@@ -310,22 +318,22 @@ namespace PptFileFormat.Records
         public bool RightToLeft;
         public bool ShowComments;
 
-        public DocumentAtom(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
-            : base(source, size, typeCode, version, instance)
+        public DocumentAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance)
         {
-            this.SlideSize = new GPointAtom(source);
-            this.NotesSize = new GPointAtom(source);
-            this.ServerZoom = new GRatioAtom(source);
+            this.SlideSize = new GPointAtom(this.Reader);
+            this.NotesSize = new GPointAtom(this.Reader);
+            this.ServerZoom = new GRatioAtom(this.Reader);
 
-            this.NotesMasterPersist = source.ReadUInt32();
-            this.HandoutMasterPersist = source.ReadUInt32();
-            this.FirstSlideNum = source.ReadUInt16();
-            this.SlideSizeType = source.ReadInt16();
+            this.NotesMasterPersist = this.Reader.ReadUInt32();
+            this.HandoutMasterPersist = this.Reader.ReadUInt32();
+            this.FirstSlideNum = this.Reader.ReadUInt16();
+            this.SlideSizeType = this.Reader.ReadInt16();
 
-            this.SaveWithFonts = source.ReadByte() != 0;
-            this.OmitTitlePlace = source.ReadByte() != 0;
-            this.RightToLeft = source.ReadByte() != 0;
-            this.ShowComments = source.ReadByte() != 0;
+            this.SaveWithFonts = this.Reader.ReadByte() != 0;
+            this.OmitTitlePlace = this.Reader.ReadByte() != 0;
+            this.RightToLeft = this.Reader.ReadByte() != 0;
+            this.ShowComments = this.Reader.ReadByte() != 0;
         }
 
         override public string ToString(uint depth)
@@ -349,10 +357,10 @@ namespace PptFileFormat.Records
         public Int32 X;
         public Int32 Y;
 
-        public GPointAtom(VirtualStream source)
+        public GPointAtom(BinaryReader reader)
         {
-            this.X = source.ReadInt32();
-            this.Y = source.ReadInt32();
+            this.X = reader.ReadInt32();
+            this.Y = reader.ReadInt32();
         }
 
         override public string ToString()
@@ -366,10 +374,10 @@ namespace PptFileFormat.Records
         public Int32 Numer;
         public Int32 Denom;
 
-        public GRatioAtom(VirtualStream source)
+        public GRatioAtom(BinaryReader reader)
         {
-            this.Numer = source.ReadInt32();
-            this.Denom = source.ReadInt32();
+            this.Numer = reader.ReadInt32();
+            this.Denom = reader.ReadInt32();
         }
 
         override public string ToString()
@@ -381,30 +389,30 @@ namespace PptFileFormat.Records
     [OfficeRecord(TypeCode = 1006)]
     public class Slide : RegularContainer
     {
-        public Slide(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
-            : base(source, size, typeCode, version, instance) { }
+        public Slide(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance) { }
     }
 
     [OfficeRecord(TypeCode = 1016)]
     public class List : RegularContainer
     {
-        public List(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
-            : base(source, size, typeCode, version, instance) { }
+        public List(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance) { }
     }
 
 
     [OfficeRecord(TypeCode = 1035)]
     public class PPDrawingGroup : RegularContainer
     {
-        public PPDrawingGroup(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
-            : base(source, size, typeCode, version, instance) { }
+        public PPDrawingGroup(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance) { }
     }
 
     [OfficeRecord(TypeCode = 1036)]
     public class PPDrawing : RegularContainer
     {
-        public PPDrawing(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
-            : base(source, size, typeCode, version, instance) { }
+        public PPDrawing(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance) { }
     }
 
     [OfficeRecord(TypeCode = 4008)]
@@ -413,11 +421,11 @@ namespace PptFileFormat.Records
         public static Encoding ENCODING = Encoding.GetEncoding("iso-8859-1");
         public string Text;
 
-        public TextBytesAtom(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
-            : base(source, size, typeCode, version, instance)
+        public TextBytesAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance)
         {
             byte[] bytes = new byte[size];
-            source.Read(bytes, (int)size);
+            this.Reader.Read(bytes, 0, (int)size);
 
             this.Text = new String(ENCODING.GetChars(bytes));
         }
@@ -432,8 +440,8 @@ namespace PptFileFormat.Records
     [OfficeRecord(TypeCode = 4080)]
     public class SlideListWithText : RegularContainer
     {
-        public SlideListWithText(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
-            : base(source, size, typeCode, version, instance) { }
+        public SlideListWithText(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance) { }
     }
 
     #endregion
@@ -443,29 +451,29 @@ namespace PptFileFormat.Records
     [OfficeRecord(TypeCode = 0xF000)]
     public class DrawingGroup : RegularContainer
     {
-        public DrawingGroup(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
-            : base(source, size, typeCode, version, instance) { }
+        public DrawingGroup(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance) { }
     }
 
     [OfficeRecord(TypeCode = 0xF002)]
     public class DrawingContainer : RegularContainer
     {
-        public DrawingContainer(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
-            : base(source, size, typeCode, version, instance) { }
+        public DrawingContainer(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance) { }
     }
 
     [OfficeRecord(TypeCode = 0xF003)]
     public class GroupContainer : RegularContainer
     {
-        public GroupContainer(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
-            : base(source, size, typeCode, version, instance) { }
+        public GroupContainer(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance) { }
     }
 
     [OfficeRecord(TypeCode = 0xF004)]
     public class ShapeContainer : RegularContainer
     {
-        public ShapeContainer(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
-            : base(source, size, typeCode, version, instance) { }
+        public ShapeContainer(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance) { }
     }
 
     [OfficeRecord(TypeCode = 0xF006)]
@@ -476,10 +484,10 @@ namespace PptFileFormat.Records
             public UInt32 DrawingGroupId;
             public UInt32 CSpIdCur;
 
-            public FileIdCluster(VirtualStream source)
+            public FileIdCluster(BinaryReader reader)
             {
-                this.DrawingGroupId = source.ReadUInt32();
-                this.CSpIdCur = source.ReadUInt32();
+                this.DrawingGroupId = reader.ReadUInt32();
+                this.CSpIdCur = reader.ReadUInt32();
             }
 
             public string ToString(uint depth)
@@ -501,17 +509,17 @@ namespace PptFileFormat.Records
 
         public List<FileIdCluster> Clusters = new List<FileIdCluster>();
 
-        public DrawingGroupRecord(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
-            : base(source, size, typeCode, version, instance)
+        public DrawingGroupRecord(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance)
         {
-            this.MaxShapeId = source.ReadUInt32();
-            this.IdClustersCount = source.ReadUInt32() - 1; // Office saves the actual value + 1 -- flgr
-            this.ShapesSavedCount = source.ReadUInt32();
-            this.DrawingsSavedCount = source.ReadUInt32();
+            this.MaxShapeId = this.Reader.ReadUInt32();
+            this.IdClustersCount = this.Reader.ReadUInt32() - 1; // Office saves the actual value + 1 -- flgr
+            this.ShapesSavedCount = this.Reader.ReadUInt32();
+            this.DrawingsSavedCount = this.Reader.ReadUInt32();
 
             for (int i = 0; i < this.IdClustersCount; i++)
             {
-                Clusters.Add(new FileIdCluster(source));
+                Clusters.Add(new FileIdCluster(this.Reader));
             }
         }
 
@@ -552,15 +560,15 @@ namespace PptFileFormat.Records
     [OfficeRecord(TypeCode = 0xF00D)]
     public class ClientTextbox : RegularContainer
     {
-        public ClientTextbox(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
-            : base(source, size, typeCode, version, instance) { }
+        public ClientTextbox(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance) { }
     }
 
     [OfficeRecord(TypeCode = 0xF011)]
     public class ClientData : RegularContainer
     {
-        public ClientData(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
-            : base(source, size, typeCode, version, instance) { }
+        public ClientData(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance) { }
     }
 
     #endregion

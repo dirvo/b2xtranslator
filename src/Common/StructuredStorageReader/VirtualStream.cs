@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 {
@@ -36,13 +37,14 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
     /// Encapsulates a virtual stream in a compound file 
     /// Author: math
     /// </summary>
-    public class VirtualStream
+    public class VirtualStream : Stream
     {
         AbstractFat _fat;
         int _position;
-        public int Position
+        public override long Position
         {
             get { return _position; }
+            set { throw new NotSupportedException(); }
         }
 
         UInt64 _sizeOfStream;
@@ -85,7 +87,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// of bytes are not currently available, or zero if the end of the stream is reached.</returns>
         public int Read(byte[] array)
         {
-            return Read(array, array.Length, _position, 0);
+            return Read(array, array.Length);
         }
 
 
@@ -99,83 +101,36 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// of bytes are not currently available, or zero if the end of the stream is reached.</returns>
         public int Read(byte[] array, int count)
         {
-            return Read(array, count, _position, 0);
+            return Read(array, 0, count);
         }
-
 
         /// <summary>
         /// Reads bytes from a virtual stream.
         /// </summary>
         /// <param name="array">Array which will contain the read bytes after successful execution.</param>
+        /// <param name="offset">Offset in the array.</param>
         /// <param name="count">Number of bytes to read.</param>
-        /// <param name="position">Start position in the stream.</param>
         /// <returns>The total number of bytes read into the buffer. 
         /// This might be less than the number of bytes requested if that number 
         /// of bytes are not currently available, or zero if the end of the stream is reached.</returns>
-        public int Read(byte[] array, int count, int position)
+        [Obsolete("Warning. Signature used to be Read(byte[] array, int count, int position).\nChange calls to Read(array, count, position, 0)!")]
+        public override int Read(byte[] array, int offset, int count)
         {
-            return Read(array, count, position, 0);
-        }
-
-        public UInt16 ReadUInt16()
-        {
-            byte[] buffer = new byte[sizeof(UInt16)];
-            
-            if (sizeof(UInt16) != Read(buffer))
-            {
-                throw new ReadBytesAmountMismatchException();
-            }
-            
-            return BitConverter.ToUInt16(buffer, 0);
-        }
-
-        public short ReadInt16()
-        {
-            byte[] buffer = new byte[sizeof(Int16)];
-
-            if (sizeof(Int16) != Read(buffer))
-            {
-                throw new ReadBytesAmountMismatchException();
-            }
-
-            return BitConverter.ToInt16(buffer, 0);
-        }
-
-        public UInt32 ReadUInt32()
-        {
-            byte[] buffer = new byte[sizeof(UInt32)];
-
-            if (sizeof(UInt32) != Read(buffer))
-            {
-                throw new ReadBytesAmountMismatchException();
-            }
-
-            return BitConverter.ToUInt32(buffer, 0);
-        }
-
-        public Int32 ReadInt32()
-        {
-            byte[] buffer = new byte[sizeof(Int32)];
-
-            if (sizeof(Int32) != Read(buffer))
-            {
-                throw new ReadBytesAmountMismatchException();
-            }
-
-            return BitConverter.ToInt32(buffer, 0);
+            return Read(array, offset, count, _position);
         }
 
         /// <summary>
         /// Reads bytes from the virtual stream.
         /// </summary>
         /// <param name="array">Array which will contain the read bytes after successful execution.</param>
+        /// <param name="offset">Offset in the array.</param>
         /// <param name="count">Number of bytes to read.</param>
         /// <param name="position">Start position in the stream.</param>
-        /// <param name="offset">Offset in the array.</param>
         /// <returns>The total number of bytes read into the buffer. 
         /// This might be less than the number of bytes requested if that number 
         /// of bytes are not currently available, or zero if the end of the stream is reached.</returns>
-        public int Read(byte[] array, int count, int position, int offset)
+        [Obsolete("Warning. Signature used to be Read(byte[] array, int count, int position, int offset).\nChange calls to Read(array, offset, count, position)!")]
+        public int Read(byte[] array, int offset, int count, int position)
         {
             // Checks whether reading is possible
 
@@ -256,6 +211,54 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             return totalBytesRead;
         }
 
+        public UInt16 ReadUInt16()
+        {
+            byte[] buffer = new byte[sizeof(UInt16)];
+
+            if (sizeof(UInt16) != Read(buffer))
+            {
+                throw new ReadBytesAmountMismatchException();
+            }
+
+            return BitConverter.ToUInt16(buffer, 0);
+        }
+
+        public short ReadInt16()
+        {
+            byte[] buffer = new byte[sizeof(Int16)];
+
+            if (sizeof(Int16) != Read(buffer))
+            {
+                throw new ReadBytesAmountMismatchException();
+            }
+
+            return BitConverter.ToInt16(buffer, 0);
+        }
+
+        public UInt32 ReadUInt32()
+        {
+            byte[] buffer = new byte[sizeof(UInt32)];
+
+            if (sizeof(UInt32) != Read(buffer))
+            {
+                throw new ReadBytesAmountMismatchException();
+            }
+
+            return BitConverter.ToUInt32(buffer, 0);
+        }
+
+        public Int32 ReadInt32()
+        {
+            byte[] buffer = new byte[sizeof(Int32)];
+
+            if (sizeof(Int32) != Read(buffer))
+            {
+                throw new ReadBytesAmountMismatchException();
+            }
+
+            return BitConverter.ToInt32(buffer, 0);
+        }
+
         /// <summary>
         /// Skips bytes in the virtual stream.
         /// </summary>
@@ -275,7 +278,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// Reads a byte from the current position in the virtual stream.
         /// </summary>
         /// <returns>The byte read or -1 if end of stream</returns>
-        public int ReadByte()
+        public override int ReadByte()
         {
             int result = ReadByte(_position);
             _position++;
@@ -325,6 +328,46 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             {
                 throw new ChainSizeMismatchException(_name);
             }
+        }
+
+        public override bool CanRead
+        {
+            get { return true; }
+        }
+
+        public override bool CanSeek
+        {
+            get { return false; }
+        }
+
+        public override bool CanWrite
+        {
+            get { return false; }
+        }
+
+        public override void Flush()
+        {
+            throw new NotSupportedException();
+        }
+
+        public override long Length
+        {
+            get { return (long)this.SizeOfStream; }
+        }
+
+        public override long Seek(long offset, SeekOrigin origin)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override void SetLength(long value)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            throw new NotSupportedException();
         }
     }
 }
