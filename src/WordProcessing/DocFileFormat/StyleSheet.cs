@@ -54,12 +54,12 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         {
             //read size of the STSHI
             byte[] stshiLengthBytes = new byte[2];
-            tableStream.Read(stshiLengthBytes, stshiLengthBytes.Length, fib.fcStshf);
+            tableStream.Read(stshiLengthBytes, 0, stshiLengthBytes.Length, fib.fcStshf);
             Int16 cbStshi = System.BitConverter.ToInt16(stshiLengthBytes, 0);
 
             //read the bytes of the stshi
             byte[] stshi = new byte[cbStshi];
-            tableStream.Read(stshi, cbStshi, fib.fcStshf + 2);
+            tableStream.Read(stshi, 0, cbStshi, fib.fcStshf + 2);
 
             //parses STSHI
             this.stshi = new StyleSheetInformation(stshi);

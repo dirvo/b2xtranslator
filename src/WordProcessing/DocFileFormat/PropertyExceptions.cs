@@ -67,7 +67,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                         // get size of operand
                         Int16 opSize = (Int16)SinglePropertyModifier.GetOperandSize(spra);
                         byte lenByte = 0;
-                        int lenModificator = 0;
 
                         //operand has variable size
                         if (opSize == 255)

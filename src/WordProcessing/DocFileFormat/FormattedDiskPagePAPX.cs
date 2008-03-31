@@ -61,7 +61,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             //read the 512 bytes (FKP)
             byte[] bytes = new byte[512];
-            wordStream.Read(bytes, 512, offset);
+            wordStream.Read(bytes, 0, 512, offset);
 
             //get the count first
             this.crun = bytes[511];
@@ -138,7 +138,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             //get bintable for PAPX
             byte[] binTablePapx = new byte[fib.lcbPlcfbtePapx];
-            tableStream.Read(binTablePapx, binTablePapx.Length, (int)fib.fcPlcfbtePapx);
+            tableStream.Read(binTablePapx, 0, binTablePapx.Length, (int)fib.fcPlcfbtePapx);
 
             //there are n offsets and n-1 fkp's in the bin table
             int n = (((int)fib.lcbPlcfbtePapx - 4) / 8) + 1;

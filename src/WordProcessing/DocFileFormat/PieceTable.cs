@@ -54,7 +54,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         {
             //Read the bytes of complex file information
             byte[] bytes = new byte[fib.lcbClx];
-            tableStream.Read(bytes, (int)fib.lcbClx, (int)fib.fcClx);
+            tableStream.Read(bytes, 0, (int)fib.lcbClx, (int)fib.fcClx);
 
             this.Pieces = new List<PieceDescriptor>();
             this.FileCharacterPositions = new Dictionary<int, int>();
@@ -124,7 +124,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                         goon = false;
                     }
                 }
-                catch(Exception e)
+                catch(Exception)
                 {
                     goon = false;
                 }
@@ -158,8 +158,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     int cb = pcdFcEnd - fcStart;
                     byte[] bytes = new byte[cb];
 
-                    //read all bytes 
-                    wordStream.Read(bytes, cb, (Int32)fcStart);
+                    //read all bytes
+                    wordStream.Read(bytes, 0, cb, (Int32)fcStart);
 
                     //get the chars
                     char[] plainChars = pcd.encoding.GetString(bytes).ToCharArray();
@@ -180,7 +180,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     byte[] bytes = new byte[cb];
 
                     //read all bytes 
-                    wordStream.Read(bytes, cb, (Int32)pcd.fc);
+                    wordStream.Read(bytes, 0, cb, (Int32)pcd.fc);
 
                     //get the chars
                     char[] plainChars = pcd.encoding.GetString(bytes).ToCharArray();
@@ -201,7 +201,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     byte[] bytes = new byte[cb];
 
                     //read all bytes 
-                    wordStream.Read(bytes, cb, (Int32)pcd.fc);
+                    wordStream.Read(bytes, 0, cb, (Int32)pcd.fc);
 
                     //get the chars
                     char[] plainChars = pcd.encoding.GetString(bytes).ToCharArray();
@@ -224,7 +224,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     byte[] bytes = new byte[cb];
 
                     //read all bytes 
-                    wordStream.Read(bytes, cb, (Int32)fcStart);
+                    wordStream.Read(bytes, 0, cb, (Int32)fcStart);
 
                     //get the chars
                     char[] plainChars = pcd.encoding.GetString(bytes).ToCharArray();

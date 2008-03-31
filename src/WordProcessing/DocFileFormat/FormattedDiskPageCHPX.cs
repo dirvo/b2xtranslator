@@ -52,7 +52,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             //read the 512 bytes (FKP)
             byte[] bytes = new byte[512];
-            wordStream.Read(bytes, 512, offset);
+            wordStream.Read(bytes, 0, 512, offset);
 
             //get the count first
             this.crun = bytes[511];
@@ -113,7 +113,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             //get bintable for CHPX
             byte[] binTableChpx = new byte[fib.lcbPlcfbteChpx];
-            tableStream.Read(binTableChpx, binTableChpx.Length, (int)fib.fcPlcfbteChpx);
+            tableStream.Read(binTableChpx, 0, binTableChpx.Length, (int)fib.fcPlcfbteChpx);
 
             //there are n offsets and n-1 fkp's in the bin table
             int n = (((int)fib.lcbPlcfbteChpx - 4) / 8) + 1;
@@ -154,7 +154,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             //get bintable for CHPX
             byte[] binTableChpx = new byte[fib.lcbPlcfbteChpx];
-            tableStream.Read(binTableChpx, binTableChpx.Length, (int)fib.fcPlcfbteChpx);
+            tableStream.Read(binTableChpx, 0, binTableChpx.Length, (int)fib.fcPlcfbteChpx);
 
             //there are n offsets and n-1 fkp's in the bin table
             int n = (((int)fib.lcbPlcfbteChpx - 4) / 8) + 1;
@@ -231,13 +231,10 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             //get bintable for CHPX
             byte[] binTableChpx = new byte[fib.lcbPlcfbteChpx];
-            tableStream.Read(binTableChpx, binTableChpx.Length, (int)fib.fcPlcfbteChpx);
+            tableStream.Read(binTableChpx, 0, binTableChpx.Length, (int)fib.fcPlcfbteChpx);
 
             //there are n offsets and n-1 fkp's in the bin table
             int n = (((int)fib.lcbPlcfbteChpx - 4) / 8) + 1;
-
-            int lastFc = 0;
-            CharacterPropertyExceptions lastChpx = null;
 
             //Get the indexed CHPX FKPs
             for (int i = (n * 4); i < binTableChpx.Length; i += 4)

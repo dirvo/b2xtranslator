@@ -118,7 +118,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
 
                 reader.Close();
             }
-            catch (ArgumentException ae)
+            catch (ArgumentException)
             {
                 printUsage();
             }

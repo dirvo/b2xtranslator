@@ -840,12 +840,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         {
             try
             {
-                //jump to the beginning of the "WordDocument" stream
-                //st.Seek(0, System.IO.SeekOrigin.Begin);
-
                 //read the first 1472 bytes (FIB)
                 byte[] bytes = new byte[1472];
-                st.Read(bytes, 1472, 0);
+                st.Read(bytes, 0, 1472, 0);
 
                 //start parsing the variables
                 wIdent = System.BitConverter.ToUInt16(bytes, 0);

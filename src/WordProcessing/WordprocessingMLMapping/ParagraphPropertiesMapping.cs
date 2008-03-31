@@ -55,7 +55,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             XmlElement pBdr = _nodeFactory.CreateElement("w", "pBdr", OpenXmlNamespaces.WordprocessingML);
             XmlElement spacing = _nodeFactory.CreateElement("w", "spacing", OpenXmlNamespaces.WordprocessingML);
             XmlElement jc = null;
-            XmlElement shd = null;
 
             //append style id 
             XmlElement pStyle = _nodeFactory.CreateElement("w", "pStyle", OpenXmlNamespaces.WordprocessingML);

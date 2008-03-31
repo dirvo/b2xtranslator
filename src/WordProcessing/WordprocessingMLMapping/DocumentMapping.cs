@@ -339,8 +339,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 //its a picture
                 PictureDescriptor pict = new PictureDescriptor(chpx, _doc.DataStream);
-                ImagePart imgPart = copyPicture(pict);
-                pict.Convert(new PictureMapping(_writer, imgPart));
+
+                //sometimes there is a picture mark without a picture,
+                //do not convert these marks
+                if (pict.mfp.mm > 98)
+                {
+                    ImagePart imgPart = copyPicture(pict);
+                    pict.Convert(new PictureMapping(_writer, imgPart));
+                }
             }
             else
             {
@@ -450,6 +456,38 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             imgPart.GetStream().Write(pict.Picture, 0, pict.Picture.Length);
 
             return imgPart;
+        }
+
+        /// <summary>
+        /// Checks if the CHPX is special
+        /// </summary>
+        /// <param name="chpx">The CHPX</param>
+        /// <returns></returns>
+        private bool isSpecial(CharacterPropertyExceptions chpx)
+        {
+            bool ret = false;
+            foreach (SinglePropertyModifier sprm in chpx.grpprl)
+            {
+                if (sprm.OpCode == 0x6A03 || sprm.OpCode == 0x6A12)
+                {
+                    //special picture
+                    ret = true;
+                    break;
+                }
+                else if (sprm.OpCode == 0x6A09)
+                {
+                    //special symbol
+                    ret = true;
+                    break;
+                }
+                else if (sprm.OpCode == 0x0855)
+                {
+                    //special value
+                    ret = DIaLOGIKa.b2xtranslator.DocFileFormat.Utils.ByteToBool(sprm.Arguments[0]);
+                    break;
+                }
+            }
+            return ret;
         }
     }
 }

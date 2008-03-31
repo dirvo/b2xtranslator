@@ -35,8 +35,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
     public class WordDocument : IVisitable
     {
-        private StorageReader _reader;
-
         /// <summary>
         /// 
         /// </summary>
@@ -154,20 +152,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.Styles = new StyleSheet(this.FIB, this.TableStream, this.DataStream);
 
             //read font table
-            this.FontTable = new FontTable();
-            byte[] ftBytes = new byte[this.FIB.lcbSttbfffn];
-            this.TableStream.Read(ftBytes, ftBytes.Length, this.FIB.fcSttbfffn);
-
-            //parse the font table
-            Int32 ffnCount = System.BitConverter.ToInt32(ftBytes, 0);
-            int pos = 4;
-            for (int i = 0; i < ffnCount; i++)
-            {
-                byte[] ffnBytes = new byte[ftBytes[pos]+1];
-                Array.Copy(ftBytes, pos, ffnBytes, 0, ffnBytes.Length);
-                this.FontTable.Add(new FontFamilyName(ffnBytes));
-                pos += ffnBytes.Length ;
-            }
+            this.FontTable = new FontTable(this.TableStream, this.FIB);
 
             //parse all PAPX and build the dictionary
             this.AllPapx = new Dictionary<Int32, ParagraphPropertyExceptions>();

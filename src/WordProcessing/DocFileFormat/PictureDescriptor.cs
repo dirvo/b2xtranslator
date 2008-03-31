@@ -124,16 +124,22 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         {
             //Get start and length of the PICT
             Int32 fc = getFcPic(chpx);
-            byte[] lcbBytes = new byte[4];
-            dataStream.Read(lcbBytes, 4, fc);
-            Int32 lcb = System.BitConverter.ToInt32(lcbBytes, 0);
+            if (fc >= 0)
+            {
+                byte[] lcbBytes = new byte[4];
+                dataStream.Read(lcbBytes, 0, 4, fc);
+                Int32 lcb = System.BitConverter.ToInt32(lcbBytes, 0);
 
-            //read the bytes of the PICT
-            byte[] pictBytes = new byte[lcb];
-            dataStream.Read(pictBytes, lcb, fc + 4);
+                if (lcb > 0)
+                {
+                    //read the bytes of the PIC
+                    byte[] pictBytes = new byte[lcb];
+                    dataStream.Read(pictBytes, 0, lcb, fc + 4);
 
-            //parse
-            parseBytes(pictBytes);
+                    //parse
+                    parseBytes(pictBytes);
+                }
+            }
         }
 
         /// <summary>
@@ -155,59 +161,68 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.mfp.yExt = System.BitConverter.ToInt16(bytes, 6);
             this.mfp.hMf = System.BitConverter.ToInt16(bytes, 8);
 
-            this.rcWinMf = new byte[14];
-            Array.Copy(bytes, 10, this.rcWinMf, 0, 14);
-
-            //dimensions
-            this.dxaGoal = System.BitConverter.ToInt16(bytes, 24);
-            this.dyaGoal = System.BitConverter.ToInt16(bytes, 26);
-            this.mx = System.BitConverter.ToUInt16(bytes, 28);
-            this.my = System.BitConverter.ToUInt16(bytes, 30);
-
-            //cropping
-            this.dxaCropLeft = System.BitConverter.ToInt16(bytes, 32);
-            this.dyaCropTop = System.BitConverter.ToInt16(bytes, 34);
-            this.dxaCropRight = System.BitConverter.ToInt16(bytes, 36);
-            this.dyaCropBottom = System.BitConverter.ToInt16(bytes, 38);
-
-            //variable part starts at byte 0x50
-            int readPos = 0x50;
-
-            //skip the first 40 bytes
-            readPos += 40;
-
-            //read the name
-            string temp = "";
-            while(temp != "\0")
+            if (this.mfp.mm > 98)
             {
-                this.Name += temp;
-                temp = Encoding.Unicode.GetString(bytes, readPos, 2);
-                readPos+=2;
-            }
-            //name section is terminated by another \0
-            readPos+=2;
+                this.rcWinMf = new byte[14];
+                Array.Copy(bytes, 10, this.rcWinMf, 0, 14);
 
-            //skip the next 79 bytes
-            readPos += 79;
+                //dimensions
+                this.dxaGoal = System.BitConverter.ToInt16(bytes, 24);
+                this.dyaGoal = System.BitConverter.ToInt16(bytes, 26);
+                this.mx = System.BitConverter.ToUInt16(bytes, 28);
+                this.my = System.BitConverter.ToUInt16(bytes, 30);
 
-            //read the picture
-            this.Picture = new byte[bytes.Length-readPos];
-            Array.Copy(bytes, readPos, this.Picture, 0, this.Picture.Length);
+                //cropping
+                this.dxaCropLeft = System.BitConverter.ToInt16(bytes, 32);
+                this.dyaCropTop = System.BitConverter.ToInt16(bytes, 34);
+                this.dxaCropRight = System.BitConverter.ToInt16(bytes, 36);
+                this.dyaCropBottom = System.BitConverter.ToInt16(bytes, 38);
 
-            //set the picture type, compare the first 3 bytes
-            if (this.Picture[0] == 0xFF && this.Picture[1] == 0xD8 && this.Picture[2] == 0xFF)
-            {
-                this.Type = PictureType.jpg;
-            }
-            else if (this.Picture[0] == 0x89 && this.Picture[1] == 0x50 && this.Picture[2] == 0x4E)
-            {
-                this.Type = PictureType.png;
+                //variable part starts at byte 0x50
+                int readPos = 0x50;
+
+                //skip the first 40 bytes
+                readPos += 40;
+
+                //read the name
+                string temp = "";
+                while (temp != "\0")
+                {
+                    this.Name += temp;
+                    temp = Encoding.Unicode.GetString(bytes, readPos, 2);
+                    readPos += 2;
+                }
+                //name section is terminated by another \0
+                readPos += 2;
+
+                //skip the next 79 bytes
+                readPos += 79;
+
+                //read the picture
+                this.Picture = new byte[bytes.Length - readPos];
+                Array.Copy(bytes, readPos, this.Picture, 0, this.Picture.Length);
+
+                //set the picture type, compare the first 3 bytes
+                if (this.Picture[0] == 0xFF && this.Picture[1] == 0xD8 && this.Picture[2] == 0xFF)
+                {
+                    this.Type = PictureType.jpg;
+                }
+                else if (this.Picture[0] == 0x89 && this.Picture[1] == 0x50 && this.Picture[2] == 0x4E)
+                {
+                    this.Type = PictureType.png;
+                }
             }
         }
 
+        /// <summary>
+        /// Returns the fcPic into the "data" stream, where the picture begins.
+        /// Returns -1 if the CHPX has no fcPic.
+        /// </summary>
+        /// <param name="chpx">The CHPX</param>
+        /// <returns></returns>
         private Int32 getFcPic(CharacterPropertyExceptions chpx)
         {
-            Int32 ret = 0;
+            Int32 ret = -1;
             foreach (SinglePropertyModifier sprm in chpx.grpprl)
             {
                 if (sprm.OpCode == 0x6A03)
