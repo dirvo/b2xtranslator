@@ -335,6 +335,28 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //write properties
             chpx.Convert(new CharacterPropertiesMapping(_writer, _doc.Styles, _doc.FontTable));
 
+            if (chars.Count == 1 && chars[0] == TextBoundary.Picture)
+            {
+                //its a picture
+                PictureDescriptor pict = new PictureDescriptor(chpx, _doc.DataStream);
+                ImagePart imgPart = copyPicture(pict);
+                pict.Convert(new PictureMapping(_writer, imgPart));
+            }
+            else
+            {
+                writeText(chars);
+            }
+
+            //end run
+            _writer.WriteEndElement();
+        }
+
+        /// <summary>
+        /// Writes the given text to the document
+        /// </summary>
+        /// <param name="chars"></param>
+        private void writeText(List<char> chars)
+        {
             //start text
             _writer.WriteStartElement("w", "t", OpenXmlNamespaces.WordprocessingML);
 
@@ -344,7 +366,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
 
             //write text
-            foreach(char c in chars)
+            foreach (char c in chars)
             {
                 if (c == TextBoundary.Tab)
                 {
@@ -354,33 +376,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 {
                     _writer.WriteElementString("w", "br", OpenXmlNamespaces.WordprocessingML, "");
                 }
-                else if(c == TextBoundary.Picture)
+                else if (c == TextBoundary.Picture)
                 {
-                    PictureDescriptor pict = new PictureDescriptor(chpx, _doc.DataStream);
-                    
-                    //create the image part
-                    ImagePart imgPart = null;
-                    switch (pict.Type)
-                    {
-                        case PictureDescriptor.PictureType.jpg:
-                            imgPart = _docPart.AddImagePart(ImagePartType.Jpeg);
-                            break;
-                        case PictureDescriptor.PictureType.png:
-                            imgPart = _docPart.AddImagePart(ImagePartType.Png);
-                            break;
-                        case PictureDescriptor.PictureType.wmf:
-                            imgPart = _docPart.AddImagePart(ImagePartType.Wmf);
-                            break;
-                        default:
-                            imgPart = _docPart.AddImagePart(ImagePartType.Png);
-                            break;
-                    }
-
-                    //write the picture
-                    imgPart.GetStream().Write(pict.Picture, 0, pict.Picture.Length);
-
-                    //convert the picture xml
-                    pict.Convert(new PictureMapping(_writer, imgPart));
+                    //do nothing
                 }
                 else if (c == TextBoundary.ParagraphEnd)
                 {
@@ -412,17 +410,46 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     _writer.WriteAttributeString("w", "fldCharType", OpenXmlNamespaces.WordprocessingML, "end");
                     _writer.WriteEndElement();
                 }
-                else if  ((int)c > 31 && (int)c != 0xFFFF)
+                else if ((int)c > 31 && (int)c != 0xFFFF)
                 {
-                     _writer.WriteString(new String(c, 1));
+                    _writer.WriteString(new String(c, 1));
                 }
             }
 
-            //end run
+            //end text
             _writer.WriteEndElement();
+        }
 
-            //end run
-            _writer.WriteEndElement();
+        /// <summary>
+        /// Copies the picture from the binary stream to the zip archive 
+        /// and creates the relationships for the image.
+        /// </summary>
+        /// <param name="pict">The PictureDescriptor</param>
+        /// <returns>The created ImagePart</returns>
+        private ImagePart copyPicture(PictureDescriptor pict)
+        {
+            //create the image part
+            ImagePart imgPart = null;
+            switch (pict.Type)
+            {
+                case PictureDescriptor.PictureType.jpg:
+                    imgPart = _docPart.AddImagePart(ImagePartType.Jpeg);
+                    break;
+                case PictureDescriptor.PictureType.png:
+                    imgPart = _docPart.AddImagePart(ImagePartType.Png);
+                    break;
+                case PictureDescriptor.PictureType.wmf:
+                    imgPart = _docPart.AddImagePart(ImagePartType.Wmf);
+                    break;
+                default:
+                    imgPart = _docPart.AddImagePart(ImagePartType.Png);
+                    break;
+            }
+
+            //write the picture
+            imgPart.GetStream().Write(pict.Picture, 0, pict.Picture.Length);
+
+            return imgPart;
         }
     }
 }
