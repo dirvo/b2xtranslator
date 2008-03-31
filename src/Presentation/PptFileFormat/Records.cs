@@ -8,6 +8,15 @@ using System.IO;
 
 namespace PptFileFormat.Records
 {
+    /// <summary>
+    /// Used for mapping Office record TypeCodes to the classes implementing them.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class)]
+    public class OfficeRecord : Attribute
+    {
+        public UInt16 TypeCode;
+    }
+
     public class Record : IEnumerable<Record>
     {
         public const uint HEADER_SIZE_IN_BYTES = (16 + 16 + 32) / 8;
@@ -22,14 +31,14 @@ namespace PptFileFormat.Records
         public uint HeaderSize = HEADER_SIZE_IN_BYTES;
         public uint BodySize;
 
-        public uint Type;
+        public uint TypeCode;
         public uint Version;
         public uint Instance;
 
-        public Record(VirtualStream source, uint bodySize, uint type, uint version, uint instance)
+        public Record(VirtualStream source, uint bodySize, uint typeCode, uint version, uint instance)
         {
             this.BodySize = bodySize;
-            this.Type = type;
+            this.TypeCode = typeCode;
             this.Version = version;
             this.Instance = instance;
         }
@@ -57,8 +66,8 @@ namespace PptFileFormat.Records
 
         public string FormatType()
         {
-            bool isEscherRecord = (this.Type >= 0xF000 && this.Type <= 0xFFFF);
-            return String.Format(isEscherRecord ? "0x{0:X}" : "{0}", this.Type);
+            bool isEscherRecord = (this.TypeCode >= 0xF000 && this.TypeCode <= 0xFFFF);
+            return String.Format(isEscherRecord ? "0x{0:X}" : "{0}", this.TypeCode);
         }
 
         public virtual string ToString(uint depth)
@@ -111,24 +120,37 @@ namespace PptFileFormat.Records
         {
             Dictionary<UInt16, Type> result = new Dictionary<UInt16, Type>();
 
-            // PowerPoint records
-            result.Add(1000, typeof(PptDocumentRecord));
-            result.Add(1001, typeof(DocumentAtom));
-            result.Add(1006, typeof(Slide));
-            result.Add(1016, typeof(List));
-            result.Add(1035, typeof(PPDrawingGroup));
-            result.Add(1036, typeof(PPDrawing));
-            result.Add(4008, typeof(TextBytesAtom));
-            result.Add(4080, typeof(SlideListWithText));
+            // Note: We return a Dictionary that maps Office record TypeCodes to Office record classes.
+            // We do this by querying all classes in the current assembly, filtering by namespace
+            // PptFileFormat.Records and looking for attributes of type OfficeRecord.
+            //
+            // If in doubt see usage below.
+            foreach (Type t in Assembly.GetExecutingAssembly().GetTypes())
+            {
+                if (t.Namespace == "PptFileFormat.Records")
+                {
+                    object[] attrs = t.GetCustomAttributes(typeof(OfficeRecord), false);
 
-            // Drawing records
-            result.Add(0xF000, typeof(DrawingGroup));
-            result.Add(0xF002, typeof(DrawingContainer));
-            result.Add(0xF003, typeof(GroupContainer));
-            result.Add(0xF004, typeof(ShapeContainer));
-            result.Add(0xF006, typeof(DrawingGroupRecord));
-            result.Add(0xF00D, typeof(ClientTextbox));
-            result.Add(0xF011, typeof(ClientData));
+                    OfficeRecord attr = null;
+                    
+                    if (attrs.Length > 0)
+                        attr = attrs[0] as OfficeRecord;
+
+                    if (attr != null)
+                    {
+                        UInt16 typeCode = attr.TypeCode;
+
+                        if (result.ContainsKey(typeCode))
+                        {
+                            throw new Exception(String.Format(
+                                "Tried to register TypeCode {0} to {1}, but it is already registered to {2}",
+                                typeCode, t, result[typeCode]));
+                        }
+
+                        result.Add(attr.TypeCode, t);
+                    }
+                }
+            }
 
             return result;
         }
@@ -139,7 +161,7 @@ namespace PptFileFormat.Records
             uint version = verAndInstance & 0x000FU;         // first 4 bit of field verAndInstance
             uint instance = (verAndInstance & 0xFFF0U) >> 4; // last 12 bit of field verAndInstance
 
-            UInt16 type = source.ReadUInt16();
+            UInt16 typeCode = source.ReadUInt16();
             UInt32 size = source.ReadUInt32();
 
             bool isContainer = (version == 0xF);
@@ -147,7 +169,7 @@ namespace PptFileFormat.Records
             Record result;
             Type cls;
 
-            if (TypeToRecordClassMapping.TryGetValue(type, out cls))
+            if (TypeToRecordClassMapping.TryGetValue(typeCode, out cls))
             {
                 ConstructorInfo constructor = cls.GetConstructor(new Type[] {
                     typeof(VirtualStream), typeof(uint), typeof(uint), typeof(uint), typeof(uint) 
@@ -163,18 +185,18 @@ namespace PptFileFormat.Records
                 try
                 {
                     result = (Record)constructor.Invoke(new object[] {
-                        source, size, type, version, instance
+                        source, size, typeCode, version, instance
                     });
                 }
                 catch (TargetInvocationException e)
                 {
-                    System.Console.WriteLine(e.InnerException);
+                    Console.WriteLine(e.InnerException);
                     throw e.InnerException;
                 }
             }
             else
             {
-                result = new UnknownRecord(source, size, type, version, instance);
+                result = new UnknownRecord(source, size, typeCode, version, instance);
             }
 
             return result;
@@ -187,8 +209,8 @@ namespace PptFileFormat.Records
     {
         public byte[] RawData;
 
-        public UnknownRecord(VirtualStream source, uint size, uint type, uint version, uint instance)
-            : base(source, size, type, version, instance)
+        public UnknownRecord(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
+            : base(source, size, typeCode, version, instance)
         {
             this.RawData = new byte[this.BodySize];
             source.Read(this.RawData);
@@ -212,8 +234,8 @@ namespace PptFileFormat.Records
     {
         public List<Record> Children = new List<Record>();
 
-        public RegularContainer(VirtualStream source, uint size, uint type, uint version, uint instance)
-            : base(source, size, type, version, instance)
+        public RegularContainer(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
+            : base(source, size, typeCode, version, instance)
         {
             uint readSize = 0;
             while (readSize < this.BodySize)
@@ -264,12 +286,14 @@ namespace PptFileFormat.Records
     }
 
     #region PowerPoint records
+    [OfficeRecord(TypeCode = 1000)]
     public class PptDocumentRecord : RegularContainer
     {
-        public PptDocumentRecord(VirtualStream source, uint size, uint type, uint version, uint instance)
-            : base(source, size, type, version, instance) { }
+        public PptDocumentRecord(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
+            : base(source, size, typeCode, version, instance) { }
     }
 
+    [OfficeRecord(TypeCode = 1001)]
     public class DocumentAtom : Record
     {
         public GPointAtom SlideSize;
@@ -286,8 +310,8 @@ namespace PptFileFormat.Records
         public bool RightToLeft;
         public bool ShowComments;
 
-        public DocumentAtom(VirtualStream source, uint size, uint type, uint version, uint instance)
-            : base(source, size, type, version, instance)
+        public DocumentAtom(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
+            : base(source, size, typeCode, version, instance)
         {
             this.SlideSize = new GPointAtom(source);
             this.NotesSize = new GPointAtom(source);
@@ -354,45 +378,46 @@ namespace PptFileFormat.Records
         }
     }
 
-    public class PPDrawing : RegularContainer
-    {
-        public PPDrawing(VirtualStream source, uint size, uint type, uint version, uint instance)
-            : base(source, size, type, version, instance) { }
-    }
-
-    public class PPDrawingGroup : RegularContainer
-    {
-        public PPDrawingGroup(VirtualStream source, uint size, uint type, uint version, uint instance)
-            : base(source, size, type, version, instance) { }
-    }
-
-    public class SlideListWithText : RegularContainer
-    {
-        public SlideListWithText(VirtualStream source, uint size, uint type, uint version, uint instance)
-            : base(source, size, type, version, instance) { }
-    }
-
-    public class List : RegularContainer
-    {
-        public List(VirtualStream source, uint size, uint type, uint version, uint instance)
-            : base(source, size, type, version, instance) { }
-    }
-
+    [OfficeRecord(TypeCode = 1006)]
     public class Slide : RegularContainer
     {
-        public Slide(VirtualStream source, uint size, uint type, uint version, uint instance)
-            : base(source, size, type, version, instance) { }
+        public Slide(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
+            : base(source, size, typeCode, version, instance) { }
     }
 
+    [OfficeRecord(TypeCode = 1016)]
+    public class List : RegularContainer
+    {
+        public List(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
+            : base(source, size, typeCode, version, instance) { }
+    }
+
+
+    [OfficeRecord(TypeCode = 1035)]
+    public class PPDrawingGroup : RegularContainer
+    {
+        public PPDrawingGroup(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
+            : base(source, size, typeCode, version, instance) { }
+    }
+
+    [OfficeRecord(TypeCode = 1036)]
+    public class PPDrawing : RegularContainer
+    {
+        public PPDrawing(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
+            : base(source, size, typeCode, version, instance) { }
+    }
+
+    [OfficeRecord(TypeCode = 4008)]
     public class TextBytesAtom : Record
     {
         public static Encoding ENCODING = Encoding.GetEncoding("iso-8859-1");
         public string Text;
 
-        public TextBytesAtom(VirtualStream source, uint size, uint type, uint version, uint instance)
-            : base(source, size, type, version, instance) {
+        public TextBytesAtom(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
+            : base(source, size, typeCode, version, instance)
+        {
             byte[] bytes = new byte[size];
-            source.Read(bytes, (int) size);
+            source.Read(bytes, (int)size);
 
             this.Text = new String(ENCODING.GetChars(bytes));
         }
@@ -400,19 +425,50 @@ namespace PptFileFormat.Records
         public override string ToString(uint depth)
         {
             return String.Format("{0}\n{1}Text = {2}",
-                base.ToString(depth), IndentationForDepth(depth + 1),  this.Text);
+                base.ToString(depth), IndentationForDepth(depth + 1), this.Text);
         }
+    }
+
+    [OfficeRecord(TypeCode = 4080)]
+    public class SlideListWithText : RegularContainer
+    {
+        public SlideListWithText(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
+            : base(source, size, typeCode, version, instance) { }
     }
 
     #endregion
 
     #region Drawing records
+
+    [OfficeRecord(TypeCode = 0xF000)]
     public class DrawingGroup : RegularContainer
     {
-        public DrawingGroup(VirtualStream source, uint size, uint type, uint version, uint instance)
-            : base(source, size, type, version, instance) { }
+        public DrawingGroup(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
+            : base(source, size, typeCode, version, instance) { }
     }
 
+    [OfficeRecord(TypeCode = 0xF002)]
+    public class DrawingContainer : RegularContainer
+    {
+        public DrawingContainer(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
+            : base(source, size, typeCode, version, instance) { }
+    }
+
+    [OfficeRecord(TypeCode = 0xF003)]
+    public class GroupContainer : RegularContainer
+    {
+        public GroupContainer(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
+            : base(source, size, typeCode, version, instance) { }
+    }
+
+    [OfficeRecord(TypeCode = 0xF004)]
+    public class ShapeContainer : RegularContainer
+    {
+        public ShapeContainer(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
+            : base(source, size, typeCode, version, instance) { }
+    }
+
+    [OfficeRecord(TypeCode = 0xF006)]
     public class DrawingGroupRecord : Record
     {
         public class FileIdCluster
@@ -445,8 +501,8 @@ namespace PptFileFormat.Records
 
         public List<FileIdCluster> Clusters = new List<FileIdCluster>();
 
-        public DrawingGroupRecord(VirtualStream source, uint size, uint type, uint version, uint instance)
-            : base(source, size, type, version, instance)
+        public DrawingGroupRecord(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
+            : base(source, size, typeCode, version, instance)
         {
             this.MaxShapeId = source.ReadUInt32();
             this.IdClustersCount = source.ReadUInt32() - 1; // Office saves the actual value + 1 -- flgr
@@ -493,34 +549,18 @@ namespace PptFileFormat.Records
         }
     }
 
-    public class DrawingContainer : RegularContainer
-    {
-        public DrawingContainer(VirtualStream source, uint size, uint type, uint version, uint instance)
-            : base(source, size, type, version, instance) { }
-    }
-
-    public class GroupContainer : RegularContainer
-    {
-        public GroupContainer(VirtualStream source, uint size, uint type, uint version, uint instance)
-            : base(source, size, type, version, instance) { }
-    }
-
-    public class ShapeContainer : RegularContainer
-    {
-        public ShapeContainer(VirtualStream source, uint size, uint type, uint version, uint instance)
-            : base(source, size, type, version, instance) { }
-    }
-
+    [OfficeRecord(TypeCode = 0xF00D)]
     public class ClientTextbox : RegularContainer
     {
-        public ClientTextbox(VirtualStream source, uint size, uint type, uint version, uint instance)
-            : base(source, size, type, version, instance) { }
+        public ClientTextbox(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
+            : base(source, size, typeCode, version, instance) { }
     }
 
+    [OfficeRecord(TypeCode = 0xF011)]
     public class ClientData : RegularContainer
     {
-        public ClientData(VirtualStream source, uint size, uint type, uint version, uint instance)
-            : base(source, size, type, version, instance) { }
+        public ClientData(VirtualStream source, uint size, uint typeCode, uint version, uint instance)
+            : base(source, size, typeCode, version, instance) { }
     }
 
     #endregion
