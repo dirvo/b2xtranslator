@@ -28,13 +28,16 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Presentation
+namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML
 {
     public class PresentationDocument : OpenXmlPackage
     {
+        protected PresentationPart _presentationPart;
+
         protected PresentationDocument(string fileName)
             : base(fileName)
         {
+            _presentationPart = new PresentationPart(this);
         }
 
         public static PresentationDocument Create(string fileName)
@@ -42,6 +45,11 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Presentation
             PresentationDocument presentation = new PresentationDocument(fileName);
 
             return presentation;
+        }
+
+        public PresentationPart PresentationPart
+        {
+            get { return _presentationPart; }
         }
     }
 }
