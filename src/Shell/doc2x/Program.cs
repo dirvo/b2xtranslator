@@ -135,12 +135,12 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
             catch (ReadBytesAmountMismatchException)
             {
                 if (verboseLvl > VerboseLevel.None)
-                    Console.WriteLine("The input file is no valid .doc file.");
+                    Console.WriteLine("The input file is not a valid .doc file.");
             }
             catch (MagicNumberException)
             {
                 if (verboseLvl > VerboseLevel.None)
-                    Console.WriteLine("The input file is no valid .doc file.");
+                    Console.WriteLine("The input file is not a valid .doc file.");
             }
             catch (InvalidFileException)
             {
@@ -150,7 +150,7 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
             catch (ByteParseException)
             {
                 if (verboseLvl > VerboseLevel.None)
-                    Console.WriteLine("The input file is no valid .doc file.");
+                    Console.WriteLine("The input file is not a valid .doc file.");
             }
             catch (ZipCreationException)
             {
