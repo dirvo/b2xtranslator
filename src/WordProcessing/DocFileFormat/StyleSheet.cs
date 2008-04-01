@@ -36,17 +36,17 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
     public class StyleSheet : IVisitable
     {
         /// <summary>
-        /// The StyleSheetInformation
+        /// The StyleSheetInformation of the stylesheet.
         /// </summary>
         public StyleSheetInformation stshi;
 
         /// <summary>
-        /// The list contains all styles
+        /// The list contains all styles.
         /// </summary>
         public List<StyleSheetDescription> Styles;
 
         /// <summary>
-        /// Parses the streams to retrieve a StyleSheet
+        /// Parses the streams to retrieve a StyleSheet.
         /// </summary>
         /// <param name="fib">The FileInformationBlock</param>
         /// <param name="tableStream">The 0Table or 1Table stream</param>
@@ -57,14 +57,14 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             tableStream.Read(stshiLengthBytes, 0, stshiLengthBytes.Length, fib.fcStshf);
             Int16 cbStshi = System.BitConverter.ToInt16(stshiLengthBytes, 0);
 
-            //read the bytes of the stshi
+            //read the bytes of the STSHI
             byte[] stshi = new byte[cbStshi];
             tableStream.Read(stshi, 0, cbStshi, fib.fcStshf + 2);
 
             //parses STSHI
             this.stshi = new StyleSheetInformation(stshi);
 
-            //create list for STDs
+            //create list of STDs
             this.Styles = new List<StyleSheetDescription>();
             for (int i = 0; i < this.stshi.cstd; i++)
             {
@@ -79,7 +79,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     byte[] std = new byte[cbStd];
                     tableStream.Read(std);
 
-                    //parse the STD
+                    //parse the STD bytes
                     this.Styles.Add(new StyleSheetDescription(std, (int)this.stshi.cbSTDBaseInFile, dataStream));
                 }
                 else

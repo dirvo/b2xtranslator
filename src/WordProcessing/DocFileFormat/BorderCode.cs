@@ -48,7 +48,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             dotDotDash,
             triple,
             thinThickSmallGap,
-            tickThinSmallGap,
+            thickThinSmallGap,
             thinThickThinSmallGap,
             thinThickMediumGap,
             thickThinMediumGap,

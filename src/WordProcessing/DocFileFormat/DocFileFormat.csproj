@@ -70,7 +70,6 @@
     <Compile Include="PieceTable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyExceptions.cs" />
-    <Compile Include="SectionProperties.cs" />
     <Compile Include="ShadingDescriptor.cs" />
     <Compile Include="SinglePropertyModifier.cs" />
     <Compile Include="StyleSheet.cs" />
@@ -98,6 +97,8 @@
     <Compile Include="Global.cs" />
     <Compile Include="InvalidFileException.cs" />
     <Compile Include="PictureDescriptor.cs" />
+    <Compile Include="SectionPropertyExceptions.cs" />
+    <Compile Include="SectionTable.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -70,6 +70,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             node.AppendChild(ele);
         }
 
+        protected void appendValueAttribute(XmlElement node, string attributeName, string attributeValue)
+        {
+            XmlAttribute att = _nodeFactory.CreateAttribute("w", attributeName, OpenXmlNamespaces.WordprocessingML);
+            att.Value = attributeValue;
+            node.Attributes.Append(att);
+        }
+
         protected void appendValueElement(XmlElement node, string elementName, string elementValue, bool unique)
         {
             XmlElement ele = _nodeFactory.CreateElement("w", elementName, OpenXmlNamespaces.WordprocessingML);

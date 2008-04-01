@@ -134,7 +134,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 {
                     //read the bytes of the PIC
                     byte[] pictBytes = new byte[lcb];
-                    dataStream.Read(pictBytes, 0, lcb, fc + 4);
+                    dataStream.Read(pictBytes, 0, lcb, fc+4);
 
                     //parse
                     parseBytes(pictBytes);

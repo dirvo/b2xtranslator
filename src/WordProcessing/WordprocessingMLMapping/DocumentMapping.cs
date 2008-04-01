@@ -44,6 +44,20 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private MainDocumentPart _docPart;
         private XmlWriterSettings _xws;
 
+        /// <summary>
+        /// A dictionary that contains all PAPX of the document.<br/>
+        /// The key is the FC at which the paragraph starts.<br/>
+        /// The value is the PAPX that formats the paragraph.
+        /// </summary>
+        private Dictionary<Int32, ParagraphPropertyExceptions> _allPapx;
+
+        /// <summary>
+        /// A dictionary that contains all SEPX of the document.<br/>
+        /// The key is the CP at which sections ends.<br/>
+        /// The value is the SEPX that formats the section.
+        /// </summary>
+        private Dictionary<Int32, SectionPropertyExceptions> _allSepx;
+
         public DocumentMapping(MainDocumentPart docPart, XmlWriterSettings xws)
             : base(XmlWriter.Create(docPart.GetStream(), xws))
         {
@@ -55,6 +69,23 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             _doc = doc;
 
+            //build a dictionary of all PAPX
+            _allPapx = new Dictionary<Int32, ParagraphPropertyExceptions>();
+            for (int i = 0; i < _doc.AllPapxFkps.Count; i++)
+            {
+                for (int j = 0; j < _doc.AllPapxFkps[i].grppapx.Length; j++)
+                {
+                    _allPapx.Add(_doc.AllPapxFkps[i].rgfc[j], _doc.AllPapxFkps[i].grppapx[j]);
+                }
+            }
+
+            //build a dictionary of all SEPX
+            _allSepx = new Dictionary<Int32, SectionPropertyExceptions>();
+            for (int i = 0; i < _doc.SectionTable.grpsepx.Length; i++)
+            {
+                _allSepx.Add(_doc.SectionTable.rgfc[i+1], _doc.SectionTable.grpsepx[i]);
+            }
+
             _writer.WriteStartDocument();
             _writer.WriteStartElement("w", "document", OpenXmlNamespaces.WordprocessingML);
             _writer.WriteStartElement("w", "body", OpenXmlNamespaces.WordprocessingML);
@@ -63,7 +94,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             while (cp < _doc.Text.Count)
             {
                 Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
-                ParagraphPropertyExceptions papx = _doc.FindValidPapx(fc);
+                ParagraphPropertyExceptions papx = findValidPapx(fc);
                 TableInfo tai = new TableInfo(papx);
 
                 if (tai.fInTable)
@@ -77,6 +108,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     cp = writeParagraph(cp);
                 }
             }
+
+            //write the section properties of the body with the last SEPX
+            SectionPropertyExceptions lastSepx = _doc.SectionTable.grpsepx[_doc.SectionTable.grpsepx.Length - 1];
+            lastSepx.Convert(new SectionPropertiesMapping(_writer));
 
             _writer.WriteEndElement();
             _writer.WriteEndElement();
@@ -94,7 +129,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             Int32 cp = initialCp;
             Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
-            ParagraphPropertyExceptions papx = _doc.FindValidPapx(fc);
+            ParagraphPropertyExceptions papx = findValidPapx(fc);
             TableInfo tai = new TableInfo(papx);
 
             //start table
@@ -112,7 +147,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 cp = writeTableRow(cp);
 
                 fc = _doc.PieceTable.FileCharacterPositions[cp];
-                papx = _doc.FindValidPapx(fc);
+                papx = findValidPapx(fc);
                 tai = new TableInfo(papx);
             }
 
@@ -131,7 +166,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             Int32 cp = initialCp;
             Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
-            ParagraphPropertyExceptions papx = _doc.FindValidPapx(fc);
+            ParagraphPropertyExceptions papx = findValidPapx(fc);
             TableInfo  tai = new TableInfo(papx);
 
             //start w:tr
@@ -149,7 +184,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                 //each cell has it's own PAPX
                 fc = _doc.PieceTable.FileCharacterPositions[cp];
-                papx = _doc.FindValidPapx(fc);
+                papx = findValidPapx(fc);
                 tai = new TableInfo(papx);
             }
 
@@ -171,7 +206,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             int cp = initialCp;
             Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
-            ParagraphPropertyExceptions papx = _doc.FindValidPapx(fc);
+            ParagraphPropertyExceptions papx = findValidPapx(fc);
             TableInfo tai = new TableInfo(papx);
 
             while (tai.fTtp==false && tai.fInTable==true)
@@ -181,7 +216,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     cp++;
                 }
                 fc = _doc.PieceTable.FileCharacterPositions[cp];
-                papx = _doc.FindValidPapx(fc);
+                papx = findValidPapx(fc);
                 tai = new TableInfo(papx);
                 cp++;
             }
@@ -226,7 +261,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
 
             //write the remaining chars as own paragraph
-            cp = writeParagraph(cp, cpCellEnd);
+            cp = writeParagraph(cp, cpCellEnd, false);
 
             //end w:tc
             _writer.WriteEndElement();
@@ -246,13 +281,24 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             //search the paragraph end
             Int32 cpParaEnd = cp;
-            while (_doc.Text[cpParaEnd] != TextBoundary.ParagraphEnd)
+            while (_doc.Text[cpParaEnd] != TextBoundary.ParagraphEnd && 
+                _doc.Text[cpParaEnd] != TextBoundary.PageBreakOrSectionMark)
             {
                 cpParaEnd++;
             }
-            cpParaEnd++;
 
-            return writeParagraph(cp, cpParaEnd);
+
+            //end was a section break
+            if (_doc.Text[cpParaEnd] == TextBoundary.PageBreakOrSectionMark)
+            {
+                cpParaEnd++;
+                return writeParagraph(cp, cpParaEnd, true);
+            }
+            else
+            {
+                cpParaEnd++;
+                return writeParagraph(cp, cpParaEnd, false);
+            }
         }
 
         /// <summary>
@@ -261,18 +307,30 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// </summary>
         /// <param name="cpStart"></param>
         /// <param name="cpEnd"></param>
+        /// <param name="sectionEnd">Set if this paragraph is the last paragraph of a section</param>
         /// <returns></returns>
-        private Int32 writeParagraph(Int32 cp, Int32 cpEnd)
+        private Int32 writeParagraph(Int32 initialCp, Int32 cpEnd, bool sectionEnd)
         {
+            Int32 cp = initialCp;
             Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
             Int32 fcEnd = _doc.PieceTable.FileCharacterPositions[cpEnd];
-            ParagraphPropertyExceptions papx = _doc.FindValidPapx(fc);
+            ParagraphPropertyExceptions papx = findValidPapx(fc);
 
             //start paragraph
             _writer.WriteStartElement("w", "p", OpenXmlNamespaces.WordprocessingML);
 
-            //write properties
-            papx.Convert(new ParagraphPropertiesMapping(_writer, _doc.Styles));
+            //check for section properties
+            if (sectionEnd)
+            {
+                //this is the last paragraph of this section
+                //write properties with section properties
+                papx.Convert(new ParagraphPropertiesMapping(_writer, _doc.Styles, _allSepx[cpEnd]));
+            }
+            else
+            {
+                //write properties
+                papx.Convert(new ParagraphPropertiesMapping(_writer, _doc.Styles));
+            }
 
             //get all CHPX between these boundaries to determine the count of runs
             List<CharacterPropertyExceptions> chpxs = FormattedDiskPageCHPX.GetCharacterPropertyExceptions(
@@ -315,7 +373,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                 //write the run
                 if (chpxChars.Count > 0)
-                    writeRun(chpxChars, chpxs[i]);
+                {
+                    cp = writeRun(chpxChars, chpxs[i], cp);
+                }
             }
 
             //end paragraph
@@ -327,8 +387,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// <summary>
         /// Writes a run with the given characters and CHPX
         /// </summary>
-        private void writeRun(List<char> chars, CharacterPropertyExceptions chpx)
+        private Int32 writeRun(List<char> chars, CharacterPropertyExceptions chpx, Int32 initialCp)
         {
+            Int32 cp = initialCp;
+
             //start run
             _writer.WriteStartElement("w", "r", OpenXmlNamespaces.WordprocessingML);
 
@@ -347,22 +409,28 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     ImagePart imgPart = copyPicture(pict);
                     pict.Convert(new PictureMapping(_writer, imgPart));
                 }
+
+                cp++;
             }
             else
             {
-                writeText(chars);
+                cp = writeText(chars, cp);
             }
 
             //end run
             _writer.WriteEndElement();
+
+            return cp;
         }
 
         /// <summary>
         /// Writes the given text to the document
         /// </summary>
         /// <param name="chars"></param>
-        private void writeText(List<char> chars)
+        private Int32 writeText(List<char> chars, Int32 initialCp)
         {
+            Int32 cp = initialCp;
+
             //start text
             _writer.WriteStartElement("w", "t", OpenXmlNamespaces.WordprocessingML);
 
@@ -385,6 +453,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 else if (c == TextBoundary.Picture)
                 {
                     //do nothing
+                    //see picture conversion above
                 }
                 else if (c == TextBoundary.ParagraphEnd)
                 {
@@ -396,7 +465,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 }
                 else if (c == TextBoundary.ColumnBreak)
                 {
-                    //do nothing
+                    _writer.WriteStartElement("w", "br", OpenXmlNamespaces.WordprocessingML);
+                    _writer.WriteAttributeString("w", "type", OpenXmlNamespaces.WordprocessingML, "column");
+                    _writer.WriteEndElement();
                 }
                 else if (c == TextBoundary.FieldBeginMark)
                 {
@@ -420,10 +491,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 {
                     _writer.WriteString(new String(c, 1));
                 }
+
+                cp++;
             }
 
             //end text
             _writer.WriteEndElement();
+
+            return cp;
         }
 
         /// <summary>
@@ -487,6 +562,30 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     break;
                 }
             }
+            return ret;
+        }
+
+        /// <summary>
+        /// Finds the PAPX that is valid for the given FC.
+        /// </summary>
+        /// <param name="fc"></param>
+        /// <returns></returns>
+        private ParagraphPropertyExceptions findValidPapx(Int32 fc)
+        {
+            ParagraphPropertyExceptions ret = null;
+
+            while (ret == null)
+            {
+                try
+                {
+                    ret = _allPapx[fc];
+                }
+                catch (KeyNotFoundException)
+                {
+                    fc--;
+                }
+            }
+
             return ret;
         }
     }

@@ -351,9 +351,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         public UInt32 lcbPlcfandTxt;
 
-        public Int32 fcPlcsed;
+        public Int32 fcPlcfSed;
 
-        public UInt32 lcbPlcfsed;
+        public UInt32 lcbPlcfSed;
 
         public Int32 fcPlcfphe;
 
@@ -917,8 +917,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 lcbPlcfandRef = System.BitConverter.ToUInt32(bytes, 190);
                 fcPlcfandTxt = System.BitConverter.ToInt32(bytes, 194);
                 lcbPlcfandTxt = System.BitConverter.ToUInt32(bytes, 198);
-                fcPlcsed = System.BitConverter.ToInt32(bytes, 202);
-                lcbPlcfsed = System.BitConverter.ToUInt32(bytes, 206);
+                fcPlcfSed = System.BitConverter.ToInt32(bytes, 202);
+                lcbPlcfSed = System.BitConverter.ToUInt32(bytes, 206);
                 fcPlcfphe = System.BitConverter.ToInt32(bytes, 218);
                 lcbPlcfphe = System.BitConverter.ToUInt32(bytes, 222);
                 fcSttbfglsy = System.BitConverter.ToInt32(bytes, 226);

@@ -29,33 +29,25 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class FontTable : List<FontFamilyName>, IVisitable
+    public class SectionPropertyExceptions : PropertyExceptions
     {
-        public FontTable(FileInformationBlock fib,VirtualStream tableStream)
+        /// <summary>
+        /// Parses the bytes to retrieve a SectionPropertyExceptions
+        /// </summary>
+        /// <param name="bytes">The bytes starting with the grpprl</param>
+        public SectionPropertyExceptions(byte[] bytes)
+            : base(bytes)
         {
-            byte[] ftBytes = new byte[fib.lcbSttbfffn];
-            tableStream.Read(ftBytes, 0, ftBytes.Length, fib.fcSttbfffn);
-
-            Int32 ffnCount = System.BitConverter.ToInt32(ftBytes, 0);
-            int pos = 4;
-            for (int i = 0; i < ffnCount; i++)
-            {
-                byte[] ffnBytes = new byte[ftBytes[pos] + 1];
-                Array.Copy(ftBytes, pos, ffnBytes, 0, ffnBytes.Length);
-                this.Add(new FontFamilyName(ffnBytes));
-                pos += ffnBytes.Length;
-            }
         }
 
         #region IVisitable Members
 
-        public void Convert<T>(T mapping)
+        public override void Convert<T>(T mapping)
         {
-            ((IMapping<FontTable>)mapping).Apply(this);
+            ((IMapping<SectionPropertyExceptions>)mapping).Apply(this);
         }
 
         #endregion

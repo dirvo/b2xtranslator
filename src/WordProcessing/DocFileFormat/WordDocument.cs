@@ -41,6 +41,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public PieceTable PieceTable;
 
         /// <summary>
+        /// Contains all section descriptors
+        /// </summary>
+        public SectionTable SectionTable;
+
+        /// <summary>
         /// The stream "WordDocument"
         /// </summary>
         public VirtualStream WordDocumentStream;
@@ -111,16 +116,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public FontTable FontTable;
 
         /// <summary>
-        /// A dictionary with all ParagraphPropertyExceptions.<br/>
-        /// The key is the offset where the PAPX starts.
+        /// A list of all FKPs that contain PAPX
         /// </summary>
-        public Dictionary<Int32, ParagraphPropertyExceptions> AllPapx;
-
-        /// <summary>
-        /// A dictionary with all CharacterPropertyExceptions.<br/>
-        /// The key is the offset where the CHPX starts.
-        /// </summary>
-        public Dictionary<Int32, CharacterPropertyExceptions> AllChpx;
+        public List<FormattedDiskPagePAPX> AllPapxFkps;
 
         public WordDocument(StorageReader reader)
         {
@@ -152,18 +150,13 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.Styles = new StyleSheet(this.FIB, this.TableStream, this.DataStream);
 
             //read font table
-            this.FontTable = new FontTable(this.TableStream, this.FIB);
+            this.FontTable = new FontTable(this.FIB,this.TableStream);
 
-            //parse all PAPX and build the dictionary
-            this.AllPapx = new Dictionary<Int32, ParagraphPropertyExceptions>();
-            List<FormattedDiskPagePAPX> allPapxFkps = FormattedDiskPagePAPX.GetAllPAPXFKPs(FIB, WordDocumentStream, TableStream, DataStream);
-            for (int i=0; i < allPapxFkps.Count; i++)
-            {
-                for (int j = 0; j < allPapxFkps[i].grppapx.Length; j++)
-                {
-                    this.AllPapx.Add(allPapxFkps[i].rgfc[j], allPapxFkps[i].grppapx[j]);
-                }
-            }
+            //read all PAPX FKPS
+            this.AllPapxFkps = FormattedDiskPagePAPX.GetAllPAPXFKPs(this.FIB, this.WordDocumentStream, this.TableStream, this.DataStream);
+
+            //read section table
+            this.SectionTable = new SectionTable(this.FIB, this.TableStream, this.WordDocumentStream);
 
             //parse the piece table and construct a list that contains all chars
             this.PieceTable = new PieceTable(this.FIB, this.TableStream);
@@ -177,29 +170,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.Endnotes = allChars.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr + FIB.ccpAtn, FIB.ccpEdn);
             this.Textboxes = allChars.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr + FIB.ccpAtn + FIB.ccpEdn, FIB.ccpTxbx);
             this.HeaderTextboxes = allChars.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr + FIB.ccpAtn + FIB.ccpEdn + FIB.ccpTxbx, FIB.ccpHdrTxbx);
-        }
-
-        /// <summary>
-        /// Finds the PAPX that is valid for the given FC.
-        /// </summary>
-        /// <param name="fc"></param>
-        /// <returns></returns>
-        public ParagraphPropertyExceptions FindValidPapx(Int32 fc)
-        {
-            ParagraphPropertyExceptions ret = null;
-
-            while(ret == null)
-            {
-                try
-                {
-                    ret = AllPapx[fc];
-                }
-                catch (KeyNotFoundException){
-                    fc--;
-                }
-            }
-
-            return ret;
         }
 
         #region IVisitable Members

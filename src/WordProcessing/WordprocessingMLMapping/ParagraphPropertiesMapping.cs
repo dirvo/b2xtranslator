@@ -40,12 +40,21 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
     {
         private StyleSheet _styleSheet;
         private XmlElement _pPr;
+        private SectionPropertyExceptions _sepx;
 
         public ParagraphPropertiesMapping(XmlWriter writer, StyleSheet styles)
             : base(writer)
         {
             _styleSheet = styles;
             _pPr = _nodeFactory.CreateElement("w", "pPr", OpenXmlNamespaces.WordprocessingML);
+        }
+
+        public ParagraphPropertiesMapping(XmlWriter writer, StyleSheet styles, SectionPropertyExceptions sepx)
+            : base(writer)
+        {
+            _styleSheet = styles;
+            _pPr = _nodeFactory.CreateElement("w", "pPr", OpenXmlNamespaces.WordprocessingML);
+            _sepx = sepx;
         }
 
         public void Apply(ParagraphPropertyExceptions papx)
@@ -271,6 +280,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     default:
                         break;
                 }
+            }
+
+            //append section properties
+            if (_sepx != null)
+            {
+                XmlElement sectPr = _nodeFactory.CreateElement("w", "sectPr", OpenXmlNamespaces.WordprocessingML);
+                _sepx.Convert(new SectionPropertiesMapping(sectPr));
+                _pPr.AppendChild(sectPr);
             }
 
             //append indent
