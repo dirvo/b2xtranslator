@@ -324,7 +324,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 //this is the last paragraph of this section
                 //write properties with section properties
-                papx.Convert(new ParagraphPropertiesMapping(_writer, _doc.Styles, _allSepx[cpEnd]));
+                papx.Convert(new ParagraphPropertiesMapping(_writer, _doc.Styles, findValidSepx(cpEnd)));
             }
             else
             {
@@ -583,6 +583,38 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 catch (KeyNotFoundException)
                 {
                     fc--;
+                }
+            }
+
+            return ret;
+        }
+
+        /// <summary>
+        /// Finds the SEPX that is valid for the given CP.
+        /// </summary>
+        /// <param name="cp"></param>
+        /// <returns></returns>
+        private SectionPropertyExceptions findValidSepx(Int32 cp)
+        {
+            SectionPropertyExceptions ret = null;
+
+            try
+            {
+                ret = _allSepx[cp];
+            }
+            catch (KeyNotFoundException)
+            {
+                //there is no Sepx at this position, 
+                //so the previous sepx is valid for this cp
+
+                Int32 lastKey = _doc.SectionTable.rgfc[1];
+                foreach (Int32 key in _allSepx.Keys)
+                {
+                    if (cp > lastKey && cp < key)
+                    {
+                        ret = _allSepx[lastKey];
+                        break;
+                    }
                 }
             }
 
