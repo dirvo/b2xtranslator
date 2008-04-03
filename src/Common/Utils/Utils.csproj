@@ -33,7 +33,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="KeyedList.cs" />
     <Compile Include="RGBColor.cs" />
     <Compile Include="TraceLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
