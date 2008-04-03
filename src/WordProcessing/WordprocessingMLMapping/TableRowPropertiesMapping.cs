@@ -13,15 +13,24 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         IMapping<TablePropertyExceptions>
     {
         private XmlElement _trPr;
+        private CharacterPropertyExceptions _rowEndChpx;
 
-        public TableRowPropertiesMapping(XmlWriter writer)
+        public TableRowPropertiesMapping(XmlWriter writer, CharacterPropertyExceptions rowEndChpx)
             : base(writer)
         {
             _trPr = _nodeFactory.CreateElement("w", "trPr", OpenXmlNamespaces.WordprocessingML);
+            _rowEndChpx = rowEndChpx;
         }
 
         public void Apply(TablePropertyExceptions tapx)
         {
+            //delete infos
+            if (_rowEndChpx != null && _rowEndChpx.IsDeleted)
+            {
+                XmlElement del = _nodeFactory.CreateElement("w", "del", OpenXmlNamespaces.WordprocessingML);
+                _trPr.AppendChild(del);
+            }
+
             foreach (SinglePropertyModifier sprm in tapx.grpprl)
             {
                 switch (sprm.OpCode)

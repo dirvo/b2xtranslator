@@ -72,22 +72,22 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             _doc = doc;
 
-            //build a dictionary of all PAPX
+            //build a dictionaries of all PAPX
             _allPapx = new Dictionary<Int32, ParagraphPropertyExceptions>();
             for (int i = 0; i < _doc.AllPapxFkps.Count; i++)
             {
                 for (int j = 0; j < _doc.AllPapxFkps[i].grppapx.Length; j++)
                 {
-                    _allPapx.Add(_doc.AllPapxFkps[i].rgfc[j], _doc.AllPapxFkps[i].grppapx[j]);
+                     _allPapx.Add(_doc.AllPapxFkps[i].rgfc[j], _doc.AllPapxFkps[i].grppapx[j]);
                 }
             }
             _lastValidPapx = _doc.AllPapxFkps[0].grppapx[0];
 
-            //build a dictionary of all SEPX
+            //build a dictionaries of all SEPX
             _allSepx = new Dictionary<Int32, SectionPropertyExceptions>();
             for (int i = 0; i < _doc.SectionTable.grpsepx.Length; i++)
             {
-                _allSepx.Add(_doc.SectionTable.rgfc[i+1], _doc.SectionTable.grpsepx[i]);
+                _allSepx.Add(_doc.SectionTable.rgfc[i + 1], _doc.SectionTable.grpsepx[i]);
             }
 
             _writer.WriteStartDocument();
@@ -136,11 +136,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             ParagraphPropertyExceptions papx = findValidPapx(fc);
             TableInfo tai = new TableInfo(papx);
 
+            //find first row end
+            Int32 fcRowEnd = findRowEndFc(cp);
+            TablePropertyExceptions row1Tapx = new TablePropertyExceptions(findValidPapx(fcRowEnd), _doc.DataStream);
+
             //start table
             _writer.WriteStartElement("w", "tbl", OpenXmlNamespaces.WordprocessingML);
-
-            //find first row end TAPX
-            TablePropertyExceptions row1Tapx = findRowEndTapx(cp);
 
             //Convert it
             row1Tapx.Convert(new TablePropertiesMapping(_writer, _doc.Styles));
@@ -177,8 +178,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _writer.WriteStartElement("w", "tr", OpenXmlNamespaces.WordprocessingML);
 
             //convert the properties
-            TablePropertyExceptions tapx = findRowEndTapx(cp);
-            tapx.Convert(new TableRowPropertiesMapping(_writer));
+            Int32 fcRowEnd = findRowEndFc(cp);
+            TablePropertyExceptions tapx = new TablePropertyExceptions(findValidPapx(fcRowEnd), _doc.DataStream);
+            List<CharacterPropertyExceptions> chpxs = _doc.GetCharacterPropertyExceptions(fcRowEnd, fcRowEnd + 1);
+
+            tapx.Convert(new TableRowPropertiesMapping(_writer, chpxs[0]));
 
             int cellIndex = 0;
             while (!(_doc.Text[cp] == TextBoundary.CellOrRowMark && tai.fTtp) && tai.fInTable)
@@ -202,11 +206,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         }
 
         /// <summary>
-        /// Finds the TAPX that formats the next row end mark.
+        /// Finds the FC of the next row end mark.
         /// </summary>
         /// <param name="cp"></param>
         /// <returns></returns>
-        private TablePropertyExceptions findRowEndTapx(int initialCp)
+        private Int32 findRowEndFc(int initialCp)
         {
             int cp = initialCp;
             Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
@@ -225,7 +229,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 cp++;
             }
 
-            return new TablePropertyExceptions(papx, _doc.DataStream);
+            return fc;
         }
 
         /// <summary>
@@ -328,6 +332,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             Int32 fcEnd = _doc.PieceTable.FileCharacterPositions[cpEnd];
             ParagraphPropertyExceptions papx = findValidPapx(fc);
 
+            //get all CHPX between these boundaries to determine the count of runs
+            List<CharacterPropertyExceptions> chpxs = _doc.GetCharacterPropertyExceptions(fc, fcEnd);
+            List<Int32> chpxFcs = _doc.GetFileCharacterPositions(fc, fcEnd);
+            chpxFcs.Add(fcEnd);
+
             //start paragraph
             _writer.WriteStartElement("w", "p", OpenXmlNamespaces.WordprocessingML);
 
@@ -336,18 +345,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 //this is the last paragraph of this section
                 //write properties with section properties
-                papx.Convert(new ParagraphPropertiesMapping(_writer, _doc.Styles, findValidSepx(cpEnd)));
+                papx.Convert(new ParagraphPropertiesMapping(_writer, _doc, chpxs[chpxs.Count-1], findValidSepx(cpEnd)));
             }
             else
             {
                 //write properties
-                papx.Convert(new ParagraphPropertiesMapping(_writer, _doc.Styles));
+                papx.Convert(new ParagraphPropertiesMapping(_writer, _doc, chpxs[chpxs.Count - 1]));
             }
-
-            //get all CHPX between these boundaries to determine the count of runs
-            List<CharacterPropertyExceptions> chpxs = _doc.GetCharacterPropertyExceptions(fc, fcEnd);
-            List<Int32> chpxFcs = _doc.GetFileCharacterPositions(fc, fcEnd);
-            chpxFcs.Add(fcEnd);
 
             //write a run for each CHPX
             for (int i = 0; i < chpxs.Count; i++)
@@ -393,11 +397,17 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             Int32 cp = initialCp;
 
+            //If it's a deleted run
+            if (chpx.IsDeleted)
+            {
+                _writer.WriteStartElement("w", "del", OpenXmlNamespaces.WordprocessingML);
+            }
+
             //start run
             _writer.WriteStartElement("w", "r", OpenXmlNamespaces.WordprocessingML);
 
             //write properties
-            chpx.Convert(new CharacterPropertiesMapping(_writer, _doc.Styles, _doc.FontTable));
+            chpx.Convert(new CharacterPropertiesMapping(_writer, _doc));
 
             if (chars.Count == 1 && chars[0] == TextBoundary.Picture)
             {
@@ -416,11 +426,17 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
             else
             {
-                cp = writeText(chars, cp);
+                cp = writeText(chars, cp, chpx.IsDeleted);
             }
 
             //end run
             _writer.WriteEndElement();
+
+            //If it's a deleted run
+            if (chpx.IsDeleted)
+            {
+                _writer.WriteEndElement();
+            }
 
             return cp;
         }
@@ -429,12 +445,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// Writes the given text to the document
         /// </summary>
         /// <param name="chars"></param>
-        private Int32 writeText(List<char> chars, Int32 initialCp)
+        private Int32 writeText(List<char> chars, Int32 initialCp, bool writeDeletedText)
         {
             Int32 cp = initialCp;
 
             //start text
-            _writer.WriteStartElement("w", "t", OpenXmlNamespaces.WordprocessingML);
+            if(writeDeletedText)
+                _writer.WriteStartElement("w", "delText", OpenXmlNamespaces.WordprocessingML);
+            else
+                _writer.WriteStartElement("w", "t", OpenXmlNamespaces.WordprocessingML);
 
             if ((int)chars[0] == 32 || (int)chars[chars.Count - 1] == 32)
             {
@@ -533,6 +552,26 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             imgPart.GetStream().Write(pict.Picture, 0, pict.Picture.Length);
 
             return imgPart;
+        }
+
+        /// <summary>
+        /// Checks if the PAPX is old
+        /// </summary>
+        /// <param name="chpx">The PAPX</param>
+        /// <returns></returns>
+        private bool isOld(ParagraphPropertyExceptions papx)
+        {
+            bool ret = false;
+            foreach (SinglePropertyModifier sprm in papx.grpprl)
+            {
+                if (sprm.OpCode == 0x2664)
+                {
+                    //sHasOldProps
+                    ret = true;
+                    break;
+                }
+            }
+            return ret;
         }
 
         /// <summary>

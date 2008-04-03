@@ -38,23 +38,26 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
     public class ParagraphPropertiesMapping : PropertiesMapping,
           IMapping<ParagraphPropertyExceptions>
     {
-        private StyleSheet _styleSheet;
+        private WordDocument _doc;
         private XmlElement _pPr;
         private SectionPropertyExceptions _sepx;
+        private CharacterPropertyExceptions _paraEndChpx;
 
-        public ParagraphPropertiesMapping(XmlWriter writer, StyleSheet styles)
+        public ParagraphPropertiesMapping(XmlWriter writer, WordDocument doc, CharacterPropertyExceptions paraEndChpx)
             : base(writer)
         {
-            _styleSheet = styles;
             _pPr = _nodeFactory.CreateElement("w", "pPr", OpenXmlNamespaces.WordprocessingML);
+            _paraEndChpx = paraEndChpx;
+            _doc = doc;
         }
 
-        public ParagraphPropertiesMapping(XmlWriter writer, StyleSheet styles, SectionPropertyExceptions sepx)
+        public ParagraphPropertiesMapping(XmlWriter writer, WordDocument doc, CharacterPropertyExceptions paraEndChpx, SectionPropertyExceptions sepx)
             : base(writer)
         {
-            _styleSheet = styles;
             _pPr = _nodeFactory.CreateElement("w", "pPr", OpenXmlNamespaces.WordprocessingML);
+            _paraEndChpx = paraEndChpx;
             _sepx = sepx;
+            _doc = doc;
         }
 
         public void Apply(ParagraphPropertyExceptions papx)
@@ -68,9 +71,30 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //append style id 
             XmlElement pStyle = _nodeFactory.CreateElement("w", "pStyle", OpenXmlNamespaces.WordprocessingML);
             XmlAttribute styleId = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
-            styleId.Value = StyleSheetMapping.MakeStyleId(_styleSheet.Styles[papx.istd].xstzName);
+            styleId.Value = StyleSheetMapping.MakeStyleId(_doc.Styles.Styles[papx.istd].xstzName);
             pStyle.Attributes.Append(styleId);
             _pPr.AppendChild(pStyle);
+
+            //append formatting of paragraph end mark
+            if (_paraEndChpx != null)
+            {
+                XmlElement rPr = _nodeFactory.CreateElement("w", "rPr", OpenXmlNamespaces.WordprocessingML);
+                
+                //append properties
+                _paraEndChpx.Convert(new CharacterPropertiesMapping(rPr, _doc));
+                
+                //append delete infos
+                if (_paraEndChpx.IsDeleted)
+                {
+                    XmlElement del = _nodeFactory.CreateElement("w", "del", OpenXmlNamespaces.WordprocessingML);
+                    rPr.AppendChild(del);
+                }
+
+                if(rPr.ChildNodes.Count >0 )
+                {
+                    _pPr.AppendChild(rPr);
+                }
+            }
 
             foreach (SinglePropertyModifier sprm in papx.grpprl)
             {

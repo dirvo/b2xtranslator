@@ -123,13 +123,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //write paragraph properties
                     if (style.papx != null)
                     {
-                        style.papx.Convert(new ParagraphPropertiesMapping(_writer, sheet));
+                        style.papx.Convert(new ParagraphPropertiesMapping(_writer, _doc, null));
                     }
                     
                     //write character properties
                     if (style.chpx != null)
                     {
-                        style.chpx.Convert(new CharacterPropertiesMapping(_writer, sheet, _doc.FontTable));
+                        style.chpx.Convert(new CharacterPropertiesMapping(_writer, _doc));
                     }
 
                     //write table properties

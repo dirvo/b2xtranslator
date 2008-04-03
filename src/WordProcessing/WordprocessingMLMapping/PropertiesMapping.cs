@@ -53,9 +53,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         protected void appendFlagElement(XmlElement node, SinglePropertyModifier sprm, string elementName, bool unique)
         {
             XmlElement ele = _nodeFactory.CreateElement("w", elementName, OpenXmlNamespaces.WordprocessingML);
-            XmlAttribute val = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
-            val.Value = sprm.Arguments[0].ToString();
-            ele.Attributes.Append(val);
+            if (sprm.Arguments[0] == 0)
+            {
+                XmlAttribute val = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
+                val.Value = "f";
+                ele.Attributes.Append(val);
+            }
             if (unique)
             {
                 foreach (XmlElement exEle in node.ChildNodes)
@@ -143,7 +146,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             //create xml
             XmlAttribute val = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
-            val.Value = brc.brcType.ToString();
+            val.Value = getBorderType(brc.brcType);
             border.Attributes.Append(val);
 
             XmlAttribute color = _nodeFactory.CreateAttribute("w", "color", OpenXmlNamespaces.WordprocessingML);
@@ -185,6 +188,68 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             shd.Attributes.Append(val);
 
             parent.AppendChild(shd);
+        }
+
+        private string getBorderType(byte type)
+        {
+            switch (type)
+            {
+                case 0:
+                    return "none";
+                case 1:
+                    return "single";
+                case 2:
+                    return "thick";
+                case 3:
+                    return "double";
+                case 4:
+                    //unused
+                    return "none";
+                case 5:
+                    return "hairline";
+                case 6:
+                    return "dotted";
+                case 7:
+                    return "dashed";
+                case 8:
+                    return "dotDash";
+                case 9:
+                    return "dotDotDash";
+                case 10:
+                    return "triple";
+                case 11:
+                    return "thinThickSmallGap";
+                case 12:
+                    return "thickThinSmallGap";
+                case 13:
+                    return "thinThickThinSmallGap";
+                case 14:
+                    return "thinThickMediumGap";
+                case 15:
+                    return "thickThinMediumGap";
+                case 16:
+                    return "thinThickThinMediumGap";
+                case 17:
+                    return "thinThickLargeGap";
+                case 18:
+                    return "thickThinLargeGap";
+                case 19:
+                    return "thinThickThinLargeGap";
+                case 20:
+                    return "wave";
+                case 21:
+                    return "doubleWave";
+                case 22:
+                    return "dashSmallGap";
+                case 23:
+                    return "dashDotStroked";
+                case 24:
+                    return "threeDEmboss";
+                case 25:
+                    return "threeDEngrave";
+                default:
+                    return "none";
+            }
         }
 
         private string getShadingPattern(ShadingDescriptor shd)

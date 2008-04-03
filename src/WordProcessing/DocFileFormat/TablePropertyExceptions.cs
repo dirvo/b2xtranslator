@@ -60,6 +60,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <param name="papx"></param>
         public TablePropertyExceptions(ParagraphPropertyExceptions papx, VirtualStream dataStream)
         {
+            this.IsDeleted = papx.IsDeleted;
+            this.HasOldProps = papx.HasOldProps;
+
             this.grpprl = new List<SinglePropertyModifier>();
             foreach (SinglePropertyModifier sprm in papx.grpprl)
             {

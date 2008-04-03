@@ -43,12 +43,21 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private XmlElement _rPr;
         private UInt16 _currentIstd;
 
-        public CharacterPropertiesMapping(XmlWriter writer, StyleSheet styles, List<FontFamilyName> fontTable)
+        public CharacterPropertiesMapping(XmlWriter writer, WordDocument doc)
             : base(writer)
         {
-            _styleSheet = styles;
-            _fontTable = fontTable;
+            _styleSheet = doc.Styles;
+            _fontTable = doc.FontTable;
             _rPr = _nodeFactory.CreateElement("w", "rPr", OpenXmlNamespaces.WordprocessingML);
+        }
+
+        public CharacterPropertiesMapping(XmlElement rPr, WordDocument doc)
+            : base(null)
+        {
+            _styleSheet = doc.Styles;
+            _fontTable = doc.FontTable;
+            _nodeFactory = rPr.OwnerDocument;
+            _rPr = rPr;
         }
 
         public void Apply(CharacterPropertyExceptions chpx)
@@ -61,6 +70,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             foreach (SinglePropertyModifier sprm in chpx.grpprl)
             {
+                //no style is set at the moment
+                _currentIstd = UInt16.MaxValue;
+
                 switch (sprm.OpCode)
                 {
                     //style id 
@@ -68,85 +80,112 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         _currentIstd = System.BitConverter.ToUInt16(sprm.Arguments, 0);
                         appendValueElement(_rPr, "rStyle", StyleSheetMapping.MakeStyleId(_styleSheet.Styles[_currentIstd].xstzName), true);
                         break;
-
+                    
                     //Element flags
                     case 0x085A:
-                        appendFlagElement(sprm, "rtl");
+                        appendFlagElement(_rPr, sprm, "rtl", true);
                         break;
                     case 0x0835:
-                        appendFlagElement(sprm, "b");
+                        appendFlagElement(_rPr, sprm, "b", true);
                         break;
                     case 0x085C:
-                        appendFlagElement(sprm, "bCs");
+                        appendFlagElement(_rPr, sprm, "bCs", true);
                         break;
                     case 0x083B:
-                        appendFlagElement(sprm, "caps");
+                        appendFlagElement(_rPr, sprm, "caps", true); ;
                         break;
                     case 0x0882:
-                        appendFlagElement(sprm, "cs");
+                        appendFlagElement(_rPr, sprm, "cs", true);
                         break;
                     case 0x2A53:
-                        appendFlagElement(sprm, "dstrike");
+                        appendFlagElement(_rPr, sprm, "dstrike", true);
                         break;
                     case 0x0858:
-                        appendFlagElement(sprm, "emboss");
+                        appendFlagElement(_rPr, sprm, "emboss", true);
                         break;
                     case 0x0854:
-                        appendFlagElement(sprm, "imprint");
+                        appendFlagElement(_rPr, sprm, "imprint", true);
                         break;
                     case 0x0836:
-                        appendFlagElement(sprm, "i");
+                        appendFlagElement(_rPr, sprm, "i", true);
                         break;
                     case 0x085D:
-                        appendFlagElement(sprm, "iCs");
+                        appendFlagElement(_rPr, sprm, "iCs", true);
                         break;
                     case 0x0875:
-                        appendFlagElement(sprm, "noProof");
+                        appendFlagElement(_rPr, sprm, "noProof", true);
                         break;
                     case 0x0838:
-                        appendFlagElement(sprm, "outline");
+                        appendFlagElement(_rPr, sprm, "outline", true);
                         break;
                     case 0x0839:
-                        appendFlagElement(sprm, "shadow");
+                        appendFlagElement(_rPr, sprm, "shadow", true);
                         break;
                     case 0x083A:
-                        appendFlagElement(sprm, "smallCaps");
+                        appendFlagElement(_rPr, sprm, "smallCaps", true);
                         break;
                     case 0x0818:
-                        appendFlagElement(sprm, "specVanish");
+                        appendFlagElement(_rPr, sprm, "specVanish", true);
                         break;
                     case 0x0837:
-                        appendFlagElement(sprm, "strike");
+                        appendFlagElement(_rPr, sprm, "strike", true);
                         break;
                     case 0x083C:
-                        appendFlagElement(sprm, "vanish");
+                        appendFlagElement(_rPr, sprm, "vanish", true);
                         break;
                     case 0x0811:
-                        appendFlagElement(sprm, "webHidden");
+                        appendFlagElement(_rPr, sprm, "webHidden", true);
                         break;
 
                     //language
                     case 0x486D:
                     case 0x4873:
                         //latin
-                        XmlAttribute langVal = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
-                        langVal.Value = System.BitConverter.ToInt16(sprm.Arguments, 0).ToString();
-                        lang.Attributes.Append(langVal);
+                        Int16 langid = System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        if(langid != 1024)
+                        {
+                            XmlAttribute langVal = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
+                            langVal.Value = langid.ToString();
+                            lang.Attributes.Append(langVal);
+                        }
                         break;
                     case 0x486E:
                     case 0x4874:
                         //east asia
-                        XmlAttribute langEastAsia = _nodeFactory.CreateAttribute("w", "eastAsia", OpenXmlNamespaces.WordprocessingML);
-                        langEastAsia.Value = System.BitConverter.ToInt16(sprm.Arguments, 0).ToString();
-                        lang.Attributes.Append(langEastAsia);
+                        langid = System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        if (langid != 1024)
+                        {
+                            XmlAttribute langEastAsia = _nodeFactory.CreateAttribute("w", "eastAsia", OpenXmlNamespaces.WordprocessingML);
+                            langEastAsia.Value = langid.ToString();
+                            lang.Attributes.Append(langEastAsia);
+                        }
                         break;
                     case 0x485F:
                         //bidi
-                        XmlAttribute langBidi = _nodeFactory.CreateAttribute("w", "bidi", OpenXmlNamespaces.WordprocessingML);
-                        langBidi.Value = System.BitConverter.ToInt16(sprm.Arguments, 0).ToString();
-                        lang.Attributes.Append(langBidi);
+                        langid = System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        if (langid != 1024)
+                        {
+                            XmlAttribute langBidi = _nodeFactory.CreateAttribute("w", "bidi", OpenXmlNamespaces.WordprocessingML);
+                            langBidi.Value = langid.ToString();
+                            lang.Attributes.Append(langBidi);
+                        }
                         break;
                     
+                    //borders
+                    case 0x6865:
+                    case 0xCA72:
+                        XmlNode bdr = _nodeFactory.CreateElement("w", "bdr", OpenXmlNamespaces.WordprocessingML);
+                        appendBorderAttributes(sprm.Arguments, bdr);
+                        _rPr.AppendChild(bdr);
+                        break;
+
+                    //shading
+                    case 0x4866:
+                    case 0xCA71:
+                        ShadingDescriptor desc = new ShadingDescriptor(sprm.Arguments);
+                        appendShading(_rPr, desc);
+                        break;
+
                     //color
                     case 0x2A42:
                     case 0x4A60:
@@ -239,63 +278,96 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
             
             //write properties
-            if (_rPr.ChildNodes.Count > 0 || _rPr.Attributes.Count > 0)
+            if (_writer!=null && _rPr.ChildNodes.Count > 0 || _rPr.Attributes.Count > 0)
             {
                 _rPr.WriteTo(_writer);
+            }
+        }
+
+        /// <summary>
+        /// CHPX flags are special flags because the can be 0,1,128 and 129,
+        /// so this method overrides the appendFlagElement method.
+        /// </summary>
+        protected void appendFlagElement(XmlElement node, SinglePropertyModifier sprm, string elementName, bool unique)
+        {
+            byte flag = sprm.Arguments[0];
+
+            if(flag != 128)
+            {
+                XmlElement ele = _nodeFactory.CreateElement("w", elementName, OpenXmlNamespaces.WordprocessingML);
+                XmlAttribute val = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
+
+                if (flag == 0)
+                {
+                    val.Value = "f";
+                    ele.Attributes.Append(val);
+                }
+                else if (flag == 1)
+                {
+                    //dont append attribute val
+                    //no val attribute means "true"
+                }
+                else if(flag == 129)
+                {
+                    //_writer.WriteComment("The flag " + elementName + " had value 129 (style " + _currentIstd + ")");
+
+                    //means that the value is the negation of the style's value
+                    if (_currentIstd == UInt16.MaxValue)
+                    {
+                        //there is NonSerializedAttribute style
+                        //supposed the value is false, set it to true
+                        //dont append attribute val
+                        //no val attribute means "true"
+                    }
+                    else
+                    {
+                        StyleSheetDescription std = _styleSheet.Styles[_currentIstd];
+                        foreach (SinglePropertyModifier styleSprm in std.chpx.grpprl)
+                        {
+                            //find the value in the style
+                            if (styleSprm.OpCode == sprm.OpCode)
+                            {
+                                //negate it
+                                byte styleFlag = styleSprm.Arguments[0];
+                                switch (styleFlag)
+	                            {
+                                    case 1:
+                                        val.Value = "f";
+                                        ele.Attributes.Append(val);
+                                        break;
+                                    case 0:
+                                        //dont append attribute val
+                                        //no val attribute means "true"
+                                        break;
+                                    default:
+                                        val.Value = styleFlag.ToString();
+                                        ele.Attributes.Append(val);
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+                if (unique)
+                {
+                    foreach (XmlElement exEle in node.ChildNodes)
+                    {
+                        if (exEle.Name == ele.Name)
+                        {
+                            node.RemoveChild(exEle);
+                            break;
+                        }
+                    }
+                }
+                node.AppendChild(ele);
             }
         }
 
         private string lowerFirstChar(string s)
         {
             return s.Substring(0, 1).ToLower() + s.Substring(1, s.Length - 1);
-        }
-
-        private void appendFlagElement(SinglePropertyModifier sprm, string elementName)
-        {
-            byte b = sprm.Arguments[0];
-
-            //value 
-            if(b == 129)
-            {
-                byte bStyle = 0;
-
-                //find style's value
-                foreach (SinglePropertyModifier sprmStyle in _styleSheet.Styles[_currentIstd].chpx.grpprl)
-                {
-                    if(sprm.OpCode == sprmStyle.OpCode)
-                    {
-                        bStyle = sprmStyle.Arguments[0];
-                    }
-                }
-
-                //value is set to the negation of the style's value
-                switch (bStyle)
-                {
-                    case 0:
-                        b = 1;
-                        break;
-                    case 1:
-                        b = 0;
-                        break;
-                    default:
-                        b = bStyle;
-                        break;
-                }
-            }
-            
-            if(b == 128)
-            {
-                //value is set to the value of the style
-                //don't set anything, value will be inherited from style
-            }
-            else
-            {
-                XmlElement ele = _nodeFactory.CreateElement("w", elementName, OpenXmlNamespaces.WordprocessingML);
-                XmlAttribute val = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
-                val.Value = b.ToString();
-                ele.Attributes.Append(val);
-                _rPr.AppendChild(ele);
-            }
         }
     }
 }

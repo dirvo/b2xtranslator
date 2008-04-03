@@ -102,7 +102,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// 24 emboss 3D
         /// 25 engrave 3D
         /// </summary>
-        public BorderType brcType;
+        public byte brcType;
 
         /// <summary>
         /// The color of the Border.
@@ -130,7 +130,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public BorderCode()
         {
-            setDefaultValues();
         }
 
         /// <summary>
@@ -146,7 +145,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 this.ico = Global.ColorIdentifier.auto;
 
                 this.dptLineWidth = bytes[4];
-                this.brcType = (BorderType)bytes[5];
+                this.brcType = bytes[5];
  
                 Int16 val = System.BitConverter.ToInt16(bytes, 6);
                 this.dptSpace = val & 0x001F;
@@ -160,7 +159,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 //it's a border code of Word 97
                 UInt16 val = System.BitConverter.ToUInt16(bytes, 0);
                 this.dptLineWidth = (byte)(val & 0x00FF);
-                this.brcType = (BorderType)((val & 0xFF00) >> 8);
+                this.brcType = (byte)((val & 0xFF00) >> 8);
                 val = System.BitConverter.ToUInt16(bytes, 2);
                 this.ico = (Global.ColorIdentifier)(val & 0x00FF);
                 this.dptSpace = (val & 0x1F00) >> 8;
@@ -169,17 +168,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             {
                 throw new ByteParseException("BRC");
             }
-        }
-
-        private void setDefaultValues()
-        {
-            this.brcType = BorderType.none;
-            this.cv = 0;
-            this.ico = Global.ColorIdentifier.auto;
-            this.dptLineWidth = 0;
-            this.dptSpace = 0;
-            this.fFrame = false;
-            this.fShadow = false;
         }
 
         #region IVisitable Members

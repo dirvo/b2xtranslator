@@ -109,7 +109,10 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.rgftcStandardChpStsh[0] = System.BitConverter.ToUInt16(bytes, 12);
             this.rgftcStandardChpStsh[1] = System.BitConverter.ToUInt16(bytes, 14);
             this.rgftcStandardChpStsh[2] = System.BitConverter.ToUInt16(bytes, 16);
-            this.rgftcStandardChpStsh[3] = System.BitConverter.ToUInt16(bytes, 18);
+            if (bytes.Length > 18)
+            {
+                this.rgftcStandardChpStsh[3] = System.BitConverter.ToUInt16(bytes, 18);
+            }
 
             //not all stylesheet contain latent styles
             if (bytes.Length > 20)
