@@ -71,7 +71,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
                     //parse the size of the external grpprl
                     byte[] sizebytes = new byte[2];
-                    dataStream.Read(sizebytes, 2, (int)fc);
+                    dataStream.Read(sizebytes, 0, 2, (int)fc);
                     UInt16 size = System.BitConverter.ToUInt16(sizebytes, 0);
                     
                     //parse the external grpprl

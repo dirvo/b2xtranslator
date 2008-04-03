@@ -120,6 +120,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public List<FormattedDiskPagePAPX> AllPapxFkps;
 
+        /// <summary>
+        /// A list of all FKPs that contain CHPX
+        /// </summary>
+        public List<FormattedDiskPageCHPX> AllChpxFkps;
+
         public WordDocument(StorageReader reader)
         {
             this.WordDocumentStream = reader.GetStream("WordDocument");
@@ -155,6 +160,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             //read all PAPX FKPS
             this.AllPapxFkps = FormattedDiskPagePAPX.GetAllPAPXFKPs(this.FIB, this.WordDocumentStream, this.TableStream, this.DataStream);
 
+            //read all CHPX FKPS
+            this.AllChpxFkps = FormattedDiskPageCHPX.GetAllCHPXFKPs(this.FIB, this.WordDocumentStream, this.TableStream);
+
             //read section table
             this.SectionTable = new SectionTable(this.FIB, this.TableStream, this.WordDocumentStream);
 
@@ -170,6 +178,95 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.Endnotes = allChars.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr + FIB.ccpAtn, FIB.ccpEdn);
             this.Textboxes = allChars.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr + FIB.ccpAtn + FIB.ccpEdn, FIB.ccpTxbx);
             this.HeaderTextboxes = allChars.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr + FIB.ccpAtn + FIB.ccpEdn + FIB.ccpTxbx, FIB.ccpHdrTxbx);
+        }
+
+        /// <summary>
+        /// Returns a list of all CHPX which are valid for the given FCs.
+        /// </summary>
+        /// <param name="fcMin">The lower boundary</param>
+        /// <param name="fcMax">The upper boundary</param>
+        /// <returns>The FCs</returns>
+        public List<Int32> GetFileCharacterPositions(Int32 fcMin, Int32 fcMax)
+        {
+            List<Int32> list = new List<Int32>();
+
+            for (int i = 0; i < this.AllChpxFkps.Count; i++ )
+            {
+                FormattedDiskPageCHPX fkp = this.AllChpxFkps[i];
+
+                //if the last fc of this fkp is smaller the fcMin
+                //this fkp is before the requested range
+                if (fkp.rgfc[fkp.rgfc.Length - 1] < fcMin)
+                {
+                    continue;
+                }
+
+                //if the first fc of this fkp is larger the Max
+                //this fkp is beyond the requested range
+                if (fkp.rgfc[0] > fcMax)
+                {
+                    break;
+                }
+
+                //don't add the duplicated values of the FKP boundaries (Length-1)
+                int max = fkp.rgfc.Length - 1;
+
+                //last fkp? 
+                //use full table
+                if (i == (this.AllChpxFkps.Count-1))
+                {
+                    max = fkp.rgfc.Length;
+                }
+
+                for (int j = 0; j < max; j++)
+                {
+                    if (fkp.rgfc[j] < fcMin && fkp.rgfc[j + 1] > fcMin)
+                    {
+                        //this chpx starts before fcMin
+                        list.Add(fkp.rgfc[j]);
+                    }
+                    else if (fkp.rgfc[j] >= fcMin && fkp.rgfc[j] < fcMax)
+                    {
+                        //this chpx is in the range
+                        list.Add(fkp.rgfc[j]);
+                    }
+                }
+            }
+
+            return list;
+        }
+
+
+        /// <summary>
+        /// Returnes a list of all CharacterPropertyExceptions which correspond to text 
+        /// between the given boundaries.
+        /// </summary>
+        /// <param name="fcMin">The lower boundary</param>
+        /// <param name="fcMax">The upper boundary</param>
+        /// <returns>The FCs</returns>
+        public List<CharacterPropertyExceptions> GetCharacterPropertyExceptions(Int32 fcMin, Int32 fcMax)
+        {
+            List<CharacterPropertyExceptions> list = new List<CharacterPropertyExceptions>();
+
+            foreach(FormattedDiskPageCHPX fkp in this.AllChpxFkps)
+            {
+                //geht the CHPX
+                for (int j = 0; j < fkp.grpchpx.Length; j++)
+                {
+                    if (fkp.rgfc[j] < fcMin && fkp.rgfc[j + 1] > fcMin)
+                    {
+                        //this chpx starts before fcMin
+                        list.Add(fkp.grpchpx[j]);
+                    }
+                    else if (fkp.rgfc[j] >= fcMin && fkp.rgfc[j] < fcMax)
+                    {
+                        //this chpx is in the range
+                        list.Add(fkp.grpchpx[j]);
+                    }
+                }
+            }
+
+            return list;
         }
 
         #region IVisitable Members

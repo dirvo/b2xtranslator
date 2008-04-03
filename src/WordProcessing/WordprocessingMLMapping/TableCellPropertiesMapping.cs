@@ -75,6 +75,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         break;
 
                     //width
+                    case 0xD608:
+                        byte itcMac = sprm.Arguments[0];
+                        for (int i = 0; i < itcMac; i++)
+                        {
+                            Int16 boundary2 = System.BitConverter.ToInt16(sprm.Arguments, 1 + ((i + 1) * 2));
+                            Int16 boundary1 = System.BitConverter.ToInt16(sprm.Arguments, 1 + (i * 2));
+                            appendDxaElement(_tcPr, "tcW" , "" + (boundary2 - boundary1), true);
+                        }
+                        break;
                     case 0xD635:
                         byte first = sprm.Arguments[0];
                         byte lim = sprm.Arguments[1];
@@ -231,6 +240,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 shdLength = 10;
 
             byte[] shdBytes = new byte[shdLength];
+
+            //multiple cell can be formatted with the same SHD.
+            //in this case there is only 1 SHD for all cells in the row.
+            if ((cellIndex * shdLength) >= sprmArg.Length)
+            {
+                //use the first SHD
+                cellIndex = 0;
+            }
+
             Array.Copy(sprmArg, cellIndex * shdBytes.Length, shdBytes, 0, shdBytes.Length);
             
             ShadingDescriptor shd = new ShadingDescriptor(shdBytes);

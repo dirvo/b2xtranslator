@@ -57,13 +57,12 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         {
             this.Type = FKPType.Paragraph;
             this.WordStream = wordStream;
-            this.Offset = offset;
 
             //read the 512 bytes (FKP)
             byte[] bytes = new byte[512];
             wordStream.Read(bytes, 0, 512, offset);
 
-            //get the count first
+            //get the count
             this.crun = bytes[511];
 
             //create and fill the array with the adresses

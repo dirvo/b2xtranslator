@@ -78,7 +78,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         XmlAttribute w = _nodeFactory.CreateAttribute("w", "w", OpenXmlNamespaces.WordprocessingML);
                         w.Value = width.ToString();
                         XmlAttribute type = _nodeFactory.CreateAttribute("w", "type", OpenXmlNamespaces.WordprocessingML);
-                        type.Value = "dxa";
+                        if (width == 0)
+                        {
+                            type.Value = "auto";
+                        }
+                        else
+                        {
+                            type.Value = "dxa";
+                        }
                         tblW.Attributes.Append(type);
                         tblW.Attributes.Append(w);
                         _tblPr.AppendChild(tblW);

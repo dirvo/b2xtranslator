@@ -50,7 +50,6 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
             Debug
         }
 
-        private static bool printHelp = false;
         private static string inputFile;
         private static string outputFile;
         private static VerboseLevel verboseLvl = VerboseLevel.Error;
