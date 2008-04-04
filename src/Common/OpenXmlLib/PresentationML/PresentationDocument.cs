@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML
             : base(fileName)
         {
             _presentationPart = new PresentationPart(this);
+            this.AddPart(_presentationPart);
         }
 
         public static PresentationDocument Create(string fileName)

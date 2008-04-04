@@ -137,14 +137,20 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
                 throw new WrongDirectoryEntryTypeException();
             }
 
+            // only streams up to long.MaxValue are supported
+            if (entry.SizeOfStream > long.MaxValue)
+            {
+                throw new UnsupportedSizeException(entry.SizeOfStream.ToString());
+            }
+
             // Determine whether this stream is a "normal stream" or a stream in the mini stream
             if (entry.SizeOfStream < _header.MiniSectorCutoff)
             {
-                return new VirtualStream(_miniFat, entry.StartSector, entry.SizeOfStream, path);
+                return new VirtualStream(_miniFat, entry.StartSector, (long)entry.SizeOfStream, path);
             }
             else
             {
-                return new VirtualStream(_fat, entry.StartSector, entry.SizeOfStream, path);
+                return new VirtualStream(_fat, entry.StartSector, (long)entry.SizeOfStream, path);
             }
         }
 

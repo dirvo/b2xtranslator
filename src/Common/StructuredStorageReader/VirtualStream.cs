@@ -40,22 +40,10 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
     public class VirtualStream : Stream
     {
         AbstractFat _fat;
-        int _position;
-        public override long Position
-        {
-            get { return _position; }
-            set { throw new NotSupportedException(); }
-        }
-
-        UInt64 _sizeOfStream;
-        public UInt64 SizeOfStream
-        {
-            get { return _sizeOfStream; }
-        }
-
+        protected long _position;
+        protected long _length;
         string _name;
         List<UInt32> _sectors;
-
 
         /// <summary>
         /// Initializes a virtual stream
@@ -64,18 +52,35 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// <param name="startSector">Start sector of the stream (sector 0 is sector immediately following the header)</param>
         /// <param name="sizeOfStream">Size of the stream in bytes</param>
         /// <param name="name">Name of the stream</param>
-        internal VirtualStream(AbstractFat fat, UInt32 startSector, UInt64 sizeOfStream, string name)
+        internal VirtualStream(AbstractFat fat, UInt32 startSector, long sizeOfStream, string name)
         {
             _fat = fat;
-            _sizeOfStream = sizeOfStream;
+            _length = sizeOfStream;
             _name = name;
-            if (startSector == SectorId.ENDOFCHAIN || SizeOfStream == 0)
+            if (startSector == SectorId.ENDOFCHAIN || Length == 0)
             {
                 return;
             }
             Init(startSector);
         }
 
+        /// <summary>
+        /// The current position within the stream. 
+        /// The supported range is from 0 to 2^31 - 1 = 2147483647 = 2GB
+        /// </summary>
+        public override long Position
+        {
+            get { return _position; }
+            set { _position = value; }
+        }
+
+        /// <summary>
+        /// A long value representing the length of the stream in bytes. 
+        /// </summary>
+        public override long Length
+        {
+            get { return _length; }
+        }
 
         /// <summary>
         /// Reads bytes from the current position in the virtual stream.
@@ -85,6 +90,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// <returns>The total number of bytes read into the buffer. 
         /// This might be less than the length of the array if that number 
         /// of bytes are not currently available, or zero if the end of the stream is reached.</returns>
+        [Obsolete("Use VirtualStreamReader.Read(byte[] array) instead.")]
         public int Read(byte[] array)
         {
             return Read(array, array.Length);
@@ -99,6 +105,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// <returns>The total number of bytes read into the buffer. 
         /// This might be less than the number of bytes requested if that number 
         /// of bytes are not currently available, or zero if the end of the stream is reached.</returns>
+        [Obsolete("Use VirtualStreamReader.Read(byte[] array, int count) instead.")]
         public int Read(byte[] array, int count)
         {
             return Read(array, 0, count);
@@ -129,8 +136,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// <returns>The total number of bytes read into the buffer. 
         /// This might be less than the number of bytes requested if that number 
         /// of bytes are not currently available, or zero if the end of the stream is reached.</returns>
-        [Obsolete("Warning. Signature used to be Read(byte[] array, int count, int position, int offset).\nChange calls to Read(array, offset, count, position)!")]
-        public int Read(byte[] array, int offset, int count, int position)
+        public int Read(byte[] array, int offset, int count, long position)
         {
             // Checks whether reading is possible
 
@@ -144,9 +150,9 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
                 return 0;
             }
 
-            if ((UInt64)(position + count) > SizeOfStream)
+            if (position + count > this.Length)
             {
-                count = (int)SizeOfStream - position;
+                count = Convert.ToInt32(Length - position);
                 if (count < 1)
                 {
                     return 0;
@@ -161,7 +167,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             int positionInArray = offset;
           
             // Read part in first relevant sector
-            int positionInSector = position % _fat.SectorSize;
+            int positionInSector = Convert.ToInt32(position % _fat.SectorSize);
             _fat.SeekToPositionInSector(_sectors[sectorInChain], positionInSector);
             int bytesToReadInFirstSector = (count > _fat.SectorSize - positionInSector) ? (_fat.SectorSize - positionInSector) : count;
             bytesRead = _fat.UncheckedRead(array, positionInArray, bytesToReadInFirstSector);
@@ -211,6 +217,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             return totalBytesRead;
         }
 
+        [Obsolete("Use VirtualStreamReader.ReadUInt16() instead.")]
         public UInt16 ReadUInt16()
         {
             byte[] buffer = new byte[sizeof(UInt16)];
@@ -223,6 +230,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             return BitConverter.ToUInt16(buffer, 0);
         }
 
+        [Obsolete("Use VirtualStreamReader.ReadInt16() instead.")]
         public short ReadInt16()
         {
             byte[] buffer = new byte[sizeof(Int16)];
@@ -235,6 +243,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             return BitConverter.ToInt16(buffer, 0);
         }
 
+        [Obsolete("Use VirtualStreamReader.ReadUInt32() instead.")]
         public UInt32 ReadUInt32()
         {
             byte[] buffer = new byte[sizeof(UInt32)];
@@ -247,6 +256,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             return BitConverter.ToUInt32(buffer, 0);
         }
 
+        [Obsolete("Use VirtualStreamReader.ReadInt32() instead.")]
         public Int32 ReadInt32()
         {
             byte[] buffer = new byte[sizeof(Int32)];
@@ -266,6 +276,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// <returns>The total number of bytes skipped. 
         /// This might be less than the number of bytes requested if that number 
         /// of bytes are not currently available, or zero if the end of the stream is reached.</returns>
+        [Obsolete("Use Seek(count, SeekOrigin.Current) instead.")]
         public int Skip(uint count)
         {
             // TODO: Someone more familiar with StructuredStorageReader
@@ -278,35 +289,35 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// Reads a byte from the current position in the virtual stream.
         /// </summary>
         /// <returns>The byte read or -1 if end of stream</returns>
-        public override int ReadByte()
-        {
-            int result = ReadByte(_position);
-            _position++;
-            return result;
-        }
+        //public override int ReadByte()
+        //{
+        //    int result = ReadByte(_position);
+        //    _position++;
+        //    return result;
+        //}
 
 
         /// <summary>
         /// Reads a byte from the given position in the virtual stream.
         /// </summary>
         /// <returns>The byte read or -1 if end of stream</returns>
-        public int ReadByte(int position)
-        {
-            if (position < 0)
-            {
-                return -1;
-            }
+        //public int ReadByte(long position)
+        //{
+        //    if (position < 0)
+        //    {
+        //        return -1;
+        //    }
             
-            int sectorInChain = (int)(position / _fat.SectorSize);
+        //    int sectorInChain = (int)(position / _fat.SectorSize);
 
-            if (sectorInChain >= _sectors.Count)
-            {
-                return -1;
-            }
+        //    if (sectorInChain >= _sectors.Count)
+        //    {
+        //        return -1;
+        //    }
 
-            _fat.SeekToPositionInSector(_sectors[sectorInChain], position % _fat.SectorSize);
-            return _fat.UncheckedReadByte();
-        }
+        //    _fat.SeekToPositionInSector(_sectors[sectorInChain], position % _fat.SectorSize);
+        //    return _fat.UncheckedReadByte();
+        //}
 
 
         /// <summary>
@@ -314,7 +325,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// </summary>
         private void Init(UInt32 startSector)
         {
-            _sectors = _fat.GetSectorChain(startSector, (UInt64)Math.Ceiling((double)_sizeOfStream / _fat.SectorSize), _name);
+            _sectors = _fat.GetSectorChain(startSector, (UInt64)Math.Ceiling((double)_length / _fat.SectorSize), _name);
             CheckConsistency();
         }
 
@@ -324,7 +335,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// </summary>
         private void CheckConsistency()
         {
-            if (((UInt64)_sectors.Count) != Math.Ceiling((double)_sizeOfStream / _fat.SectorSize))
+            if (((UInt64)_sectors.Count) != Math.Ceiling((double)_length / _fat.SectorSize))
             {
                 throw new ChainSizeMismatchException(_name);
             }
@@ -337,7 +348,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
         public override bool CanSeek
         {
-            get { return false; }
+            get { return true; }
         }
 
         public override bool CanWrite
@@ -347,27 +358,43 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
         public override void Flush()
         {
-            throw new NotSupportedException();
-        }
-
-        public override long Length
-        {
-            get { return (long)this.SizeOfStream; }
+            throw new NotSupportedException("This method is not supported on a read-only stream.");
         }
 
         public override long Seek(long offset, SeekOrigin origin)
         {
-            throw new NotSupportedException();
+            switch (origin)
+            {
+                case System.IO.SeekOrigin.Begin:
+                    _position = offset;
+                    break;
+                case System.IO.SeekOrigin.Current:
+                    _position += offset;
+                    break;
+                case System.IO.SeekOrigin.End:
+                    _position = _length - offset;
+                    break;
+            }
+            if (_position < 0)
+            {
+                _position = 0;
+            }
+            else if (_position > _length)
+            {
+                _position = _length;
+            }
+
+            return _position;
         }
 
         public override void SetLength(long value)
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException("This method is not supported on a read-only stream.");
         }
 
         public override void Write(byte[] buffer, int offset, int count)
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException("This method is not supported on a read-only stream.");
         }
     }
 }

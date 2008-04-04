@@ -142,7 +142,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
                     writer.WriteAttributeString("Type", part.RelationshipType);
 
                     // write the target relative to the current part
-                    writer.WriteAttributeString("Target", Path.Combine(part.TargetDirectory, part.TargetName) + part.TargetExt);
+                    string target = Path.Combine(part.TargetDirectory, part.TargetName) + part.TargetExt;
+                    writer.WriteAttributeString("Target", target.Replace('\\', '/'));
                     writer.WriteEndElement();
                 }
                 writer.WriteEndElement();
