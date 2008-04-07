@@ -78,17 +78,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public bool fHybrid;
 
         /// <summary>
-        /// HTML compatibility flags:<br/>
-        /// 0x01 Checked<br/>
-        /// 0x02 The numbering sequence or format is unsupported (includes tab & size)<br/>
-        /// 0x04 The list text is not "#."<br/>
-        /// 0x08 Something other than a period is used<br/>
-        /// 0x10 First line indent mismatch<br/>
-        /// 0x20 The list tab and the dxaLeft don't match (need table?)<br/>
-        /// 0x40 The hanging indent falls beneath the number (need plain text)<br/>
-        /// 0x80 A built-in HTML bullet
+        /// Array of ListLevel describing the several levels of the list.
         /// </summary>
-        public byte grfhic;
+        public ListLevel[] rglvl;
 
         public const Int16 ISTD_NIL = 4095;
         private const int RGISTD_LENGTH = 9;
@@ -113,12 +105,16 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 //parse flagbyte
                 int flag = (int)bytes[26];
                 this.fSimpleList = Utils.BitmaskToBool(flag, 0x01);
+
+                if(this.fSimpleList)
+                    this.rglvl = new ListLevel[1];
+                else
+                    this.rglvl = new ListLevel[9];
+
                 this.fRestartHdn = Utils.BitmaskToBool(flag, 0x02);
                 this.fAutoNum = Utils.BitmaskToBool(flag, 0x04);
                 this.fPreRTF = Utils.BitmaskToBool(flag, 0x08);
                 this.fHybrid = Utils.BitmaskToBool(flag, 0x10);
-
-                this.grfhic = bytes[27];
             }
             else
             {

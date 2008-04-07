@@ -13,6 +13,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
           IMapping<ListTable>
     {
 
+        private enum LevelJustification
+        {
+            left = 0,
+            right,
+            center
+        }
+
         public NumberingMapping(NumberingDefinitionsPart numPart, XmlWriterSettings xws)
             : base(XmlWriter.Create(numPart.GetStream(), xws))
         {
@@ -51,6 +58,37 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, "multiLevel");
                 _writer.WriteEndElement();
 
+                //writes the levels
+                for (int j = 0; j < lstf.rglvl.Length; j++)
+                {
+                    ListLevel lvl = lstf.rglvl[j];
+
+                    _writer.WriteStartElement("w", "lvl", OpenXmlNamespaces.WordprocessingML);
+                    _writer.WriteAttributeString("w", "ilvl", OpenXmlNamespaces.WordprocessingML, j.ToString());
+
+                    //starts at
+                    _writer.WriteStartElement("w", "start", OpenXmlNamespaces.WordprocessingML);
+                    _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, lvl.iStartAt.ToString());
+                    _writer.WriteEndElement();
+
+                    //number format
+                    _writer.WriteStartElement("w", "numFmt", OpenXmlNamespaces.WordprocessingML);
+                    _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, getNumberFormat(lvl.nfc));
+                    _writer.WriteEndElement();
+
+                    //Number level text
+                    _writer.WriteStartElement("w", "lvlText", OpenXmlNamespaces.WordprocessingML);
+                    _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, getLvlText(lvl.NumberText));
+                    _writer.WriteEndElement();
+                    
+                    //jc
+                    _writer.WriteStartElement("w", "lvlJc", OpenXmlNamespaces.WordprocessingML);
+                    _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, ((LevelJustification)lvl.jc).ToString());
+                    _writer.WriteEndElement();
+
+                    _writer.WriteEndElement();
+                }
+
                 //end abstractNum
                 _writer.WriteEndElement();
 
@@ -65,6 +103,52 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             _writer.WriteEndElement();
             _writer.Flush();
+        }
+
+        private string getLvlText(string numberText)
+        {
+            string ret = numberText;
+
+            ret = ret.Replace(new string((char)0x0000, 1), "%1");
+            ret = ret.Replace(new string((char)0x0001, 1), "%2");
+            ret = ret.Replace(new string((char)0x0002, 1), "%3");
+            ret = ret.Replace(new string((char)0x0003, 1), "%4");
+            ret = ret.Replace(new string((char)0x0004, 1), "%5");
+            ret = ret.Replace(new string((char)0x0005, 1), "%6");
+            ret = ret.Replace(new string((char)0x0006, 1), "%7");
+            ret = ret.Replace(new string((char)0x0007, 1), "%8");
+            ret = ret.Replace(new string((char)0x0008, 1), "%9");
+
+            return ret;
+        }
+
+        private string getNumberFormat(byte nfc)
+        {
+            switch (nfc)
+            {
+                case 0:
+                    return "decimal";
+                case 1:
+                    return "upperRoman";
+                case 2:
+                    return "lowerRoman";
+                case 3:
+                    return "upperLetter";
+                case 4:
+                    return "lowerLetter";
+                case 5:
+                    return "ordinal";
+                case 6:
+                    return "cardinalText";
+                case 7:
+                    return "ordinalText";
+                case 23:
+                    return "bullet";
+                //ToDO: implement rest of the number formats
+                default:
+                    return "decimal";
+                    break;
+            }
         }
     }
 }

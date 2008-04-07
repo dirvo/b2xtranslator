@@ -36,24 +36,42 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
     public class ListTable : List<ListData>, IVisitable
     {
         private const int LSTF_LENGTH = 28;
+        private const int LVLF_LENGTH = 28;
 
         public ListTable(FileInformationBlock fib, VirtualStream tableStream)
         {
             byte[] bytes = new byte[fib.lcbPlcfLst];
             tableStream.Read(bytes, 0, bytes.Length, fib.fcPlcfLst);
 
+            //the ListTable is a plex.
+            //it starts with a count, followed by the array of LST structs,
+            //followed by the array of LVL structs
+
             //read count
             byte[] countBytes = new byte[2];
             tableStream.Read(countBytes, 0, 2, fib.fcPlcfLst);
             Int16 count = System.BitConverter.ToInt16(countBytes, 0);
 
-            //read the ListData
+            //read the LST structs
+            int lvlPos = fib.fcPlcfLst + (int)fib.lcbPlcfLst;
             for (int i = 0; i < count; i++)
             {
                 //read and parse
+                int offset = fib.fcPlcfLst + 2 + (i * LSTF_LENGTH);
                 byte[] lstf = new byte[LSTF_LENGTH];
-                tableStream.Read(lstf, 0, LSTF_LENGTH, fib.fcPlcfLst + 2 + (i*LSTF_LENGTH));
-                this.Add(new ListData(lstf));
+                tableStream.Read(lstf, 0, LSTF_LENGTH, offset);
+                ListData lst = new ListData(lstf);
+
+                //read the LVL structs that belong to this LST
+                for (int j = 0; j < lst.rglvl.Length; j++)
+                {
+                    ListLevel lvl = new ListLevel(tableStream, lvlPos);
+                    lst.rglvl[j] = lvl;
+
+                    lvlPos += (LVLF_LENGTH + lvl.cbGrpprlPapx + lvl.cbGrpprlChpx + 2 + lvl.NumberText.Length*2);
+                }
+
+                this.Add(lst);
             }
         }
 
