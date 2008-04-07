@@ -337,6 +337,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             List<Int32> chpxFcs = _doc.GetFileCharacterPositions(fc, fcEnd);
             chpxFcs.Add(fcEnd);
 
+            //the last of these CHPX formast the paragraph end mark
+            CharacterPropertyExceptions paraEndChpx = chpxs[chpxs.Count-1];
+
             //start paragraph
             _writer.WriteStartElement("w", "p", OpenXmlNamespaces.WordprocessingML);
 
@@ -345,12 +348,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 //this is the last paragraph of this section
                 //write properties with section properties
-                papx.Convert(new ParagraphPropertiesMapping(_writer, _doc, chpxs[chpxs.Count-1], findValidSepx(cpEnd)));
+                papx.Convert(new ParagraphPropertiesMapping(_writer, _doc, paraEndChpx, findValidSepx(cpEnd)));
             }
             else
             {
                 //write properties
-                papx.Convert(new ParagraphPropertiesMapping(_writer, _doc, chpxs[chpxs.Count - 1]));
+                papx.Convert(new ParagraphPropertiesMapping(_writer, _doc, paraEndChpx));
             }
 
             //write a run for each CHPX
@@ -405,6 +408,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             //start run
             _writer.WriteStartElement("w", "r", OpenXmlNamespaces.WordprocessingML);
+
+            //append rsid
+            //_writer.WriteAttributeString("w", "rsidRPr", OpenXmlNamespaces.WordprocessingML, getChpxRsid(chpx).ToString());
 
             //write properties
             chpx.Convert(new CharacterPropertiesMapping(_writer, _doc));
@@ -600,6 +606,23 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 {
                     //special value
                     ret = DIaLOGIKa.b2xtranslator.DocFileFormat.Utils.ByteToBool(sprm.Arguments[0]);
+                    break;
+                }
+            }
+            return ret;
+        }
+
+
+        private Int32 getChpxRsid(CharacterPropertyExceptions chpx)
+        {
+            Int32 ret = 0;
+            foreach (SinglePropertyModifier sprm in chpx.grpprl)
+            {
+                if (sprm.OpCode == 0x6815 || 
+                    sprm.OpCode == 0x6816 ||
+                    sprm.OpCode == 0x6817)
+                {
+                    ret = System.BitConverter.ToInt32(sprm.Arguments, 0);
                     break;
                 }
             }

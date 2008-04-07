@@ -38,26 +38,27 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
     public class CharacterPropertiesMapping : PropertiesMapping,
           IMapping<CharacterPropertyExceptions>
     {
-        private StyleSheet _styleSheet;
-        private List<FontFamilyName> _fontTable;
+        private WordDocument _doc;
         private XmlElement _rPr;
         private UInt16 _currentIstd;
+        private List<SinglePropertyModifier> _revisionStack;
+        private bool _collectRevisionData = true;
 
         public CharacterPropertiesMapping(XmlWriter writer, WordDocument doc)
             : base(writer)
         {
-            _styleSheet = doc.Styles;
-            _fontTable = doc.FontTable;
+            _doc = doc;
             _rPr = _nodeFactory.CreateElement("w", "rPr", OpenXmlNamespaces.WordprocessingML);
+            _revisionStack = new List<SinglePropertyModifier>();
         }
 
         public CharacterPropertiesMapping(XmlElement rPr, WordDocument doc)
             : base(null)
         {
-            _styleSheet = doc.Styles;
-            _fontTable = doc.FontTable;
+            _doc = doc;
             _nodeFactory = rPr.OwnerDocument;
             _rPr = rPr;
+            _revisionStack = new List<SinglePropertyModifier>();
         }
 
         public void Apply(CharacterPropertyExceptions chpx)
@@ -67,6 +68,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             XmlElement color = _nodeFactory.CreateElement("w", "color", OpenXmlNamespaces.WordprocessingML);
             XmlAttribute colorVal = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
             XmlElement lang = _nodeFactory.CreateElement("w", "lang", OpenXmlNamespaces.WordprocessingML);
+            XmlElement rPrChange = _nodeFactory.CreateElement("w", "rPrChange", OpenXmlNamespaces.WordprocessingML);
+            XmlElement ins = _nodeFactory.CreateElement("w", "ins", OpenXmlNamespaces.WordprocessingML);
 
             foreach (SinglePropertyModifier sprm in chpx.grpprl)
             {
@@ -78,7 +81,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //style id 
                     case 0x4A30:
                         _currentIstd = System.BitConverter.ToUInt16(sprm.Arguments, 0);
-                        appendValueElement(_rPr, "rStyle", StyleSheetMapping.MakeStyleId(_styleSheet.Styles[_currentIstd].xstzName), true);
+                        appendValueElement(_rPr, "rStyle", StyleSheetMapping.MakeStyleId(_doc.Styles.Styles[_currentIstd].xstzName), true);
                         break;
                     
                     //Element flags
@@ -135,6 +138,51 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         break;
                     case 0x0811:
                         appendFlagElement(_rPr, sprm, "webHidden", true);
+                        break;
+
+                    //revision data
+                    case 0xCA89:
+                        //revision mark
+                        _collectRevisionData = false;
+                        //author 
+                        Int16 isbt = System.BitConverter.ToInt16(sprm.Arguments, 1);
+                        //date
+                        byte[] dttmBytes = new byte[4];
+                        Array.Copy(sprm.Arguments, 3, dttmBytes, 0, 4);
+                        DateAndTime dttm = new DateAndTime(dttmBytes);
+                        if (_revisionStack.Count > 0)
+                        {
+                            appendValueAttribute(rPrChange, "author", _doc.AuthorTable[isbt]);
+                            dttm.Convert(new DateMapping(rPrChange));
+                        }
+                        else
+                        {
+                            //if no revision data has been collected, it's an insert of a new element
+                            appendValueAttribute(ins, "author", _doc.AuthorTable[isbt]);
+                            dttm.Convert(new DateMapping(ins));
+                        }
+                        break;
+                    case 0x0801:
+                        //revision mark
+                        _collectRevisionData = false;
+                        break;
+                    case 0x4804:
+                        //author
+                        isbt = System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        //if no revision data has been collected, it's an insert of a new element
+                        if (_revisionStack.Count > 0)
+                            appendValueAttribute(rPrChange, "author", _doc.AuthorTable[isbt]);
+                        else
+                            appendValueAttribute(ins, "author", _doc.AuthorTable[isbt]);
+                        break;
+                    case 0x6805:
+                        //date
+                        dttm = new DateAndTime(sprm.Arguments);
+                        //if no revision data has been collected, it's an insert of a new element
+                        if (_revisionStack.Count > 0)
+                            dttm.Convert(new DateMapping(rPrChange));
+                        else
+                            dttm.Convert(new DateMapping(ins));
                         break;
 
                     //language
@@ -224,17 +272,17 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //font family
                     case 0x4A4F:
                        XmlAttribute ascii = _nodeFactory.CreateAttribute("w", "ascii", OpenXmlNamespaces.WordprocessingML);
-                       ascii.Value = _fontTable[System.BitConverter.ToUInt16(sprm.Arguments, 0)].xszFtn;
+                       ascii.Value = _doc.FontTable[System.BitConverter.ToUInt16(sprm.Arguments, 0)].xszFtn;
                        rFonts.Attributes.Append(ascii);
                        break;
                    case 0x4A50:
                        XmlAttribute eastAsia = _nodeFactory.CreateAttribute("w", "eastAsia", OpenXmlNamespaces.WordprocessingML);
-                       eastAsia.Value = _fontTable[System.BitConverter.ToUInt16(sprm.Arguments, 0)].xszFtn;
+                       eastAsia.Value = _doc.FontTable[System.BitConverter.ToUInt16(sprm.Arguments, 0)].xszFtn;
                        rFonts.Attributes.Append(eastAsia);
                        break;
                     case 0x4A51:
                         XmlAttribute ansi = _nodeFactory.CreateAttribute("w", "hAnsi", OpenXmlNamespaces.WordprocessingML);
-                        ansi.Value = _fontTable[System.BitConverter.ToUInt16(sprm.Arguments, 0)].xszFtn;
+                        ansi.Value = _doc.FontTable[System.BitConverter.ToUInt16(sprm.Arguments, 0)].xszFtn;
                         rFonts.Attributes.Append(ansi);
                         break;
 
@@ -256,6 +304,35 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     default:
                         break;
                 }
+
+                //put the sprm on the revision stack
+                if (_collectRevisionData)
+                {
+                    _revisionStack.Add(sprm);
+                }
+            }
+
+            //convert revision stack
+            if (chpx.HasOldProps)
+            {
+                //build a dummy chpx, to store the revision data
+                CharacterPropertyExceptions revisionChpx = new CharacterPropertyExceptions();
+                //copy the revision stack to the dummy
+                revisionChpx.grpprl = _revisionStack.GetRange(0, _revisionStack.Count);
+                //convert that dummy to rPrChange
+                revisionChpx.Convert(new CharacterPropertiesMapping(rPrChange, _doc));
+            }
+
+            //apend revision
+            if (rPrChange.Attributes.Count > 0 || rPrChange.ChildNodes.Count > 0)
+            {
+                _rPr.AppendChild(rPrChange);
+            }
+
+            //apend insertion
+            if (ins.Attributes.Count > 0)
+            {
+                _rPr.AppendChild(ins);
             }
 
             //apend lang
@@ -278,7 +355,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
             
             //write properties
-            if (_writer!=null && _rPr.ChildNodes.Count > 0 || _rPr.Attributes.Count > 0)
+            if (_writer!=null && (_rPr.ChildNodes.Count > 0 || _rPr.Attributes.Count > 0))
             {
                 _rPr.WriteTo(_writer);
             }
@@ -299,7 +376,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                 if (flag == 0)
                 {
-                    val.Value = "f";
+                    val.Value = "false";
                     ele.Attributes.Append(val);
                 }
                 else if (flag == 1)
@@ -321,7 +398,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     }
                     else
                     {
-                        StyleSheetDescription std = _styleSheet.Styles[_currentIstd];
+                        StyleSheetDescription std = _doc.Styles.Styles[_currentIstd];
                         foreach (SinglePropertyModifier styleSprm in std.chpx.grpprl)
                         {
                             //find the value in the style
@@ -332,7 +409,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                                 switch (styleFlag)
 	                            {
                                     case 1:
-                                        val.Value = "f";
+                                        val.Value = "false";
                                         ele.Attributes.Append(val);
                                         break;
                                     case 0:

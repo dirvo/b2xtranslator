@@ -235,15 +235,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         jc.Attributes.Append(jcVal);
                         break;
 
-                    //numbering properties
-                    case 0x260A:
-                        XmlNode ilvl = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "ilvl", OpenXmlNamespaces.WordprocessingML);
-                        XmlAttribute iLvlVal = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
-                        iLvlVal.Value = sprm.Arguments[0].ToString();
-                        ilvl.Attributes.Append(iLvlVal);
-                        numPr.AppendChild(ilvl);
-                        break;
-
                     //borders
                     case 0x461C:
                     case 0xC64E:
@@ -301,6 +292,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         appendShading(_pPr, desc);
                         break;
                     
+                    //numbering
+                    case 0x260A:
+                        appendValueElement(numPr, "ilvl", sprm.Arguments[0].ToString(), true);
+                        break;
+                    case 0x460B:
+                        appendValueElement(numPr, "numId", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString(), true);
+                        break;
+
                     default:
                         break;
                 }

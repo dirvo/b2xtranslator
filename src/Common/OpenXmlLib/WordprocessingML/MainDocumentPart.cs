@@ -35,6 +35,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
     {
         protected StyleDefinitionsPart _styleDefinitionsPart;
         protected FontTablePart _fontTablePart;
+        protected NumberingDefinitionsPart _numberingDefinitionsPart;
 
         protected int _imagePartCount = 0;
         
@@ -77,6 +78,17 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
         public FontTablePart FontTablePart
         {
             get { return _fontTablePart; }
+        }
+
+        public NumberingDefinitionsPart AddNumberingDefinitionsPart()
+        {
+            _numberingDefinitionsPart = new NumberingDefinitionsPart(this);
+            return this.AddPart(_numberingDefinitionsPart);
+        }
+
+        public NumberingDefinitionsPart NumberingDefinitionsPart
+        {
+            get { return _numberingDefinitionsPart; }
         }
 
         public ImagePart AddImagePart(ImagePartType type)

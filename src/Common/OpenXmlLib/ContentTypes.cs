@@ -54,6 +54,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         // WordprocessingML content types
         public const string MainDocument = "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml";
         public const string Styles = "application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml";
+        public const string Numbering = "application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml";
         public const string FontTable = "application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml";
         public const string WebSettings = "application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml";
         public const string Settings = "application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml";
@@ -111,7 +112,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 
         public const string OfficeDocument = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument";
         public const string Styles="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles";
-        public const string FontTable = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable"; 
+        public const string FontTable = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable";
+        public const string Numbering = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering"; 
         public const string WebSettings = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings";
         public const string Settings = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings";
 

@@ -124,9 +124,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                             //parse
                             SinglePropertyModifier sprm = new SinglePropertyModifier(sprmBytes);
 
-                            //save
-                            grpprl.Add(sprm);
-
                             //check if it sets the PX to fHasOldProps or if it's a delete info
                             switch (sprm.OpCode)
                             {
@@ -146,12 +143,13 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                                     //SEPX fHasOldProps
                                     this.HasOldProps = true;
                                     break;
-                                case 0x6817:
-                                    //CHPX delete rsid
+                                case 0x0800:
+                                    //CHPX delete mark
                                     this.IsDeleted = true;
                                     break;
-
                             }
+
+                            grpprl.Add(sprm);
 
                             sprmStart += sprmBytes.Length;
                         }

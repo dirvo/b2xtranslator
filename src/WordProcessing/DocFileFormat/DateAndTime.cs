@@ -29,10 +29,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Collections;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class DateAndTime
+    public class DateAndTime : IVisitable
     {
         /// <summary>
         /// minutes (0-59)
@@ -93,17 +94,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 this.hr = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 6, 5));
                 this.dom = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 11, 5));
                 this.mon = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 16, 4));
-                this.yr = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 20, 9));
+                this.yr = (Int16)(1900 + Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 20, 9)));
                 this.wdy = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 29, 3));
-
-                //int b0 = (int)System.BitConverter.ToInt16(bytes, 0);
-                //this.mint = Convert.ToInt16(b0 & 0x003F);
-                //this.hr = Convert.ToInt16(b0 & 0x07C0);
-                //this.dom = Convert.ToInt16(b0 & 0xF800);
-                //int b2 = (int)System.BitConverter.ToInt16(bytes, 2);
-                //this.mon = Convert.ToInt16(b2 & 0x000F);
-                //this.yr = Convert.ToInt16(b2 & 0x1FF0);
-                //this.wdy = Convert.ToInt16(b2 & 0xE000);
             }
             else
             {
@@ -119,5 +111,14 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.wdy = 0;
             this.yr = 0;
         }
+
+        #region IVisitable Members
+
+        public virtual void Convert<T>(T mapping)
+        {
+            ((IMapping<DateAndTime>)mapping).Apply(this);
+        }
+
+        #endregion
     }
 }

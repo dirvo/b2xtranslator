@@ -92,10 +92,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AuthorTable.cs" />
     <Compile Include="FontFamilyName.cs" />
     <Compile Include="FontTable.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="InvalidFileException.cs" />
+    <Compile Include="ListData.cs" />
+    <Compile Include="ListTable.cs" />
     <Compile Include="PictureDescriptor.cs" />
     <Compile Include="SectionPropertyExceptions.cs" />
     <Compile Include="SectionTable.cs" />

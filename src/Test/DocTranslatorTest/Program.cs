@@ -70,6 +70,9 @@ namespace DocTranslatorTest
                     //Write Styles.xml
                     doc.Styles.Convert(new StyleSheetMapping(docx.MainDocumentPart.AddStyleDefinitionsPart(), xws, doc));
 
+                    //Write numbering.xml
+                    doc.ListTable.Convert(new NumberingMapping(docx.MainDocumentPart.AddNumberingDefinitionsPart(), xws));
+
                     //Write fontTable.xml
                     doc.FontTable.Convert(new FontTableMapping(docx.MainDocumentPart.AddFontTablePart(), xws));
 

@@ -46,6 +46,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public SectionTable SectionTable;
 
         /// <summary>
+        /// Contains the names of all author who revised something in the document
+        /// </summary>
+        public AuthorTable AuthorTable;
+
+        /// <summary>
         /// The stream "WordDocument"
         /// </summary>
         public VirtualStream WordDocumentStream;
@@ -116,6 +121,12 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public FontTable FontTable;
 
         /// <summary>
+        /// A list that contains all formatting information of 
+        /// the lists and numberings in the document
+        /// </summary>
+        public ListTable ListTable;
+
+        /// <summary>
         /// A list of all FKPs that contain PAPX
         /// </summary>
         public List<FormattedDiskPagePAPX> AllPapxFkps;
@@ -156,6 +167,12 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             //read font table
             this.FontTable = new FontTable(this.FIB,this.TableStream);
+
+            //read list table
+            this.ListTable = new ListTable(this.FIB, this.TableStream);
+
+            //parse the AuthorTable
+            this.AuthorTable = new AuthorTable(this.FIB, this.TableStream);
 
             //read all PAPX FKPS
             this.AllPapxFkps = FormattedDiskPagePAPX.GetAllPAPXFKPs(this.FIB, this.WordDocumentStream, this.TableStream, this.DataStream);
