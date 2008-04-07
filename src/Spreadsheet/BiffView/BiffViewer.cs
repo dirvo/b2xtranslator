@@ -62,7 +62,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             try
             {
                 reader = new StorageReader(this.Options.InputDocument);
-                VirtualStream workbook = reader.GetStream("Workbook");
+                VirtualStreamReader workbookReader = new VirtualStreamReader(reader.GetStream("Workbook"));
 
                 if (this.Options.Mode == BiffViewerMode.File)
                 {
@@ -76,11 +76,11 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
                 
                 if (this.Options.PrintTextOnly)
                 {
-                    PrintText(sw, workbook);
+                    PrintText(sw, workbookReader);
                 }
                 else
                 {
-                    PrintHtml(sw, workbook);
+                    PrintHtml(sw, workbookReader);
                 }
 
                 if (this.Options.ShowInBrowser && this.Options.Mode == BiffViewerMode.File)
@@ -117,19 +117,19 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             Util.VisitLink(this.Options.OutputFileName);
         }
 
-        protected void PrintText(StreamWriter sw, VirtualStream workbook)
+        protected void PrintText(StreamWriter sw, VirtualStreamReader workbookReader)
         {
             BiffHeader bh;
 
             try
             {
-                while ((ulong)workbook.Position < workbook.SizeOfStream)
+                while (workbookReader.BaseStream.Position < workbookReader.BaseStream.Length)
                 {
-                    bh.id = (RecordNumber)workbook.ReadUInt16();
-                    bh.length = workbook.ReadUInt16();
+                    bh.id = (RecordNumber)workbookReader.ReadUInt16();
+                    bh.length = workbookReader.ReadUInt16();
 
                     byte[] buffer = new byte[bh.length];
-                    if (bh.length != workbook.Read(buffer, bh.length))
+                    if (bh.length != workbookReader.Read(buffer, bh.length))
                         sw.WriteLine("EOF");
 
                     sw.Write("BIFF {0}\t{1}\t", bh.id, bh.length);
@@ -152,7 +152,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             }
         }
 
-        protected void PrintHtml(StreamWriter sw, VirtualStream workbook)
+        protected void PrintHtml(StreamWriter sw, VirtualStreamReader workbookReader)
         {
             BiffHeader bh;
 
@@ -170,13 +170,13 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
 
             try
             {
-                while ((ulong)workbook.Position < workbook.SizeOfStream)
+                while (workbookReader.BaseStream.Position < workbookReader.BaseStream.Length)
                 {
-                    bh.id = (RecordNumber)workbook.ReadUInt16();
-                    bh.length = workbook.ReadUInt16();
+                    bh.id = (RecordNumber)workbookReader.ReadUInt16();
+                    bh.length = workbookReader.ReadUInt16();
 
                     byte[] buffer = new byte[bh.length];
-                    if (bh.length != workbook.Read(buffer, bh.length))
+                    if (bh.length != workbookReader.Read(buffer, bh.length))
                         sw.WriteLine("EOF");
 
                     sw.WriteLine("<tr>");

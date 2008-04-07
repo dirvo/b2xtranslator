@@ -47,7 +47,7 @@ namespace PptFileFormat
         {
             this.PowerpointDocumentStream = reader.GetStream("PowerPoint Document");
 
-            while ((ulong) this.PowerpointDocumentStream.Position != this.PowerpointDocumentStream.SizeOfStream)
+            while (this.PowerpointDocumentStream.Position != this.PowerpointDocumentStream.Length)
             {
                 this.RootRecords.Add(Record.readRecord(this.PowerpointDocumentStream));
             }

@@ -32,6 +32,7 @@ using System.IO;
 using System.Collections;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
 using System.Xml;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
 {
@@ -55,6 +56,36 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
         
 
             doc.Close();
+
+
+            PresentationDocument presentation = PresentationDocument.Create(@"C:\tmp\testOpenXmlLib.pptx");
+            PresentationPart presentationPart = presentation.PresentationPart;
+
+            SlidePart slide = presentationPart.AddSlidePart();
+
+            string presentationXml =
+@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
+    <p:presentation xmlns:a=""http://schemas.openxmlformats.org/drawingml/2006/main"" 
+        xmlns:r=""http://schemas.openxmlformats.org/officeDocument/2006/relationships"" 
+        xmlns:p=""http://schemas.openxmlformats.org/presentationml/2006/main"" saveSubsetFonts=""1"">
+  <p:sldIdLst>
+    <p:sldId id=""256"" r:id=""" + slide.RelIdToString + @"""/>
+  </p:sldIdLst>
+</p:presentation>";
+            stream = presentationPart.GetStream();
+            buf = (new UTF8Encoding()).GetBytes(presentationXml);
+            stream.Write(buf, 0, buf.Length);
+
+            string slideXml =
+@"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>
+<p:sld xmlns:a=""http://schemas.openxmlformats.org/drawingml/2006/main"" xmlns:r=""http://schemas.openxmlformats.org/officeDocument/2006/relationships"" xmlns:p=""http://schemas.openxmlformats.org/presentationml/2006/main"">
+</p:sld>";
+
+            stream = slide.GetStream();
+            buf = (new UTF8Encoding()).GetBytes(slideXml);
+            stream.Write(buf, 0, buf.Length);
+
+            presentation.Close();
         }
     }
 }

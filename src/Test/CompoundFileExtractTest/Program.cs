@@ -97,7 +97,7 @@ namespace CompoundFileExtractTest
                     foreach (string key in PathNames.Keys)
                     {
                         // get virtual stream by path name
-                        VirtualStream stream = storageReader.GetStream(key);
+                        VirtualStreamReader streamReader = new VirtualStreamReader(storageReader.GetStream(key));
 
                         // read bytes from stream, write them back to disk
                         FileStream fs = new FileStream(outputDir + "\\" + PathNames[key] + ".stream", FileMode.Create);
@@ -106,7 +106,7 @@ namespace CompoundFileExtractTest
                         int bytesRead;
                         do
                         {
-                            bytesRead = stream.Read(array);
+                            bytesRead = streamReader.Read(array);
                             writer.Write(array, 0, bytesRead);
                             writer.Flush();
                         } while (bytesRead == array.Length);

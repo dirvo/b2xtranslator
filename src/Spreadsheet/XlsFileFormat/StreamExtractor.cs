@@ -98,9 +98,9 @@ namespace DIaLOGIKa.b2xtranslator.XlsFileFormat
             string returnValue = "Extracted file: " + this.fileName + "\n Values: \n"; 
             // List filenames 
             // name and size of some streams 
-            returnValue += "Stream: " + StreamExtractor.SUMMARYINFORMATIONSEARCH + "  Size: " + this.SummaryStream.SizeOfStream + "\n";
-            returnValue += "Stream: " + StreamExtractor.DOCSUMMARYINFORMATIONSEARCH + "  Size: " + this.DocumentSummaryStream.SizeOfStream + "\n";
-            returnValue += "Stream: " + StreamExtractor.WORKBOOKSEARCH + "  Size: " + this.WorkbookStream.SizeOfStream + "\n"; 
+            returnValue += "Stream: " + StreamExtractor.SUMMARYINFORMATIONSEARCH + "  Size: " + this.SummaryStream.Length + "\n";
+            returnValue += "Stream: " + StreamExtractor.DOCSUMMARYINFORMATIONSEARCH + "  Size: " + this.DocumentSummaryStream.Length + "\n";
+            returnValue += "Stream: " + StreamExtractor.WORKBOOKSEARCH + "  Size: " + this.WorkbookStream.Length + "\n"; 
             // all other not known streams 
             foreach (object var in streamDirList)
             {

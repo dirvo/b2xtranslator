@@ -52,7 +52,7 @@ namespace DIaLOGIKa.b2xtranslator.XlsFileFormat
             sw = new StreamWriter(Console.OpenStandardOutput());
             try
             {
-                while ((ulong)this.SummaryStream.Position < this.SummaryStream.SizeOfStream)
+                while (this.SummaryStream.Position < this.SummaryStream.Length)
                 {
                     bh.id = (RecordNumber)this.SummaryStream.ReadUInt16();
                     bh.length = this.SummaryStream.ReadUInt16();
