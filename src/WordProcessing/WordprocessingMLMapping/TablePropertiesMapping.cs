@@ -141,18 +141,26 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         appendValueElement(_tblPr, "jc", ((Global.JustificationCode)sprm.Arguments[0]).ToString(), true);
                         break;
 
-                    //default cell padding
+                    //default cell padding (margin)
                     case 0xD632:
                     case 0xD634:
                     case 0xD638:
-                        //not yet implemented
+                        byte grfbrc = sprm.Arguments[2];
+                        Int16 wMar = System.BitConverter.ToInt16(sprm.Arguments, 4);
+                        if (DIaLOGIKa.b2xtranslator.DocFileFormat.Utils.BitmaskToBool((int)grfbrc, 0x01))
+                            appendDxaElement(tblCellMar, "top", wMar.ToString(), true);
+                        if (DIaLOGIKa.b2xtranslator.DocFileFormat.Utils.BitmaskToBool((int)grfbrc, 0x02))
+                            appendDxaElement(tblCellMar, "left", wMar.ToString(), true);
+                        if (DIaLOGIKa.b2xtranslator.DocFileFormat.Utils.BitmaskToBool((int)grfbrc, 0x04))
+                            appendDxaElement(tblCellMar, "bottom", wMar.ToString(), true);
+                        if (DIaLOGIKa.b2xtranslator.DocFileFormat.Utils.BitmaskToBool((int)grfbrc, 0x08))
+                            appendDxaElement(tblCellMar, "right", wMar.ToString(), true);
                         break;
 
                     //default cell spacing
                     case 0xD631:
                     case 0xD633:
                     case 0xD637:
-                        //not yet implemented
                         break;
 
                     //row count
@@ -254,6 +262,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             if(tblBorders.ChildNodes.Count > 0)
             {
                 _tblPr.AppendChild(tblBorders);
+            }
+
+            //append margins
+            if (tblCellMar.ChildNodes.Count > 0)
+            {
+                _tblPr.AppendChild(tblCellMar);
             }
 
             //write Properties

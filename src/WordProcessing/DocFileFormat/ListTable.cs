@@ -40,38 +40,41 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         public ListTable(FileInformationBlock fib, VirtualStream tableStream)
         {
-            byte[] bytes = new byte[fib.lcbPlcfLst];
-            tableStream.Read(bytes, 0, bytes.Length, fib.fcPlcfLst);
-
-            //the ListTable is a plex.
-            //it starts with a count, followed by the array of LST structs,
-            //followed by the array of LVL structs
-
-            //read count
-            byte[] countBytes = new byte[2];
-            tableStream.Read(countBytes, 0, 2, fib.fcPlcfLst);
-            Int16 count = System.BitConverter.ToInt16(countBytes, 0);
-
-            //read the LST structs
-            int lvlPos = fib.fcPlcfLst + (int)fib.lcbPlcfLst;
-            for (int i = 0; i < count; i++)
+            if (fib.lcbPlcfLst > 0)
             {
-                //read and parse
-                int offset = fib.fcPlcfLst + 2 + (i * LSTF_LENGTH);
-                byte[] lstf = new byte[LSTF_LENGTH];
-                tableStream.Read(lstf, 0, LSTF_LENGTH, offset);
-                ListData lst = new ListData(lstf);
+                byte[] bytes = new byte[fib.lcbPlcfLst];
+                tableStream.Read(bytes, 0, bytes.Length, fib.fcPlcfLst);
 
-                //read the LVL structs that belong to this LST
-                for (int j = 0; j < lst.rglvl.Length; j++)
+                //the ListTable is a plex.
+                //it starts with a count, followed by the array of LST structs,
+                //followed by the array of LVL structs
+
+                //read count
+                byte[] countBytes = new byte[2];
+                tableStream.Read(countBytes, 0, 2, fib.fcPlcfLst);
+                Int16 count = System.BitConverter.ToInt16(countBytes, 0);
+
+                //read the LST structs
+                int lvlPos = fib.fcPlcfLst + (int)fib.lcbPlcfLst;
+                for (int i = 0; i < count; i++)
                 {
-                    ListLevel lvl = new ListLevel(tableStream, lvlPos);
-                    lst.rglvl[j] = lvl;
+                    //read and parse
+                    int offset = fib.fcPlcfLst + 2 + (i * LSTF_LENGTH);
+                    byte[] lstf = new byte[LSTF_LENGTH];
+                    tableStream.Read(lstf, 0, LSTF_LENGTH, offset);
+                    ListData lst = new ListData(lstf);
 
-                    lvlPos += (LVLF_LENGTH + lvl.cbGrpprlPapx + lvl.cbGrpprlChpx + 2 + lvl.xst.Length*2);
+                    //read the LVL structs that belong to this LST
+                    for (int j = 0; j < lst.rglvl.Length; j++)
+                    {
+                        ListLevel lvl = new ListLevel(tableStream, lvlPos);
+                        lst.rglvl[j] = lvl;
+
+                        lvlPos += (LVLF_LENGTH + lvl.cbGrpprlPapx + lvl.cbGrpprlChpx + 2 + lvl.xst.Length * 2);
+                    }
+
+                    this.Add(lst);
                 }
-
-                this.Add(lst);
             }
         }
 

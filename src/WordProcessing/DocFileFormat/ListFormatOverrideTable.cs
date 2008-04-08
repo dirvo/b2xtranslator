@@ -39,35 +39,38 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         public ListFormatOverrideTable(FileInformationBlock fib, VirtualStream tableStream)
         {
-            //read the count of LFOs
-            byte[] countBytes = new byte[4];
-            tableStream.Read(countBytes, 0, 4, fib.fcPlfLfo);
-            Int32 count = System.BitConverter.ToInt32(countBytes, 0);
-
-            //read the LFOs
-            //int pos = fib.fcPlfLfo + 4;
-            for (int i = 0; i < count; i++)
+            if (fib.lcbPlfLfo > 0)
             {
-                byte[] lfoBytes = new byte[LFO_LENGTH];
-                //tableStream.Read(lfoBytes, 0, LFO_LENGTH, pos);
-                tableStream.Read(lfoBytes, LFO_LENGTH);
-                ListFormatOverride lfo = new ListFormatOverride(lfoBytes);
-                this.Add(lfo);
+                //read the count of LFOs
+                byte[] countBytes = new byte[4];
+                tableStream.Read(countBytes, 0, 4, fib.fcPlfLfo);
+                Int32 count = System.BitConverter.ToInt32(countBytes, 0);
 
-                //pos += LFO_LENGTH;
-            }
-
-            //read the LFOLVLs
-            for (int i = 0; i < this.Count; i++)
-            {
-                
-                for (int j = 0; j < this[i].clfolvl; j++)
+                //read the LFOs
+                //int pos = fib.fcPlfLfo + 4;
+                for (int i = 0; i < count; i++)
                 {
-                    byte[] lfolvlBytes = new byte[LFOLVL_LENGTH];
-                    tableStream.Read(lfolvlBytes, LFOLVL_LENGTH);
-                    this[i].rgLfoLvl[j] = new ListFormatOverrideLevel(lfolvlBytes);
+                    byte[] lfoBytes = new byte[LFO_LENGTH];
+                    //tableStream.Read(lfoBytes, 0, LFO_LENGTH, pos);
+                    tableStream.Read(lfoBytes, LFO_LENGTH);
+                    ListFormatOverride lfo = new ListFormatOverride(lfoBytes);
+                    this.Add(lfo);
 
-                    //pos += LFOLVL_LENGTH;
+                    //pos += LFO_LENGTH;
+                }
+
+                //read the LFOLVLs
+                for (int i = 0; i < this.Count; i++)
+                {
+
+                    for (int j = 0; j < this[i].clfolvl; j++)
+                    {
+                        byte[] lfolvlBytes = new byte[LFOLVL_LENGTH];
+                        tableStream.Read(lfolvlBytes, LFOLVL_LENGTH);
+                        this[i].rgLfoLvl[j] = new ListFormatOverrideLevel(lfolvlBytes);
+
+                        //pos += LFOLVL_LENGTH;
+                    }
                 }
             }
         }

@@ -63,10 +63,19 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0x9407:
                         XmlElement rowHeight = _nodeFactory.CreateElement("w", "trHeight", OpenXmlNamespaces.WordprocessingML);
                         XmlAttribute rowHeightVal = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
-                        rowHeightVal.Value = System.BitConverter.ToInt16(sprm.Arguments, 0).ToString();
-                        rowHeight.Attributes.Append(rowHeightVal);
                         XmlAttribute rowHeightRule = _nodeFactory.CreateAttribute("w", "hRule", OpenXmlNamespaces.WordprocessingML);
-                        rowHeightRule.Value = "exact";
+                        Int16 rH = System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        if (rH > 0)
+                        {
+                            rowHeightRule.Value = "atLeast";
+                        }
+                        else
+                        {
+                            rowHeightRule.Value = "exact";
+                            rH *= -1;
+                        }
+                        rowHeightVal.Value = rH.ToString();
+                        rowHeight.Attributes.Append(rowHeightVal);
                         rowHeight.Attributes.Append(rowHeightRule);
                         _trPr.AppendChild(rowHeight);
                         break;
