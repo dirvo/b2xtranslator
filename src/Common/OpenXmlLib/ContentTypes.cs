@@ -39,7 +39,6 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string Relationships = "application/vnd.openxmlformats-package.relationships+xml";
 
         public const string CoreProperties = "application/vnd.openxmlformats-package.core-properties+xml";
-        
 
         // general office document content types
         public const string ExtendedProperties = "application/vnd.openxmlformats-officedocument.extended-properties+xml";
@@ -107,6 +106,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
     public static class OpenXmlRelationshipTypes
     {
         public const string CoreProperties = "http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties";
+        public const string ExtendedProperties = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties";
 
         public const string Theme = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme";
 

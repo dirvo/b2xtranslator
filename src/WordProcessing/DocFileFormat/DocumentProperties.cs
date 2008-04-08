@@ -29,10 +29,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Collections;
+using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class DocumentProperties
+    public class DocumentProperties : IVisitable
     {
         /// <summary>
         /// True when facing pages should be printed
@@ -1245,8 +1247,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// Parses the bytes to retrieve a DocumentProperties
         /// </summary>
         /// <param name="bytes">The bytes</param>
-        public DocumentProperties(byte[] bytes)
+        public DocumentProperties(FileInformationBlock fib, VirtualStream tableStream)
         {
+            byte[] bytes = new byte[fib.lcbDop];
+            tableStream.Read(bytes, 0, (int)fib.lcbDop, fib.fcDop);
+
             if (bytes.Length > 0)
             {
                 BitArray bits;
@@ -1618,5 +1623,14 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 }
             }
         }
+
+        #region IVisitable Members
+
+        public virtual void Convert<T>(T mapping)
+        {
+            ((IMapping<DocumentProperties>)mapping).Apply(this);
+        }
+
+        #endregion
     }
 }

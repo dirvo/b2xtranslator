@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2008, DIaLOGIKa
  * All rights reserved.
  *
@@ -30,24 +30,24 @@ using System.Text;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 {
-    public class CorePropertiesPart : UniqueOpenXmlPart
+    public class AppPropertiesPart : UniqueOpenXmlPart
     {
-        internal CorePropertiesPart(OpenXmlPartContainer parent)
+        internal AppPropertiesPart(OpenXmlPartContainer parent)
             : base(parent)
         {
         }
 
         public override string ContentType
         {
-            get { return OpenXmlContentTypes.CoreProperties; }
+            get { return OpenXmlContentTypes.ExtendedProperties; }
         }
 
         public override string RelationshipType
         {
-            get { return OpenXmlRelationshipTypes.CoreProperties; }
+            get { return OpenXmlRelationshipTypes.ExtendedProperties; }
         }
 
-        public override string TargetName { get { return "core"; } }
+        public override string TargetName { get { return "app"; } }
         public override string TargetDirectory { get { return "docProps"; } }
         
     }

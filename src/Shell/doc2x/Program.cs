@@ -98,6 +98,12 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                         xws.Encoding = Encoding.UTF8;                  
                         xws.ConformanceLevel = ConformanceLevel.Document;
 
+                        //write docProps/app.xml
+                        //doc.DocumentProperties.Convert(new ApplicationPropertiesMapping(docx.AddAppPropertiesPart(), xws));
+
+                        //write settings.xml
+                        doc.DocumentProperties.Convert(new SettingsMapping(docx.MainDocumentPart.AddSettingsPart(), xws));
+
                         //Write Styles.xml
                         doc.Styles.Convert(new StyleSheetMapping(docx.MainDocumentPart.AddStyleDefinitionsPart(), xws, doc));
 

@@ -67,7 +67,13 @@ namespace DocTranslatorTest
                     xws.Encoding = Encoding.UTF8;
                     xws.ConformanceLevel = ConformanceLevel.Document;
 
-                    //Write Styles.xml
+                    //write docProps/app.xml
+                    //doc.DocumentProperties.Convert(new ApplicationPropertiesMapping(docx.AddAppPropertiesPart(), xws));
+
+                    //write settings.xml
+                    doc.DocumentProperties.Convert(new SettingsMapping(docx.MainDocumentPart.AddSettingsPart(), xws));
+
+                    //Write styles.xml
                     doc.Styles.Convert(new StyleSheetMapping(docx.MainDocumentPart.AddStyleDefinitionsPart(), xws, doc));
 
                     //Write numbering.xml
@@ -76,7 +82,7 @@ namespace DocTranslatorTest
                     //Write fontTable.xml
                     doc.FontTable.Convert(new FontTableMapping(docx.MainDocumentPart.AddFontTablePart(), xws));
 
-                    //Write Document.xml
+                    //Write document.xml
                     doc.Convert(new DocumentMapping(docx.MainDocumentPart, xws));
 
                     DateTime end = DateTime.Now;

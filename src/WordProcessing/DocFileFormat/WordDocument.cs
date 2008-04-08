@@ -127,6 +127,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public ListTable ListTable;
 
         /// <summary>
+        /// The DocumentProperties of the word document
+        /// </summary>
+        public DocumentProperties DocumentProperties;
+
+        /// <summary>
         /// A list that contains all overriding formatting information
         /// of the lists and numberings in the document.
         /// </summary>
@@ -167,6 +172,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             {
                 this.DataStream = null;
             }
+
+            //parse properties
+            this.DocumentProperties = new DocumentProperties(this.FIB, this.TableStream);
 
             //parse the stylesheet
             this.Styles = new StyleSheet(this.FIB, this.TableStream, this.DataStream);

@@ -43,6 +43,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         protected Dictionary<string, string> _partOverrides = new Dictionary<string, string>();
 
         protected CorePropertiesPart _coreFilePropertiesPart;
+        protected AppPropertiesPart _appPropertiesPart;
         #endregion
 
         protected OpenXmlPackage(string fileName)
@@ -88,11 +89,24 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
             return this.AddPart(this.CoreFilePropertiesPart);
         }
 
+        public AppPropertiesPart AppPropertiesPart
+        {
+            get { return _appPropertiesPart; }
+            set { _appPropertiesPart = value; }
+        }
+
+        public AppPropertiesPart AddAppPropertiesPart()
+        {
+            this.AppPropertiesPart = new AppPropertiesPart(this);
+            return this.AddPart(this.AppPropertiesPart);
+        }
+
         internal void AddContentTypeDefault(string extension, string contentType)
         {
             if (!_defaultTypes.ContainsKey(extension))
                 _defaultTypes.Add(extension, contentType);
         }
+
 
         internal void AddContentTypeOverride(string partNameAbsolute, string contentType)
         {

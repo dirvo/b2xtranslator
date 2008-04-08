@@ -162,7 +162,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
 
             //DOP
             DateTime dopStart = DateTime.Now;
-            DocumentProperties dop = new DocumentProperties(dopBytes);
+            DocumentProperties dop = new DocumentProperties(fib, tableStream);
             DateTime dopEnd = DateTime.Now;
             TimeSpan dopDiff = dopEnd.Subtract(dopStart);
 
@@ -191,7 +191,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
         {
             byte[] dopBytes = new byte[fib.lcbDop];
             tableStream.Read(dopBytes, dopBytes.Length, fib.fcDop);
-            DocumentProperties dop = new DocumentProperties(dopBytes);
+            DocumentProperties dop = new DocumentProperties(fib, tableStream);
 
             Console.WriteLine("Initial Footnote number: " + dop.nFtn);
         }
