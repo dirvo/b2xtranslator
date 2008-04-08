@@ -7,20 +7,18 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 using DIaLOGIKa.b2xtranslator.XlsFileFormat.Exceptions;
-using XlsFileFormat; 
+using XlsFileFormat;
 
 namespace DIaLOGIKa.b2xtranslator.XlsFileFormat
 {
     /// <summary>
-    /// Extracts the FileSummaryStream 
+    /// Extracts the workbook stream !!
     /// </summary>
-    public class FileInformationExtractor
+    public class WorkbookExtractor
     {
-        public VirtualStream SummaryStream;         // Summary stream 
+        public VirtualStream Workbookstream;         // Summary stream 
 
-        public string Title;
-
-        public string buffer; 
+        public string buffer;
 
         struct BiffHeader
         {
@@ -31,18 +29,15 @@ namespace DIaLOGIKa.b2xtranslator.XlsFileFormat
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="sum">Summary stream </param>
-        public FileInformationExtractor(VirtualStream sum)
+        /// <param name="sum">workbookstream </param>
+        public WorkbookExtractor(VirtualStream workbook)
         {
-            this.Title = null; 
-            if (sum == null)
+            if (workbook == null)
             {
                 throw new ExtractorException(ExtractorException.NULLPOINTEREXCEPTION); 
             }
-            this.SummaryStream = sum;
+            this.Workbookstream = workbook;
             this.extractData(); 
-
-
         }
 
         /// <summary>
@@ -55,13 +50,13 @@ namespace DIaLOGIKa.b2xtranslator.XlsFileFormat
             sw = new StreamWriter(Console.OpenStandardOutput());
             try
             {
-                while (this.SummaryStream.Position < this.SummaryStream.Length)
+                while ((ulong)this.Workbookstream.Position < this.Workbookstream.SizeOfStream)
                 {
-                    bh.id = (RecordNumber)this.SummaryStream.ReadUInt16();
-                    bh.length = this.SummaryStream.ReadUInt16();
+                    bh.id = (RecordNumber)this.Workbookstream.ReadUInt16();
+                    bh.length = this.Workbookstream.ReadUInt16();
 
                     byte[] buf = new byte[bh.length];
-                    if (bh.length != this.SummaryStream.Read(buf, bh.length))
+                    if (bh.length != this.Workbookstream.Read(buf, bh.length))
                         sw.WriteLine("EOF");
 
                     sw.Write("BIFF {0}\t{1}\t", bh.id, bh.length);
@@ -83,7 +78,7 @@ namespace DIaLOGIKa.b2xtranslator.XlsFileFormat
                 Console.WriteLine(ex.ToString());
             }
             this.buffer = sw.ToString();
-         }
+        }
 
         /// <summary>
         /// A normal overload ToString Method 
@@ -91,8 +86,8 @@ namespace DIaLOGIKa.b2xtranslator.XlsFileFormat
         /// <returns></returns>
         public override string ToString()
         {
-            string returnvalue = "Title: " + this.Title;
-            return returnvalue; 
+            string returnvalue = "Workbook"; 
+            return returnvalue;
         }
     }
 }
