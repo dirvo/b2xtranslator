@@ -102,7 +102,7 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                         doc.Styles.Convert(new StyleSheetMapping(docx.MainDocumentPart.AddStyleDefinitionsPart(), xws, doc));
 
                         //Write numbering.xml
-                        doc.ListTable.Convert(new NumberingMapping(docx.MainDocumentPart.AddNumberingDefinitionsPart(), xws));
+                        doc.ListTable.Convert(new NumberingMapping(docx.MainDocumentPart.AddNumberingDefinitionsPart(), xws, doc));
 
                         //Write fontTable.xml
                         doc.FontTable.Convert(new FontTableMapping(docx.MainDocumentPart.AddFontTablePart(), xws));

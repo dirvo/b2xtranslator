@@ -122,9 +122,15 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         /// <summary>
         /// A list that contains all formatting information of 
-        /// the lists and numberings in the document
+        /// the lists and numberings in the document.
         /// </summary>
         public ListTable ListTable;
+
+        /// <summary>
+        /// A list that contains all overriding formatting information
+        /// of the lists and numberings in the document.
+        /// </summary>
+        public ListFormatOverrideTable ListFormatOverrideTable;
 
         /// <summary>
         /// A list of all FKPs that contain PAPX
@@ -170,6 +176,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             //read list table
             this.ListTable = new ListTable(this.FIB, this.TableStream);
+
+            //read lfo table
+            this.ListFormatOverrideTable = new ListFormatOverrideTable(this.FIB, this.TableStream);
 
             //parse the AuthorTable
             this.AuthorTable = new AuthorTable(this.FIB, this.TableStream);

@@ -86,6 +86,14 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public bool fWord6;
 
         /// <summary>
+        /// Contains the character offsets into the LVL’s XST of the inherited numbers of previous levels. <br/>
+        /// The XST contains place holders for any paragraph numbers contained in the text of the number, 
+        /// and the place holder contains the ilvl of the inherited number, 
+        /// so lvl.xst[lvl.rgbxchNums[0]] == the level of the first inherited number in this level.
+        /// </summary>
+        public byte[] rgbxchNums;
+
+        /// <summary>
         /// The type of character following the number text for the paragraph.
         /// </summary>
         public FollowingChar ixchFollow;
@@ -120,17 +128,17 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// 
         /// </summary>
-        public ParagraphPropertyExceptions[] grpprlPapx;
+        public ParagraphPropertyExceptions grpprlPapx;
 
         /// <summary>
         /// 
         /// </summary>
-        public CharacterPropertyExceptions[] grpprlChpx;
+        public CharacterPropertyExceptions grpprlChpx;
 
         /// <summary>
         /// 
         /// </summary>
-        public string NumberText;
+        public string xst;
 
         private const int LVLF_LENGTH = 28;
 
@@ -148,38 +156,52 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.iStartAt = System.BitConverter.ToInt32(bytes, 0);
             this.nfc = bytes[4];
             int flag = (int)bytes[5];
-            //this.jc = 
+            this.jc = (byte)(flag & 0x03);
             this.fLegal = Utils.BitmaskToBool(flag, 0x04);
             this.fNoRestart = Utils.BitmaskToBool(flag, 0x08);
             this.fPrev = Utils.BitmaskToBool(flag, 0x10);
             this.fPrevSpace = Utils.BitmaskToBool(flag, 0x20);
             this.fWord6 = Utils.BitmaskToBool(flag, 0x40);
-            //bytes 6-14 are character offset array
+            this.rgbxchNums = new byte[9];
+            int j=0;
+            for (int i = 6; i < 15; i++)
+            {
+                rgbxchNums[j] = bytes[i];
+                j++;
+            }
             this.ixchFollow = (FollowingChar)bytes[15];
             this.dxaSpace = System.BitConverter.ToInt32(bytes, 16);
             this.dxaIndent = System.BitConverter.ToInt32(bytes, 20);
             this.cbGrpprlChpx = bytes[24];
             this.cbGrpprlPapx = bytes[25];
             this.ilvlRestartLim = bytes[26];
-            //byte 27 contains HTML flags
 
             //parse the variable part
 
-            //read the papx
+            //read the group of papx sprms
+            int papxPos = offset + LVLF_LENGTH;
+            byte[] papxBytes = new byte[this.cbGrpprlPapx];
+            tableStream.Read(papxBytes, 0, this.cbGrpprlPapx, papxPos);
+            //this papx ahs no istd, so use PX to parse it
+            PropertyExceptions px = new PropertyExceptions(papxBytes);
+            this.grpprlPapx = new ParagraphPropertyExceptions();
+            this.grpprlPapx.grpprl = px.grpprl;
 
-            //read the chpx
+            //read the group of chpx sprms
+            int chpxPos = offset + LVLF_LENGTH + this.cbGrpprlPapx;
+            byte[] chpxBytes = new byte[this.cbGrpprlChpx];
+            tableStream.Read(chpxBytes, 0, this.cbGrpprlChpx, chpxPos);
+            this.grpprlChpx = new CharacterPropertyExceptions(chpxBytes);
 
             //read the number text
             int strPos = offset + LVLF_LENGTH + this.cbGrpprlPapx + this.cbGrpprlChpx;
-
             byte[] strLenBytes = new byte[2];
             tableStream.Read(strLenBytes,0,2,strPos);
             Int16 strLen = System.BitConverter.ToInt16(strLenBytes, 0);
             strPos += 2;
-            
             byte[] strBytes = new byte[strLen*2];
             tableStream.Read(strBytes, 0, strLen*2, strPos);
-            this.NumberText = Encoding.Unicode.GetString(strBytes);
+            this.xst = Encoding.Unicode.GetString(strBytes);
         }
     }
 }

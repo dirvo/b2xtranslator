@@ -98,6 +98,9 @@
     <Compile Include="Global.cs" />
     <Compile Include="InvalidFileException.cs" />
     <Compile Include="ListData.cs" />
+    <Compile Include="ListFormatOverride.cs" />
+    <Compile Include="ListFormatOverrideLevel.cs" />
+    <Compile Include="ListFormatOverrideTable.cs" />
     <Compile Include="ListLevel.cs" />
     <Compile Include="ListTable.cs" />
     <Compile Include="PictureDescriptor.cs" />

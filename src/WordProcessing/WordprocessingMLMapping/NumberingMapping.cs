@@ -1,3 +1,30 @@
+/*
+ * Copyright (c) 2008, DIaLOGIKa
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *        notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of DIaLOGIKa nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY DIaLOGIKa ''AS IS'' AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL DIaLOGIKa BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,24 +39,28 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
     public class NumberingMapping : AbstractOpenXmlMapping,
           IMapping<ListTable>
     {
+        private WordDocument _doc;
 
         private enum LevelJustification
         {
             left = 0,
-            right,
-            center
+            center,
+            right
         }
 
-        public NumberingMapping(NumberingDefinitionsPart numPart, XmlWriterSettings xws)
+        public NumberingMapping(NumberingDefinitionsPart numPart, 
+            XmlWriterSettings xws, 
+            WordDocument doc)
             : base(XmlWriter.Create(numPart.GetStream(), xws))
         {
+            _doc = doc;
         }
 
         public void Apply(ListTable rglst)
         {
             _writer.WriteStartElement("w", "numbering", OpenXmlNamespaces.WordprocessingML);
 
-            for (int i = 0 ; i < rglst.Count; i++)
+            for (int i = 0; i < rglst.Count; i++)
             {
                 ListData lstf = rglst[i];
 
@@ -43,11 +74,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, String.Format("{0:X8}", lstf.lsid));
                 _writer.WriteEndElement();
 
-                //template
-                _writer.WriteStartElement("w", "tmpl", OpenXmlNamespaces.WordprocessingML);
-                _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, String.Format("{0:X8}", lstf.tplc));
-                _writer.WriteEndElement();
-
                 //multiLevelType
                 _writer.WriteStartElement("w", "multiLevelType", OpenXmlNamespaces.WordprocessingML);
                 if (lstf.fHybrid)
@@ -55,7 +81,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 else if (lstf.fSimpleList)
                     _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, "singleLevel");
                 else
-                    _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, "multiLevel");
+                    _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, "multilevel");
+                _writer.WriteEndElement();
+
+                //template
+                _writer.WriteStartElement("w", "tmpl", OpenXmlNamespaces.WordprocessingML);
+                _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, String.Format("{0:X8}", lstf.tplc));
                 _writer.WriteEndElement();
 
                 //writes the levels
@@ -76,9 +107,18 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, getNumberFormat(lvl.nfc));
                     _writer.WriteEndElement();
 
+                    //style
+                    Int16 styleIndex = lstf.rgistd[j];
+                    if(styleIndex != ListData.ISTD_NIL)
+                    {
+                        _writer.WriteStartElement("w", "pStyle", OpenXmlNamespaces.WordprocessingML);
+                        _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, StyleSheetMapping.MakeStyleId(_doc.Styles.Styles[styleIndex].xstzName));
+                        _writer.WriteEndElement();
+                    }
+
                     //Number level text
                     _writer.WriteStartElement("w", "lvlText", OpenXmlNamespaces.WordprocessingML);
-                    _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, getLvlText(lvl.NumberText));
+                    _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, getLvlText(lvl.xst));
                     _writer.WriteEndElement();
                     
                     //jc
@@ -86,17 +126,33 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, ((LevelJustification)lvl.jc).ToString());
                     _writer.WriteEndElement();
 
+                    //pPr
+                    lvl.grpprlPapx.Convert(new ParagraphPropertiesMapping(_writer, _doc, null));
+
+                    //rPr
+                    lvl.grpprlChpx.Convert(new CharacterPropertiesMapping(_writer, _doc));
+
                     _writer.WriteEndElement();
                 }
 
                 //end abstractNum
                 _writer.WriteEndElement();
+            }
+
+            //write the overrides
+            for (int i = 0; i < _doc.ListFormatOverrideTable.Count; i++)
+            {
+                ListFormatOverride lfo = _doc.ListFormatOverrideTable[i];
 
                 //start num
                 _writer.WriteStartElement("w", "num", OpenXmlNamespaces.WordprocessingML);
                 _writer.WriteAttributeString("w", "numId", OpenXmlNamespaces.WordprocessingML, (i+1).ToString());
+
+                int index = findIndexbyId(rglst, lfo.lsid);
+
                 _writer.WriteStartElement("w", "abstractNumId", OpenXmlNamespaces.WordprocessingML);
-                _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, i.ToString());
+                _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, index.ToString());
+
                 _writer.WriteEndElement();
                 _writer.WriteEndElement();
             }
@@ -105,6 +161,26 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _writer.Flush();
         }
 
+        private int findIndexbyId(List<ListData> list, Int32 id)
+        {
+            int ret = -1;
+            for (int i = 0; i < list.Count; i++)
+			{
+                if (list[i].lsid == id)
+                {
+                    ret = i;
+                    break;
+                }
+			}
+            return ret;
+        }
+
+        /// <summary>
+        /// Converts the number text of the binary format to the number text of OOXML.
+        /// OOXML uses different placeholders for the numbers.
+        /// </summary>
+        /// <param name="numberText">The number text of the binary format</param>
+        /// <returns></returns>
         private string getLvlText(string numberText)
         {
             string ret = numberText;
@@ -122,6 +198,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             return ret;
         }
 
+        /// <summary>
+        /// Converts the number format code of the binary format.
+        /// </summary>
+        /// <param name="nfc">The number format code</param>
+        /// <returns>The OOXML attribute value</returns>
         private string getNumberFormat(byte nfc)
         {
             switch (nfc)

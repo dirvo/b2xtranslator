@@ -68,12 +68,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             XmlElement spacing = _nodeFactory.CreateElement("w", "spacing", OpenXmlNamespaces.WordprocessingML);
             XmlElement jc = null;
 
-            //append style id 
-            XmlElement pStyle = _nodeFactory.CreateElement("w", "pStyle", OpenXmlNamespaces.WordprocessingML);
-            XmlAttribute styleId = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
-            styleId.Value = StyleSheetMapping.MakeStyleId(_doc.Styles.Styles[papx.istd].xstzName);
-            pStyle.Attributes.Append(styleId);
-            _pPr.AppendChild(pStyle);
+            //append style id , do not append "Normal" style (istd 0)
+            if (papx.istd != 0)
+            {
+                XmlElement pStyle = _nodeFactory.CreateElement("w", "pStyle", OpenXmlNamespaces.WordprocessingML);
+                XmlAttribute styleId = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
+                styleId.Value = StyleSheetMapping.MakeStyleId(_doc.Styles.Styles[papx.istd].xstzName);
+                pStyle.Attributes.Append(styleId);
+                _pPr.AppendChild(pStyle);
+            }
 
             //append formatting of paragraph end mark
             if (_paraEndChpx != null)
@@ -159,36 +162,35 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0x840F:
                     case 0x465F:
                     case 0x4610:
-                        XmlAttribute left = _nodeFactory.CreateAttribute("w", "left", OpenXmlNamespaces.WordprocessingML);
-                        left.Value = System.BitConverter.ToInt16(sprm.Arguments, 0).ToString();
-                        ind.Attributes.Append(left);
+                        appendValueAttribute(ind, "left", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
                     case 0x4456:
-                        XmlAttribute leftChars = _nodeFactory.CreateAttribute("w", "leftChars", OpenXmlNamespaces.WordprocessingML);
-                        leftChars.Value = System.BitConverter.ToInt16(sprm.Arguments, 0).ToString();
-                        ind.Attributes.Append(leftChars);
+                        appendValueAttribute(ind, "leftChars", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
                     case 0x8460:
                     case 0x8411:
-                        XmlAttribute firstLine = _nodeFactory.CreateAttribute("w", "firstLine", OpenXmlNamespaces.WordprocessingML);
-                        firstLine.Value = System.BitConverter.ToInt16(sprm.Arguments, 0).ToString();
-                        ind.Attributes.Append(firstLine);
+                        Int16 flValue = System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        string flName;
+                        if (flValue >= 0)
+                        {
+                            flName = "firstLine";
+                        }
+                        else
+                        {
+                            flName = "hanging";
+                            flValue *= -1;
+                        }
+                        appendValueAttribute(ind, flName, flValue.ToString());
                         break;
                     case 0x4457:
-                        XmlAttribute firstLineChars = _nodeFactory.CreateAttribute("w", "firstLineChars", OpenXmlNamespaces.WordprocessingML);
-                        firstLineChars.Value = System.BitConverter.ToInt16(sprm.Arguments, 0).ToString();
-                        ind.Attributes.Append(firstLineChars);
+                        appendValueAttribute(ind, "firstLineChars", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
                     case 0x845D:
                     case 0x840E:
-                        XmlAttribute right = _nodeFactory.CreateAttribute("w", "right", OpenXmlNamespaces.WordprocessingML);
-                        right.Value = System.BitConverter.ToInt16(sprm.Arguments, 0).ToString();
-                        ind.Attributes.Append(right);
+                        appendValueAttribute(ind, "right", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
                     case 0x4455:
-                        XmlAttribute rightChars = _nodeFactory.CreateAttribute("w", "rightChars", OpenXmlNamespaces.WordprocessingML);
-                        rightChars.Value = System.BitConverter.ToInt16(sprm.Arguments, 0).ToString();
-                        ind.Attributes.Append(rightChars);
+                        appendValueAttribute(ind, "rightChars", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
 
                     //spacing
