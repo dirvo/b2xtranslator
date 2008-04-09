@@ -91,7 +91,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             UInt32 child = entry.ChildSiblingSid;
 
             // Check for cycle
-            if (_directoryEntries.Contains(entry))
+            if (_directoryEntries.Exists(delegate(DirectoryEntry x) { return x.Sid == entry.Sid; }))
             {
                 throw new ChainCycleDetectedException("DirectoryEntries");
             }
