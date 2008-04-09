@@ -53,21 +53,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             _writer.WriteStartDocument();
             _writer.WriteStartElement("w", "styles", OpenXmlNamespaces.WordprocessingML);
-
+            
+            //document defaults
             _writer.WriteStartElement("w", "docDefaults", OpenXmlNamespaces.WordprocessingML);
-            _writer.WriteStartElement("w", "rPrDefault", OpenXmlNamespaces.WordprocessingML);
-            _writer.WriteStartElement("w", "rPr", OpenXmlNamespaces.WordprocessingML);
-
-            //write default fonts
-            _writer.WriteStartElement("w", "rFonts", OpenXmlNamespaces.WordprocessingML);
-            _writer.WriteAttributeString("w", "ascii", OpenXmlNamespaces.WordprocessingML, _doc.FontTable[sheet.stshi.rgftcStandardChpStsh[0]].xszFtn);
-            _writer.WriteAttributeString("w", "eastAsia", OpenXmlNamespaces.WordprocessingML, _doc.FontTable[sheet.stshi.rgftcStandardChpStsh[1]].xszFtn);
-            _writer.WriteAttributeString("w", "hAnsi", OpenXmlNamespaces.WordprocessingML, _doc.FontTable[sheet.stshi.rgftcStandardChpStsh[2]].xszFtn);
-            _writer.WriteAttributeString("w", "cs", OpenXmlNamespaces.WordprocessingML, _doc.FontTable[sheet.stshi.rgftcStandardChpStsh[3]].xszFtn);
-            _writer.WriteEndElement();
-
-            _writer.WriteEndElement();
-            _writer.WriteEndElement();
+            writeRunDefaults(sheet);
             _writer.WriteEndElement();
 
             foreach (StyleSheetDescription style in sheet.Styles)
@@ -148,6 +137,24 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _writer.Flush();
         }
 
+        private void writeRunDefaults(StyleSheet sheet)
+        {
+            _writer.WriteStartElement("w", "rPrDefault", OpenXmlNamespaces.WordprocessingML);
+            _writer.WriteStartElement("w", "rPr", OpenXmlNamespaces.WordprocessingML);
+
+            //write default fonts
+            _writer.WriteStartElement("w", "rFonts", OpenXmlNamespaces.WordprocessingML);
+            _writer.WriteAttributeString("w", "ascii", OpenXmlNamespaces.WordprocessingML, _doc.FontTable[sheet.stshi.rgftcStandardChpStsh[0]].xszFtn);
+            _writer.WriteAttributeString("w", "eastAsia", OpenXmlNamespaces.WordprocessingML, _doc.FontTable[sheet.stshi.rgftcStandardChpStsh[1]].xszFtn);
+            _writer.WriteAttributeString("w", "hAnsi", OpenXmlNamespaces.WordprocessingML, _doc.FontTable[sheet.stshi.rgftcStandardChpStsh[2]].xszFtn);
+            _writer.WriteAttributeString("w", "cs", OpenXmlNamespaces.WordprocessingML, _doc.FontTable[sheet.stshi.rgftcStandardChpStsh[3]].xszFtn);
+            
+            _writer.WriteEndElement();
+
+            _writer.WriteEndElement();
+            _writer.WriteEndElement();
+        }
+
         /// <summary>
         /// Generates a style id
         /// </summary>
@@ -155,7 +162,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// <returns></returns>
         public static string MakeStyleId(string stylename)
         {
-            return stylename.Replace(" ", "");
+            string ret = stylename;
+            ret = ret.Replace(" ", "");
+            ret = ret.Replace("(", "");
+            ret = ret.Replace(")", "");
+            ret = ret.Replace("'", "");
+            ret = ret.Replace("\"", "");
+            return ret;
         }
     }
 }
