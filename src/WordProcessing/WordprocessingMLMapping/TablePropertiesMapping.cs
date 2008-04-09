@@ -42,35 +42,28 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private XmlElement _tblPr;
         private XmlElement _tblGrid;
         private StyleSheet _styles;
+        private List<Int16> _grid;
 
-        public TablePropertiesMapping(XmlWriter writer, StyleSheet styles)
+        public TablePropertiesMapping(XmlWriter writer, StyleSheet styles, List<Int16> grid)
             : base(writer)
         {
             _styles = styles;
             _tblPr = _nodeFactory.CreateElement("w", "tblPr", OpenXmlNamespaces.WordprocessingML);
-            _tblGrid = _nodeFactory.CreateElement("w", "tblGrid", OpenXmlNamespaces.WordprocessingML);
+            _grid = grid;
         }
 
         public void Apply(TablePropertyExceptions tapx)
         {
             XmlElement tblBorders = _nodeFactory.CreateElement("w", "tblBorders", OpenXmlNamespaces.WordprocessingML);
             XmlElement tblCellMar = _nodeFactory.CreateElement("w", "tblCellMar", OpenXmlNamespaces.WordprocessingML);
+            XmlElement tblLayout = _nodeFactory.CreateElement("w", "tblLayout", OpenXmlNamespaces.WordprocessingML);
+            XmlAttribute layoutType = _nodeFactory.CreateAttribute("w", "type", OpenXmlNamespaces.WordprocessingML);
+            layoutType.Value = "fixed";
 
             foreach (SinglePropertyModifier sprm in tapx.grpprl)
             {
                 switch (sprm.OpCode)
                 {
-                    //style
-                    case 0x563a:
-                    case 0xd63d:
-                        appendValueElement(_tblPr, "tblStyle", StyleSheetMapping.MakeStyleId(_styles.Styles[System.BitConverter.ToInt16(sprm.Arguments, 0)].xstzName), true);
-                        break;
-
-                    //bidi
-                    case 0x560B:
-                        appendValueElement(_tblPr, "bidiVisual", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString(), true);
-                        break;
-
                     //preferred table width
                     case 0xF614:
                         Int16 width = System.BitConverter.ToInt16(sprm.Arguments, 1);
@@ -91,20 +84,53 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         _tblPr.AppendChild(tblW);
                         break;
 
-                    //grid
-                    case 0xD608:
-                        byte itcMac = sprm.Arguments[0];
-                        for (int i = 0; i < itcMac; i++)
+                    //justification
+                    case 0x5400:
+                    case 0x548A:
+                        appendValueElement(_tblPr, "jc", ((Global.JustificationCode)sprm.Arguments[0]).ToString(), true);
+                        break;
+
+                    //indent
+                    case 0xF661:
+                        Int16 indValue = System.BitConverter.ToInt16(sprm.Arguments, 1);
+                        if (indValue != 0)
                         {
-                            Int16 boundary2 = System.BitConverter.ToInt16(sprm.Arguments, 1 + ((i+1) * 2));
-                            Int16 boundary1 = System.BitConverter.ToInt16(sprm.Arguments, 1 + (i * 2));
-                            XmlElement gridCol = _nodeFactory.CreateElement("w", "gridCol", OpenXmlNamespaces.WordprocessingML);
-                            XmlAttribute gridColW = _nodeFactory.CreateAttribute("w", "w", OpenXmlNamespaces.WordprocessingML);
-                            gridColW.Value = "" + (boundary2 - boundary1);
-                            gridCol.Attributes.Append(gridColW);
-                            _tblGrid.AppendChild(gridCol);
+                            XmlElement tblInd = _nodeFactory.CreateElement("w", "tblInd", OpenXmlNamespaces.WordprocessingML);
+                            XmlAttribute tblIndW = _nodeFactory.CreateAttribute("w", "w", OpenXmlNamespaces.WordprocessingML);
+                            tblIndW.Value = System.BitConverter.ToInt16(sprm.Arguments, 1).ToString();
+                            tblInd.Attributes.Append(tblIndW);
+                            XmlAttribute tblIndType = _nodeFactory.CreateAttribute("w", "type", OpenXmlNamespaces.WordprocessingML);
+                            tblIndType.Value = "dxa";
+                            tblInd.Attributes.Append(tblIndType);
+                            _tblPr.AppendChild(tblInd);
                         }
                         break;
+
+                    //style
+                    case 0x563a:
+                    case 0xd63d:
+                        appendValueElement(_tblPr, "tblStyle", StyleSheetMapping.MakeStyleId(_styles.Styles[System.BitConverter.ToInt16(sprm.Arguments, 0)].xstzName), true);
+                        break;
+
+                    //bidi
+                    case 0x560B:
+                        appendValueElement(_tblPr, "bidiVisual", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString(), true);
+                        break;
+
+                    //grid
+                    //case 0xD608:
+                    //    byte itcMac = sprm.Arguments[0];
+                    //    for (int i = 0; i < itcMac; i++)
+                    //    {
+                    //        Int16 boundary2 = System.BitConverter.ToInt16(sprm.Arguments, 1 + ((i+1) * 2));
+                    //        Int16 boundary1 = System.BitConverter.ToInt16(sprm.Arguments, 1 + (i * 2));
+                    //        XmlElement gridCol = _nodeFactory.CreateElement("w", "gridCol", OpenXmlNamespaces.WordprocessingML);
+                    //        XmlAttribute gridColW = _nodeFactory.CreateAttribute("w", "w", OpenXmlNamespaces.WordprocessingML);
+                    //        gridColW.Value = "" + (boundary2 - boundary1);
+                    //        gridCol.Attributes.Append(gridColW);
+                    //        _tblGrid.AppendChild(gridCol);
+                    //    }
+                    //    break;
 
                     //table look
                     case 0x740A:
@@ -113,32 +139,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     //autofit
                     case 0x3615:
-                        XmlElement tblLayout = _nodeFactory.CreateElement("w", "tblLayout", OpenXmlNamespaces.WordprocessingML);
-                        XmlAttribute layoutType = _nodeFactory.CreateAttribute("w", "type", OpenXmlNamespaces.WordprocessingML);
                         if (sprm.Arguments[0] == 1)
                             layoutType.Value = "auto";
-                        else
-                            layoutType.Value = "fixed";
-                        tblLayout.Attributes.Append(layoutType);
-                        _tblPr.AppendChild(tblLayout);
-                        break;
-
-                    //indent
-                    case 0xF661:
-                        XmlElement tblInd = _nodeFactory.CreateElement("w", "tblInd", OpenXmlNamespaces.WordprocessingML);
-                        XmlAttribute tblIndW = _nodeFactory.CreateAttribute("w", "w", OpenXmlNamespaces.WordprocessingML);
-                        tblIndW.Value = System.BitConverter.ToInt16(sprm.Arguments, 1).ToString();
-                        tblInd.Attributes.Append(tblIndW);
-                        XmlAttribute tblIndType = _nodeFactory.CreateAttribute("w", "type", OpenXmlNamespaces.WordprocessingML);
-                        tblIndType.Value = "dxa";
-                        tblInd.Attributes.Append(tblIndType);
-                        _tblPr.AppendChild(tblInd);
-                        break;
-
-                    //justification
-                    case 0x5400:
-                    case 0x548A:
-                        appendValueElement(_tblPr, "jc", ((Global.JustificationCode)sprm.Arguments[0]).ToString(), true);
                         break;
 
                     //default cell padding (margin)
@@ -156,7 +158,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         if (DIaLOGIKa.b2xtranslator.DocFileFormat.Utils.BitmaskToBool((int)grfbrc, 0x08))
                             appendDxaElement(tblCellMar, "right", wMar.ToString(), true);
                         break;
-
+                    
                     //default cell spacing
                     case 0xD631:
                     case 0xD633:
@@ -264,6 +266,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 _tblPr.AppendChild(tblBorders);
             }
 
+            //append layout type
+            tblLayout.Attributes.Append(layoutType);
+            _tblPr.AppendChild(tblLayout);
+
             //append margins
             if (tblCellMar.ChildNodes.Count > 0)
             {
@@ -276,11 +282,17 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 _tblPr.WriteTo(_writer);
             }
 
-            //write grid
-            if (_tblGrid.ChildNodes.Count > 0)
+            //append the grid
+            _tblGrid = _nodeFactory.CreateElement("w", "tblGrid", OpenXmlNamespaces.WordprocessingML);
+            foreach (Int16 colW in _grid)
             {
-                _tblGrid.WriteTo(_writer);
+                XmlElement gridCol = _nodeFactory.CreateElement("w", "gridCol", OpenXmlNamespaces.WordprocessingML);
+                XmlAttribute gridColW = _nodeFactory.CreateAttribute("w", "w", OpenXmlNamespaces.WordprocessingML);
+                gridColW.Value = colW.ToString();
+                gridCol.Attributes.Append(gridColW);
+                _tblGrid.AppendChild(gridCol);
             }
+            _tblGrid.WriteTo(_writer);
         }
     }
 }

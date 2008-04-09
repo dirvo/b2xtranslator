@@ -312,16 +312,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 }
             }
 
-            //convert revision stack
-            if (chpx.HasOldProps)
-            {
-                //build a dummy chpx, to store the revision data
-                CharacterPropertyExceptions revisionChpx = new CharacterPropertyExceptions();
-                //copy the revision stack to the dummy
-                revisionChpx.grpprl = _revisionStack.GetRange(0, _revisionStack.Count);
-                //convert that dummy to rPrChange
-                revisionChpx.Convert(new CharacterPropertiesMapping(rPrChange, _doc));
-            }
 
             //apend revision
             if (rPrChange.Attributes.Count > 0 || rPrChange.ChildNodes.Count > 0)
@@ -352,6 +342,17 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 color.Attributes.Append(colorVal);
                 _rPr.AppendChild(color);
+            }
+
+            //convert revision stack
+            if (chpx.HasOldProps && _rPr.ChildNodes.Count > 0)
+            {
+                //build a dummy chpx, to store the revision data
+                CharacterPropertyExceptions revisionChpx = new CharacterPropertyExceptions();
+                //copy the revision stack to the dummy
+                revisionChpx.grpprl = _revisionStack.GetRange(0, _revisionStack.Count);
+                //convert that dummy to rPrChange
+                revisionChpx.Convert(new CharacterPropertiesMapping(rPrChange, _doc));
             }
             
             //write properties

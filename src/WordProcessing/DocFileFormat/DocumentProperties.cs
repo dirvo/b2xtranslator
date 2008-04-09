@@ -1370,7 +1370,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 this.iGutterPos = bits[15];
 
                 //compatibility options section
-                if (bytes.Length > 84)
+                if (fib.nFib >= 103)
                 {
                     //split byte 84,85,86,87 into bits
                     bits = new BitArray(new byte[] { bytes[84], bytes[85], bytes[86], bytes[87] });
@@ -1395,7 +1395,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     this.fMWSmallCaps = bits[21];
                     //bits 22-31 are reserved
 
-                    if (bytes.Length > 88)
+                    if (fib.nFib >= 106)
                     {
                         this.adt = (UInt16)System.BitConverter.ToInt16(bytes, 88);
 
@@ -1451,7 +1451,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                         this.dywDispPag = System.BitConverter.ToInt16(bytes, 498);
 
                         //WORD 2000, 2002, 2003 PART
-                        if (bytes.Length > 500)
+                        if (fib.nFib >= 217)
                         {
                             this.ilvlLastBulletMain = bytes[500];
                             this.ilvlLastNumberMain = bytes[501];

@@ -43,10 +43,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private XmlElement _tcPr;
         private XmlElement _tcMar;
         private XmlElement _tcBorders;
+        private List<Int16> _grid;
+        private Int16 _width;
 
         private const byte VMEGRE_CONTINUE = 1;
         private const byte VMERGE_RESTART = 3;
-        
+
         private enum VerticalCellAlignment
         {
             top,
@@ -54,13 +56,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             bottom
         }
 
-        public TableCellPropertiesMapping(XmlWriter writer, int cellIndex)
+        public TableCellPropertiesMapping(XmlWriter writer, int cellIndex, List<Int16> tableGrid)
             : base(writer)
         {
             _tcPr = _nodeFactory.CreateElement("w", "tcPr", OpenXmlNamespaces.WordprocessingML);
             _tcMar = _nodeFactory.CreateElement("w", "tcMar", OpenXmlNamespaces.WordprocessingML);
             _tcBorders = _nodeFactory.CreateElement("w", "tcBorders", OpenXmlNamespaces.WordprocessingML);
             _cellIndex = cellIndex;
+            _grid = tableGrid;
         }
 
         public void Apply(TablePropertyExceptions tapx)
@@ -69,30 +72,22 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 switch (sprm.OpCode)
 	            {
-                    //there is a merge in this row
-                    case 0x5624:
-                        ;
-                        break;
-
                     //width
                     case 0xD608:
-                        byte itcMac = sprm.Arguments[0];
-                        for (int i = 0; i < itcMac; i++)
-                        {
-                            Int16 boundary2 = System.BitConverter.ToInt16(sprm.Arguments, 1 + ((i + 1) * 2));
-                            Int16 boundary1 = System.BitConverter.ToInt16(sprm.Arguments, 1 + (i * 2));
-                            appendDxaElement(_tcPr, "tcW" , "" + (boundary2 - boundary1), true);
-                        }
+                        Int16 boundary2 = System.BitConverter.ToInt16(sprm.Arguments, 1 + ((_cellIndex + 1) * 2));
+                        Int16 boundary1 = System.BitConverter.ToInt16(sprm.Arguments, 1 + (_cellIndex * 2));
+                        _width = (Int16)(boundary2 - boundary1);
+                        appendDxaElement(_tcPr, "tcW", _width.ToString(), true);
                         break;
                     case 0xD635:
                         byte first = sprm.Arguments[0];
                         byte lim = sprm.Arguments[1];
                         byte ftsWidth = sprm.Arguments[2];
-                        Int16 wWidth = System.BitConverter.ToInt16(sprm.Arguments, 3);
+                        _width = System.BitConverter.ToInt16(sprm.Arguments, 3);
                         if (_cellIndex >= first && _cellIndex < lim)
-                            appendDxaElement(_tcPr, "tcW", "" + wWidth, true);
+                            appendDxaElement(_tcPr, "tcW", _width.ToString(), true);
                         break;
-                    
+
                     //margins
                     case 0xd632:
                         first = sprm.Arguments[0];
@@ -211,6 +206,24 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         }
                         break;
 	            }
+            }
+
+            //horizontal merge
+            if (_width > _grid[_cellIndex])
+            {
+                int span = 1;
+
+                //check the number of merged cells
+                int w = _grid[_cellIndex];
+                for (int i = _cellIndex+1; i < _grid.Count; i++)
+                {
+                    span++;
+                    w += _grid[i];
+                    if (w == _width)
+                        break;
+                }
+
+                appendValueElement(_tcPr, "gridSpan", span.ToString(), true);
             }
 
             //append margins

@@ -33,7 +33,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             foreach (SinglePropertyModifier sprm in tapx.grpprl)
             {
-                switch (sprm.OpCode)
+                switch (sprm.OpCode)  
                 {
                     //width after
                     case 0xF618:
@@ -49,14 +49,21 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     //width before
                     case 0xF617:
-                        XmlElement wBefore = _nodeFactory.CreateElement("w", "wBefore", OpenXmlNamespaces.WordprocessingML);
-                        XmlAttribute wBeforeValue = _nodeFactory.CreateAttribute("w", "w", OpenXmlNamespaces.WordprocessingML);
-                        wBeforeValue.Value = System.BitConverter.ToInt16(sprm.Arguments, 1).ToString();
-                        wBefore.Attributes.Append(wBeforeValue);
-                        XmlAttribute wBeforeType = _nodeFactory.CreateAttribute("w", "type", OpenXmlNamespaces.WordprocessingML);
-                        wBeforeType.Value = "dxa";
-                        wBefore.Attributes.Append(wBeforeType);
-                        _trPr.AppendChild(wBefore);
+                        Int16 before = System.BitConverter.ToInt16(sprm.Arguments, 1);
+                        if (before != 0)
+                        {
+                            XmlElement wBefore = _nodeFactory.CreateElement("w", "wBefore", OpenXmlNamespaces.WordprocessingML);
+                            XmlAttribute wBeforeValue = _nodeFactory.CreateAttribute("w", "w", OpenXmlNamespaces.WordprocessingML);
+                            wBeforeValue.Value = before.ToString();
+                            wBefore.Attributes.Append(wBeforeValue);
+                            XmlAttribute wBeforeType = _nodeFactory.CreateAttribute("w", "type", OpenXmlNamespaces.WordprocessingML);
+                            wBeforeType.Value = "dxa";
+                            wBefore.Attributes.Append(wBeforeType);
+                            _trPr.AppendChild(wBefore);
+                        }
+                        break;
+
+                    case 0x9602:
                         break;
 
                     //row height

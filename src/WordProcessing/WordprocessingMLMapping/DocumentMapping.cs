@@ -136,6 +136,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             ParagraphPropertyExceptions papx = findValidPapx(fc);
             TableInfo tai = new TableInfo(papx);
 
+            //build the table grid
+            List<Int16> grid = buildTableGrid(cp);
+
             //find first row end
             Int32 fcRowEnd = findRowEndFc(cp);
             TablePropertyExceptions row1Tapx = new TablePropertyExceptions(findValidPapx(fcRowEnd), _doc.DataStream);
@@ -144,12 +147,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _writer.WriteStartElement("w", "tbl", OpenXmlNamespaces.WordprocessingML);
 
             //Convert it
-            row1Tapx.Convert(new TablePropertiesMapping(_writer, _doc.Styles));
+            row1Tapx.Convert(new TablePropertiesMapping(_writer, _doc.Styles, grid));
 
             //convert all rows
             while (tai.fInTable)
             {
-                cp = writeTableRow(cp);
+                cp = writeTableRow(cp, grid);
 
                 fc = _doc.PieceTable.FileCharacterPositions[cp];
                 papx = findValidPapx(fc);
@@ -167,7 +170,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// </summary>
         /// <param name="initialCp">The cp at where the row begins</param>
         /// <returns>The character pointer to the first character after this row</returns>
-        private Int32 writeTableRow(Int32 initialCp)
+        private Int32 writeTableRow(Int32 initialCp, List<Int16> grid)
         {
             Int32 cp = initialCp;
             Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
@@ -187,7 +190,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             int cellIndex = 0;
             while (!(_doc.Text[cp] == TextBoundary.CellOrRowMark && tai.fTtp) && tai.fInTable)
             {
-                cp = writeTableCell(cp, cellIndex, tapx);
+                cp = writeTableCell(cp, tapx, cellIndex, grid);
                 cellIndex++;
 
                 //each cell has it's own PAPX
@@ -206,6 +209,89 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         }
 
         /// <summary>
+        /// Builds a list that contains the width of the several columns of the table.
+        /// </summary>
+        /// <param name="initialCp"></param>
+        /// <returns></returns>
+        private List<Int16> buildTableGrid(int initialCp)
+        {
+            ParagraphPropertyExceptions backup = _lastValidPapx;
+
+            List<Int16> grid = new List<Int16>();
+            Int32 cp = initialCp;
+            Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
+            ParagraphPropertyExceptions papx = findValidPapx(fc);
+            TableInfo tai = new TableInfo(papx);
+
+            Int32 fcRowEnd = findRowEndFc(cp, out cp);
+            int maxColumnCount = 0;
+
+            while (tai.fInTable)
+            {
+                //check all SPRMs of this TAPX
+                foreach (SinglePropertyModifier sprm in papx.grpprl)
+                {
+                    //find the tDef SPRM
+                    if(sprm.OpCode == 0xd608)
+                    {
+                        byte itcMac = sprm.Arguments[0];
+                        if (itcMac > maxColumnCount)
+                        {
+                            //this row has more columns than the largest row found
+                            maxColumnCount = itcMac;
+
+                            //build new grid
+                            grid.Clear();
+                            for (int i = 0; i < itcMac; i++)
+                            {
+                                Int16 boundary2 = System.BitConverter.ToInt16(sprm.Arguments, 1 + ((i+1) * 2));
+                                Int16 boundary1 = System.BitConverter.ToInt16(sprm.Arguments, 1 + (i * 2));
+                                grid.Add((Int16)(boundary2 - boundary1));
+                            }
+                        }
+                    }
+                }
+
+                //get the next papx
+                papx = findValidPapx(fcRowEnd);
+                tai = new TableInfo(papx);
+                fcRowEnd = findRowEndFc(cp, out cp);
+            }
+
+            _lastValidPapx = backup;
+            return grid;
+        }
+
+        /// <summary>
+        /// Finds the FC of the next row end mark.
+        /// </summary>
+        /// <param name="initialCp">Some CP before the row end</param>
+        /// <param name="rowEndCp">The CP of the next row end mark</param>
+        /// <returns>The FC of the next row end mark</returns>
+        private Int32 findRowEndFc(int initialCp, out int rowEndCp)
+        {
+            int cp = initialCp;
+            Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
+            ParagraphPropertyExceptions papx = findValidPapx(fc);
+            TableInfo tai = new TableInfo(papx);
+
+            while (tai.fTtp==false && tai.fInTable==true)
+            {
+                while (_doc.Text[cp] != TextBoundary.CellOrRowMark)
+                {
+                    cp++;
+                }
+                fc = _doc.PieceTable.FileCharacterPositions[cp];
+                papx = findValidPapx(fc);
+                tai = new TableInfo(papx);
+                cp++;
+            }
+
+            rowEndCp = cp;
+            return fc;
+        }
+
+        /// <summary>
         /// Finds the FC of the next row end mark.
         /// </summary>
         /// <param name="cp"></param>
@@ -217,7 +303,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             ParagraphPropertyExceptions papx = findValidPapx(fc);
             TableInfo tai = new TableInfo(papx);
 
-            while (tai.fTtp==false && tai.fInTable==true)
+            while (tai.fTtp == false && tai.fInTable == true)
             {
                 while (_doc.Text[cp] != TextBoundary.CellOrRowMark)
                 {
@@ -239,7 +325,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// <param name="cellIndex">The index of this cell. The first cell's index should be 0</param>
         /// <param name="tapx">The TAPX that formats the row to which the cell belongs</param>
         /// <returns>The character pointer to the first character after this cell</returns>
-        private Int32 writeTableCell(Int32 initialCp, int cellIndex, TablePropertyExceptions tapx)
+        private Int32 writeTableCell(Int32 initialCp, TablePropertyExceptions tapx, int cellIndex, List<Int16> grid)
         {
             Int32 cp = initialCp;
 
@@ -255,7 +341,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             cpCellEnd++;
 
             //convert the properties
-            tapx.Convert(new TableCellPropertiesMapping(_writer, cellIndex));
+            tapx.Convert(new TableCellPropertiesMapping(_writer, cellIndex, grid));
 
             //write the paragraphs of the cell
             while (cp < cpCellEnd)
@@ -517,6 +603,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 else if ((int)c > 31 && (int)c != 0xFFFF)
                 {
                     _writer.WriteChars(new char[] { c }, 0, 1);
+
                 }
 
                 cp++;
@@ -647,33 +734,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 ret = _lastValidPapx;
             }
-
-            #region oldLookUp
-            //try
-            //{
-            //    ret = _allPapx[fc];
-            //}
-            //catch (KeyNotFoundException)
-            //{
-            //    //there is no PAPX at this position, 
-            //    //so the previous PAPX is valid for this cp
-
-            //    Int32 lastKey = _doc.AllPapxFkps[0].rgfc[0];
-            //    foreach (Int32 key in _allPapx.Keys)
-            //    {
-            //        if (fc > lastKey && fc < key)
-            //        {
-            //            //ret = _allPapx[lastKey];
-            //            ret = _allPapx[lastKey];
-            //            break;
-            //        }
-            //        else
-            //        {
-            //            lastKey = key;
-            //        }
-            //    }
-            //}
-            #endregion
 
             return ret;
         }
