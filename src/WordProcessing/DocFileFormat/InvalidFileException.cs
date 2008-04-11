@@ -4,14 +4,16 @@ using System.Text;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class InvalidFileException :Exception
+    public class UnspportedFileVersionException :Exception
     {
-        public InvalidFileException()
-            : base()
+        private const string MSG = "DocFileFormat does not support .doc files that have been created with Word versions older than Word 97.";
+
+        public UnspportedFileVersionException()
+            : base(MSG)
         {
         }
 
-        public InvalidFileException(string text)
+        public UnspportedFileVersionException(string text)
             : base(text)
         {
         }

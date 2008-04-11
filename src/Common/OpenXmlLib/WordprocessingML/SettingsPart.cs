@@ -13,12 +13,12 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
 
         public override string ContentType
         {
-            get { return WordprocessingMLContentTypes.Comments; }
+            get { return WordprocessingMLContentTypes.Settings; }
         }
 
         public override string RelationshipType
         {
-            get { return OpenXmlRelationshipTypes.Comments; }
+            get { return OpenXmlRelationshipTypes.Settings; }
         }
 
         public override string TargetName { get { return "settings"; } }

@@ -102,7 +102,7 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                         //doc.DocumentProperties.Convert(new ApplicationPropertiesMapping(docx.AddAppPropertiesPart(), xws));
 
                         //write settings.xml
-                        doc.DocumentProperties.Convert(new SettingsMapping(docx.MainDocumentPart.AddSettingsPart(), xws));
+                        doc.DocumentProperties.Convert(new SettingsMapping(docx.MainDocumentPart.AddSettingsPart(), xws, doc.FIB));
 
                         //Write Styles.xml
                         doc.Styles.Convert(new StyleSheetMapping(docx.MainDocumentPart.AddStyleDefinitionsPart(), xws, doc));
@@ -150,7 +150,7 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                 if (verboseLvl > VerboseLevel.None)
                     Console.WriteLine("The input file is not a valid .doc file.");
             }
-            catch (InvalidFileException)
+            catch (UnspportedFileVersionException)
             {
                 if (verboseLvl > VerboseLevel.None)
                     Console.WriteLine("Doc2x doesn't support file older than Word 97.");

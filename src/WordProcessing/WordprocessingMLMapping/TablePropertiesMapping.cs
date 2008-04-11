@@ -44,6 +44,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private StyleSheet _styles;
         private List<Int16> _grid;
 
+        public enum WidthType
+        {
+            nil,
+            auto,
+            pct,
+            dxa
+        }
+
         public TablePropertiesMapping(XmlWriter writer, StyleSheet styles, List<Int16> grid)
             : base(writer)
         {
@@ -66,19 +74,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 {
                     //preferred table width
                     case 0xF614:
+                        WidthType fts = (WidthType)sprm.Arguments[0];
                         Int16 width = System.BitConverter.ToInt16(sprm.Arguments, 1);
                         XmlElement tblW = _nodeFactory.CreateElement("w", "tblW", OpenXmlNamespaces.WordprocessingML);
                         XmlAttribute w = _nodeFactory.CreateAttribute("w", "w", OpenXmlNamespaces.WordprocessingML);
                         w.Value = width.ToString();
                         XmlAttribute type = _nodeFactory.CreateAttribute("w", "type", OpenXmlNamespaces.WordprocessingML);
-                        if (width == 0)
-                        {
-                            type.Value = "auto";
-                        }
-                        else
-                        {
-                            type.Value = "dxa";
-                        }
+                        type.Value = fts.ToString();
                         tblW.Attributes.Append(type);
                         tblW.Attributes.Append(w);
                         _tblPr.AppendChild(tblW);
@@ -116,21 +118,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0x560B:
                         appendValueElement(_tblPr, "bidiVisual", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString(), true);
                         break;
-
-                    //grid
-                    //case 0xD608:
-                    //    byte itcMac = sprm.Arguments[0];
-                    //    for (int i = 0; i < itcMac; i++)
-                    //    {
-                    //        Int16 boundary2 = System.BitConverter.ToInt16(sprm.Arguments, 1 + ((i+1) * 2));
-                    //        Int16 boundary1 = System.BitConverter.ToInt16(sprm.Arguments, 1 + (i * 2));
-                    //        XmlElement gridCol = _nodeFactory.CreateElement("w", "gridCol", OpenXmlNamespaces.WordprocessingML);
-                    //        XmlAttribute gridColW = _nodeFactory.CreateAttribute("w", "w", OpenXmlNamespaces.WordprocessingML);
-                    //        gridColW.Value = "" + (boundary2 - boundary1);
-                    //        gridCol.Attributes.Append(gridColW);
-                    //        _tblGrid.AppendChild(gridCol);
-                    //    }
-                    //    break;
 
                     //table look
                     case 0x740A:

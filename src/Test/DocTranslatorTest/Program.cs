@@ -71,7 +71,7 @@ namespace DocTranslatorTest
                     //doc.DocumentProperties.Convert(new ApplicationPropertiesMapping(docx.AddAppPropertiesPart(), xws));
 
                     //write settings.xml
-                    doc.DocumentProperties.Convert(new SettingsMapping(docx.MainDocumentPart.AddSettingsPart(), xws));
+                    doc.DocumentProperties.Convert(new SettingsMapping(docx.MainDocumentPart.AddSettingsPart(), xws, doc.FIB));
 
                     //Write styles.xml
                     doc.Styles.Convert(new StyleSheetMapping(docx.MainDocumentPart.AddStyleDefinitionsPart(), xws, doc));

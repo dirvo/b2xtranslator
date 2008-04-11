@@ -39,6 +39,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         PropertiesMapping,
         IMapping<TablePropertyExceptions>
     {
+        private int _gridIndex;
         private int _cellIndex;
         private XmlElement _tcPr;
         private XmlElement _tcMar;
@@ -49,6 +50,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private const byte VMEGRE_CONTINUE = 1;
         private const byte VMERGE_RESTART = 3;
 
+        /// <summary>
+        /// The grind span of this cell
+        /// </summary>
+        private int _gridSpan;
+        public int GridSpan
+        {
+            get { return _gridSpan; }
+        }
+
         private enum VerticalCellAlignment
         {
             top,
@@ -56,14 +66,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             bottom
         }
 
-        public TableCellPropertiesMapping(XmlWriter writer, int cellIndex, List<Int16> tableGrid)
+        public TableCellPropertiesMapping(XmlWriter writer, List<Int16> tableGrid, int gridIndex, int cellIndex)
             : base(writer)
         {
             _tcPr = _nodeFactory.CreateElement("w", "tcPr", OpenXmlNamespaces.WordprocessingML);
             _tcMar = _nodeFactory.CreateElement("w", "tcMar", OpenXmlNamespaces.WordprocessingML);
             _tcBorders = _nodeFactory.CreateElement("w", "tcBorders", OpenXmlNamespaces.WordprocessingML);
-            _cellIndex = cellIndex;
+            _gridIndex = gridIndex;
             _grid = tableGrid;
+            _cellIndex = cellIndex;
         }
 
         public void Apply(TablePropertyExceptions tapx)
@@ -106,6 +117,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                             if (borderBits[3] == true)
                                 appendDxaElement(_tcMar, "right", wMargin.ToString(), true);
                         }
+                        break;
+
+                    //text flow
+                    case 0x7629:
                         break;
 
                     //vertical alignment
@@ -208,22 +223,21 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 	            }
             }
 
-            //horizontal merge
-            if (_width > _grid[_cellIndex])
+            //grid span
+            _gridSpan = 1;
+            if (_width > _grid[_gridIndex])
             {
-                int span = 1;
-
                 //check the number of merged cells
-                int w = _grid[_cellIndex];
-                for (int i = _cellIndex+1; i < _grid.Count; i++)
+                int w = _grid[_gridIndex];
+                for (int i = _gridIndex+1; i < _grid.Count; i++)
                 {
-                    span++;
+                    _gridSpan++;
                     w += _grid[i];
-                    if (w == _width)
+                    if (w >= _width)
                         break;
                 }
 
-                appendValueElement(_tcPr, "gridSpan", span.ToString(), true);
+                appendValueElement(_tcPr, "gridSpan", _gridSpan.ToString(), true);
             }
 
             //append margins

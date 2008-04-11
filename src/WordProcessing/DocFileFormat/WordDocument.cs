@@ -155,7 +155,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.FIB = new FileInformationBlock(this.WordDocumentStream);
 
             if (this.FIB.nFib < 105)
-                throw new InvalidFileException("DocFileFormat doesn't support Word versions older than Word 97.");
+                throw new UnspportedFileVersionException("DocFileFormat doesn't support Word versions older than Word 97.");
 
             //get the table stream
             if (this.FIB.fWhichTblStm)

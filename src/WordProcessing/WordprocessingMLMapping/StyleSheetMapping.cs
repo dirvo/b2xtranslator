@@ -57,6 +57,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //document defaults
             _writer.WriteStartElement("w", "docDefaults", OpenXmlNamespaces.WordprocessingML);
             writeRunDefaults(sheet);
+            writeParagraphDefaults(sheet);
             _writer.WriteEndElement();
 
             foreach (StyleSheetDescription style in sheet.Styles)
@@ -152,6 +153,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _writer.WriteEndElement();
 
             _writer.WriteEndElement();
+            _writer.WriteEndElement();
+        }
+
+        private void writeParagraphDefaults(StyleSheet sheet)
+        {
+            //if there is no pPrDefault, Word will not used the default paragraph settings.
+            //writing an empty pPrDefault will cause Word to load the default paragraph settings.
+            _writer.WriteStartElement("w", "pPrDefault", OpenXmlNamespaces.WordprocessingML);
+
             _writer.WriteEndElement();
         }
 

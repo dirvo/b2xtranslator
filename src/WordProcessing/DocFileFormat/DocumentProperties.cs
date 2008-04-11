@@ -854,7 +854,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// Compatibility option: when set to 1, allow table rows to lay out apart
         /// </summary>
-        public bool fLAyoutTableRowsApart;
+        public bool fLayoutTableRowsApart;
 
         /// <summary>
         /// Compatibility option: when set to 1, use Word 97 line breaking rules for East Asian text
@@ -1249,6 +1249,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <param name="bytes">The bytes</param>
         public DocumentProperties(FileInformationBlock fib, VirtualStream tableStream)
         {
+            setDefaultCompatibilityOptions(fib.nFib);
+
             byte[] bytes = new byte[fib.lcbDop];
             tableStream.Read(bytes, 0, (int)fib.lcbDop, fib.fcDop);
 
@@ -1406,7 +1408,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                         byte[] dogridBytes = new byte[10];
                         Array.Copy(bytes, 400, dogridBytes, 0, dogridBytes.Length);
                         this.dogrid = new DrawingObjectGrid(dogridBytes);
-                        
+
                         //split byte 410 and 411 into bits
                         bits = new BitArray(new byte[] { bytes[410], bytes[411] });
                         //bit 0 is reserved
@@ -1523,7 +1525,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                             this.fUseAutoSpaceForFullWidthAlpha = bits[5];
                             this.fAlignTablesRowByRow = bits[6];
                             this.fLayoutRawTableWidth = bits[7];
-                            this.fLAyoutTableRowsApart = bits[8];
+                            this.fLayoutTableRowsApart = bits[8];
                             this.fUserWord97LineBreakingRules = bits[9];
                             this.fDontBreakWrappedTables = bits[10];
                             this.fDontSnapToGridInCell = bits[11];
@@ -1619,8 +1621,74 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                             //byte 607 is unused
                             this.ilfoMacAtCleanup = System.BitConverter.ToUInt16(bytes, 608);
                         }
+                        
                     }
                 }
+            }
+        }
+
+        private void setDefaultCompatibilityOptions(UInt16 nFib)
+        {
+            if(nFib == 193)
+            {
+                //Word 97 default settings
+                this.fAlignTablesRowByRow = true;
+                this.fLayoutTableRowsApart = true;
+                this.fGrowAutofit = true;
+                this.fDontWrapTextWithPunct = true;
+                //ToDo: Don't autofit tables next to wrapped objects
+                //ToDo: Don't break constrained tables forced onto the page
+                this.fDontBreakWrappedTables = true;
+                this.fDontSnapToGridInCell = true;
+                this.fDontUseAsianBreakRules = true;
+                this.fNoTabForInd = true;
+                this.fDontUseHTMLParagraphAutoSpacing = true;
+                this.fForgetLastTabAlign = true;
+                this.fSpLayoutLikeWW8 = true;
+                this.fFtnLayoutLikeWW8 = true;
+                this.fLayoutRawTableWidth = true;
+                this.fDontAllowFieldEndSelect = true;
+                //ToDo: underline characters in numbered lists
+                this.fUseWord2002TableStyleRules = true;
+                this.fUserWord97LineBreakingRules = true;
+            }
+            else if (nFib == 217)
+            {
+                //Word 2000 default settings
+
+                this.fGrowAutofit = true;
+                this.fDontWrapTextWithPunct = true;
+                //ToDo: Don't autofit tables next to wrapped objects
+                this.fDontBreakWrappedTables = true;
+                this.fDontSnapToGridInCell = true;
+                this.fDontUseAsianBreakRules = true;
+                this.fNoTabForInd = true;
+                this.fDontAllowFieldEndSelect = true;
+                //ToDo: underline characters in numbered lists
+                this.fUseWord2002TableStyleRules = true;
+            }
+            else if(nFib == 257)
+            {
+                //Word 2002 (XP)
+
+                this.fGrowAutofit = true;
+                //ToDo: Don't autofit tables next to wrapped objects
+                this.fDontBreakWrappedTables = true;
+                this.fNoTabForInd = true;
+                this.fUseWord2002TableStyleRules = true;
+            }
+            else if (nFib == 268)
+            {
+                //Word 2003
+
+                //ToDo: Don't autofit tables next to wrapped objects
+                this.fDontBreakWrappedTables = true;
+                this.fNoTabForInd = true;
+
+            }
+            else if (nFib < 193)
+            {
+                throw new UnspportedFileVersionException();
             }
         }
 

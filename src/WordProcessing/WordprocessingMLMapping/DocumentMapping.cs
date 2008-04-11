@@ -124,6 +124,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _writer.Flush();
         }
 
+        #region TableConversion
+
         /// <summary>
         /// Writes the table starts at the given cp value
         /// </summary>
@@ -187,10 +189,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             tapx.Convert(new TableRowPropertiesMapping(_writer, chpxs[0]));
 
+            int gridIndex = 0;
             int cellIndex = 0;
             while (!(_doc.Text[cp] == TextBoundary.CellOrRowMark && tai.fTtp) && tai.fInTable)
             {
-                cp = writeTableCell(cp, tapx, cellIndex, grid);
+                cp = writeTableCell(cp, tapx, grid, ref gridIndex, cellIndex);
                 cellIndex++;
 
                 //each cell has it's own PAPX
@@ -217,6 +220,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             ParagraphPropertyExceptions backup = _lastValidPapx;
 
+            List<Int16> boundaries = new List<Int16>();
             List<Int16> grid = new List<Int16>();
             Int32 cp = initialCp;
             Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
@@ -235,19 +239,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     if(sprm.OpCode == 0xd608)
                     {
                         byte itcMac = sprm.Arguments[0];
-                        if (itcMac > maxColumnCount)
+                        for (int i = 0; i < itcMac; i++)
                         {
-                            //this row has more columns than the largest row found
-                            maxColumnCount = itcMac;
+                            Int16 boundary1 = System.BitConverter.ToInt16(sprm.Arguments, 1 + (i * 2));
+                            if (!boundaries.Contains(boundary1))
+                                boundaries.Add(boundary1);
 
-                            //build new grid
-                            grid.Clear();
-                            for (int i = 0; i < itcMac; i++)
-                            {
-                                Int16 boundary2 = System.BitConverter.ToInt16(sprm.Arguments, 1 + ((i+1) * 2));
-                                Int16 boundary1 = System.BitConverter.ToInt16(sprm.Arguments, 1 + (i * 2));
-                                grid.Add((Int16)(boundary2 - boundary1));
-                            }
+                            Int16 boundary2 = System.BitConverter.ToInt16(sprm.Arguments, 1 + ((i + 1) * 2));
+                            if (!boundaries.Contains(boundary2))
+                                boundaries.Add(boundary2);
                         }
                     }
                 }
@@ -256,6 +256,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 papx = findValidPapx(fcRowEnd);
                 tai = new TableInfo(papx);
                 fcRowEnd = findRowEndFc(cp, out cp);
+            }
+
+            //build the grid based on the boundaries
+            boundaries.Sort();
+            for (int i = 0; i < boundaries.Count -1; i++)
+            {
+                grid.Add( (Int16)(boundaries[i+1] - boundaries[i]) );
             }
 
             _lastValidPapx = backup;
@@ -322,10 +329,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// Writes the table cell that starts at the given cp value and ends at the next cell end mark
         /// </summary>
         /// <param name="initialCp">The cp at where the cell begins</param>
-        /// <param name="cellIndex">The index of this cell. The first cell's index should be 0</param>
         /// <param name="tapx">The TAPX that formats the row to which the cell belongs</param>
+        /// <param name="gridIndex">The index of this cell in the grid</param>
+        /// <param name="gridIndex">The grid</param>
         /// <returns>The character pointer to the first character after this cell</returns>
-        private Int32 writeTableCell(Int32 initialCp, TablePropertyExceptions tapx, int cellIndex, List<Int16> grid)
+        private Int32 writeTableCell(Int32 initialCp, TablePropertyExceptions tapx, List<Int16> grid, ref int gridIndex, int cellIndex)
         {
             Int32 cp = initialCp;
 
@@ -341,7 +349,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             cpCellEnd++;
 
             //convert the properties
-            tapx.Convert(new TableCellPropertiesMapping(_writer, cellIndex, grid));
+            TableCellPropertiesMapping mapping = new TableCellPropertiesMapping(_writer, grid, gridIndex, cellIndex);
+            tapx.Convert(mapping);
+            gridIndex = gridIndex + mapping.GridSpan;
 
             //write the paragraphs of the cell
             while (cp < cpCellEnd)
@@ -349,34 +359,19 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 cp = writeParagraph(cp);
             }
 
-            #region oldCode
-            //copy the chars of the cell
-            //List<char> remainingChars = _doc.Text.GetRange(initialCp, cpCellEnd - initialCp);
-
-            ////write paragaphs for each paragraph in the cell
-            //while(remainingChars.Contains('\r'))
-            //{
-            //    //fc = _doc.PieceTable.FileCharacterPositions[cp];
-            //    cp = writeParagraph(cp);
-            //    remainingChars = _doc.Text.GetRange(cp, cpCellEnd - cp);
-            //}
-
-            ////write the remaining chars as own paragraph
-            //cp = writeParagraph(cp, cpCellEnd, false);
-
-            //skip cell end mark
-            //cp++;
-            #endregion
-
             //end w:tc
             _writer.WriteEndElement();
 
             return cp;
         }
 
+        #endregion
+
+        #region ParagraphRunConversion
+
         /// <summary>
         /// Writes a Paragraph that starts at the given cp and 
-        /// ends at the next paragraph end mark or section mark
+        /// ends at the next paragraph end mark or section end mark
         /// </summary>
         /// <param name="cp"></param>
         private Int32 writeParagraph(Int32 cp) 
@@ -384,17 +379,19 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //search the paragraph end
             Int32 cpParaEnd = cp;
             while (_doc.Text[cpParaEnd] != TextBoundary.ParagraphEnd && 
-                _doc.Text[cpParaEnd] != TextBoundary.PageBreakOrSectionMark &&
-                _doc.Text[cpParaEnd] != TextBoundary.CellOrRowMark)
+                _doc.Text[cpParaEnd] != TextBoundary.CellOrRowMark &&
+                !(_doc.Text[cpParaEnd] == TextBoundary.PageBreakOrSectionMark && isSectionEnd(cpParaEnd)))
             {
                 cpParaEnd++;
             }
 
-            //end was a section break
             if (_doc.Text[cpParaEnd] == TextBoundary.PageBreakOrSectionMark)
             {
+                //there is a page break OR section mark,
+                //write the section only if it's a section mark
+                bool sectionEnd = isSectionEnd(cpParaEnd);
                 cpParaEnd++;
-                return writeParagraph(cp, cpParaEnd, true);
+                return writeParagraph(cp, cpParaEnd, sectionEnd);
             }
             else
             {
@@ -503,16 +500,16 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             if (chars.Count == 1 && chars[0] == TextBoundary.Picture)
             {
-                //its a picture
-                PictureDescriptor pict = new PictureDescriptor(chpx, _doc.DataStream);
+                ////its a picture
+                //PictureDescriptor pict = new PictureDescriptor(chpx, _doc.DataStream);
 
-                //sometimes there is a picture mark without a picture,
-                //do not convert these marks (occurs in hyperlinks e.g.)
-                if (pict.mfp.mm > 98)
-                {
-                    ImagePart imgPart = copyPicture(pict);
-                    pict.Convert(new PictureMapping(_writer, imgPart));
-                }
+                ////sometimes there is a picture mark without a picture,
+                ////do not convert these marks (occurs in hyperlinks e.g.)
+                //if (pict.mfp.mm > 98)
+                //{
+                //    ImagePart imgPart = copyPicture(pict);
+                //    pict.Convert(new PictureMapping(_writer, imgPart));
+                //}
 
                 cp++;
             }
@@ -574,7 +571,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 }
                 else if (c == TextBoundary.PageBreakOrSectionMark)
                 {
-                    //do nothing
+                    //write page break, section breaks are written by writeParagraph() method
+                    if (!isSectionEnd(cp))
+                    {
+                        _writer.WriteStartElement("w", "br", OpenXmlNamespaces.WordprocessingML);
+                        _writer.WriteAttributeString("w", "type", OpenXmlNamespaces.WordprocessingML, "page");
+                        _writer.WriteEndElement();
+                    }
                 }
                 else if (c == TextBoundary.ColumnBreak)
                 {
@@ -614,6 +617,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             return cp;
         }
+
+        #endregion
 
         /// <summary>
         /// Copies the picture from the binary stream to the zip archive 
@@ -699,6 +704,29 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             return ret;
         }
 
+        /// <summary>
+        /// Looks into the section table to find out if this CP is the end of a section
+        /// </summary>
+        /// <param name="cp"></param>
+        /// <returns></returns>
+        private bool isSectionEnd(Int32 cp)
+        {
+            bool result = false;
+
+            //if cp is the last char of a section, the next section will start at cp +1
+            int search = cp + 1;
+
+            for (int i = 0; i < _doc.SectionTable.rgfc.Length; i++)
+            {
+                if (_doc.SectionTable.rgfc[i] == search)
+                {
+                    result = true;
+                    break;
+                }
+            }
+
+            return result;
+        }
 
         private Int32 getChpxRsid(CharacterPropertyExceptions chpx)
         {
