@@ -183,62 +183,62 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         //top border
                         Array.Copy(sprm.Arguments, 0, brc, 0, 8);
                         XmlNode topBorder1 = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "top", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(brc, topBorder1);
+                        appendBorderAttributes(new BorderCode(brc), topBorder1);
                         addOrSetBorder(tblBorders, topBorder1);
                         //left
                         Array.Copy(sprm.Arguments, 8, brc, 0, 8);
                         XmlNode leftBorder1 = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "left", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(brc, leftBorder1);
+                        appendBorderAttributes(new BorderCode(brc), leftBorder1);
                         addOrSetBorder(tblBorders, leftBorder1);
                         //bottom
                         Array.Copy(sprm.Arguments, 16, brc, 0, 8);
                         XmlNode bottomBorder1 = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "bottom", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(brc, bottomBorder1);
+                        appendBorderAttributes(new BorderCode(brc), bottomBorder1);
                         addOrSetBorder(tblBorders, bottomBorder1);
                         //right
                         Array.Copy(sprm.Arguments, 24, brc, 0, 8);
                         XmlNode rightBorder1 = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "right", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(brc, rightBorder1);
+                        appendBorderAttributes(new BorderCode(brc), rightBorder1);
                         addOrSetBorder(tblBorders, rightBorder1);
                         //inside H
                         Array.Copy(sprm.Arguments, 32, brc, 0, 8);
                         XmlNode insideHBorder1 = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "insideH", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(brc, insideHBorder1);
+                        appendBorderAttributes(new BorderCode(brc), insideHBorder1);
                         addOrSetBorder(tblBorders, insideHBorder1);
                         //inside V
                         Array.Copy(sprm.Arguments, 40, brc, 0, 8);
                         XmlNode insideVBorder1 = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "insideV", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(brc, insideVBorder1);
+                        appendBorderAttributes(new BorderCode(brc), insideVBorder1);
                         addOrSetBorder(tblBorders, insideVBorder1);
                         break;
                     case 0xD47F:
                         XmlNode topBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "top", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(sprm.Arguments, topBorder);
+                        appendBorderAttributes(new BorderCode(sprm.Arguments), topBorder);
                         addOrSetBorder(tblBorders, topBorder);
                         break;
                     case 0xD680:
                         XmlNode bottomBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "bottom", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(sprm.Arguments, bottomBorder);
+                        appendBorderAttributes(new BorderCode(sprm.Arguments), bottomBorder);
                         addOrSetBorder(tblBorders, bottomBorder);
                         break;
                     case 0xD681:
                         XmlNode leftBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "left", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(sprm.Arguments, leftBorder);
+                        appendBorderAttributes(new BorderCode(sprm.Arguments), leftBorder);
                         addOrSetBorder(tblBorders, leftBorder);
                         break;
                     case 0xD682:
                         XmlNode rightBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "right", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(sprm.Arguments, rightBorder);
+                        appendBorderAttributes(new BorderCode(sprm.Arguments), rightBorder);
                         addOrSetBorder(tblBorders, rightBorder);
                         break;
                     case 0xD683:
                         XmlNode insideHBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "insideH", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(sprm.Arguments, insideHBorder);
+                        appendBorderAttributes(new BorderCode(sprm.Arguments), insideHBorder);
                         addOrSetBorder(tblBorders, insideHBorder);
                         break;
                     case 0xD684:
                         XmlNode insideVBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "insideV", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(sprm.Arguments, insideVBorder);
+                        appendBorderAttributes(new BorderCode(sprm.Arguments), insideVBorder);
                         addOrSetBorder(tblBorders, insideVBorder);
                         break;
 

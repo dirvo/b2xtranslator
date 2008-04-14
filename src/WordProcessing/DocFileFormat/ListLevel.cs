@@ -36,9 +36,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
     {
         public enum FollowingChar
         {
-            Tab = 0,
-            Space,
-            Nothing
+            tab = 0,
+            space,
+            nothing
         }
 
         /// <summary>

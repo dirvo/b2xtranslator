@@ -223,7 +223,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0x6865:
                     case 0xCA72:
                         XmlNode bdr = _nodeFactory.CreateElement("w", "bdr", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(sprm.Arguments, bdr);
+                        appendBorderAttributes(new BorderCode(sprm.Arguments), bdr);
                         _rPr.AppendChild(bdr);
                         break;
 

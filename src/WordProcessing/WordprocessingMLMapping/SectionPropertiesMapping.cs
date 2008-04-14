@@ -41,6 +41,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
     {
         private XmlElement _sectPr;
 
+        private enum SectionType
+        {
+            continuous = 0,
+            nextColumn,
+            nextPage,
+            evenPage,
+            oddPage
+        }
+
         private enum PageOrientation
         {
             landscape = 1,
@@ -89,6 +98,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             XmlElement docGrid = _nodeFactory.CreateElement("w", "docGrid", OpenXmlNamespaces.WordprocessingML);
             XmlElement cols = _nodeFactory.CreateElement("w", "cols", OpenXmlNamespaces.WordprocessingML);
             XmlElement pgBorders = _nodeFactory.CreateElement("w", "pgBorders", OpenXmlNamespaces.WordprocessingML);
+            XmlElement paperSrc = _nodeFactory.CreateElement("w", "paperSrc", OpenXmlNamespaces.WordprocessingML);
 
             foreach (SinglePropertyModifier sprm in sepx.grpprl)
             {
@@ -138,33 +148,41 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         appendValueAttribute(pgSz, "orient", ((PageOrientation)sprm.Arguments[0]).ToString());
                         break;
 
+                    //paper source
+                    case 0x5007:
+                        appendValueAttribute(paperSrc, "first", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
+                        break;
+                    case 0x5008:
+                        appendValueAttribute(paperSrc, "other", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
+                        break;
+
                     //page borders
                     case 0x702B:
                     case 0xD234:
                         //top
                         XmlElement topBorder = _nodeFactory.CreateElement("w", "top", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(sprm.Arguments, topBorder);
+                        appendBorderAttributes(new BorderCode(sprm.Arguments), topBorder);
                         addOrSetBorder(pgBorders, topBorder);
                         break;
                     case 0x702C:
                     case 0xD235:
                         //left
                         XmlElement leftBorder = _nodeFactory.CreateElement("w", "left", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(sprm.Arguments, leftBorder);
+                        appendBorderAttributes(new BorderCode(sprm.Arguments), leftBorder);
                         addOrSetBorder(pgBorders, leftBorder);
                         break;
                     case 0x702D:
                     case 0xD236:
                         //left
                         XmlElement bottomBorder = _nodeFactory.CreateElement("w", "bottom", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(sprm.Arguments, bottomBorder);
+                        appendBorderAttributes(new BorderCode(sprm.Arguments), bottomBorder);
                         addOrSetBorder(pgBorders, bottomBorder);
                         break;
                     case 0x702E:
                     case 0xD237:
                         //left
                         XmlElement rightBorder = _nodeFactory.CreateElement("w", "right", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(sprm.Arguments, rightBorder);
+                        appendBorderAttributes(new BorderCode(sprm.Arguments), rightBorder);
                         addOrSetBorder(pgBorders, rightBorder);
                         break;
 
@@ -183,6 +201,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0x500B:
                         Int32 colNum = System.BitConverter.ToInt16(sprm.Arguments,0) + 1;
                         appendValueAttribute(cols, "num", colNum.ToString());
+                        break;
+                    case 0x900c:
+                        appendValueAttribute(cols, "space", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
 
                     //bidi
@@ -207,7 +228,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     //type
                     case 0x3009:
-                        appendValueElement(_sectPr, "type", sprm.Arguments[0].ToString(), true);
+                        appendValueElement(_sectPr, "type", ((SectionType)sprm.Arguments[0]).ToString(), true);
                         break;
 
                     //align
@@ -233,6 +254,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             if (pgMar.Attributes.Count > 0)
             {
                 _sectPr.AppendChild(pgMar);
+            }
+
+            //append paper info
+            if (paperSrc.Attributes.Count > 0)
+            {
+                _sectPr.AppendChild(paperSrc);
             }
 
             //append columns

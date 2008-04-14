@@ -33,7 +33,7 @@ using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
-using DIaLOGIKa.b2xtranslator.Utils;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
@@ -380,7 +380,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             Int32 cpParaEnd = cp;
             while (_doc.Text[cpParaEnd] != TextBoundary.ParagraphEnd && 
                 _doc.Text[cpParaEnd] != TextBoundary.CellOrRowMark &&
-                !(_doc.Text[cpParaEnd] == TextBoundary.PageBreakOrSectionMark && isSectionEnd(cpParaEnd)))
+                !(_doc.Text[cpParaEnd] == TextBoundary.PageBreakOrSectionMark && isSectionEnd(cpParaEnd) ))
             {
                 cpParaEnd++;
             }
@@ -539,10 +539,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             Int32 cp = initialCp;
 
             //start text
+            string textType = "t";
+
             if(writeDeletedText)
-                _writer.WriteStartElement("w", "delText", OpenXmlNamespaces.WordprocessingML);
-            else
-                _writer.WriteStartElement("w", "t", OpenXmlNamespaces.WordprocessingML);
+                textType = "delText";
+
+            _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
 
             if ((int)chars[0] == 32 || (int)chars[chars.Count - 1] == 32)
             {
@@ -556,7 +558,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 {
                     _writer.WriteEndElement();
                     _writer.WriteElementString("w", "tab", OpenXmlNamespaces.WordprocessingML, "");
-                    _writer.WriteStartElement("w", "t", OpenXmlNamespaces.WordprocessingML);
+                    _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
                 }
                 else if (c == TextBoundary.HardLineBreak)
                 {
@@ -598,6 +600,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     _writer.WriteStartElement("w", "fldChar", OpenXmlNamespaces.WordprocessingML);
                     _writer.WriteAttributeString("w", "fldCharType", OpenXmlNamespaces.WordprocessingML, "separate");
                     _writer.WriteEndElement();
+
                 }
                 else if (c == TextBoundary.FieldEndMark)
                 {

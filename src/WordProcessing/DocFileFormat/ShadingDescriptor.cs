@@ -138,19 +138,16 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             {
                 //it's a Word 2000/2003 descriptor
                 this.cvFore = Utils.BitArrayToUInt32(new BitArray(new byte[] { bytes[2], bytes[1], bytes[0] }));
-
                 this.cvBack = Utils.BitArrayToUInt32(new BitArray(new byte[] { bytes[6], bytes[5], bytes[4] }));
-                //3302550
-
                 this.ipat = (ShadingPattern)System.BitConverter.ToUInt16(bytes, 8);
             }
             else if (bytes.Length == 2)
             {
                 //it's a Word 97 SPRM
-                byte val = bytes[1];
-                this.icoFore = (Global.ColorIdentifier)(val & 0x001F);
-                this.icoBack = (Global.ColorIdentifier)((val & 0x03e0) >> 5);
-                this.ipat = (ShadingPattern)((val & 0xFC00) >> 10);
+                Int16 val = System.BitConverter.ToInt16(bytes, 0);
+                this.icoFore = (Global.ColorIdentifier)((val << 11) >> 11);
+                this.icoBack = (Global.ColorIdentifier)((val << 2) >> 7);
+                this.ipat = (ShadingPattern)(val >> 10);
             }
             else
             {

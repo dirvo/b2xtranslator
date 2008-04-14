@@ -35,7 +35,7 @@ using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
 using DIaLOGIKa.b2xtranslator.WordprocessingMLMapping;
 using System.IO;
 using DIaLOGIKa.b2xtranslator.ZipUtils;
-using DIaLOGIKa.b2xtranslator.Utils;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.doc2x
 {

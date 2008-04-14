@@ -32,6 +32,7 @@ using DIaLOGIKa.b2xtranslator.DocFileFormat;
 using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using System.Collections;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
@@ -46,9 +47,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private XmlElement _tcBorders;
         private List<Int16> _grid;
         private Int16 _width;
-
-        private const byte VMEGRE_CONTINUE = 1;
-        private const byte VMERGE_RESTART = 3;
+        private BorderCode _brcTop, _brcLeft, _brcBottom, _brcRight;
 
         /// <summary>
         /// The grind span of this cell
@@ -64,6 +63,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             top,
             center,
             bottom
+        }
+
+        private enum CellWidthType
+        {
+            nil,
+            auto,
+            pct,
+            dxa
         }
 
         public TableCellPropertiesMapping(XmlWriter writer, List<Int16> tableGrid, int gridIndex, int cellIndex)
@@ -83,26 +90,85 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 switch (sprm.OpCode)
 	            {
-                    //width
+                    //TDef (width, borders)
                     case 0xD608:
-                        Int16 boundary2 = System.BitConverter.ToInt16(sprm.Arguments, 1 + ((_cellIndex + 1) * 2));
+                        byte itcMac = sprm.Arguments[0];
+
                         Int16 boundary1 = System.BitConverter.ToInt16(sprm.Arguments, 1 + (_cellIndex * 2));
+                        Int16 boundary2 = System.BitConverter.ToInt16(sprm.Arguments, 1 + ((_cellIndex + 1) * 2));
                         _width = (Int16)(boundary2 - boundary1);
-                        appendDxaElement(_tcPr, "tcW", _width.ToString(), true);
-                        break;
-                    case 0xD635:
-                        byte first = sprm.Arguments[0];
-                        byte lim = sprm.Arguments[1];
-                        byte ftsWidth = sprm.Arguments[2];
-                        _width = System.BitConverter.ToInt16(sprm.Arguments, 3);
-                        if (_cellIndex >= first && _cellIndex < lim)
-                            appendDxaElement(_tcPr, "tcW", _width.ToString(), true);
+
+                        int cellPos = 1 + (2 * (itcMac + 1)) + (_cellIndex * 20);
+
+                        //read flags
+                        byte[] flagBytes = new byte[2];
+                        Array.Copy(sprm.Arguments, cellPos, flagBytes, 0, 2);
+                        Int16 flags = System.BitConverter.ToInt16(flagBytes, 0);
+
+                        //width
+                        XmlElement tcW = _nodeFactory.CreateElement("w", "tcW", OpenXmlNamespaces.WordprocessingML);
+                        XmlAttribute tcWtype = _nodeFactory.CreateAttribute("w", "type", OpenXmlNamespaces.WordprocessingML);
+                        tcWtype.Value = ((CellWidthType)((flags << 4) >> 13)).ToString();
+                        tcW.Attributes.Append(tcWtype);
+                        XmlAttribute tcWval = _nodeFactory.CreateAttribute("w", "w", OpenXmlNamespaces.WordprocessingML);
+                        tcWval.Value = System.BitConverter.ToInt16(sprm.Arguments, cellPos + 2).ToString();
+                        tcW.Attributes.Append(tcWval);
+                        _tcPr.AppendChild(tcW);
+
+                        //vertical merge 
+                        if (Utils.BitmaskToBool((int)flags, 0x0040))
+                            appendValueElement(_tcPr, "vMerge", "restart", true);
+
+                        else if(Utils.BitmaskToBool((int)flags, 0x0020))
+                            appendValueElement(_tcPr, "vMerge", "continue", true);
+
+                        //vertical alignment
+                        VerticalCellAlignment va = (VerticalCellAlignment)((flags << 7) >> 30);
+                        if(va != VerticalCellAlignment.top)
+                            appendValueElement(_tcPr, "vAlign", va.ToString(), true);
+
+                        //autofit
+                        if (Utils.BitmaskToBool((int)flags, 0x1000))
+                            appendValueElement(_tcPr, "tcFitText", "", false);
+
+                        //no wrap
+                        if (Utils.BitmaskToBool((int)flags, 0x2000))
+                            appendValueElement(_tcPr, "noWrap", "", false);
+                        
+                        //border top
+                        byte[] brcTopBytes = new byte[4];
+                        Array.Copy(sprm.Arguments, cellPos + 4, brcTopBytes, 0, 4);
+                        int sum = Utils.ArraySum(brcTopBytes);
+                        if (sum != 0 && sum != 4*255)
+                            _brcTop = new BorderCode(brcTopBytes);
+
+                        //border left
+                        byte[] brcLeftBytes = new byte[4];
+                        Array.Copy(sprm.Arguments, cellPos + 8, brcLeftBytes, 0, 4);
+                        sum = Utils.ArraySum(brcLeftBytes);
+                        if (sum != 0 && sum != 4 * 255)
+                            _brcLeft = new BorderCode(brcLeftBytes);
+
+                        //border bottom
+                        byte[] brcBottomBytes = new byte[4];
+                        Array.Copy(sprm.Arguments, cellPos + 12, brcBottomBytes, 0, 4);
+                        sum = Utils.ArraySum(brcBottomBytes);
+                        if (sum != 0 && sum != 4 * 255)
+                            _brcBottom = new BorderCode(brcBottomBytes);
+                        
+                        //border top
+                        byte[] brcRightBytes = new byte[4];
+                        Array.Copy(sprm.Arguments, cellPos + 16, brcRightBytes, 0, 4);
+                        sum = Utils.ArraySum(brcRightBytes);
+                        if (sum != 0 && sum != 4 * 255)
+                            _brcRight = new BorderCode(brcRightBytes);
+
                         break;
 
                     //margins
                     case 0xd632:
-                        first = sprm.Arguments[0];
-                        lim = sprm.Arguments[1];
+                        byte first = sprm.Arguments[0];
+                        byte lim = sprm.Arguments[1];
                         byte ftsMargin = sprm.Arguments[3];
                         Int16 wMargin = System.BitConverter.ToInt16(sprm.Arguments, 4);
                         if (_cellIndex >= first && _cellIndex < lim)
@@ -119,34 +185,36 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         }
                         break;
 
-                    //text flow
-                    case 0x7629:
+                    //shading
+                    case 0xD612:
+                        //cell shading for cells 0-20
+                        apppendCellShading(sprm.Arguments, _cellIndex);
+                        break;
+                    case 0xD616:
+                        //cell shading for cells 21-42
+                        apppendCellShading(sprm.Arguments, _cellIndex - 21);
+                        break;
+                    case 0xD60C:
+                        //cell shading for cells 43-62
+                        apppendCellShading(sprm.Arguments, _cellIndex - 43);
+                        break;
+
+                    //width
+                    case 0xD635:
+                        first = sprm.Arguments[0];
+                        lim = sprm.Arguments[1];
+                        byte ftsWidth = sprm.Arguments[2];
+                        _width = System.BitConverter.ToInt16(sprm.Arguments, 3);
+                        if (_cellIndex >= first && _cellIndex < lim)
+                            appendDxaElement(_tcPr, "tcW", _width.ToString(), true);
                         break;
 
                     //vertical alignment
                     case 0xD62C:
                         first = sprm.Arguments[0];
                         lim = sprm.Arguments[1];
-                        if(_cellIndex >= first && _cellIndex <lim)
+                        if (_cellIndex >= first && _cellIndex < lim)
                             appendValueElement(_tcPr, "vAlign", ((VerticalCellAlignment)sprm.Arguments[2]).ToString(), true);
-                        break;
-
-                    //vertical merge
-                    case 0xD62B:
-                        byte cell = sprm.Arguments[0];
-                        byte mergeValue = sprm.Arguments[1];
-                        if (cell == _cellIndex && mergeValue > 0)
-                        {
-                            switch (mergeValue)
-                            {
-                                case VMEGRE_CONTINUE:
-                                    appendValueElement(_tcPr, "vMerge", "continue", true);
-                                    break;
-                                case VMERGE_RESTART:
-                                    appendValueElement(_tcPr, "vMerge", "restart", true);
-                                    break;
-                            } 
-                        }
                         break;
 
                     //Autofit
@@ -165,62 +233,30 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                             appendValueElement(_tcPr, "noWrap", sprm.Arguments[2].ToString(), true);
                         break;
 
-                    //shading
-                    case 0xD612:
-                        //cell shading for cells 0-20
-                        apppendCellShading(sprm.Arguments, _cellIndex);
-                        break;
-                    case 0xD616:
-                        //cell shading for cells 21-42
-                        apppendCellShading(sprm.Arguments, _cellIndex - 21);
-                        break;
-                    case 0xD60C:
-                        //cell shading for cells 43-62
-                        apppendCellShading(sprm.Arguments, _cellIndex - 43);
-                        break;
+                    #region unusedSPRMS
+                    ////borders
+                    //case 0xD620:
+                    //case 0xD62F:
+                    //    first = sprm.Arguments[0];
+                    //    lim = sprm.Arguments[1];
+                    //    if (_cellIndex >= first && _cellIndex < lim)
+                    //    {
+                    //        BitArray borderBits = new BitArray(new byte[] { sprm.Arguments[2] });
+                    //        byte[] brc = new byte[sprm.Arguments.Length - 3];
+                    //        Array.Copy(sprm.Arguments, 3, brc, 0, brc.Length);
 
-                    //borders
-                    case 0xD620:
-                    case 0xD62F:
-                        first = sprm.Arguments[0];
-                        lim = sprm.Arguments[1];
-                        if (_cellIndex >= first && _cellIndex < lim)
-                        {
-                            BitArray borderBits = new BitArray(new byte[] { sprm.Arguments[2] });
-                            byte[] brc = new byte[sprm.Arguments.Length - 3];
-                            Array.Copy(sprm.Arguments, 3, brc, 0, brc.Length);
-
-                            if(borderBits[0])
-                            {
-                                //top border
-                                XmlNode topBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "top", OpenXmlNamespaces.WordprocessingML);
-                                appendBorderAttributes(brc, topBorder);
-                                addOrSetBorder(_tcBorders, topBorder);
-                            }
-                            if (borderBits[1])
-                            {
-                                //left border
-                                XmlNode leftBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "left", OpenXmlNamespaces.WordprocessingML);
-                                appendBorderAttributes(brc, leftBorder);
-                                addOrSetBorder(_tcBorders, leftBorder);
-                            }
-                            if (borderBits[2])
-                            {
-                                //bottom border
-                                XmlNode bottomBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "bottom", OpenXmlNamespaces.WordprocessingML);
-                                appendBorderAttributes(brc, bottomBorder);
-                                addOrSetBorder(_tcBorders, bottomBorder);
-                            }
-                            if (borderBits[3])
-                            {
-                                //right border
-                                XmlNode rightBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "right", OpenXmlNamespaces.WordprocessingML);
-                                appendBorderAttributes(brc, rightBorder);
-                                addOrSetBorder(_tcBorders, rightBorder);
-                            }
-                        }
-                        break;
-	            }
+                    //        if(borderBits[0])
+                    //            _brcTop = new BorderCode(brc);
+                    //        if (borderBits[1])
+                    //            _brcLeft = new BorderCode(brc);
+                    //        if (borderBits[2])
+                    //            _brcBottom = new BorderCode(brc);
+                    //        if (borderBits[3])
+                    //            _brcRight = new BorderCode(brc);
+                    //    }
+                    //    break;
+                    #endregion
+                }
             }
 
             //grid span
@@ -247,6 +283,30 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
 
             //append borders
+            if (_brcTop != null)
+            {
+                XmlNode topBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "top", OpenXmlNamespaces.WordprocessingML);
+                appendBorderAttributes(_brcTop, topBorder);
+                addOrSetBorder(_tcBorders, topBorder);
+            }
+            if (_brcLeft != null)
+            {
+                XmlNode leftBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "left", OpenXmlNamespaces.WordprocessingML);
+                appendBorderAttributes(_brcLeft, leftBorder);
+                addOrSetBorder(_tcBorders, leftBorder);
+            }
+            if (_brcBottom != null)
+            {
+                XmlNode bottomBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "bottom", OpenXmlNamespaces.WordprocessingML);
+                appendBorderAttributes(_brcBottom, bottomBorder);
+                addOrSetBorder(_tcBorders, bottomBorder);
+            }
+            if (_brcRight != null)
+            {
+                XmlNode rightBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "right", OpenXmlNamespaces.WordprocessingML);
+                appendBorderAttributes(_brcRight, rightBorder);
+                addOrSetBorder(_tcBorders, rightBorder);
+            }
             if (_tcBorders.ChildNodes.Count > 0)
             {
                 _tcPr.AppendChild(_tcBorders);

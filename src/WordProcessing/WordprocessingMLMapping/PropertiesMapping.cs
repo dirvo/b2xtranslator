@@ -32,7 +32,7 @@ using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using DIaLOGIKa.b2xtranslator.DocFileFormat;
-using DIaLOGIKa.b2xtranslator.Utils;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
@@ -56,7 +56,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             if (sprm.Arguments[0] == 0)
             {
                 XmlAttribute val = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
-                val.Value = "f";
+                val.Value = "false";
                 ele.Attributes.Append(val);
             }
             if (unique)
@@ -139,11 +139,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             pBdr.AppendChild(border);
         }
 
-        protected void appendBorderAttributes(byte[] brcBytes, XmlNode border)
+        protected void appendBorderAttributes(BorderCode brc, XmlNode border)
         {
-            //parse the border code
-            BorderCode brc = new BorderCode(brcBytes);
-
             //create xml
             XmlAttribute val = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
             val.Value = getBorderType(brc.brcType);
@@ -258,7 +255,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             switch (shd.ipat)
             {
                 case ShadingDescriptor.ShadingPattern.Automatic:
-                    pattern = "clear";
+                    pattern = "auto";
                     break;
                 case ShadingDescriptor.ShadingPattern.Solid:
                     pattern = "solid";

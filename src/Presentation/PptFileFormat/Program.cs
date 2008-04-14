@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
-using DIaLOGIKa.b2xtranslator.Utils;
+using DIaLOGIKa.b2xtranslator.Tools;
 using PptFileFormat.Records;
 using System.IO;
 

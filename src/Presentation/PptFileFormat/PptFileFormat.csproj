@@ -67,9 +67,9 @@
       <Project>{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}</Project>
       <Name>StructuredStorageReader</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Common\Utils\Utils.csproj">
+    <ProjectReference Include="..\..\Common\Utils\Tools.csproj">
       <Project>{B44FAEE0-B32E-4682-AA42-618C893F14C6}</Project>
-      <Name>Utils</Name>
+      <Name>Tools</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

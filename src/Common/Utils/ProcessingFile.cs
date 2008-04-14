@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 
-namespace DIaLOGIKa.b2xtranslator.Utils
+namespace DIaLOGIKa.b2xtranslator.Tools
 {
     public class ProcessingFile
     {

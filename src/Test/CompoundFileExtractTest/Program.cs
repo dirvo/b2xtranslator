@@ -33,7 +33,7 @@ using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 using System.IO;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using DIaLOGIKa.b2xtranslator.Utils;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace CompoundFileExtractTest
 {

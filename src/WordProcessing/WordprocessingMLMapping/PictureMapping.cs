@@ -8,7 +8,7 @@ using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using System.IO;
 using System.Drawing;
-using DIaLOGIKa.b2xtranslator.Utils;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {

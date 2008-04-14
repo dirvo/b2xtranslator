@@ -35,6 +35,16 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
     public class Utils
     {
+        public static int ArraySum(byte[] values)
+        {
+            int ret = 0;
+            foreach (byte b in values)
+            {
+                ret += b;
+            }
+            return ret;
+        }
+
         public static bool BitmaskToBool(Int32 value, Int32 mask)
         {
             return ((value & mask) == mask);

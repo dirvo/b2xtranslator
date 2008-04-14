@@ -107,6 +107,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, getNumberFormat(lvl.nfc));
                     _writer.WriteEndElement();
 
+                    //suffix
+                    _writer.WriteStartElement("w", "suff", OpenXmlNamespaces.WordprocessingML);
+                    _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, lvl.ixchFollow.ToString());
+                    _writer.WriteEndElement();
+
                     //style
                     Int16 styleIndex = lstf.rgistd[j];
                     if(styleIndex != ListData.ISTD_NIL)

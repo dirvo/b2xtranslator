@@ -27,7 +27,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenXmlLibTest", "Test\Open
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocTranslatorTest", "Test\DocTranslatorTest\DocTranslatorTest.csproj", "{5558D1F7-91D9-47A8-B39D-AE593B3AF812}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils", "Common\Utils\Utils.csproj", "{B44FAEE0-B32E-4682-AA42-618C893F14C6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tools", "Common\Utils\Tools.csproj", "{B44FAEE0-B32E-4682-AA42-618C893F14C6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonTranslatorLib", "Common\CommonTranslatorLib\CommonTranslatorLib.csproj", "{0F0F6BAF-BC5D-4DC6-AE53-8257305EE5CA}"
 EndProject

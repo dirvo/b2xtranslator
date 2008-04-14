@@ -29,7 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DIaLOGIKa.b2xtranslator.Utils
+namespace DIaLOGIKa.b2xtranslator.Tools
 {
     public class RGBColor
     {
@@ -39,6 +39,10 @@ namespace DIaLOGIKa.b2xtranslator.Utils
             RedLast
         }
 
+        public byte Red;
+        public byte Green;
+        public byte Blue;
+        public byte Alpha;
         public string ThreeDigitHexCode;
         public string FourDigitHexCode;
 
@@ -49,26 +53,34 @@ namespace DIaLOGIKa.b2xtranslator.Utils
             if(order == ByteOrder.RedFirst)
             {
                 //R
-                ThreeDigitHexCode = String.Format("{0:x2}", bytes[0]);
+                this.Red = bytes[0];
+                ThreeDigitHexCode = String.Format("{0:x2}", this.Red);
                 //G
-                ThreeDigitHexCode += String.Format("{0:x2}", bytes[1]);
+                this.Green = bytes[1];
+                ThreeDigitHexCode += String.Format("{0:x2}", this.Green);
                 //B
-                ThreeDigitHexCode += String.Format("{0:x2}", bytes[2]);
+                this.Blue = bytes[2];
+                ThreeDigitHexCode += String.Format("{0:x2}", this.Blue);
                 FourDigitHexCode = ThreeDigitHexCode;
                 //Alpha
-                FourDigitHexCode += String.Format("{0:x2}", bytes[3]);
+                this.Alpha = bytes[3];
+                FourDigitHexCode += String.Format("{0:x2}", this.Alpha);
             }
             else if (order == ByteOrder.RedLast)
             {
                 //R
-                ThreeDigitHexCode = String.Format("{0:x2}", bytes[2]);
+                this.Red = bytes[2];
+                ThreeDigitHexCode = String.Format("{0:x2}", this.Red);
                 //G
-                ThreeDigitHexCode += String.Format("{0:x2}", bytes[1]);
+                this.Green = bytes[1];
+                ThreeDigitHexCode += String.Format("{0:x2}", this.Green);
                 //B
-                ThreeDigitHexCode += String.Format("{0:x2}", bytes[0]);
+                this.Blue = bytes[0];
+                ThreeDigitHexCode += String.Format("{0:x2}", this.Blue);
                 FourDigitHexCode = ThreeDigitHexCode;
                 //Alpha
-                FourDigitHexCode += String.Format("{0:x2}", bytes[3]);
+                this.Alpha = bytes[3];
+                FourDigitHexCode += String.Format("{0:x2}", this.Alpha);
             }
 
         }

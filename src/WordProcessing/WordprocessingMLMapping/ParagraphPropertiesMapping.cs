@@ -243,7 +243,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0x4424:
                     case 0x6424:
                         XmlNode topBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "top", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(sprm.Arguments, topBorder);
+                        appendBorderAttributes(new BorderCode(sprm.Arguments), topBorder);
                         addOrSetBorder(pBdr, topBorder);
                         break;
                     case 0x461D:
@@ -251,7 +251,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0x4425:
                     case 0x6425:
                         XmlNode leftBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "left", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(sprm.Arguments, leftBorder);
+                        appendBorderAttributes(new BorderCode(sprm.Arguments), leftBorder);
                         addOrSetBorder(pBdr, leftBorder);
                         break;
                     case 0x461E:
@@ -259,7 +259,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0x4426:
                     case 0x6426:
                         XmlNode bottomBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "bottom", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(sprm.Arguments, bottomBorder);
+                        appendBorderAttributes(new BorderCode(sprm.Arguments), bottomBorder);
                         addOrSetBorder(pBdr, bottomBorder);
                         break;
                     case 0x461F:
@@ -267,7 +267,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0x4427:
                     case 0x6427:
                         XmlNode rightBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "right", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(sprm.Arguments, rightBorder);
+                        appendBorderAttributes(new BorderCode(sprm.Arguments), rightBorder);
                         addOrSetBorder(pBdr, rightBorder);
                         break;
                     case 0x4620:
@@ -275,7 +275,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0x4428:
                     case 0x6428:
                         XmlNode betweenBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "between", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(sprm.Arguments, betweenBorder);
+                        appendBorderAttributes(new BorderCode(sprm.Arguments), betweenBorder);
                         addOrSetBorder(pBdr, betweenBorder);
                         break;
                     case 0x4621:
@@ -283,7 +283,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0x4629:
                     case 0x6629:
                         XmlNode barBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "bar", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(sprm.Arguments, barBorder);
+                        appendBorderAttributes(new BorderCode(sprm.Arguments), barBorder);
                         addOrSetBorder(pBdr, barBorder);
                         break;
                     
