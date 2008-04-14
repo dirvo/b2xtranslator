@@ -116,7 +116,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                         Array.Copy(bytes, 4, this.Arguments, 0, Arguments.Length);
                         break;
                     case (UInt16)SpecialSprm.sprmPChgTabs:
-                        //not yet implemented
+                        this.Arguments = new byte[bytes[2]];
+                        Array.Copy(bytes, 3, this.Arguments, 0, Arguments.Length);
                         break;
                     default:
                         //the variable length stand in the byte after the opcode (byte2)

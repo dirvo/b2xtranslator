@@ -61,7 +61,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public TabDescriptor(byte b)
         {
           this.jc = Convert.ToByte(Convert.ToInt32(b) & 0x07);
-          this.tlc = Convert.ToByte(Convert.ToInt32(b) & 0x38);
+          this.tlc = Convert.ToByte(b >> 3);
         }
     }
 }

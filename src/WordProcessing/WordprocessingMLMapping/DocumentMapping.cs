@@ -554,7 +554,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 if (c == TextBoundary.Tab)
                 {
+                    _writer.WriteEndElement();
                     _writer.WriteElementString("w", "tab", OpenXmlNamespaces.WordprocessingML, "");
+                    _writer.WriteStartElement("w", "t", OpenXmlNamespaces.WordprocessingML);
                 }
                 else if (c == TextBoundary.HardLineBreak)
                 {

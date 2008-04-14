@@ -104,6 +104,16 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             dashLongHeavy
         }
 
+        public enum TabLeader
+        {
+            none = 0,
+            dot,
+            hyphen,
+            underscore,
+            heavy,
+            middleDot
+        }
+
         public enum LanguageId
         {
             Afrikaans = 1078,
@@ -323,6 +333,5 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             Yoruba = 1130,
             Zulu = 1077
         }
-
 	}
 }

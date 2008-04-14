@@ -302,6 +302,52 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         appendValueElement(numPr, "numId", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString(), true);
                         break;
 
+                    //tabs
+                    case 0xc60D:
+                    case 0xC615:
+                        XmlElement tabs = _nodeFactory.CreateElement("w", "tabs", OpenXmlNamespaces.WordprocessingML);
+                        int pos = 0;
+                        //read the removed tabs
+                        byte itbdDelMax = sprm.Arguments[pos];
+                        pos++;
+                        for(int i=0; i<itbdDelMax; i++)
+                        {
+                            XmlElement tab = _nodeFactory.CreateElement("w", "tab", OpenXmlNamespaces.WordprocessingML);
+                            //clear
+                            XmlAttribute tabsVal = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
+                            tabsVal.Value = "clear";
+                            tab.Attributes.Append(tabsVal);
+                            //position
+                            XmlAttribute tabsPos = _nodeFactory.CreateAttribute("w", "pos", OpenXmlNamespaces.WordprocessingML);
+                            tabsPos.Value = System.BitConverter.ToInt16(sprm.Arguments, pos).ToString();
+                            tab.Attributes.Append(tabsPos);
+                            tabs.AppendChild(tab);
+                            pos += 2;
+                        }
+                        //read the added tabs
+                        byte itbdAddMax = sprm.Arguments[pos];
+                        pos++;
+                        for (int i = 0; i < itbdAddMax; i++)
+                        {
+                            TabDescriptor tbd = new TabDescriptor(sprm.Arguments[pos + (itbdAddMax * 2) + i]);
+                            XmlElement tab = _nodeFactory.CreateElement("w", "tab", OpenXmlNamespaces.WordprocessingML);
+                            //justification
+                            XmlAttribute tabsVal = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
+                            tabsVal.Value = ((Global.JustificationCode)tbd.jc).ToString();
+                            tab.Attributes.Append(tabsVal);
+                            //tab leader type
+                            XmlAttribute leader = _nodeFactory.CreateAttribute("w", "leader", OpenXmlNamespaces.WordprocessingML);
+                            leader.Value = ((Global.TabLeader)tbd.tlc).ToString();
+                            tab.Attributes.Append(leader);
+                            //position
+                            XmlAttribute tabsPos = _nodeFactory.CreateAttribute("w", "pos", OpenXmlNamespaces.WordprocessingML);
+                            tabsPos.Value = System.BitConverter.ToInt16(sprm.Arguments, pos + (i * 2)).ToString();
+                            tab.Attributes.Append(tabsPos);
+                            tabs.AppendChild(tab);
+                        }
+                        _pPr.AppendChild(tabs);
+                        break;
+
                     default:
                         break;
                 }
