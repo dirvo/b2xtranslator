@@ -122,8 +122,19 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
 
             BiffViewerOptions options = e.Argument as BiffViewerOptions;
             BiffViewer viewer = new BiffViewer(options);
-            viewer.DoTheMagic(worker);
-
+            try
+            {
+                viewer.DoTheMagic(worker);
+            }
+            catch (IOException ex)
+            {
+                MessageBox.Show(ex.Message, "BiffView++", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            
             if (worker.CancellationPending)
             {
                 e.Cancel = true;

@@ -103,7 +103,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             {
                 if (this.Options.ShowErrors)
                 {
-                    MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 else
                 {

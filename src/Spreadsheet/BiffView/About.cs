@@ -46,7 +46,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             this.labelVersion.Text = String.Format("Version {0}", Util.AssemblyVersion);
             this.linkWeb.Text = String.Format("{0} {1}", Util.AssemblyCopyright, Util.ProjectWebSite);
             this.linkWeb.LinkArea = new System.Windows.Forms.LinkArea(Util.AssemblyCopyright.Length + 1, this.linkWeb.Text.Length);
-            this.linkCompany.Text = String.Format("Developed by {0}.", Util.AssemblyCompany);
+            this.linkCompany.Text = String.Format("Developed by {0}", Util.AssemblyCompany);
             this.linkCompany.LinkArea = new System.Windows.Forms.LinkArea("Developed at ".Length, Util.AssemblyCompany.Length);
         }
 
