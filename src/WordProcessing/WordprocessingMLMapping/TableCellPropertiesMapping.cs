@@ -46,6 +46,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private XmlElement _tcMar;
         private XmlElement _tcBorders;
         private List<Int16> _grid;
+
         private Int16 _width;
         private BorderCode _brcTop, _brcLeft, _brcBottom, _brcRight;
 
@@ -90,22 +91,54 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 switch (sprm.OpCode)
 	            {
-                    //TDef (width, borders)
+                    //The TDef SPRM contains an array with the boundaries of the cells, 
+                    //followed by a block of cell information for each cell.
+                    //The first part of this block is a 16 bit integer containing flags.
+                    //The second part is the width of the cell (as 16 bit integer).
+                    //The third part contains 4 BRCs for the borders of the cell.
                     case 0xD608:
                         byte itcMac = sprm.Arguments[0];
 
+                        //get the boundaries of this cell
                         Int16 boundary1 = System.BitConverter.ToInt16(sprm.Arguments, 1 + (_cellIndex * 2));
                         Int16 boundary2 = System.BitConverter.ToInt16(sprm.Arguments, 1 + ((_cellIndex + 1) * 2));
                         _width = (Int16)(boundary2 - boundary1);
 
                         int cellPos = 1 + (2 * (itcMac + 1)) + (_cellIndex * 20);
 
-                        //read flags
+                        //read the flag int of this cell
                         byte[] flagBytes = new byte[2];
                         Array.Copy(sprm.Arguments, cellPos, flagBytes, 0, 2);
                         Int16 flags = System.BitConverter.ToInt16(flagBytes, 0);
 
-                        //width
+                        //extract the text rotation out of the flag
+                        bool fBackward = Utils.BitmaskToBool((int)flags, 0x0008);
+                        bool fRotateFont = Utils.BitmaskToBool((int)flags, 0x0010);
+
+                        //extract the vertical merge out of the flag
+                        bool fVertMerge = Utils.BitmaskToBool((int)flags, 0x0020);
+                        bool fVertRestart = Utils.BitmaskToBool((int)flags, 0x0040);
+                        if (fVertRestart)
+                            appendValueElement(_tcPr, "vMerge", "restart", false);
+                        else if (fVertMerge)
+                            appendValueElement(_tcPr, "vMerge", "continue", false);
+
+                        //extract the vertical alignment out of the flag
+                        VerticalCellAlignment vertAlign = (VerticalCellAlignment)((flags << 7) >> 30);
+                        if (vertAlign != VerticalCellAlignment.top)
+                            appendValueElement(_tcPr, "vAlign", vertAlign.ToString(), false);
+
+                        //extract the autofit out of the flag
+                        bool fFitText = Utils.BitmaskToBool((int)flags, 0x1000);
+                        if (fFitText)
+                            appendValueElement(_tcPr, "tcFitText", "", false);
+
+                        //extract the wrap out of the flag
+                        bool fNoWrap = Utils.BitmaskToBool((int)flags, 0x2000);
+                        if (fNoWrap)
+                            appendValueElement(_tcPr, "noWrap", "", false);
+
+                        //read the width of this cell
                         XmlElement tcW = _nodeFactory.CreateElement("w", "tcW", OpenXmlNamespaces.WordprocessingML);
                         XmlAttribute tcWtype = _nodeFactory.CreateAttribute("w", "type", OpenXmlNamespaces.WordprocessingML);
                         tcWtype.Value = ((CellWidthType)((flags << 4) >> 13)).ToString();
@@ -115,26 +148,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         tcW.Attributes.Append(tcWval);
                         _tcPr.AppendChild(tcW);
 
-                        //vertical merge 
-                        if (Utils.BitmaskToBool((int)flags, 0x0040))
-                            appendValueElement(_tcPr, "vMerge", "restart", true);
-
-                        else if(Utils.BitmaskToBool((int)flags, 0x0020))
-                            appendValueElement(_tcPr, "vMerge", "continue", true);
-
-                        //vertical alignment
-                        VerticalCellAlignment va = (VerticalCellAlignment)((flags << 7) >> 30);
-                        if(va != VerticalCellAlignment.top)
-                            appendValueElement(_tcPr, "vAlign", va.ToString(), true);
-
-                        //autofit
-                        if (Utils.BitmaskToBool((int)flags, 0x1000))
-                            appendValueElement(_tcPr, "tcFitText", "", false);
-
-                        //no wrap
-                        if (Utils.BitmaskToBool((int)flags, 0x2000))
-                            appendValueElement(_tcPr, "noWrap", "", false);
-                        
                         //border top
                         byte[] brcTopBytes = new byte[4];
                         Array.Copy(sprm.Arguments, cellPos + 4, brcTopBytes, 0, 4);

@@ -55,7 +55,7 @@
     <Compile Include="VirtualStreamReader.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Utils\Tools.csproj">
+    <ProjectReference Include="..\Tools\Tools.csproj">
       <Project>{B44FAEE0-B32E-4682-AA42-618C893F14C6}</Project>
       <Name>Tools</Name>
     </ProjectReference>
