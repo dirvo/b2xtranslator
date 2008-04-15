@@ -32,6 +32,7 @@ using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using DIaLOGIKa.b2xtranslator.DocFileFormat;
 using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
@@ -136,13 +137,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0xD638:
                         byte grfbrc = sprm.Arguments[2];
                         Int16 wMar = System.BitConverter.ToInt16(sprm.Arguments, 4);
-                        if (DIaLOGIKa.b2xtranslator.DocFileFormat.Utils.BitmaskToBool((int)grfbrc, 0x01))
+                        if (Utils.BitmaskToBool((int)grfbrc, 0x01))
                             appendDxaElement(tblCellMar, "top", wMar.ToString(), true);
-                        if (DIaLOGIKa.b2xtranslator.DocFileFormat.Utils.BitmaskToBool((int)grfbrc, 0x02))
+                        if (Utils.BitmaskToBool((int)grfbrc, 0x02))
                             appendDxaElement(tblCellMar, "left", wMar.ToString(), true);
-                        if (DIaLOGIKa.b2xtranslator.DocFileFormat.Utils.BitmaskToBool((int)grfbrc, 0x04))
+                        if (Utils.BitmaskToBool((int)grfbrc, 0x04))
                             appendDxaElement(tblCellMar, "bottom", wMar.ToString(), true);
-                        if (DIaLOGIKa.b2xtranslator.DocFileFormat.Utils.BitmaskToBool((int)grfbrc, 0x08))
+                        if (Utils.BitmaskToBool((int)grfbrc, 0x08))
                             appendDxaElement(tblCellMar, "right", wMar.ToString(), true);
                         break;
                     
@@ -164,7 +165,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     //overlap
                     case 0x3465:
-                        bool noOverlap = DIaLOGIKa.b2xtranslator.DocFileFormat.Utils.ByteToBool(sprm.Arguments[0]);
+                        bool noOverlap = Utils.ByteToBool(sprm.Arguments[0]);
                         string tblOverlapVal = "overlap";
                         if (noOverlap)
                             tblOverlapVal = "never";

@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.DocFileFormat;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
@@ -65,19 +66,19 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 if (sprm.OpCode == 0x2416)
                 {
-                    this.fInTable = DIaLOGIKa.b2xtranslator.DocFileFormat.Utils.ByteToBool(sprm.Arguments[0]);
+                    this.fInTable = Utils.ByteToBool(sprm.Arguments[0]);
                 }
                 if (sprm.OpCode == 0x2417)
                 {
-                    this.fTtp = DIaLOGIKa.b2xtranslator.DocFileFormat.Utils.ByteToBool(sprm.Arguments[0]);
+                    this.fTtp = Utils.ByteToBool(sprm.Arguments[0]);
                 }
                 if (sprm.OpCode == 0x244B)
                 {
-                    this.fInnerTableCell = DIaLOGIKa.b2xtranslator.DocFileFormat.Utils.ByteToBool(sprm.Arguments[0]);
+                    this.fInnerTableCell = Utils.ByteToBool(sprm.Arguments[0]);
                 }
                 if (sprm.OpCode == 0x244C)
                 {
-                    this.fInnerTtp = DIaLOGIKa.b2xtranslator.DocFileFormat.Utils.ByteToBool(sprm.Arguments[0]);
+                    this.fInnerTtp = Utils.ByteToBool(sprm.Arguments[0]);
                 }
                 if (sprm.OpCode == 0x6649)
                 {

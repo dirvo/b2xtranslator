@@ -702,7 +702,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 else if (sprm.OpCode == 0x0855)
                 {
                     //special value
-                    ret = DIaLOGIKa.b2xtranslator.DocFileFormat.Utils.ByteToBool(sprm.Arguments[0]);
+                    ret = Utils.ByteToBool(sprm.Arguments[0]);
                     break;
                 }
             }

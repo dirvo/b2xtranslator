@@ -31,6 +31,7 @@ using System.Text;
 using System.Collections;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {

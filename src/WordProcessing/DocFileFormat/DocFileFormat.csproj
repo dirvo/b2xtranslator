@@ -78,7 +78,6 @@
     <Compile Include="TabDescriptor.cs" />
     <Compile Include="TablePropertyExceptions.cs" />
     <Compile Include="TextBoundary.cs" />
-    <Compile Include="Utils.cs" />
     <Compile Include="WordDocument.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -89,6 +88,10 @@
     <ProjectReference Include="..\..\Common\StructuredStorageReader\StructuredStorageReader.csproj">
       <Project>{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}</Project>
       <Name>StructuredStorageReader</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\Tools\Tools.csproj">
+      <Project>{B44FAEE0-B32E-4682-AA42-618C893F14C6}</Project>
+      <Name>Tools</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

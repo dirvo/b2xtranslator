@@ -112,8 +112,17 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         Int16 flags = System.BitConverter.ToInt16(flagBytes, 0);
 
                         //extract the text rotation out of the flag
+                        bool fVertical = Utils.BitmaskToBool((int)flags, 0x0004);
                         bool fBackward = Utils.BitmaskToBool((int)flags, 0x0008);
                         bool fRotateFont = Utils.BitmaskToBool((int)flags, 0x0010);
+                        if (fVertical && !fBackward)
+                        {
+                            appendValueElement(_tcPr, "textDirection", "tbRl", false);
+                        }
+                        else if (fVertical && fBackward)
+                        {
+                            appendValueElement(_tcPr, "textDirection", "btLr", false);
+                        }
 
                         //extract the vertical merge out of the flag
                         bool fVertMerge = Utils.BitmaskToBool((int)flags, 0x0020);
