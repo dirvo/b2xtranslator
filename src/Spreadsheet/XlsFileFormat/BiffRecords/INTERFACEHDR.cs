@@ -36,7 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     public class INTERFACEHDR : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.INTERFACEHDR;
-        
+
         public UInt16 cv;
 
         /// <summary>
@@ -49,12 +49,15 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         /// <param name="reader"></param>
         /// <param name="id"></param>
         /// <param name="length"></param>
-        public INTERFACEHDR(VirtualStreamReader reader, RecordNumber id, UInt16 length)
-            : base(id, length)
+        public INTERFACEHDR(IStreamReader reader, RecordNumber id, UInt16 length)
+            : base(reader, id, length)
         {
-            Debug.Assert(id == ID);
+            Debug.Assert(this.Id == ID);
+            
+            // initialize class members from stream
+            cv = this.Reader.ReadUInt16();
 
-            cv = reader.ReadUInt16();
+            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
         }
     }
 }

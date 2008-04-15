@@ -29,12 +29,26 @@ using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 using DIaLOGIKa.b2xtranslator.Tools;
+using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
+    /// <summary>
+    /// BOF: Beginning of File (809h)
+    /// 
+    /// The BOF record marks the beginning of the Book stream in the BIFF file. 
+    /// It also marks the beginning of record groups (or “substreams” of the Book stream) 
+    /// for sheets in the workbook. 
+    /// 
+    /// For BIFF2 through BIFF4, the BIFF version is found from the high-order byte of the 
+    /// record number field, as shown in the following table. For BIFF5/BIFF7, 
+    /// and BIFF8 use the vers field at offset 4 to determine the BIFF version.
+    /// </summary>
     public class BOF : BiffRecord
     {
-        public UInt16 vers;        // Version number:
+        public const RecordNumber ID = RecordNumber.BOF; 
+        
+        public UInt16 vers;         // Version number:
                                     //    0600 for BIFF8
         public UInt16 dt;	        // Substream type:
                                     //    0005h = Workbook globals
@@ -56,31 +70,44 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public bool fWinAny;    //  3	    00000008h   =1 if the file has ever been edited by Excel for Windows
         public bool fMacAny;    //  4	    00000010h   =1 if the file has ever been edited by Excel for the Macintosh
         public bool fBetaAny;   //  5	    00000020h   =1 if the file has ever been edited by a beta version of Excel
-        public UInt32 reserved1;//  7–6 	000000C0h	Reserved; must be 0 (zero)
+        public UInt32 reserved0;//  7–6 	000000C0h	Reserved; must be 0 (zero)
         public bool fRiscAny;   //  8	    00000100h   =1 if the file has ever been edited by Excel on a RISC platform
-        public UInt32 reserved2;//  31-9    FFFFFE00h   Reserved; must be 0 (zero)
+        public UInt32 reserved1;//  31-9    FFFFFE00h   Reserved; must be 0 (zero)
 
 
-        public BOF(VirtualStreamReader reader, RecordNumber id, UInt16 length)
-            : base(id, length)
+        public BOF(IStreamReader reader, RecordNumber id, UInt16 length)
+            : base(reader, id, length)
         {
+            // assert that the correct record type is instantiated
+            Debug.Assert(this.Id == ID);
+
+            // initialize class members from stream
             vers = reader.ReadUInt16();
+
+            // TODO: currently only BIFF8 is supported
+            if (vers != 0x0600)
+            {
+                throw new NotSupportedException("Only BIFF8 files are supported.");
+            }
+            
             dt = reader.ReadUInt16();
             rupBuild = reader.ReadUInt16();
             rupYear = reader.ReadUInt16();
             bfh = reader.ReadUInt32();
             sfo = reader.ReadUInt32();
 
-            fWin	    = Utils.BitmaskToBool(bfh, 0x00000001);
-            fRisc	    = Utils.BitmaskToBool(bfh, 0x00000002);
-            fBeta	    = Utils.BitmaskToBool(bfh, 0x00000004);
-            fWinAny	    = Utils.BitmaskToBool(bfh, 0x00000008);
-            fMacAny	    = Utils.BitmaskToBool(bfh, 0x00000010);
-            fBetaAny	= Utils.BitmaskToBool(bfh, 0x00000020);
-            reserved1	= Utils.BitmaskToUInt32(bfh, 0x000000C0);
-            fRiscAny	= Utils.BitmaskToBool(bfh, 0x00000100);
-            reserved2   = Utils.BitmaskToUInt32(bfh, 0xFFFFFE00);
-        }
+            fWin = Utils.BitmaskToBool(bfh, 0x00000001);
+            fRisc = Utils.BitmaskToBool(bfh, 0x00000002);
+            fBeta = Utils.BitmaskToBool(bfh, 0x00000004);
+            fWinAny = Utils.BitmaskToBool(bfh, 0x00000008);
+            fMacAny = Utils.BitmaskToBool(bfh, 0x00000010);
+            fBetaAny = Utils.BitmaskToBool(bfh, 0x00000020);
+            reserved0 = Utils.BitmaskToUInt32(bfh, 0x000000C0);
+            fRiscAny = Utils.BitmaskToBool(bfh, 0x00000100);
+            reserved1 = Utils.BitmaskToUInt32(bfh, 0xFFFFFE00);
 
+            // assert that the correct number of bytes has been read from the stream
+            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
+        }
     }
 }

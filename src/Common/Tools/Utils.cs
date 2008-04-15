@@ -55,6 +55,14 @@ namespace DIaLOGIKa.b2xtranslator.Tools
             return ((value & mask) == mask);
         }
 
+        public static byte BitmaskToByte(Int32 value, Int32 mask)
+        {
+            value = value & mask;
+            while ((mask & 0x1) != 0x1)
+                value = value >> 1;
+            return Convert.ToByte(value);
+        }
+
         public static Int32 BitmaskToInt32(Int32 value, Int32 mask)
         {
             value = value & mask;

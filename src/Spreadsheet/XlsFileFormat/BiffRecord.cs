@@ -27,16 +27,24 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
     public abstract class BiffRecord
     {
+        IStreamReader _reader;
+        
         RecordNumber _id;
         UInt16 _length;
+        long _offset;
 
-        public BiffRecord(RecordNumber id, UInt16 length)
+        public BiffRecord(IStreamReader reader, RecordNumber id, UInt16 length)
         {
+            _reader = reader;
+            _offset = _reader.BaseStream.Position;
+
             _id = id;
             _length = length;
         }
@@ -44,13 +52,21 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public RecordNumber Id
         {
             get { return _id; }
-            set { _id = value; }
         }
         
         public UInt16 Length
         {
             get { return _length; }
-            set { _length = value; }
+        }
+
+        public long Offset
+        {
+            get { return _offset; }
+        }
+
+        public IStreamReader Reader
+        {
+            get { return _reader; }
         }
     }
 }

@@ -39,6 +39,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         AUTOFILTER = 0x9E, 	// AutoFilter Data
         AUTOFILTER12 = 0x87E, 	// AutoFilter Data Introduced in Excel 2007
         AUTOFILTERINFO = 0x9D, 	// Drop-Down Arrow Count
+        AUTOWEBPUB = 0x8C0,     // Auto web publish storage
         BACKUP = 0x40, 	// Save Backup Version of the File
         BLANK = 0x201, 	// Cell Value, Blank Cell
         BOF = 0x809, 	// Beginning of File
@@ -110,7 +111,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         FILTERMODE = 0x9B, 	// Sheet Contains Filtered List
         FMQRY = 0x8c6, 	//  Filemaker queries
         FMSQRY = 0x8c7, 	//  File maker queries
-        FNGROUP12 = 0x898, 	// Function Group
+        FNGRP12 = 0x898, 	// Function Group
         FNGROUPCOUNT = 0x9C, 	// Built-in Function Group Count
         FNGROUPNAME = 0x9A, 	// Function Group Name
         FONT = 0x231, 	// Font Description
