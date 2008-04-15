@@ -37,8 +37,15 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.linkWeb = new System.Windows.Forms.LinkLabel();
-            this.linkAbout = new System.Windows.Forms.LinkLabel();
+            this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
+            this.toolStripStatusLabelAbout = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tableLayoutPanel.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // cmdCreate
@@ -121,7 +128,6 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             this.tableLayoutPanel.Controls.Add(this.txtFileName, 0, 2);
             this.tableLayoutPanel.Controls.Add(this.cmdExit, 3, 3);
             this.tableLayoutPanel.Controls.Add(this.cmdCreate, 2, 3);
-            this.tableLayoutPanel.Controls.Add(this.linkAbout, 1, 3);
             this.tableLayoutPanel.Location = new System.Drawing.Point(12, 12);
             this.tableLayoutPanel.Margin = new System.Windows.Forms.Padding(15);
             this.tableLayoutPanel.Name = "tableLayoutPanel";
@@ -130,7 +136,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel.Size = new System.Drawing.Size(524, 123);
+            this.tableLayoutPanel.Size = new System.Drawing.Size(524, 153);
             this.tableLayoutPanel.TabIndex = 5;
             // 
             // linkWeb
@@ -146,18 +152,63 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             this.linkWeb.UseCompatibleTextRendering = true;
             this.linkWeb.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkWeb_LinkClicked);
             // 
-            // linkAbout
+            // backgroundWorker
             // 
-            this.linkAbout.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.linkAbout.AutoSize = true;
-            this.linkAbout.Location = new System.Drawing.Point(3, 101);
-            this.linkAbout.Margin = new System.Windows.Forms.Padding(3, 0, 3, 9);
-            this.linkAbout.Name = "linkAbout";
-            this.linkAbout.Size = new System.Drawing.Size(35, 13);
-            this.linkAbout.TabIndex = 6;
-            this.linkAbout.TabStop = true;
-            this.linkAbout.Text = "About";
-            this.linkAbout.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkAbout_LinkClicked);
+            this.backgroundWorker.WorkerReportsProgress = true;
+            this.backgroundWorker.WorkerSupportsCancellation = true;
+            this.backgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_DoWork);
+            this.backgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker_RunWorkerCompleted);
+            this.backgroundWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker_ProgressChanged);
+            // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1,
+            this.toolStripStatusLabel2,
+            this.toolStripProgressBar1,
+            this.toolStripStatusLabel3,
+            this.toolStripStatusLabelAbout});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 167);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(535, 22);
+            this.statusStrip1.SizingGrip = false;
+            this.statusStrip1.TabIndex = 6;
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.AutoSize = false;
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(200, 17);
+            this.toolStripStatusLabel1.Text = "Please select a file.";
+            this.toolStripStatusLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // toolStripProgressBar1
+            // 
+            this.toolStripProgressBar1.Name = "toolStripProgressBar1";
+            this.toolStripProgressBar1.Size = new System.Drawing.Size(200, 16);
+            this.toolStripProgressBar1.Step = 5;
+            // 
+            // toolStripStatusLabelAbout
+            // 
+            this.toolStripStatusLabelAbout.IsLink = true;
+            this.toolStripStatusLabelAbout.LinkBehavior = System.Windows.Forms.LinkBehavior.AlwaysUnderline;
+            this.toolStripStatusLabelAbout.Name = "toolStripStatusLabelAbout";
+            this.toolStripStatusLabelAbout.Size = new System.Drawing.Size(36, 17);
+            this.toolStripStatusLabelAbout.Text = "About";
+            this.toolStripStatusLabelAbout.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.toolStripStatusLabelAbout.Click += new System.EventHandler(this.toolStripStatusLabelAbout_Click);
+            // 
+            // toolStripStatusLabel2
+            // 
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(41, 17);
+            this.toolStripStatusLabel2.Spring = true;
+            // 
+            // toolStripStatusLabel3
+            // 
+            this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
+            this.toolStripStatusLabel3.Size = new System.Drawing.Size(41, 17);
+            this.toolStripStatusLabel3.Spring = true;
             // 
             // MainWindow
             // 
@@ -165,7 +216,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(535, 153);
+            this.ClientSize = new System.Drawing.Size(535, 189);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.tableLayoutPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -174,6 +226,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             this.Text = "BiffView++";
             this.tableLayoutPanel.ResumeLayout(false);
             this.tableLayoutPanel.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -189,7 +243,13 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel;
         private System.Windows.Forms.LinkLabel linkWeb;
-        private System.Windows.Forms.LinkLabel linkAbout;
+        private System.ComponentModel.BackgroundWorker backgroundWorker;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelAbout;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
     }
 }
 

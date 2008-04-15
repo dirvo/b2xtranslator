@@ -6,10 +6,8 @@ using System.IO;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
-using DIaLOGIKa.b2xtranslator.XlsFileFormat.Exceptions;
-using XlsFileFormat; 
 
-namespace DIaLOGIKa.b2xtranslator.XlsFileFormat
+namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
     /// <summary>
     /// Extracts the FileSummaryStream 

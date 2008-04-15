@@ -28,9 +28,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace XlsFileFormat
+namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
-    public enum RecordNumber
+    public enum RecordNumber : ushort
     {
         DATE1904 = 0x22, 	// 1904 Date System
         ADDIN = 0x87, 	// Workbook Is an Add-in Macro

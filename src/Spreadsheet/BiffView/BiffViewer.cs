@@ -30,7 +30,9 @@ using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 using System.Windows.Forms;
 using System.IO;
-using XlsFileFormat;
+using System.Reflection;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
+using System.ComponentModel;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
 {
@@ -43,6 +45,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
         }
         
         private BiffViewerOptions _options;
+        private BackgroundWorker _backgroundWorker;
+        private bool _isCancelled = false;
 
         public BiffViewerOptions Options
         {
@@ -53,6 +57,13 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
         public BiffViewer(BiffViewerOptions options)
         {
             this._options = options;
+        }
+
+        public void DoTheMagic(BackgroundWorker backgroundWorker)
+        {
+            _backgroundWorker = backgroundWorker;
+            DoTheMagic();
+            _backgroundWorker = null;
         }
 
         public void DoTheMagic()
@@ -83,7 +94,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
                     PrintHtml(sw, workbookReader);
                 }
 
-                if (this.Options.ShowInBrowser && this.Options.Mode == BiffViewerMode.File)
+                if (!_isCancelled && this.Options.ShowInBrowser && this.Options.Mode == BiffViewerMode.File)
                 {
                     Util.VisitLink(this.Options.OutputFileName);
                 }
@@ -143,6 +154,23 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
                             sw.Write("\n\t\t\t");
                     }
                     sw.Write("\n");
+
+                    if (_backgroundWorker != null)
+                    {
+                        int progress = 100;
+
+                        if (sw.BaseStream.Length != 0)
+                        {
+                            progress = (int)(100 * workbookReader.BaseStream.Position / workbookReader.BaseStream.Length);
+                        }
+                        _backgroundWorker.ReportProgress(progress);
+
+                        if (_backgroundWorker.CancellationPending)
+                        {
+                            _isCancelled = true;
+                            break;
+                        }
+                    }
                 }
 
             }
@@ -156,6 +184,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
         {
             BiffHeader bh;
 
+            Uri baseUrl = new Uri(new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName);
+            
             sw.WriteLine("<html>");
             sw.WriteLine("<head>");
             sw.WriteLine("<title>" + this.Options.InputDocument + "</title>");
@@ -181,7 +211,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
 
                     sw.WriteLine("<tr>");
                     sw.WriteLine("<td>");
-                    sw.WriteLine("BIFF <a href=\"excelspec\\{0}.html\">{0}</a> ({1:X02}h)", bh.id, (int)bh.id);
+                    sw.WriteLine("BIFF <a href=\"{0}\\xlsspec\\{1}.html\">{1}</a> ({2:X02}h)", baseUrl, bh.id, (int)bh.id);
                     sw.WriteLine("</td><td>");
                     sw.WriteLine("{0}", bh.length);
 
@@ -200,6 +230,23 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
                             sw.Write("&nbsp;");
                     }
                     sw.Write("</td></tr>");
+
+                    if (_backgroundWorker != null)
+                    {
+                        int progress = 100;
+
+                        if (sw.BaseStream.Length != 0)
+                        {
+                            progress = (int)(100 * workbookReader.BaseStream.Position / workbookReader.BaseStream.Length);
+                        }
+                        _backgroundWorker.ReportProgress(progress);
+
+                        if (_backgroundWorker.CancellationPending)
+                        {
+                            _isCancelled = true;
+                            break;
+                        }
+                    }
                 }
 
             }

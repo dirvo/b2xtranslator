@@ -56,7 +56,17 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
         {
             try
             {
-                cmdCreate.Enabled = File.Exists(txtFileName.Text);
+                if (File.Exists(txtFileName.Text))
+                {
+                    cmdCreate.Enabled = true;
+                    toolStripStatusLabel1.Text = "Ready";
+                }
+                else
+                {
+                    cmdCreate.Enabled = false;
+                    toolStripStatusLabel1.Text = "Please select a file.";
+                }
+                toolStripProgressBar1.Value = 0;
             }
             catch
             {
@@ -71,14 +81,27 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
 
         private void cmdCreate_Click(object sender, EventArgs e)
         {
-            BiffViewerOptions options = new BiffViewerOptions();
-            options.ShowErrors = true;
-            options.UseTempFolder = true;
-            options.OutputFileName = options.GetTempFileName(txtFileName.Text);
-            options.ShowInBrowser = true;
-            options.InputDocument = txtFileName.Text;
-            BiffViewer viewer = new BiffViewer(options);
-            viewer.DoTheMagic();
+            if (!this.backgroundWorker.IsBusy)
+            {
+                BiffViewerOptions options = new BiffViewerOptions();
+                options.ShowErrors = true;
+                options.UseTempFolder = true;
+                options.OutputFileName = options.GetTempFileName(txtFileName.Text);
+                options.ShowInBrowser = true;
+                options.InputDocument = txtFileName.Text;
+
+                this.toolStripProgressBar1.Value = 0;
+
+                backgroundWorker.RunWorkerAsync(options);
+
+                // Disable the button for the duration of the download.
+                this.cmdCreate.Text = "Cancel";
+            }
+            else
+            {
+                this.cmdCreate.Enabled = false;
+                this.backgroundWorker.CancelAsync();
+            }
         }
 
         private void linkWeb_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -88,6 +111,51 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
         }
 
         private void linkAbout_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            new About().Show();
+        }
+
+        void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            // Get the BackgroundWorker that raised this event.
+            BackgroundWorker worker = sender as BackgroundWorker;
+
+            BiffViewerOptions options = e.Argument as BiffViewerOptions;
+            BiffViewer viewer = new BiffViewer(options);
+            viewer.DoTheMagic(worker);
+
+            if (worker.CancellationPending)
+            {
+                e.Cancel = true;
+            }
+        }
+
+        private void backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            this.toolStripProgressBar1.Value = e.ProgressPercentage;
+        }
+
+        private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            // First, handle the case where an exception was thrown.
+            if (e.Error != null)
+            {
+                MessageBox.Show(e.Error.Message, "BiffView++", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else if (e.Cancelled)
+            {
+                this.toolStripStatusLabel1.Text = "Cancelled";
+            }
+            else
+            {
+                this.toolStripStatusLabel1.Text = "Completed";
+            }
+
+            this.cmdCreate.Enabled = true;
+            this.cmdCreate.Text = "Create";
+        }
+
+        private void toolStripStatusLabelAbout_Click(object sender, EventArgs e)
         {
             new About().Show();
         }

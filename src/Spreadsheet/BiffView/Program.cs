@@ -43,7 +43,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
-        //[STAThread]
+        [STAThread]
         static void Main(string[] args)
         {
             BiffViewerOptions options = ParseCommandLine(args);
