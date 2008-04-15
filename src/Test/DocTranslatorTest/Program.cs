@@ -83,7 +83,9 @@ namespace DocTranslatorTest
                     doc.FontTable.Convert(new FontTableMapping(docx.MainDocumentPart.AddFontTablePart(), xws));
 
                     //Write document.xml
-                    doc.Convert(new DocumentMapping(docx.MainDocumentPart, xws));
+                    doc.Convert(new DocumentMapping(docx.MainDocumentPart, xws, 0, doc.FIB.ccpText));
+
+                    //
 
                     DateTime end = DateTime.Now;
                     TimeSpan diff = end.Subtract(start);

@@ -71,9 +71,14 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public FileInformationBlock FIB;
 
         /// <summary>
-        /// The text part of the Word document
+        /// All text of the Word document
         /// </summary>
         public List<char> Text;
+
+        /// <summary>
+        /// The main document text of the Word document
+        /// </summary>
+        public List<char> MainDocument;
 
         /// <summary>
         /// The macros of the Word document
@@ -202,16 +207,16 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             //parse the piece table and construct a list that contains all chars
             this.PieceTable = new PieceTable(this.FIB, this.TableStream);
-            List<char> allChars = this.PieceTable.GetChars(this.FIB.fcMin, this.FIB.fcMac, this.WordDocumentStream);
+            this.Text = this.PieceTable.GetChars(this.FIB.fcMin, this.FIB.fcMac, this.WordDocumentStream);
 
             //split the chars into the subdocuments
-            this.Text = allChars.GetRange(0, FIB.ccpText);
-            this.Footnotes = allChars.GetRange(FIB.ccpText, FIB.ccpFtn);
-            this.Headers = allChars.GetRange(FIB.ccpText + FIB.ccpFtn, FIB.ccpHdr);
-            this.Annotations = allChars.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr, FIB.ccpAtn);
-            this.Endnotes = allChars.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr + FIB.ccpAtn, FIB.ccpEdn);
-            this.Textboxes = allChars.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr + FIB.ccpAtn + FIB.ccpEdn, FIB.ccpTxbx);
-            this.HeaderTextboxes = allChars.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr + FIB.ccpAtn + FIB.ccpEdn + FIB.ccpTxbx, FIB.ccpHdrTxbx);
+            this.MainDocument = this.Text.GetRange(0, FIB.ccpText);
+            this.Footnotes = this.Text.GetRange(FIB.ccpText, FIB.ccpFtn);
+            this.Headers = this.Text.GetRange(FIB.ccpText + FIB.ccpFtn, FIB.ccpHdr);
+            this.Annotations = this.Text.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr, FIB.ccpAtn);
+            this.Endnotes = this.Text.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr + FIB.ccpAtn, FIB.ccpEdn);
+            this.Textboxes = this.Text.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr + FIB.ccpAtn + FIB.ccpEdn, FIB.ccpTxbx);
+            this.HeaderTextboxes = this.Text.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr + FIB.ccpAtn + FIB.ccpEdn + FIB.ccpTxbx, FIB.ccpHdrTxbx);
         }
 
         /// <summary>

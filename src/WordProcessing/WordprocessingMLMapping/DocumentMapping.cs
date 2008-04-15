@@ -41,6 +41,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         AbstractOpenXmlMapping,
         IMapping<WordDocument>
     {
+        private Int32 _initialCp, _countOfChars;
         private WordDocument _doc;
         private MainDocumentPart _docPart;
         private XmlWriterSettings _xws;
@@ -61,11 +62,19 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// </summary>
         private Dictionary<Int32, SectionPropertyExceptions> _allSepx;
 
-        public DocumentMapping(MainDocumentPart docPart, XmlWriterSettings xws)
+        /// <summary>
+        /// Creates a new DocumentMapping that converts 
+        /// </summary>
+        /// <param name="docPart"></param>
+        /// <param name="xws"></param>
+        /// <param name="initialCp"></param>
+        public DocumentMapping(MainDocumentPart docPart, XmlWriterSettings xws, Int32 initialCp, Int32 countOfChars)
             : base(XmlWriter.Create(docPart.GetStream(), xws))
         {
             _xws = xws;
             _docPart = docPart;
+            _initialCp = initialCp;
+            _countOfChars = countOfChars;
         }
 
         public void Apply(WordDocument doc)
@@ -83,7 +92,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
             _lastValidPapx = _doc.AllPapxFkps[0].grppapx[0];
 
-            //build a dictionaries of all SEPX
+            //build a dictionary of all SEPX
             _allSepx = new Dictionary<Int32, SectionPropertyExceptions>();
             for (int i = 0; i < _doc.SectionTable.grpsepx.Length; i++)
             {
@@ -94,8 +103,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _writer.WriteStartElement("w", "document", OpenXmlNamespaces.WordprocessingML);
             _writer.WriteStartElement("w", "body", OpenXmlNamespaces.WordprocessingML);
 
-            Int32 cp = 0;
-            while (cp < _doc.Text.Count)
+            Int32 cp = _initialCp;
+            while (cp < _initialCp + _countOfChars)
             {
                 Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
                 ParagraphPropertyExceptions papx = findValidPapx(fc);

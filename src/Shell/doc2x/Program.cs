@@ -104,7 +104,7 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                         //write settings.xml
                         doc.DocumentProperties.Convert(new SettingsMapping(docx.MainDocumentPart.AddSettingsPart(), xws, doc.FIB));
 
-                        //Write Styles.xml
+                        //Write styles.xml
                         doc.Styles.Convert(new StyleSheetMapping(docx.MainDocumentPart.AddStyleDefinitionsPart(), xws, doc));
 
                         //Write numbering.xml
@@ -113,8 +113,8 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                         //Write fontTable.xml
                         doc.FontTable.Convert(new FontTableMapping(docx.MainDocumentPart.AddFontTablePart(), xws));
 
-                        //Write Document.xml
-                        doc.Convert(new DocumentMapping(docx.MainDocumentPart, xws));
+                        //Write document.xml
+                        doc.Convert(new DocumentMapping(docx.MainDocumentPart, xws, 0, doc.FIB.ccpText));
 
                         DateTime end = DateTime.Now;
                         TimeSpan diff = end.Subtract(start);
