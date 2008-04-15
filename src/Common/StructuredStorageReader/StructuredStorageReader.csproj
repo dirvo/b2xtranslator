@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractFat.cs" />
+    <Compile Include="IStreamReader.cs" />
     <Compile Include="MaskingHandler.cs" />
     <Compile Include="StorageReader.cs" />
     <Compile Include="InternalBitConverter.cs" />

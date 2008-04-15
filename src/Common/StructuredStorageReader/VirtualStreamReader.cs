@@ -5,7 +5,7 @@ using System.IO;
 
 namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 {
-    public class VirtualStreamReader : BinaryReader
+    public class VirtualStreamReader : BinaryReader, IStreamReader
     {
         public VirtualStreamReader(VirtualStream stream)
             : base(stream)

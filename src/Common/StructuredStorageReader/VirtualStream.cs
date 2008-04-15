@@ -90,7 +90,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// <returns>The total number of bytes read into the buffer. 
         /// This might be less than the length of the array if that number 
         /// of bytes are not currently available, or zero if the end of the stream is reached.</returns>
-        [Obsolete("Use VirtualStreamReader.Read(byte[] array) instead.")]
+        [Obsolete("Use IStreamReader.Read(byte[] array) instead.")]
         public int Read(byte[] array)
         {
             return Read(array, array.Length);
@@ -105,7 +105,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// <returns>The total number of bytes read into the buffer. 
         /// This might be less than the number of bytes requested if that number 
         /// of bytes are not currently available, or zero if the end of the stream is reached.</returns>
-        [Obsolete("Use VirtualStreamReader.Read(byte[] array, int count) instead.")]
+        [Obsolete("Use IStreamReader.Read(byte[] array, int count) instead.")]
         public int Read(byte[] array, int count)
         {
             return Read(array, 0, count);
@@ -217,7 +217,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             return totalBytesRead;
         }
 
-        [Obsolete("Use VirtualStreamReader.ReadUInt16() instead.")]
+        [Obsolete("Use IStreamReader.ReadUInt16() instead.")]
         public UInt16 ReadUInt16()
         {
             byte[] buffer = new byte[sizeof(UInt16)];
@@ -230,7 +230,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             return BitConverter.ToUInt16(buffer, 0);
         }
 
-        [Obsolete("Use VirtualStreamReader.ReadInt16() instead.")]
+        [Obsolete("Use IStreamReader.ReadInt16() instead.")]
         public short ReadInt16()
         {
             byte[] buffer = new byte[sizeof(Int16)];
@@ -243,7 +243,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             return BitConverter.ToInt16(buffer, 0);
         }
 
-        [Obsolete("Use VirtualStreamReader.ReadUInt32() instead.")]
+        [Obsolete("Use IStreamReader.ReadUInt32() instead.")]
         public UInt32 ReadUInt32()
         {
             byte[] buffer = new byte[sizeof(UInt32)];
@@ -256,7 +256,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             return BitConverter.ToUInt32(buffer, 0);
         }
 
-        [Obsolete("Use VirtualStreamReader.ReadInt32() instead.")]
+        [Obsolete("Use IStreamReader.ReadInt32() instead.")]
         public Int32 ReadInt32()
         {
             byte[] buffer = new byte[sizeof(Int32)];
