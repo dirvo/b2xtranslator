@@ -290,6 +290,7 @@
     <Compile Include="BiffRecords\XFCRC.cs" />
     <Compile Include="BiffRecords\XFEXT.cs" />
     <Compile Include="BiffRecords\XL5MODIFY.cs" />
+    <Compile Include="BiffString.cs" />
     <Compile Include="Exception\ExtractorException.cs" />
     <Compile Include="Exception\RecordParseException.cs" />
     <Compile Include="FileInformationExtractor.cs" />
@@ -297,7 +298,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RecordNumbers.cs" />
     <Compile Include="StreamExtractor.cs" />
-    <Compile Include="UnicodeString.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\StructuredStorageReader\StructuredStorageReader.csproj">

@@ -42,7 +42,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
     /// Because most strings in USA/English Excel have all of the high bytes of unicode 
     /// characters set to 00h, the strings can be saved using a compressed unicode format.  
     /// </summary>
-    public class UnicodeString
+    public class BiffString
     {
         /// <summary>
         /// Count of characters in the string (Note: this is the number of characters, NOT the number of bytes)
@@ -77,7 +77,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// </summary>
         private bool fRichSt;
         
-        public UnicodeString(IStreamReader reader)
+        public BiffString(IStreamReader reader)
         {
             cch = reader.ReadUInt16();
             grbit = reader.ReadByte();
