@@ -38,13 +38,18 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             return BaseStream.Read(buffer, 0, count);
         }
 
-        public int ReadAtPos(byte[] buffer, long position, int count)
-        {
-            BaseStream.Seek(position, SeekOrigin.Begin);
-            return BaseStream.Read(buffer, 0, count);
-        }
-
-        public byte[] ReadBytesAtPos(long position, int count)
+        /// <summary>
+        /// Reads count bytes from the current stream into a byte array and advances
+        ///     the current position by count bytes.
+        /// </summary>
+        /// <param name="position">The absolute byte offset where to read.</param>
+        /// <param name="count">The number of bytes to read.</param>
+        /// <returns>A byte array containing data read from the underlying stream. This might
+        ///     be less than the number of bytes requested if the end of the stream is reached.</returns>
+        /// <exception cref="System.IO.IOException">An I/O error occurs.</exception>
+        /// <exception cref="System.ObjectDisposedException">The stream is closed.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">count is negative.</exception>
+        public byte[] ReadBytes(long position, int count)
         {
             BaseStream.Seek(position, SeekOrigin.Begin);
             return ReadBytes(count);
