@@ -76,46 +76,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public List<char> Text;
 
         /// <summary>
-        /// The main document text of the Word document
-        /// </summary>
-        public List<char> MainDocument;
-
-        /// <summary>
-        /// The macros of the Word document
-        /// </summary>
-        public List<char> Macros;
-
-        /// <summary>
-        /// The headers of the Word document
-        /// </summary>
-        public List<char> Headers;
-
-        /// <summary>
-        /// The textboxes of the Word document
-        /// </summary>
-        public List<char> Textboxes;
-
-        /// <summary>
-        /// The annotations of the Word document
-        /// </summary>
-        public List<char> Annotations;
-
-        /// <summary>
-        /// The endnotes of the Word document
-        /// </summary>
-        public List<char> Endnotes;
-
-        /// <summary>
-        /// The footnotes of the Word document
-        /// </summary>
-        public List<char> Footnotes;
-
-        /// <summary>
-        /// The textboxes in headers of the Word document
-        /// </summary>
-        public List<char> HeaderTextboxes;
-
-        /// <summary>
         /// The style sheet of the document
         /// </summary>
         public StyleSheet Styles;
@@ -151,6 +111,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// A list of all FKPs that contain CHPX
         /// </summary>
         public List<FormattedDiskPageCHPX> AllChpxFkps;
+
+        /// <summary>
+        /// A table that contains the positions of the headers and footer in the text.
+        /// </summary>
+        public HeaderAndFooterTable HeaderAndFooterTable;
 
         public WordDocument(StorageReader reader)
         {
@@ -205,18 +170,12 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             //read section table
             this.SectionTable = new SectionTable(this.FIB, this.TableStream, this.WordDocumentStream);
 
+            //read headers and footer table
+            this.HeaderAndFooterTable = new HeaderAndFooterTable(this);
+
             //parse the piece table and construct a list that contains all chars
             this.PieceTable = new PieceTable(this.FIB, this.TableStream);
             this.Text = this.PieceTable.GetChars(this.FIB.fcMin, this.FIB.fcMac, this.WordDocumentStream);
-
-            //split the chars into the subdocuments
-            this.MainDocument = this.Text.GetRange(0, FIB.ccpText);
-            this.Footnotes = this.Text.GetRange(FIB.ccpText, FIB.ccpFtn);
-            this.Headers = this.Text.GetRange(FIB.ccpText + FIB.ccpFtn, FIB.ccpHdr);
-            this.Annotations = this.Text.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr, FIB.ccpAtn);
-            this.Endnotes = this.Text.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr + FIB.ccpAtn, FIB.ccpEdn);
-            this.Textboxes = this.Text.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr + FIB.ccpAtn + FIB.ccpEdn, FIB.ccpTxbx);
-            this.HeaderTextboxes = this.Text.GetRange(FIB.ccpText + FIB.ccpFtn + FIB.ccpHdr + FIB.ccpAtn + FIB.ccpEdn + FIB.ccpTxbx, FIB.ccpHdrTxbx);
         }
 
         /// <summary>

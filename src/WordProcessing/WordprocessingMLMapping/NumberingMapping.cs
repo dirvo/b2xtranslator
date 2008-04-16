@@ -39,7 +39,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
     public class NumberingMapping : AbstractOpenXmlMapping,
           IMapping<ListTable>
     {
-        private WordDocument _doc;
+        private ConversionContext _ctx;
 
         private enum LevelJustification
         {
@@ -48,12 +48,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             right
         }
 
-        public NumberingMapping(NumberingDefinitionsPart numPart, 
-            XmlWriterSettings xws, 
-            WordDocument doc)
-            : base(XmlWriter.Create(numPart.GetStream(), xws))
+        public NumberingMapping(ConversionContext ctx)
+            : base(XmlWriter.Create(ctx.Docx.MainDocumentPart.AddNumberingDefinitionsPart().GetStream(), ctx.WriterSettings))
         {
-            _doc = doc;
+            _ctx = ctx;
         }
 
         public void Apply(ListTable rglst)
@@ -117,7 +115,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     if(styleIndex != ListData.ISTD_NIL)
                     {
                         _writer.WriteStartElement("w", "pStyle", OpenXmlNamespaces.WordprocessingML);
-                        _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, StyleSheetMapping.MakeStyleId(_doc.Styles.Styles[styleIndex].xstzName));
+                        _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, StyleSheetMapping.MakeStyleId(_ctx.Doc.Styles.Styles[styleIndex].xstzName));
                         _writer.WriteEndElement();
                     }
 
@@ -132,10 +130,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     _writer.WriteEndElement();
 
                     //pPr
-                    lvl.grpprlPapx.Convert(new ParagraphPropertiesMapping(_writer, _doc, null));
+                    lvl.grpprlPapx.Convert(new ParagraphPropertiesMapping(_writer, _ctx, null));
 
                     //rPr
-                    lvl.grpprlChpx.Convert(new CharacterPropertiesMapping(_writer, _doc));
+                    lvl.grpprlChpx.Convert(new CharacterPropertiesMapping(_writer, _ctx.Doc));
 
                     _writer.WriteEndElement();
                 }
@@ -145,9 +143,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
 
             //write the overrides
-            for (int i = 0; i < _doc.ListFormatOverrideTable.Count; i++)
+            for (int i = 0; i < _ctx.Doc.ListFormatOverrideTable.Count; i++)
             {
-                ListFormatOverride lfo = _doc.ListFormatOverrideTable[i];
+                ListFormatOverride lfo = _ctx.Doc.ListFormatOverrideTable[i];
 
                 //start num
                 _writer.WriteStartElement("w", "num", OpenXmlNamespaces.WordprocessingML);
@@ -233,7 +231,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 //ToDO: implement rest of the number formats
                 default:
                     return "decimal";
-                    break;
             }
         }
     }

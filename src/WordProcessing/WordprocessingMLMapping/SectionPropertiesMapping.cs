@@ -32,6 +32,7 @@ using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using DIaLOGIKa.b2xtranslator.DocFileFormat;
 using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
@@ -40,6 +41,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         IMapping<SectionPropertyExceptions>
     {
         private XmlElement _sectPr;
+        private int _sectNr;
+        private ConversionContext _ctx;
 
         private enum SectionType
         {
@@ -69,10 +72,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// properties to the given writer
         /// </summary>
         /// <param name="writer">The XmlWriter</param>
-        public SectionPropertiesMapping(XmlWriter writer)
+        public SectionPropertiesMapping(XmlWriter writer, ConversionContext ctx, int sectionNr)
             : base(writer)
         {
+            _ctx = ctx;
             _sectPr = _nodeFactory.CreateElement("w", "sectPr", OpenXmlNamespaces.WordprocessingML);
+            _sectNr = sectionNr;
         }
 
         /// <summary>
@@ -80,11 +85,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// the properties to a given node.
         /// </summary>
         /// <param name="sectPr">The sectPr node</param>
-        public SectionPropertiesMapping(XmlElement sectPr) 
+        public SectionPropertiesMapping(XmlElement sectPr, ConversionContext ctx, int sectionNr) 
             : base(null)
         {
+            _ctx = ctx;
             _nodeFactory = sectPr.OwnerDocument;
             _sectPr = sectPr;
+            _sectNr = sectionNr;
         }
 
         /// <summary>
@@ -99,6 +106,38 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             XmlElement cols = _nodeFactory.CreateElement("w", "cols", OpenXmlNamespaces.WordprocessingML);
             XmlElement pgBorders = _nodeFactory.CreateElement("w", "pgBorders", OpenXmlNamespaces.WordprocessingML);
             XmlElement paperSrc = _nodeFactory.CreateElement("w", "paperSrc", OpenXmlNamespaces.WordprocessingML);
+
+            //convert headers of this section
+            int headerCp = 0 + _ctx.Doc.FIB.ccpText;
+            Header oddHdr = _ctx.Doc.HeaderAndFooterTable.OddHeaders[_sectNr];
+            if (oddHdr.CharacterCount > 3)
+            {
+                HeaderPart oddPart = _ctx.Docx.MainDocumentPart.AddHeaderPart();
+                _ctx.Doc.Convert(new HeaderMapping(_ctx, oddPart, oddHdr));
+                appendRef(_sectPr, "headerReference", "default", oddPart.RelIdToString);
+            }
+            Header evenHdr = _ctx.Doc.HeaderAndFooterTable.EvenHeaders[_sectNr];
+            if (evenHdr.CharacterCount > 3)
+            {
+                HeaderPart evenPart = _ctx.Docx.MainDocumentPart.AddHeaderPart();
+                _ctx.Doc.Convert(new HeaderMapping(_ctx, evenPart, evenHdr));
+                appendRef(_sectPr, "headerReference", "even", evenPart.RelIdToString);
+            }
+            Header firstHdr = _ctx.Doc.HeaderAndFooterTable.FirstHeaders[_sectNr];
+            if (firstHdr.CharacterCount > 3)
+            {
+                HeaderPart firstPart = _ctx.Docx.MainDocumentPart.AddHeaderPart();
+                _ctx.Doc.Convert(new HeaderMapping(_ctx, firstPart, firstHdr));
+                appendRef(_sectPr, "headerReference", "first", firstPart.RelIdToString);
+            }
+
+            //append footer references
+            //if (_doc.Headers.FirstFooters[_sectNr].CharacterCount > 3)
+            //    appendRef(_sectPr,"footerReference", "first", "");
+            //if (_doc.Headers.EvenFooters[_sectNr].CharacterCount > 3)
+            //    appendRef(_sectPr, "footerReference", "even", "");
+            //if (_doc.Headers.OddFooters[_sectNr].CharacterCount > 3)
+            //    appendRef(_sectPr, "footerReference", "default", "");
 
             foreach (SinglePropertyModifier sprm in sepx.grpprl)
             {
@@ -235,6 +274,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0x301A:
                         appendValueElement(_sectPr, "vAlign", sprm.Arguments[0].ToString(), true);
                         break;
+
+
                 }
             }
 
@@ -279,6 +320,18 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 //write the properties
                 _sectPr.WriteTo(_writer);
             }
+        }
+
+        private void appendRef(XmlElement parent, string element, string refType, string refId)
+        {
+            XmlElement headerRef = _nodeFactory.CreateElement("w", element, OpenXmlNamespaces.WordprocessingML);
+            XmlAttribute headerRefId = _nodeFactory.CreateAttribute("r", "id", OpenXmlNamespaces.Relationships);
+            headerRefId.Value = refId;
+            headerRef.Attributes.Append(headerRefId);
+            XmlAttribute headerRefType = _nodeFactory.CreateAttribute("w", "type", OpenXmlNamespaces.WordprocessingML);
+            headerRefType.Value = refType;
+            headerRef.Attributes.Append(headerRefType);
+            parent.AppendChild(headerRef);
         }
     }
 }

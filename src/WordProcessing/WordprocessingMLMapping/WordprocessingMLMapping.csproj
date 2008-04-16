@@ -42,9 +42,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CharacterPropertiesMapping.cs" />
+    <Compile Include="ConversionContext.cs" />
     <Compile Include="DateMapping.cs" />
     <Compile Include="ApplicationPropertiesMapping.cs" />
     <Compile Include="FontTableMapping.cs" />
+    <Compile Include="HeaderMapping.cs" />
+    <Compile Include="MainDocumentMapping.cs" />
     <Compile Include="NumberingMapping.cs" />
     <Compile Include="ParagraphPropertiesMapping.cs" />
     <Compile Include="DocumentMapping.cs" />

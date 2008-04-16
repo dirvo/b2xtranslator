@@ -61,31 +61,59 @@ namespace DocTranslatorTest
             {
                 using (WordprocessingDocument docx = WordprocessingDocument.Create(file + "x", WordprocessingDocumentType.Document))
                 {
+                    //Setup the writer
                     XmlWriterSettings xws = new XmlWriterSettings();
                     xws.OmitXmlDeclaration = false;
                     xws.CloseOutput = true;
                     xws.Encoding = Encoding.UTF8;
                     xws.ConformanceLevel = ConformanceLevel.Document;
 
-                    //write docProps/app.xml
-                    //doc.DocumentProperties.Convert(new ApplicationPropertiesMapping(docx.AddAppPropertiesPart(), xws));
+                    //Build the context
+                    ConversionContext context = new ConversionContext(doc);
+                    context.WriterSettings = xws;
+                    context.Docx = docx;
 
                     //write settings.xml
-                    doc.DocumentProperties.Convert(new SettingsMapping(docx.MainDocumentPart.AddSettingsPart(), xws, doc.FIB));
+                    doc.DocumentProperties.Convert(new SettingsMapping(context));
 
-                    //Write styles.xml
-                    doc.Styles.Convert(new StyleSheetMapping(docx.MainDocumentPart.AddStyleDefinitionsPart(), xws, doc));
+                    //write styles.xml
+                    doc.Styles.Convert(new StyleSheetMapping(context));
 
-                    //Write numbering.xml
-                    doc.ListTable.Convert(new NumberingMapping(docx.MainDocumentPart.AddNumberingDefinitionsPart(), xws, doc));
+                    //write numbering.xml
+                    doc.ListTable.Convert(new NumberingMapping(context));
 
-                    //Write fontTable.xml
-                    doc.FontTable.Convert(new FontTableMapping(docx.MainDocumentPart.AddFontTablePart(), xws));
+                    //write fontTable.xml
+                    doc.FontTable.Convert(new FontTableMapping(context));
 
-                    //Write document.xml
-                    doc.Convert(new DocumentMapping(docx.MainDocumentPart, xws, 0, doc.FIB.ccpText));
+                    //write document.xml
+                    doc.Convert(new MainDocumentMapping(context));
 
-                    //
+                    ////write headers
+                    //int sectionCount = doc.Headers.OddHeaders.Count;
+                    //int headerCp = 0 + doc.FIB.ccpText;
+                    //for (int i = 0; i < sectionCount; i++)
+                    //{
+                    //    //odd headers
+                    //    if (doc.Headers.OddHeaders[i].CharacterCount > 3)
+                    //        doc.Convert(new HeaderMapping(
+                    //            context, headerCp + doc.Headers.OddHeaders[i].CharacterPosition,
+                    //            doc.Headers.OddHeaders[i].CharacterCount
+                    //            ));
+
+                    //    //even headers
+                    //    if(doc.Headers.EvenHeaders[i].CharacterCount > 3)
+                    //        doc.Convert(new HeaderMapping(
+                    //            context, headerCp + doc.Headers.EvenHeaders[i].CharacterPosition,
+                    //            doc.Headers.EvenHeaders[i].CharacterCount
+                    //            ));
+
+                    //    //first headers
+                    //    if(doc.Headers.FirstHeaders[i].CharacterCount > 3)
+                    //        doc.Convert(new HeaderMapping(
+                    //            context, headerCp + doc.Headers.FirstHeaders[i].CharacterPosition,
+                    //            doc.Headers.FirstHeaders[i].CharacterCount
+                    //            ));
+                    //}
 
                     DateTime end = DateTime.Now;
                     TimeSpan diff = end.Subtract(start);

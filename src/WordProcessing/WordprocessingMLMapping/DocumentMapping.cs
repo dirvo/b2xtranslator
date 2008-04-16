@@ -37,101 +37,23 @@ using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
-    public class DocumentMapping : 
+    public abstract class DocumentMapping : 
         AbstractOpenXmlMapping,
         IMapping<WordDocument>
     {
-        private Int32 _initialCp, _countOfChars;
-        private WordDocument _doc;
-        private MainDocumentPart _docPart;
-        private XmlWriterSettings _xws;
-        private ParagraphPropertyExceptions _lastValidPapx;
-        private SectionPropertyExceptions _lastValidSepx;
+        protected WordDocument _doc;
+        protected ConversionContext _ctx;
+        protected ParagraphPropertyExceptions _lastValidPapx;
+        protected SectionPropertyExceptions _lastValidSepx;
+        protected int _sectionCount = 1;
 
-        /// <summary>
-        /// A dictionary that contains all PAPX of the document.<br/>
-        /// The key is the FC at which the paragraph starts.<br/>
-        /// The value is the PAPX that formats the paragraph.
-        /// </summary>
-        private Dictionary<Int32, ParagraphPropertyExceptions> _allPapx;
-
-        /// <summary>
-        /// A dictionary that contains all SEPX of the document.<br/>
-        /// The key is the CP at which sections ends.<br/>
-        /// The value is the SEPX that formats the section.
-        /// </summary>
-        private Dictionary<Int32, SectionPropertyExceptions> _allSepx;
-
-        /// <summary>
-        /// Creates a new DocumentMapping that converts 
-        /// </summary>
-        /// <param name="docPart"></param>
-        /// <param name="xws"></param>
-        /// <param name="initialCp"></param>
-        public DocumentMapping(MainDocumentPart docPart, XmlWriterSettings xws, Int32 initialCp, Int32 countOfChars)
-            : base(XmlWriter.Create(docPart.GetStream(), xws))
+        public DocumentMapping(ConversionContext ctx, OpenXmlPart targetPart)
+            : base(XmlWriter.Create(targetPart.GetStream(), ctx.WriterSettings))
         {
-            _xws = xws;
-            _docPart = docPart;
-            _initialCp = initialCp;
-            _countOfChars = countOfChars;
+            _ctx = ctx;
         }
 
-        public void Apply(WordDocument doc)
-        {
-            _doc = doc;
-
-            //build a dictionaries of all PAPX
-            _allPapx = new Dictionary<Int32, ParagraphPropertyExceptions>();
-            for (int i = 0; i < _doc.AllPapxFkps.Count; i++)
-            {
-                for (int j = 0; j < _doc.AllPapxFkps[i].grppapx.Length; j++)
-                {
-                     _allPapx.Add(_doc.AllPapxFkps[i].rgfc[j], _doc.AllPapxFkps[i].grppapx[j]);
-                }
-            }
-            _lastValidPapx = _doc.AllPapxFkps[0].grppapx[0];
-
-            //build a dictionary of all SEPX
-            _allSepx = new Dictionary<Int32, SectionPropertyExceptions>();
-            for (int i = 0; i < _doc.SectionTable.grpsepx.Length; i++)
-            {
-                _allSepx.Add(_doc.SectionTable.rgfc[i + 1], _doc.SectionTable.grpsepx[i]);
-            }
-
-            _writer.WriteStartDocument();
-            _writer.WriteStartElement("w", "document", OpenXmlNamespaces.WordprocessingML);
-            _writer.WriteStartElement("w", "body", OpenXmlNamespaces.WordprocessingML);
-
-            Int32 cp = _initialCp;
-            while (cp < _initialCp + _countOfChars)
-            {
-                Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
-                ParagraphPropertyExceptions papx = findValidPapx(fc);
-                TableInfo tai = new TableInfo(papx);
-
-                if (tai.fInTable)
-                {
-                    //this PAPX is for a table
-                    cp = writeTable(cp);
-                }
-                else
-                {
-                    //this PAPX is for a normal paragraph
-                    cp = writeParagraph(cp);
-                }
-            }
-
-            //write the section properties of the body with the last SEPX
-            SectionPropertyExceptions lastSepx = _doc.SectionTable.grpsepx[_doc.SectionTable.grpsepx.Length - 1];
-            lastSepx.Convert(new SectionPropertiesMapping(_writer));
-
-            _writer.WriteEndElement();
-            _writer.WriteEndElement();
-            _writer.WriteEndDocument();
-
-            _writer.Flush();
-        }
+        public abstract void Apply(WordDocument doc);
 
         #region TableConversion
 
@@ -140,7 +62,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// </summary>
         /// <param name="cp">The cp at where the table begins</param>
         /// <returns>The character pointer to the first character after this table</returns>
-        private Int32 writeTable(Int32 initialCp)
+        protected Int32 writeTable(Int32 initialCp)
         {
             Int32 cp = initialCp;
             Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
@@ -181,7 +103,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// </summary>
         /// <param name="initialCp">The cp at where the row begins</param>
         /// <returns>The character pointer to the first character after this row</returns>
-        private Int32 writeTableRow(Int32 initialCp, List<Int16> grid)
+        protected Int32 writeTableRow(Int32 initialCp, List<Int16> grid)
         {
             Int32 cp = initialCp;
             Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
@@ -225,7 +147,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// </summary>
         /// <param name="initialCp"></param>
         /// <returns></returns>
-        private List<Int16> buildTableGrid(int initialCp)
+        protected List<Int16> buildTableGrid(int initialCp)
         {
             ParagraphPropertyExceptions backup = _lastValidPapx;
 
@@ -284,7 +206,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// <param name="initialCp">Some CP before the row end</param>
         /// <param name="rowEndCp">The CP of the next row end mark</param>
         /// <returns>The FC of the next row end mark</returns>
-        private Int32 findRowEndFc(int initialCp, out int rowEndCp)
+        protected Int32 findRowEndFc(int initialCp, out int rowEndCp)
         {
             int cp = initialCp;
             Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
@@ -312,7 +234,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// </summary>
         /// <param name="cp"></param>
         /// <returns></returns>
-        private Int32 findRowEndFc(int initialCp)
+        protected Int32 findRowEndFc(int initialCp)
         {
             int cp = initialCp;
             Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
@@ -342,7 +264,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// <param name="gridIndex">The index of this cell in the grid</param>
         /// <param name="gridIndex">The grid</param>
         /// <returns>The character pointer to the first character after this cell</returns>
-        private Int32 writeTableCell(Int32 initialCp, TablePropertyExceptions tapx, List<Int16> grid, ref int gridIndex, int cellIndex)
+        protected Int32 writeTableCell(Int32 initialCp, TablePropertyExceptions tapx, List<Int16> grid, ref int gridIndex, int cellIndex)
         {
             Int32 cp = initialCp;
 
@@ -383,7 +305,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// ends at the next paragraph end mark or section end mark
         /// </summary>
         /// <param name="cp"></param>
-        private Int32 writeParagraph(Int32 cp) 
+        protected Int32 writeParagraph(Int32 cp) 
         {
             //search the paragraph end
             Int32 cpParaEnd = cp;
@@ -417,7 +339,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// <param name="cpEnd"></param>
         /// <param name="sectionEnd">Set if this paragraph is the last paragraph of a section</param>
         /// <returns></returns>
-        private Int32 writeParagraph(Int32 initialCp, Int32 cpEnd, bool sectionEnd)
+        protected Int32 writeParagraph(Int32 initialCp, Int32 cpEnd, bool sectionEnd)
         {
             Int32 cp = initialCp;
             Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
@@ -440,12 +362,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 //this is the last paragraph of this section
                 //write properties with section properties
-                papx.Convert(new ParagraphPropertiesMapping(_writer, _doc, paraEndChpx, findValidSepx(cpEnd)));
+                papx.Convert(new ParagraphPropertiesMapping(_writer, _ctx, paraEndChpx, findValidSepx(cpEnd), _sectionCount));
+                _sectionCount++;
             }
             else
             {
                 //write properties
-                papx.Convert(new ParagraphPropertiesMapping(_writer, _doc, paraEndChpx));
+                papx.Convert(new ParagraphPropertiesMapping(_writer, _ctx, paraEndChpx));
             }
 
             //write a run for each CHPX
@@ -488,7 +411,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// <summary>
         /// Writes a run with the given characters and CHPX
         /// </summary>
-        private Int32 writeRun(List<char> chars, CharacterPropertyExceptions chpx, Int32 initialCp)
+        protected Int32 writeRun(List<char> chars, CharacterPropertyExceptions chpx, Int32 initialCp)
         {
             Int32 cp = initialCp;
 
@@ -543,7 +466,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// Writes the given text to the document
         /// </summary>
         /// <param name="chars"></param>
-        private Int32 writeText(List<char> chars, Int32 initialCp, bool writeDeletedText)
+        protected Int32 writeText(List<char> chars, Int32 initialCp, bool writeDeletedText)
         {
             Int32 cp = initialCp;
 
@@ -634,29 +557,31 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
         #endregion
 
+        #region HelpFunctions
+
         /// <summary>
         /// Copies the picture from the binary stream to the zip archive 
         /// and creates the relationships for the image.
         /// </summary>
         /// <param name="pict">The PictureDescriptor</param>
         /// <returns>The created ImagePart</returns>
-        private ImagePart copyPicture(PictureDescriptor pict)
+        protected ImagePart copyPicture(PictureDescriptor pict)
         {
             //create the image part
             ImagePart imgPart = null;
             switch (pict.Type)
             {
                 case PictureDescriptor.PictureType.jpg:
-                    imgPart = _docPart.AddImagePart(ImagePartType.Jpeg);
+                    imgPart = _ctx.Docx.MainDocumentPart.AddImagePart(ImagePartType.Jpeg);
                     break;
                 case PictureDescriptor.PictureType.png:
-                    imgPart = _docPart.AddImagePart(ImagePartType.Png);
+                    imgPart = _ctx.Docx.MainDocumentPart.AddImagePart(ImagePartType.Png);
                     break;
                 case PictureDescriptor.PictureType.wmf:
-                    imgPart = _docPart.AddImagePart(ImagePartType.Wmf);
+                    imgPart = _ctx.Docx.MainDocumentPart.AddImagePart(ImagePartType.Wmf);
                     break;
                 default:
-                    imgPart = _docPart.AddImagePart(ImagePartType.Png);
+                    imgPart = _ctx.Docx.MainDocumentPart.AddImagePart(ImagePartType.Png);
                     break;
             }
 
@@ -671,7 +596,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// </summary>
         /// <param name="chpx">The PAPX</param>
         /// <returns></returns>
-        private bool isOld(ParagraphPropertyExceptions papx)
+        protected bool isOld(ParagraphPropertyExceptions papx)
         {
             bool ret = false;
             foreach (SinglePropertyModifier sprm in papx.grpprl)
@@ -691,7 +616,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// </summary>
         /// <param name="chpx">The CHPX</param>
         /// <returns></returns>
-        private bool isSpecial(CharacterPropertyExceptions chpx)
+        protected bool isSpecial(CharacterPropertyExceptions chpx)
         {
             bool ret = false;
             foreach (SinglePropertyModifier sprm in chpx.grpprl)
@@ -723,7 +648,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// </summary>
         /// <param name="cp"></param>
         /// <returns></returns>
-        private bool isSectionEnd(Int32 cp)
+        protected bool isSectionEnd(Int32 cp)
         {
             bool result = false;
 
@@ -742,7 +667,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             return result;
         }
 
-        private Int32 getChpxRsid(CharacterPropertyExceptions chpx)
+        protected Int32 getChpxRsid(CharacterPropertyExceptions chpx)
         {
             Int32 ret = 0;
             foreach (SinglePropertyModifier sprm in chpx.grpprl)
@@ -763,13 +688,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// </summary>
         /// <param name="fc"></param>
         /// <returns></returns>
-        private ParagraphPropertyExceptions findValidPapx(Int32 fc)
+        protected ParagraphPropertyExceptions findValidPapx(Int32 fc)
         {
             ParagraphPropertyExceptions ret = null;
 
-            if(_allPapx.ContainsKey(fc))
+            if(_ctx.AllPapx.ContainsKey(fc))
             {
-                ret = _allPapx[fc];
+                ret = _ctx.AllPapx[fc];
                 _lastValidPapx = ret;
             }
             else
@@ -785,13 +710,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// </summary>
         /// <param name="cp"></param>
         /// <returns></returns>
-        private SectionPropertyExceptions findValidSepx(Int32 cp)
+        protected SectionPropertyExceptions findValidSepx(Int32 cp)
         {
             SectionPropertyExceptions ret = null;
 
             try
             {
-                ret = _allSepx[cp];
+                ret = _ctx.AllSepx[cp];
                 _lastValidSepx = ret;
             }
             catch (KeyNotFoundException)
@@ -800,11 +725,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 //so the previous SEPX is valid for this cp
 
                 Int32 lastKey = _doc.SectionTable.rgfc[1];
-                foreach (Int32 key in _allSepx.Keys)
+                foreach (Int32 key in _ctx.AllSepx.Keys)
                 {
                     if (cp > lastKey && cp < key)
                     {
-                        ret = _allSepx[lastKey];
+                        ret = _ctx.AllSepx[lastKey];
                         break;
                     }
                     else
@@ -816,5 +741,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             return ret;
         }
+
+        #endregion
     }
 }

@@ -29,10 +29,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
         private FileInformationBlock _fib;
 
-        public SettingsMapping(SettingsPart settingsPart, XmlWriterSettings xws, FileInformationBlock fib)
-            : base(XmlWriter.Create(settingsPart.GetStream(), xws))
+        public SettingsMapping(ConversionContext ctx)
+            : base(XmlWriter.Create(ctx.Docx.MainDocumentPart.AddSettingsPart().GetStream(), ctx.WriterSettings))
         {
-            _fib = fib;
+            _fib = ctx.Doc.FIB;
         }
 
         public void Apply(DocumentProperties dop)

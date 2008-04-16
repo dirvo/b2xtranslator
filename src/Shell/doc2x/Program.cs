@@ -92,29 +92,32 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                 {
                     using (WordprocessingDocument docx = WordprocessingDocument.Create(outputFile, WordprocessingDocumentType.Document))
                     {
+                        //Setup the writer
                         XmlWriterSettings xws = new XmlWriterSettings();
                         xws.OmitXmlDeclaration = false;
                         xws.CloseOutput = true;
-                        xws.Encoding = Encoding.UTF8;                  
+                        xws.Encoding = Encoding.UTF8;
                         xws.ConformanceLevel = ConformanceLevel.Document;
 
-                        //write docProps/app.xml
-                        //doc.DocumentProperties.Convert(new ApplicationPropertiesMapping(docx.AddAppPropertiesPart(), xws));
+                        //Setup the context
+                        ConversionContext context = new ConversionContext(doc);
+                        context.WriterSettings = xws;
+                        context.Docx = docx;
 
                         //write settings.xml
-                        doc.DocumentProperties.Convert(new SettingsMapping(docx.MainDocumentPart.AddSettingsPart(), xws, doc.FIB));
+                        doc.DocumentProperties.Convert(new SettingsMapping(context));
 
                         //Write styles.xml
-                        doc.Styles.Convert(new StyleSheetMapping(docx.MainDocumentPart.AddStyleDefinitionsPart(), xws, doc));
+                        doc.Styles.Convert(new StyleSheetMapping(context));
 
                         //Write numbering.xml
-                        doc.ListTable.Convert(new NumberingMapping(docx.MainDocumentPart.AddNumberingDefinitionsPart(), xws, doc));
+                        doc.ListTable.Convert(new NumberingMapping(context));
 
                         //Write fontTable.xml
-                        doc.FontTable.Convert(new FontTableMapping(docx.MainDocumentPart.AddFontTablePart(), xws));
+                        doc.FontTable.Convert(new FontTableMapping(context));
 
                         //Write document.xml
-                        doc.Convert(new DocumentMapping(docx.MainDocumentPart, xws, 0, doc.FIB.ccpText));
+                        doc.Convert(new MainDocumentMapping(context));
 
                         DateTime end = DateTime.Now;
                         TimeSpan diff = end.Subtract(start);

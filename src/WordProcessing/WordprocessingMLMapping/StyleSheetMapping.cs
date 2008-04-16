@@ -41,12 +41,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         : AbstractOpenXmlMapping,
           IMapping<StyleSheet>
     {
-        WordDocument _doc;
+        ConversionContext _ctx;
 
-        public StyleSheetMapping(StyleDefinitionsPart stylePart, XmlWriterSettings xws, WordDocument doc)
-            : base(XmlWriter.Create(stylePart.GetStream(), xws))
+        public StyleSheetMapping(ConversionContext ctx)
+            : base(XmlWriter.Create(ctx.Docx.MainDocumentPart.AddStyleDefinitionsPart().GetStream(), ctx.WriterSettings))
         {
-            _doc = doc;
+            _ctx = ctx;
         }
 
         public void Apply(StyleSheet sheet)
@@ -113,13 +113,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //write paragraph properties
                     if (style.papx != null)
                     {
-                        style.papx.Convert(new ParagraphPropertiesMapping(_writer, _doc, null));
+                        style.papx.Convert(new ParagraphPropertiesMapping(_writer, _ctx, null));
                     }
                     
                     //write character properties
                     if (style.chpx != null)
                     {
-                        style.chpx.Convert(new CharacterPropertiesMapping(_writer, _doc));
+                        style.chpx.Convert(new CharacterPropertiesMapping(_writer, _ctx.Doc));
                     }
 
                     //write table properties
@@ -145,10 +145,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             //write default fonts
             _writer.WriteStartElement("w", "rFonts", OpenXmlNamespaces.WordprocessingML);
-            _writer.WriteAttributeString("w", "ascii", OpenXmlNamespaces.WordprocessingML, _doc.FontTable[sheet.stshi.rgftcStandardChpStsh[0]].xszFtn);
-            _writer.WriteAttributeString("w", "eastAsia", OpenXmlNamespaces.WordprocessingML, _doc.FontTable[sheet.stshi.rgftcStandardChpStsh[1]].xszFtn);
-            _writer.WriteAttributeString("w", "hAnsi", OpenXmlNamespaces.WordprocessingML, _doc.FontTable[sheet.stshi.rgftcStandardChpStsh[2]].xszFtn);
-            _writer.WriteAttributeString("w", "cs", OpenXmlNamespaces.WordprocessingML, _doc.FontTable[sheet.stshi.rgftcStandardChpStsh[3]].xszFtn);
+            _writer.WriteAttributeString("w", "ascii", OpenXmlNamespaces.WordprocessingML, _ctx.Doc.FontTable[sheet.stshi.rgftcStandardChpStsh[0]].xszFtn);
+            _writer.WriteAttributeString("w", "eastAsia", OpenXmlNamespaces.WordprocessingML, _ctx.Doc.FontTable[sheet.stshi.rgftcStandardChpStsh[1]].xszFtn);
+            _writer.WriteAttributeString("w", "hAnsi", OpenXmlNamespaces.WordprocessingML, _ctx.Doc.FontTable[sheet.stshi.rgftcStandardChpStsh[2]].xszFtn);
+            _writer.WriteAttributeString("w", "cs", OpenXmlNamespaces.WordprocessingML, _ctx.Doc.FontTable[sheet.stshi.rgftcStandardChpStsh[3]].xszFtn);
             
             _writer.WriteEndElement();
 

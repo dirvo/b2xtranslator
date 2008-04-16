@@ -39,6 +39,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
         protected SettingsPart _settingsPart;
 
         protected int _imagePartCount = 0;
+        protected int _headerPartCount = 0;
         
         public MainDocumentPart(OpenXmlPartContainer parent)
             : base(parent)
@@ -94,8 +95,6 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
             get { return _fontTablePart; }
         }
 
-
-
         public NumberingDefinitionsPart AddNumberingDefinitionsPart()
         {
             _numberingDefinitionsPart = new NumberingDefinitionsPart(this);
@@ -110,6 +109,11 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
         public ImagePart AddImagePart(ImagePartType type)
         {
             return this.AddPart(new ImagePart(type, this, ++_imagePartCount));
+        }
+
+        public HeaderPart AddHeaderPart()
+        {
+            return this.AddPart(new HeaderPart(this, ++_headerPartCount));
         }
     }
 }

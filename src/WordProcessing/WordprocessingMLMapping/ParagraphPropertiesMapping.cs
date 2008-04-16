@@ -38,26 +38,33 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
     public class ParagraphPropertiesMapping : PropertiesMapping,
           IMapping<ParagraphPropertyExceptions>
     {
-        private WordDocument _doc;
+        private ConversionContext _ctx;
         private XmlElement _pPr;
         private SectionPropertyExceptions _sepx;
         private CharacterPropertyExceptions _paraEndChpx;
+        private int _sectionNr;
 
-        public ParagraphPropertiesMapping(XmlWriter writer, WordDocument doc, CharacterPropertyExceptions paraEndChpx)
+        public ParagraphPropertiesMapping(XmlWriter writer, ConversionContext ctx, CharacterPropertyExceptions paraEndChpx)
             : base(writer)
         {
             _pPr = _nodeFactory.CreateElement("w", "pPr", OpenXmlNamespaces.WordprocessingML);
             _paraEndChpx = paraEndChpx;
-            _doc = doc;
+            _ctx = ctx;
         }
 
-        public ParagraphPropertiesMapping(XmlWriter writer, WordDocument doc, CharacterPropertyExceptions paraEndChpx, SectionPropertyExceptions sepx)
+        public ParagraphPropertiesMapping(
+            XmlWriter writer, 
+            ConversionContext ctx,
+            CharacterPropertyExceptions paraEndChpx, 
+            SectionPropertyExceptions sepx,
+            int sectionNr)
             : base(writer)
         {
             _pPr = _nodeFactory.CreateElement("w", "pPr", OpenXmlNamespaces.WordprocessingML);
             _paraEndChpx = paraEndChpx;
             _sepx = sepx;
-            _doc = doc;
+            _ctx = ctx;
+            _sectionNr = sectionNr;
         }
 
         public void Apply(ParagraphPropertyExceptions papx)
@@ -73,7 +80,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 XmlElement pStyle = _nodeFactory.CreateElement("w", "pStyle", OpenXmlNamespaces.WordprocessingML);
                 XmlAttribute styleId = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
-                styleId.Value = StyleSheetMapping.MakeStyleId(_doc.Styles.Styles[papx.istd].xstzName);
+                styleId.Value = StyleSheetMapping.MakeStyleId(_ctx.Doc.Styles.Styles[papx.istd].xstzName);
                 pStyle.Attributes.Append(styleId);
                 _pPr.AppendChild(pStyle);
             }
@@ -84,7 +91,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 XmlElement rPr = _nodeFactory.CreateElement("w", "rPr", OpenXmlNamespaces.WordprocessingML);
                 
                 //append properties
-                _paraEndChpx.Convert(new CharacterPropertiesMapping(rPr, _doc));
+                _paraEndChpx.Convert(new CharacterPropertiesMapping(rPr, _ctx.Doc));
                 
                 //append delete infos
                 if (_paraEndChpx.IsDeleted)
@@ -357,7 +364,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             if (_sepx != null)
             {
                 XmlElement sectPr = _nodeFactory.CreateElement("w", "sectPr", OpenXmlNamespaces.WordprocessingML);
-                _sepx.Convert(new SectionPropertiesMapping(sectPr));
+                _sepx.Convert(new SectionPropertiesMapping(sectPr, _ctx, _sectionNr));
                 _pPr.AppendChild(sectPr);
             }
 
