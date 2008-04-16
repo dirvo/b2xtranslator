@@ -117,7 +117,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public HeaderAndFooterTable HeaderAndFooterTable;
 
-        public WordDocument(StorageReader reader)
+        public WordDocument(StructuredStorageFile reader)
         {
             this.WordDocumentStream = reader.GetStream("WordDocument");
 

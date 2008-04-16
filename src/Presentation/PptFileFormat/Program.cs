@@ -24,7 +24,7 @@ namespace PptFileFormat
             ProcessingFile procFile = new ProcessingFile(inputFile);
             
             //open the reader
-            StorageReader reader = new StorageReader(procFile.File.FullName);
+            StructuredStorageFile reader = new StructuredStorageFile(procFile.File.FullName);
 
             foreach (DirectoryEntry entry in reader.AllStreamEntries)
                 Console.WriteLine(entry.Path);

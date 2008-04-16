@@ -68,12 +68,12 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
 
         public void DoTheMagic()
         {
-            StorageReader reader = null;
+            StructuredStorageFile reader = null;
             StreamWriter sw = null;
             try
             {
-                reader = new StorageReader(this.Options.InputDocument);
-                VirtualStreamReader workbookReader = new VirtualStreamReader(reader.GetStream("Workbook"));
+                reader = new StructuredStorageFile(this.Options.InputDocument);
+                IStreamReader workbookReader = new VirtualStreamReader(reader.GetStream("Workbook"));
 
                 if (this.Options.Mode == BiffViewerMode.File)
                 {
@@ -139,7 +139,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             Util.VisitLink(this.Options.OutputFileName);
         }
 
-        protected void PrintText(StreamWriter sw, VirtualStreamReader workbookReader)
+        protected void PrintText(StreamWriter sw, IStreamReader workbookReader)
         {
             BiffHeader bh;
 
@@ -191,7 +191,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             }
         }
 
-        protected void PrintHtml(StreamWriter sw, VirtualStreamReader workbookReader)
+        protected void PrintHtml(StreamWriter sw, IStreamReader workbookReader)
         {
             BiffHeader bh;
 

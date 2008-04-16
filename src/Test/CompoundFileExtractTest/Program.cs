@@ -64,17 +64,17 @@ namespace CompoundFileExtractTest
             foreach (string file in args)
             {
 
-                StorageReader storageReader = null;
+                StructuredStorageFile storageReader = null;
                 DateTime begin = DateTime.Now;
                 TimeSpan extractionTime = new TimeSpan();
 
                 try
                 {                   
                     // init StorageReader
-                    storageReader = new StorageReader(file);
+                    storageReader = new StructuredStorageFile(file);
 
                     // read stream entries
-                    ReadOnlyCollection<DirectoryEntry> streamEntries = storageReader.AllStreamEntries;
+                    ICollection<DirectoryEntry> streamEntries = storageReader.AllStreamEntries;
 
                     // create valid path names
                     Dictionary<string, string> PathNames = new Dictionary<string, string>();
@@ -97,7 +97,7 @@ namespace CompoundFileExtractTest
                     foreach (string key in PathNames.Keys)
                     {
                         // get virtual stream by path name
-                        VirtualStreamReader streamReader = new VirtualStreamReader(storageReader.GetStream(key));
+                        IStreamReader streamReader = new VirtualStreamReader(storageReader.GetStream(key));
 
                         // read bytes from stream, write them back to disk
                         FileStream fs = new FileStream(outputDir + "\\" + PathNames[key] + ".stream", FileMode.Create);

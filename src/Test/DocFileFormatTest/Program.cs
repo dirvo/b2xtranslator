@@ -37,7 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
 {
     class Program
     {
-        private static StorageReader reader;
+        private static StructuredStorageFile reader;
         private static VirtualStream wordDocumentStream, tableStream, dataStream;
         private static FileInformationBlock fib;
         private static string file, method;
@@ -49,7 +49,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
                 //parse arguments
                 parseArgs(args);
 
-                reader = new StorageReader(file);
+                reader = new StructuredStorageFile(file);
 
                 //get the "WordDocument" stream
                 wordDocumentStream = reader.GetStream("WordDocument");

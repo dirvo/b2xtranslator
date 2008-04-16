@@ -298,8 +298,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RecordNumbers.cs" />
     <Compile Include="StreamExtractor.cs" />
+    <Compile Include="XlsDocument.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\CommonTranslatorLib\CommonTranslatorLib.csproj">
+      <Project>{0F0F6BAF-BC5D-4DC6-AE53-8257305EE5CA}</Project>
+      <Name>CommonTranslatorLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Common\StructuredStorageReader\StructuredStorageReader.csproj">
       <Project>{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}</Project>
       <Name>StructuredStorageReader</Name>

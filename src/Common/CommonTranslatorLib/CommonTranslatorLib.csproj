@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractOpenXmlMapping.cs" />
+    <Compile Include="BinaryDocument.cs" />
     <Compile Include="IVisitable.cs" />
     <Compile Include="IMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

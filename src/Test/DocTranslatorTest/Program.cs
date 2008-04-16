@@ -51,7 +51,7 @@ namespace DocTranslatorTest
             DateTime start = DateTime.Now;
 
             //open the reader
-            StorageReader reader = new StorageReader(file);
+            StructuredStorageFile reader = new StructuredStorageFile(file);
 
             //parse the document
             WordDocument doc = new WordDocument(reader);

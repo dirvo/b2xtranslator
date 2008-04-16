@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 
 [assembly: CLSCompliant(false)]
 
@@ -39,7 +40,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
     /// Provides methods for accessing a compound file.
     /// Author: math
     /// </summary>
-    public class StorageReader
+    public class StructuredStorageFile : IStructuredStorageFile
     {        
 
         FileHandler _fileHandler;
@@ -47,6 +48,8 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         Fat _fat;
         MiniFat _miniFat;
         private DirectoryTree _directory;
+
+        private bool _disposed = false;
 
 
         ///// <summary>
@@ -70,7 +73,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// <summary>
         /// Collection of all entry names contained in a compound file
         /// </summary>        
-        public ReadOnlyCollection<string> FullNameOfAllEntries
+        public ICollection<string> FullNameOfAllEntries
         {
             get { return _directory.GetPathsOfAllEntries(); }
         }
@@ -79,7 +82,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// <summary>
         /// Collection of all stream entry names contained in a compound file
         /// </summary>        
-        public ReadOnlyCollection<string> FullNameOfAllStreamEntries
+        public ICollection<string> FullNameOfAllStreamEntries
         {
             get { return _directory.GetPathsOfAllStreamEntries(); }
         }
@@ -88,7 +91,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// <summary>
         /// Collection of all entries contained in a compound file
         /// </summary> 
-        public ReadOnlyCollection<DirectoryEntry> AllEntries
+        public ICollection<DirectoryEntry> AllEntries
         {
             get { return _directory.GetAllEntries(); }
         }
@@ -97,7 +100,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// <summary> 
         /// Collection of all stream entries contained in a compound file
         /// </summary> 
-        public ReadOnlyCollection<DirectoryEntry> AllStreamEntries
+        public ICollection<DirectoryEntry> AllStreamEntries
         {
             get { return _directory.GetAllStreamEntries(); }
         }
@@ -107,7 +110,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// Initalizes a handle to a compound file with the given name
         /// </summary>
         /// <param name="fileName">The name of the file including its path</param>
-        public StorageReader(string fileName)
+        public StructuredStorageFile(string fileName)
         {
             _fileHandler = new FileHandler(fileName);
             _header = new Header(_fileHandler);
@@ -163,5 +166,29 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             _fileHandler.CloseFile();
         }
 
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        public void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    // Dispose managed resources : none here
+                }
+                this.Close();
+                _disposed = true;
+            }
+        }
+
+        ~StructuredStorageFile()
+        {
+            Dispose(false);
+        }
     }
 }

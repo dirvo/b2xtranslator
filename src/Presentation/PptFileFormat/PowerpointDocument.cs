@@ -43,7 +43,7 @@ namespace PptFileFormat
 
         public List<Record> RootRecords = new List<Record>();
 
-        public PowerpointDocument(StorageReader reader)
+        public PowerpointDocument(StructuredStorageFile reader)
         {
             this.PowerpointDocumentStream = reader.GetStream("PowerPoint Document");
 

@@ -40,8 +40,8 @@
   <ItemGroup>
     <Compile Include="AbstractFat.cs" />
     <Compile Include="IStreamReader.cs" />
+    <Compile Include="IStructuredStorageFile.cs" />
     <Compile Include="MaskingHandler.cs" />
-    <Compile Include="StorageReader.cs" />
     <Compile Include="InternalBitConverter.cs" />
     <Compile Include="DirectoryTree.cs" />
     <Compile Include="Exceptions.cs" />
@@ -51,6 +51,7 @@
     <Compile Include="Header.cs" />
     <Compile Include="MiniFat.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StructuredStorageFile.cs" />
     <Compile Include="VirtualStream.cs" />
     <Compile Include="DirectoryEntry.cs" />
     <Compile Include="VirtualStreamReader.cs" />

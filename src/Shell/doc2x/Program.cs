@@ -83,7 +83,7 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                 DateTime start = DateTime.Now;
 
                 //open the reader
-                StorageReader reader = new StorageReader(procFile.File.FullName);
+                StructuredStorageFile reader = new StructuredStorageFile(procFile.File.FullName);
 
                 //parse the document
                 WordDocument doc = new WordDocument(reader);

@@ -11,7 +11,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
     public class StreamExtractor
     {
-        StorageReader storageReader; 
+        StructuredStorageFile storageReader; 
 
         // some const declarations 
         public const string SUMMARYINFORMATIONSEARCH = "SummaryInformation";
@@ -48,9 +48,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             try
             {
                 // init StorageReader
-                storageReader = new StorageReader(this.fileName);
+                storageReader = new StructuredStorageFile(this.fileName);
                 // read stream entries
-                ReadOnlyCollection<DirectoryEntry> streamEntries = storageReader.AllStreamEntries;
+                ICollection<DirectoryEntry> streamEntries = storageReader.AllStreamEntries;
 
                 foreach (object var in streamEntries)
                 {
