@@ -79,6 +79,11 @@ namespace DIaLOGIKa.b2xtranslator.Tools
             return value;
         }
 
+        public static UInt16 BitmaskToUInt16(UInt32 value, UInt32 mask)
+        {
+            return Convert.ToUInt16(BitmaskToUInt32(value, mask));
+        }
+
         public static bool IntToBool(int value)
         {
             if (value == 1)
