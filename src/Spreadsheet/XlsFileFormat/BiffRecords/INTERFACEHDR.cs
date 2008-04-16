@@ -37,6 +37,12 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     {
         public const RecordNumber ID = RecordNumber.INTERFACEHDR;
 
+        /// <summary>
+        /// Code page the file is saved in:
+        ///     01B5h (437 dec.) = IBM PC (Multiplan)
+        ///     8000h (32768 dec.) = Apple Macintosh
+        ///     04E4h (1252 dec.) = ANSI (Microsoft Windows)
+        /// </summary>
         public UInt16 cv;
 
         /// <summary>

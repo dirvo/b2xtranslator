@@ -39,15 +39,20 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
 
     public class BiffViewerOptions
     {
-        private string _tempFileName = "";
+        private string _tmpFileName = "";
+        private string _tmpWorkFolder = "";
 
         ~BiffViewerOptions()
         {
             // cleanup temp folder
-            if (!String.IsNullOrEmpty(_tempFileName))
+            if (!String.IsNullOrEmpty(_tmpFileName))
             {
-                FileInfo fi = new FileInfo(this.OutputFileName);
-                //Directory.Delete(fi.DirectoryName, true);
+                File.Delete(_tmpFileName);
+            }
+
+            if (!String.IsNullOrEmpty(_tmpWorkFolder))
+            {
+                Directory.Delete(_tmpWorkFolder, true);
             }
         }
 
@@ -129,28 +134,29 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
 
         public string GetTempFileName(string inputDocument)
         {
-            string workFolder;
-
-            if (String.IsNullOrEmpty(_tempFileName))
+            if (String.IsNullOrEmpty(_tmpFileName))
             {
+                // WARNING!!!
+                // only use a temporary folder
+                // _tmpWorkFolder and all its contents is deleted in the destructor!!!
                 do
                 {
-                    workFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+                    _tmpWorkFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
                 }
-                while (Directory.Exists(workFolder));
-                Directory.CreateDirectory(workFolder);
+                while (Directory.Exists(_tmpWorkFolder));
+                Directory.CreateDirectory(_tmpWorkFolder);
 
                 FileInfo fi = new FileInfo(inputDocument);
                 if (this.PrintTextOnly)
                 {
-                    _tempFileName = Path.Combine(workFolder, fi.Name + ".txt");
+                    _tmpFileName = Path.Combine(_tmpWorkFolder, fi.Name + ".txt");
                 }
                 else
                 {
-                    _tempFileName = Path.Combine(workFolder, fi.Name + ".html");
+                    _tmpFileName = Path.Combine(_tmpWorkFolder, fi.Name + ".html");
                 }
             }
-            return _tempFileName;
+            return _tmpFileName;
         }
     }
 }

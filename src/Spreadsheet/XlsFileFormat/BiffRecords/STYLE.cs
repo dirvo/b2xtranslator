@@ -33,10 +33,65 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
+    /// <summary>
+    /// STYLE: Style Information (293h)
+    /// 
+    /// Each style in an Excel workbook, whether built-in or user-defined, requires a style 
+    /// record in the BIFF file. When Excel saves the workbook, it writes the STYLE records 
+    /// in alphabetical order, which is the order in which the styles appear in the drop-down list box.
+    /// </summary>
     public class STYLE : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.STYLE;
 
+        /// <summary>
+        /// Index to the style XF record.
+        /// 
+        /// Note: ixfe uses only the low-order 12 bits of the field (bits 11–0). 
+        /// Bits 12, 13, and 14 are unused, and bit 15 ( fBuiltIn ) is 1 for built-in styles.
+        /// </summary>
+        public UInt16 ixfe;
+                                
+        /// <summary>
+        /// Built-in style numbers:
+        ///     =00h Normal 
+        ///     =01h RowLevel_n
+        ///     =02h ColLevel_n
+        ///     =03h Comma
+        ///     =04h Currency
+        ///     =05h Percent
+        ///     =06h Comma[0]
+        ///     =07h Currency[0] 
+        /// 
+        /// The automatic outline styles — RowLevel_1 through RowLevel_7, 
+        /// and ColLevel_1 through ColLevel_7 — are stored by setting istyBuiltIn to 01h or 02h 
+        /// and then setting iLevel to the style level minus 1. 
+        /// If the style is not an automatic outline style, ignore this field. 
+        /// 
+        /// Note: for built-in styles only
+        /// </summary>
+        public byte istyBuiltIn;
+
+        /// <summary>
+        /// Level of the outline style RowLevel_n or ColLevel_n (see text) (for built-in styles only).
+        /// </summary>
+        public byte iLevel;
+
+        /// <summary>
+        /// Length of the style name (for non-built-in styles only).
+        /// </summary>
+        public byte cch;
+
+        /// <summary>
+        /// Style name (for non-built-in styles only).
+        /// </summary>
+        public byte[] rgch;
+
+        /// <summary>
+        /// A flag indicating whether this is a built-in style
+        /// </summary>
+        public bool fBuiltin;
+ 
         public STYLE(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
@@ -44,7 +99,23 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            ixfe = reader.ReadUInt16();
+            fBuiltin = Utils.BitmaskToBool(ixfe, 0x8000);
+
+            // only bit 11-0 are used
+            // TODO: check if the filtering mask need to be applied or not
+            ixfe = (UInt16)(ixfe & 0x0FFF);
+
+            if (fBuiltin)
+            {
+                istyBuiltIn = reader.ReadByte();
+                iLevel = reader.ReadByte();
+            }
+            else
+            {
+                cch = reader.ReadByte();
+                rgch = reader.ReadBytes(cch);
+            }
             
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 

@@ -47,7 +47,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
         private BiffViewerOptions _options;
         private BackgroundWorker _backgroundWorker;
         private bool _isCancelled = false;
-
+        
         public BiffViewerOptions Options
         {
             get { return _options; }
@@ -84,7 +84,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
                     sw = new StreamWriter(Console.OpenStandardOutput());
                 }
                 sw.AutoFlush = true;
-                
+
                 if (this.Options.PrintTextOnly)
                 {
                     PrintText(sw, workbookReader);
@@ -97,6 +97,17 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
                 if (!_isCancelled && this.Options.ShowInBrowser && this.Options.Mode == BiffViewerMode.File)
                 {
                     Util.VisitLink(this.Options.OutputFileName);
+                }
+            }
+            catch (MagicNumberException ex)
+            {
+                if (this.Options.ShowErrors)
+                {
+                    MessageBox.Show(string.Format("This file is not a valid Excel file ({0})", ex.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    Console.WriteLine(ex.ToString());
                 }
             }
             catch (Exception ex)

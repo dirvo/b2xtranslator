@@ -40,10 +40,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
-            this.toolStripStatusLabelAbout = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabelAbout = new System.Windows.Forms.ToolStripStatusLabel();
             this.tableLayoutPanel.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -59,7 +59,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             this.cmdCreate.MinimumSize = new System.Drawing.Size(75, 23);
             this.cmdCreate.Name = "cmdCreate";
             this.cmdCreate.Size = new System.Drawing.Size(75, 23);
-            this.cmdCreate.TabIndex = 0;
+            this.cmdCreate.TabIndex = 5;
             this.cmdCreate.Text = "&Create";
             this.cmdCreate.UseVisualStyleBackColor = true;
             this.cmdCreate.Click += new System.EventHandler(this.cmdCreate_Click);
@@ -73,7 +73,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             this.cmdExit.MinimumSize = new System.Drawing.Size(75, 23);
             this.cmdExit.Name = "cmdExit";
             this.cmdExit.Size = new System.Drawing.Size(75, 23);
-            this.cmdExit.TabIndex = 1;
+            this.cmdExit.TabIndex = 6;
             this.cmdExit.Text = "&Exit";
             this.cmdExit.UseVisualStyleBackColor = true;
             this.cmdExit.Click += new System.EventHandler(this.cmdExit_Click);
@@ -87,7 +87,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             this.cmdBrowse.MinimumSize = new System.Drawing.Size(75, 23);
             this.cmdBrowse.Name = "cmdBrowse";
             this.cmdBrowse.Size = new System.Drawing.Size(75, 23);
-            this.cmdBrowse.TabIndex = 2;
+            this.cmdBrowse.TabIndex = 4;
             this.cmdBrowse.Text = "&Browse...";
             this.cmdBrowse.UseVisualStyleBackColor = true;
             this.cmdBrowse.Click += new System.EventHandler(this.cmdBrowse_Click);
@@ -109,10 +109,15 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             this.tableLayoutPanel.SetColumnSpan(this.labelDescription, 4);
             this.labelDescription.Location = new System.Drawing.Point(3, 0);
             this.labelDescription.Name = "labelDescription";
-            this.labelDescription.Size = new System.Drawing.Size(467, 13);
-            this.labelDescription.TabIndex = 4;
-            this.labelDescription.Text = "This tool creates an interactive list of BIFF records contained in a binary Excel" +
-                " 97-2003 document.";
+            this.labelDescription.Size = new System.Drawing.Size(477, 13);
+            this.labelDescription.TabIndex = 1;
+            this.labelDescription.Text = "BiffView++ creates an interactive list of BIFF records contained in a binary Exce" +
+                "l 97-2003 document.";
+            // 
+            // openFileDialog
+            // 
+            this.openFileDialog.DefaultExt = "xls";
+            this.openFileDialog.Filter = "Excel files (*.xls)|*.xls|All files (*.*)|*.*";
             // 
             // tableLayoutPanel
             // 
@@ -146,7 +151,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             this.linkWeb.Location = new System.Drawing.Point(3, 20);
             this.linkWeb.Name = "linkWeb";
             this.linkWeb.Size = new System.Drawing.Size(356, 17);
-            this.linkWeb.TabIndex = 5;
+            this.linkWeb.TabIndex = 2;
             this.linkWeb.TabStop = true;
             this.linkWeb.Text = "For further information please see: http://b2xtranslator.sourceforge.net";
             this.linkWeb.UseCompatibleTextRendering = true;
@@ -172,7 +177,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(535, 22);
             this.statusStrip1.SizingGrip = false;
-            this.statusStrip1.TabIndex = 6;
+            this.statusStrip1.TabIndex = 7;
             // 
             // toolStripStatusLabel1
             // 
@@ -182,11 +187,23 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             this.toolStripStatusLabel1.Text = "Please select a file.";
             this.toolStripStatusLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // toolStripStatusLabel2
+            // 
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(41, 17);
+            this.toolStripStatusLabel2.Spring = true;
+            // 
             // toolStripProgressBar1
             // 
             this.toolStripProgressBar1.Name = "toolStripProgressBar1";
             this.toolStripProgressBar1.Size = new System.Drawing.Size(200, 16);
             this.toolStripProgressBar1.Step = 5;
+            // 
+            // toolStripStatusLabel3
+            // 
+            this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
+            this.toolStripStatusLabel3.Size = new System.Drawing.Size(41, 17);
+            this.toolStripStatusLabel3.Spring = true;
             // 
             // toolStripStatusLabelAbout
             // 
@@ -197,18 +214,6 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             this.toolStripStatusLabelAbout.Text = "About";
             this.toolStripStatusLabelAbout.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.toolStripStatusLabelAbout.Click += new System.EventHandler(this.toolStripStatusLabelAbout_Click);
-            // 
-            // toolStripStatusLabel2
-            // 
-            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(41, 17);
-            this.toolStripStatusLabel2.Spring = true;
-            // 
-            // toolStripStatusLabel3
-            // 
-            this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
-            this.toolStripStatusLabel3.Size = new System.Drawing.Size(41, 17);
-            this.toolStripStatusLabel3.Spring = true;
             // 
             // MainWindow
             // 

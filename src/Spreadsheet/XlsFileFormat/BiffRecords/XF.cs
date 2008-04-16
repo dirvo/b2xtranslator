@@ -33,6 +33,22 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
+    /// <summary>
+    /// XF: Extended Format (E0h)
+    /// 
+    /// The XF record stores formatting properties. There are two different XF records, 
+    /// one for cell records and another for style records. The fStyle bit is true if 
+    /// the XF is a style XF . The ixfe of a cell record (BLANK, LABEL, NUMBER, RK, and so on)
+    /// points to a cell XF record, and the ixfe of a STYLE record points to a style XF record. 
+    /// 
+    /// Note: in previous BIFF versions, the record number for the XF record was 43h.
+    /// 
+    /// Prior to BIFF5, all number format information was included in FORMAT records in 
+    /// the BIFF file. Beginning with BIFF5, many of the built-in number formats were moved to 
+    /// an internal table and are no longer saved with the file as FORMAT records. 
+    /// Use the ifmt to associate the built-in number formats with an XF record. However, 
+    /// the internal number formats are no longer visible in the BIFF file. 
+    /// </summary>
     public class XF : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.XF;

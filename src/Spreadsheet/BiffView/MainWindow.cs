@@ -43,9 +43,6 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
 
         private void cmdBrowse_Click(object sender, EventArgs e)
         {
-            openFileDialog.Filter = "Excel files (*.xls)|*.xls|All files (*.*)|*.*";
-            openFileDialog.FilterIndex = 1;
-
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 txtFileName.Text = openFileDialog.FileName;

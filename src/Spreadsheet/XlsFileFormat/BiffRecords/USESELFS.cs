@@ -33,10 +33,20 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
+    /// <summary>
+    /// USESELFS: Natural Language Formulas Flag (160h)
+    /// 
+    /// This record stores a flag bit.
+    /// </summary>
     public class USESELFS : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.USESELFS;
 
+        /// <summary>
+        /// =1 if this file was written by a version of Excel that can use natural-language formula input
+        /// </summary>
+        public UInt16 fUsesElfs;
+        
         public USESELFS(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
@@ -44,7 +54,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            fUsesElfs = reader.ReadUInt16();
             
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 

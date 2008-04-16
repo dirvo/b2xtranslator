@@ -33,9 +33,70 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
+    /// <summary>
+    /// TABLESTYLE: Table Style (88Fh)
+    /// 
+    /// This record is used for each custom Table style in use in the document.
+    /// </summary>
     public class TABLESTYLE : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.TABLESTYLE;
+
+        /// <summary>
+        /// Record type; this matches the BIFF rt in the first two bytes of the record; =088Fh
+        /// </summary>
+        public UInt16 rt;
+
+        /// <summary>
+        /// FRT cell reference flag; =0 currently
+        /// </summary>
+        public UInt16 grbitFrt;
+
+        /// <summary>
+        /// Currently not used, and set to 0
+        /// </summary>
+        public UInt64 reserved0;
+
+        /// <summary>
+        /// A packed bit field
+        /// </summary>
+        private UInt16 grbitTS;
+
+        /// <summary>
+        /// Count of TABLESTYLEELEMENT records to follow.
+        /// </summary>
+        public UInt32 ctse;
+
+        /// <summary>
+        /// Length of Table style name in 2 byte characters.
+        /// </summary>
+        public UInt16 cchName;
+
+        /// <summary>
+        /// Table style name in 2 byte characters
+        /// </summary>
+        public byte[] rgchName;
+
+        /// <summary>
+        /// Should always be 0.
+        /// </summary>
+        public bool fIsBuiltIn;
+
+        /// <summary>
+        /// =1 if Table style can be applied to PivotTables
+        /// </summary>
+        public bool fIsPivot;
+
+        /// <summary>
+        /// =1 if Table style can be applied to Tables
+        /// </summary>
+        public bool fIsTable;
+
+        /// <summary>
+        /// Reserved; must be 0 (zero)
+        /// </summary>
+        public UInt16 fReserved0;
+
 
         public TABLESTYLE(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
@@ -44,8 +105,20 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            rt = reader.ReadUInt16();
+            grbitFrt = reader.ReadUInt16();
+            reserved0 = reader.ReadUInt64();
+            grbitTS = reader.ReadUInt16();
+
+            fIsBuiltIn = Utils.BitmaskToBool(grbitTS, 0x0001);
+            fIsPivot = Utils.BitmaskToBool(grbitTS, 0x0002);
+            fIsTable = Utils.BitmaskToBool(grbitTS, 0x0004);
+            fReserved0 = Utils.BitmaskToUInt16(grbitTS, 0xFFF8);
             
+            ctse = reader.ReadUInt32();
+            cchName = reader.ReadUInt16();
+            rgchName = reader.ReadBytes(cchName * 2);
+
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
         }

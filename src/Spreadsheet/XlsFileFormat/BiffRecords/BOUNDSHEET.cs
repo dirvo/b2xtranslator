@@ -33,10 +33,34 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
+    /// <summary>
+    /// BOUNDSHEET: Sheet Information (85h)
+    /// 
+    /// This record stores the sheet name, sheet type, and stream position.
+    /// </summary>
     public class BOUNDSHEET : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.BOUNDSHEET;
 
+        /// <summary>
+        /// Stream position of the start of the BOF record for the sheet
+        /// </summary>
+        public UInt32 lbPlyPos;
+
+        /// <summary>
+        /// Option flags
+        /// </summary>
+        private UInt16 grbit;
+
+        /// <summary>
+        /// Length of the sheet name (in characters)
+        /// </summary>
+        public byte cch;
+
+        /// <summary>
+        /// Sheet name (grbit/rgb fields of Unicode String)
+        /// </summary>
+        public byte[] rgch;        // TODO: check for correct interpretation of Unicode strings
         public BOUNDSHEET(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
