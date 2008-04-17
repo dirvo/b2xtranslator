@@ -42,6 +42,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public XlsDocument(IStructuredStorageFile file)
         {
             _workbookReader = new VirtualStreamReader(file.GetStream(WORKBOOK));
+
+            // TODO: start parsing here
         }
 
         public override void Convert<T>(T mapping)

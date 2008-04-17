@@ -60,7 +60,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         /// <summary>
         /// Sheet name (grbit/rgb fields of Unicode String)
         /// </summary>
-        public byte[] rgch;        // TODO: check for correct interpretation of Unicode strings
+        public byte[] rgch;
+        // TODO: check for correct interpretation of Unicode strings
+
         public BOUNDSHEET(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
