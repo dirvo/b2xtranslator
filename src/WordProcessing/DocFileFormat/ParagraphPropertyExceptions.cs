@@ -56,8 +56,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public ParagraphPropertyExceptions(byte[] bytes, VirtualStream dataStream)
             : base(new List<byte>(bytes).GetRange(2, bytes.Length-2).ToArray())
         {
-            IStreamReader reader = new VirtualStreamReader(dataStream);
-
             if (bytes.Length != 0)
             {
                 this.istd = System.BitConverter.ToUInt16(bytes, 0);
@@ -69,6 +67,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             {
                 if (sprm.OpCode == 0x6645 || sprm.OpCode == 0x6646)
                 {
+                    IStreamReader reader = new VirtualStreamReader(dataStream);
                     UInt32 fc = System.BitConverter.ToUInt32(sprm.Arguments, 0);
 
                     //parse the size of the external grpprl
