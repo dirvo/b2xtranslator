@@ -2,33 +2,32 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.DocFileFormat;
-using System.Xml;
-using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
-    public class HeaderMapping : DocumentMapping
+    public class FooterMapping : DocumentMapping
     {
-        private CharacterRange _hdr;
+        private CharacterRange _ftr;
 
-        public HeaderMapping(ConversionContext ctx, HeaderPart part, CharacterRange hdr)
+        public FooterMapping(ConversionContext ctx, FooterPart part, CharacterRange ftr)
             : base(ctx, part)
         {
-            _hdr = hdr;
+            _ftr = ftr;
         }
-
+        
         public override void Apply(WordDocument doc)
         {
             _doc = doc;
 
             _writer.WriteStartDocument();
-            _writer.WriteStartElement("w", "hdr", OpenXmlNamespaces.WordprocessingML);
+            _writer.WriteStartElement("w", "ftr", OpenXmlNamespaces.WordprocessingML);
 
-            //convert the header text
+            //convert the footer text
             _lastValidPapx = _doc.AllPapxFkps[0].grppapx[0];
-            Int32 cp = _hdr.CharacterPosition;
-            while (cp < (_hdr.CharacterPosition + _hdr.CharacterCount))
+            Int32 cp = _ftr.CharacterPosition;
+            while (cp < (_ftr.CharacterPosition + _ftr.CharacterCount))
             {
                 Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
                 ParagraphPropertyExceptions papx = findValidPapx(fc);
@@ -50,7 +49,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _writer.WriteEndDocument();
 
             _writer.Flush();
-
         }
     }
 }

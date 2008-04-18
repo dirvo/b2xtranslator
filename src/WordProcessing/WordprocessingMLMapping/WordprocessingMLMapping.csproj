@@ -46,6 +46,7 @@
     <Compile Include="DateMapping.cs" />
     <Compile Include="ApplicationPropertiesMapping.cs" />
     <Compile Include="FontTableMapping.cs" />
+    <Compile Include="FooterMapping.cs" />
     <Compile Include="HeaderMapping.cs" />
     <Compile Include="MainDocumentMapping.cs" />
     <Compile Include="NumberingMapping.cs" />

@@ -40,6 +40,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
 
         protected int _imagePartCount = 0;
         protected int _headerPartCount = 0;
+        protected int _footerPartCount = 0;
         
         public MainDocumentPart(OpenXmlPartContainer parent)
             : base(parent)
@@ -114,6 +115,11 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
         public HeaderPart AddHeaderPart()
         {
             return this.AddPart(new HeaderPart(this, ++_headerPartCount));
+        }
+
+        public FooterPart AddFooterPart()
+        {
+            return this.AddPart(new FooterPart(this, ++_footerPartCount));
         }
     }
 }

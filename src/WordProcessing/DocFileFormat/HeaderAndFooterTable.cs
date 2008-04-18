@@ -34,23 +34,23 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
     public class HeaderAndFooterTable
     {
-        public List<Header> FirstHeaders;
-        public List<Header> EvenHeaders;
-        public List<Header> OddHeaders;
-        //public List<Header> FirstFooters;
-        //public List<Header> EvenFooters;
-        //public List<Header> OddFooters;
+        public List<CharacterRange> FirstHeaders;
+        public List<CharacterRange> EvenHeaders;
+        public List<CharacterRange> OddHeaders;
+        public List<CharacterRange> FirstFooters;
+        public List<CharacterRange> EvenFooters;
+        public List<CharacterRange> OddFooters;
 
         public HeaderAndFooterTable(WordDocument doc)
         {
             IStreamReader tableReader = new VirtualStreamReader(doc.TableStream);
 
-            FirstHeaders = new List<Header>();
-            EvenHeaders = new List<Header>();
-            OddHeaders = new List<Header>();
-            //FirstFooters = new List<CharacterRange>();
-            //EvenFooters = new List<CharacterRange>();
-            //OddFooters = new List<CharacterRange>();
+            FirstHeaders = new List<CharacterRange>();
+            EvenHeaders = new List<CharacterRange>();
+            OddHeaders = new List<CharacterRange>();
+            FirstFooters = new List<CharacterRange>();
+            EvenFooters = new List<CharacterRange>();
+            OddFooters = new List<CharacterRange>();
             
             //read the Table
             Int32[] table = new Int32[doc.FIB.lcbPlcfhdd / 4];
@@ -58,44 +58,32 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             for (int i = 0; i < table.Length; i++)
             {
                 table[i] = tableReader.ReadInt32();
-                //table[i] = doc.TableStream.ReadInt32();
             }
-
             int count = (table.Length - 8) / 6;
+
+            int initialPos = doc.FIB.ccpText + doc.FIB.ccpFtn;
 
             //the first 6 entries are about footnote and endnote formatting
             //so skip these entries
             int pos = 6;
             for (int i = 0; i < count; i++)
             {
-                Header evnHdr = new Header();
-                evnHdr.CharacterPosition = doc.FIB.ccpText + table[pos];
-                evnHdr.CharacterCount = table[pos + 1] - table[pos]; 
-                evnHdr.Type = Header.HeaderType.EvenPage;
-                this.EvenHeaders.Add(evnHdr);
+                this.EvenHeaders.Add(new CharacterRange(initialPos + table[pos], table[pos + 1] - table[pos]));
                 pos++;
 
-                Header oddHdr = new Header();
-                oddHdr.CharacterPosition = doc.FIB.ccpText + table[pos];
-                oddHdr.CharacterCount = table[pos + 1] - table[pos];
-                oddHdr.Type = Header.HeaderType.OddPage;
-                this.OddHeaders.Add(oddHdr);
+                this.OddHeaders.Add(new CharacterRange(initialPos + table[pos], table[pos + 1] - table[pos]));
                 pos++;
 
-                //this.EvenFooters.Add(new CharacterRange(table[pos], table[pos + 1] - table[pos]));
+                this.EvenFooters.Add(new CharacterRange(initialPos + table[pos], table[pos + 1] - table[pos]));
                 pos++;
 
-                //this.OddFooters.Add(new CharacterRange(table[pos], table[pos + 1] - table[pos]));
+                this.OddFooters.Add(new CharacterRange(initialPos + table[pos], table[pos + 1] - table[pos]));
                 pos++;
 
-                Header fstHdr = new Header();
-                fstHdr.CharacterPosition = doc.FIB.ccpText + table[pos];
-                fstHdr.CharacterCount = table[pos + 1] - table[pos];
-                fstHdr.Type = Header.HeaderType.FirstPage;
-                this.FirstHeaders.Add(fstHdr);
+                this.FirstHeaders.Add(new CharacterRange(initialPos + table[pos], table[pos + 1] - table[pos]));
                 pos++;
 
-                //this.FirstFooters.Add(new CharacterRange(table[pos], table[pos + 1] - table[pos]));
+                this.FirstFooters.Add(new CharacterRange(initialPos + table[pos], table[pos + 1] - table[pos]));
                 pos++;
             }
         }

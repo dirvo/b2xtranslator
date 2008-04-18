@@ -99,7 +99,7 @@
     <Compile Include="FontFamilyName.cs" />
     <Compile Include="FontTable.cs" />
     <Compile Include="Global.cs" />
-    <Compile Include="Header.cs" />
+    <Compile Include="CharacterRange.cs" />
     <Compile Include="HeaderAndFooterTable.cs" />
     <Compile Include="InvalidFileException.cs" />
     <Compile Include="ListData.cs" />
