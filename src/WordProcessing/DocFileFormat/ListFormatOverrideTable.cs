@@ -39,20 +39,23 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         public ListFormatOverrideTable(FileInformationBlock fib, VirtualStream tableStream)
         {
+            IStreamReader tableReader = new VirtualStreamReader(tableStream);
+
             if (fib.lcbPlfLfo > 0)
             {
                 //read the count of LFOs
-                byte[] countBytes = new byte[4];
-                tableStream.Read(countBytes, 0, 4, fib.fcPlfLfo);
+                //byte[] countBytes = new byte[4];
+                //tableStream.Read(countBytes, 0, 4, fib.fcPlfLfo);
+                byte[] countBytes = tableReader.ReadBytes(fib.fcPlfLfo, 4);
                 Int32 count = System.BitConverter.ToInt32(countBytes, 0);
 
                 //read the LFOs
                 //int pos = fib.fcPlfLfo + 4;
                 for (int i = 0; i < count; i++)
                 {
-                    byte[] lfoBytes = new byte[LFO_LENGTH];
-                    //tableStream.Read(lfoBytes, 0, LFO_LENGTH, pos);
-                    tableStream.Read(lfoBytes, LFO_LENGTH);
+                    //byte[] lfoBytes = new byte[LFO_LENGTH];
+                    //tableStream.Read(lfoBytes, LFO_LENGTH);
+                    byte[] lfoBytes = tableReader.ReadBytes(LFO_LENGTH);
                     ListFormatOverride lfo = new ListFormatOverride(lfoBytes);
                     this.Add(lfo);
 
@@ -65,8 +68,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
                     for (int j = 0; j < this[i].clfolvl; j++)
                     {
-                        byte[] lfolvlBytes = new byte[LFOLVL_LENGTH];
-                        tableStream.Read(lfolvlBytes, LFOLVL_LENGTH);
+                        //byte[] lfolvlBytes = new byte[LFOLVL_LENGTH];
+                        //tableStream.Read(lfolvlBytes, LFOLVL_LENGTH);
+                        byte[] lfolvlBytes = tableReader.ReadBytes(LFOLVL_LENGTH);
                         this[i].rgLfoLvl[j] = new ListFormatOverrideLevel(lfolvlBytes);
 
                         //pos += LFOLVL_LENGTH;

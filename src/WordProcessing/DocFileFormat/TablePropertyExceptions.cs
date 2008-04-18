@@ -62,8 +62,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         {
             this.IsDeleted = papx.IsDeleted;
             this.HasOldProps = papx.HasOldProps;
-
             this.grpprl = new List<SinglePropertyModifier>();
+            IStreamReader reader = new VirtualStreamReader(dataStream);
+
             foreach (SinglePropertyModifier sprm in papx.grpprl)
             {
                 if (sprm.Type == SinglePropertyModifier.SprmType.TAP)
@@ -76,13 +77,15 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     UInt32 fc = System.BitConverter.ToUInt32(sprm.Arguments, 0);
                     
                     //get the size of the following grpprl
-                    byte[] sizebytes = new byte[2];
-                    dataStream.Read(sizebytes, 2, (int)fc);
+                    //byte[] sizebytes = new byte[2];
+                    //dataStream.Read(sizebytes, 2, (int)fc);
+                    byte[] sizebytes = reader.ReadBytes(fc, 2);
                     UInt16 grpprlSize = System.BitConverter.ToUInt16(sizebytes, 0);
 
                     //read the grpprl
-                    byte[] grpprlBytes = new byte[grpprlSize];
-                    dataStream.Read(grpprlBytes);
+                    //byte[] grpprlBytes = new byte[grpprlSize];
+                    //dataStream.Read(grpprlBytes);
+                    byte[] grpprlBytes = reader.ReadBytes(grpprlSize);
 
                     //parse the grpprl
                     PropertyExceptions externalPx = new PropertyExceptions(grpprlBytes);

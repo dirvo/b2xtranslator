@@ -50,7 +50,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             node.Attributes.Append(att);
         }
 
-        protected void appendFlagElement(XmlElement node, SinglePropertyModifier sprm, string elementName, bool unique)
+        protected virtual void appendFlagElement(XmlElement node, SinglePropertyModifier sprm, string elementName, bool unique)
         {
             XmlElement ele = _nodeFactory.CreateElement("w", elementName, OpenXmlNamespaces.WordprocessingML);
             if (sprm.Arguments[0] == 0)

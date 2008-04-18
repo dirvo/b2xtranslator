@@ -43,6 +43,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         public HeaderAndFooterTable(WordDocument doc)
         {
+            IStreamReader tableReader = new VirtualStreamReader(doc.TableStream);
+
             FirstHeaders = new List<Header>();
             EvenHeaders = new List<Header>();
             OddHeaders = new List<Header>();
@@ -55,7 +57,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             doc.TableStream.Seek(doc.FIB.fcPlcfhdd, System.IO.SeekOrigin.Begin);
             for (int i = 0; i < table.Length; i++)
             {
-                table[i] = doc.TableStream.ReadInt32();
+                table[i] = tableReader.ReadInt32();
+                //table[i] = doc.TableStream.ReadInt32();
             }
 
             int count = (table.Length - 8) / 6;

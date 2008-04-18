@@ -366,7 +366,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// CHPX flags are special flags because the can be 0,1,128 and 129,
         /// so this method overrides the appendFlagElement method.
         /// </summary>
-        protected void appendFlagElement(XmlElement node, SinglePropertyModifier sprm, string elementName, bool unique)
+        protected override void appendFlagElement(XmlElement node, SinglePropertyModifier sprm, string elementName, bool unique)
         {
             byte flag = sprm.Arguments[0];
 

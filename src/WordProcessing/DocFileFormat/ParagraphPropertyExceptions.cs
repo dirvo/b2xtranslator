@@ -56,6 +56,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public ParagraphPropertyExceptions(byte[] bytes, VirtualStream dataStream)
             : base(new List<byte>(bytes).GetRange(2, bytes.Length-2).ToArray())
         {
+            IStreamReader reader = new VirtualStreamReader(dataStream);
+
             if (bytes.Length != 0)
             {
                 this.istd = System.BitConverter.ToUInt16(bytes, 0);
@@ -75,8 +77,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     UInt16 size = System.BitConverter.ToUInt16(sizebytes, 0);
                     
                     //parse the external grpprl
-                    byte[] grpprlBytes = new byte[size];
-                    dataStream.Read(grpprlBytes);
+                    //byte[] grpprlBytes = new byte[size];
+                    //dataStream.Read(grpprlBytes);
+                    byte[] grpprlBytes = reader.ReadBytes(size);
                     PropertyExceptions externalPx = new PropertyExceptions(grpprlBytes);
 
                     //assign the external grpprl

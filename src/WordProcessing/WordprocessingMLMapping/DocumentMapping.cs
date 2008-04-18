@@ -159,7 +159,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             TableInfo tai = new TableInfo(papx);
 
             Int32 fcRowEnd = findRowEndFc(cp, out cp);
-            int maxColumnCount = 0;
 
             while (tai.fInTable)
             {

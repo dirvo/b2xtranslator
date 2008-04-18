@@ -52,14 +52,17 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <param name="tableStream">The 0Table or 1Table stream</param>
         public StyleSheet(FileInformationBlock fib, VirtualStream tableStream, VirtualStream dataStream)
         {
+            IStreamReader tableReader = new VirtualStreamReader(tableStream);
+
             //read size of the STSHI
             byte[] stshiLengthBytes = new byte[2];
             tableStream.Read(stshiLengthBytes, 0, stshiLengthBytes.Length, fib.fcStshf);
             Int16 cbStshi = System.BitConverter.ToInt16(stshiLengthBytes, 0);
 
             //read the bytes of the STSHI
-            byte[] stshi = new byte[cbStshi];
-            tableStream.Read(stshi, 0, cbStshi, fib.fcStshf + 2);
+            //byte[] stshi = new byte[cbStshi];
+            //tableStream.Read(stshi, 0, cbStshi, fib.fcStshf + 2);
+            byte[] stshi = tableReader.ReadBytes(fib.fcStshf + 2, cbStshi);
 
             //parses STSHI
             this.stshi = new StyleSheetInformation(stshi);
@@ -69,15 +72,17 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             for (int i = 0; i < this.stshi.cstd; i++)
             {
                 //get the cbStd
-                byte[] cbStdBytes = new byte[2];
-                tableStream.Read(cbStdBytes);
-                UInt16 cbStd = System.BitConverter.ToUInt16(cbStdBytes, 0);
+                //byte[] cbStdBytes = new byte[2];
+                //tableStream.Read(cbStdBytes);
+                //UInt16 cbStd = System.BitConverter.ToUInt16(cbStdBytes, 0);
+                UInt16 cbStd = tableReader.ReadUInt16();
 
                 if (cbStd != 0)
                 {
                     //read the STD bytes
-                    byte[] std = new byte[cbStd];
-                    tableStream.Read(std);
+                    //byte[] std = new byte[cbStd];
+                    //tableStream.Read(std);
+                    byte[] std = tableReader.ReadBytes(cbStd);
 
                     //parse the STD bytes
                     this.Styles.Add(new StyleSheetDescription(std, (int)this.stshi.cbSTDBaseInFile, dataStream));
