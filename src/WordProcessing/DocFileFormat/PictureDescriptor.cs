@@ -117,6 +117,41 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public Int16 dyaCropBottom;
 
         /// <summary>
+        /// Border above picture
+        /// </summary>
+        public BorderCode brcTop;
+
+        /// <summary>
+        /// Border to the left of the picture
+        /// </summary>
+        public BorderCode brcLeft;
+
+        /// <summary>
+        /// Border below picture
+        /// </summary>
+        public BorderCode brcBottom;
+
+        /// <summary>
+        /// Border to the right of the picture
+        /// </summary>
+        public BorderCode brcRight;
+
+        /// <summary>
+        /// Horizontal offset of hand annotation origin
+        /// </summary>
+        public Int16 dxaOrigin;
+
+        /// <summary>
+        /// vertical offset of hand annotation origin
+        /// </summary>
+        public Int16 dyaOrigin;
+
+        /// <summary>
+        /// unused
+        /// </summary>
+        public Int16 cProps;
+
+        /// <summary>
         /// Parses the CHPX for a fcPic an loads the PictureDescriptor at this offset
         /// </summary>
         /// <param name="chpx">The CHPX that holds a SPRM for fcPic</param>
@@ -178,39 +213,54 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 this.dxaCropRight = System.BitConverter.ToInt16(bytes, 36);
                 this.dyaCropBottom = System.BitConverter.ToInt16(bytes, 38);
 
-                //variable part starts at byte 0x50
-                int readPos = 0x50;
+                //border
+                byte[] brc = new byte[4];
+                Array.Copy(bytes, 46, brc, 0, 4);
+                this.brcTop = new BorderCode(brc);
+                Array.Copy(bytes, 50, brc, 0, 4);
+                this.brcLeft = new BorderCode(brc);
+                Array.Copy(bytes, 54, brc, 0, 4);
+                this.brcBottom = new BorderCode(brc);
+                Array.Copy(bytes, 58, brc, 0, 4);
+                this.brcRight = new BorderCode(brc);
 
-                //skip the first 40 bytes
-                readPos += 40;
+                this.dxaOrigin = System.BitConverter.ToInt16(bytes, 62);
+                this.dyaOrigin = System.BitConverter.ToInt16(bytes, 64);
+                this.cProps = System.BitConverter.ToInt16(bytes, 66);
 
-                //read the name
-                string temp = "";
-                while (temp != "\0")
-                {
-                    this.Name += temp;
-                    temp = Encoding.Unicode.GetString(bytes, readPos, 2);
-                    readPos += 2;
-                }
-                //name section is terminated by another \0
-                readPos += 2;
+                ////variable part starts at byte 0x50
+                //int readPos = 0x50;
 
-                //skip the next 79 bytes
-                readPos += 79;
+                ////skip the first 40 bytes
+                //readPos += 40;
 
-                //read the picture
-                this.Picture = new byte[bytes.Length - readPos];
-                Array.Copy(bytes, readPos, this.Picture, 0, this.Picture.Length);
+                ////read the name
+                //string temp = "";
+                //while (temp != "\0")
+                //{
+                //    this.Name += temp;
+                //    temp = Encoding.Unicode.GetString(bytes, readPos, 2);
+                //    readPos += 2;
+                //}
+                ////name section is terminated by another \0
+                //readPos += 2;
 
-                //set the picture type, compare the first 3 bytes
-                if (this.Picture[0] == 0xFF && this.Picture[1] == 0xD8 && this.Picture[2] == 0xFF)
-                {
-                    this.Type = PictureType.jpg;
-                }
-                else if (this.Picture[0] == 0x89 && this.Picture[1] == 0x50 && this.Picture[2] == 0x4E)
-                {
-                    this.Type = PictureType.png;
-                }
+                ////skip the next 79 bytes
+                //readPos += 79;
+
+                ////read the picture
+                //this.Picture = new byte[bytes.Length - readPos];
+                //Array.Copy(bytes, readPos, this.Picture, 0, this.Picture.Length);
+
+                ////set the picture type, compare the first 3 bytes
+                //if (this.Picture[0] == 0xFF && this.Picture[1] == 0xD8 && this.Picture[2] == 0xFF)
+                //{
+                //    this.Type = PictureType.jpg;
+                //}
+                //else if (this.Picture[0] == 0x89 && this.Picture[1] == 0x50 && this.Picture[2] == 0x4E)
+                //{
+                //    this.Type = PictureType.png;
+                //}
             }
         }
 
