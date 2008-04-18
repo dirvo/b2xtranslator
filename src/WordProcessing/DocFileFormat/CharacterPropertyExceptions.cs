@@ -32,6 +32,7 @@ using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
+
     public class CharacterPropertyExceptions : PropertyExceptions
     {
         /// <summary>
@@ -41,6 +42,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public CharacterPropertyExceptions()
             : base()
         {
+
         }
 
         /// <summary>
@@ -50,6 +52,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public CharacterPropertyExceptions(byte[] bytes) 
             : base(bytes)
         {
+
         }
 
         #region IVisitable Members

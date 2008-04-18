@@ -119,7 +119,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //write character properties
                     if (style.chpx != null)
                     {
-                        style.chpx.Convert(new CharacterPropertiesMapping(_writer, _ctx.Doc));
+                        RevisionData rev = new RevisionData();
+                        rev.Type = RevisionData.RevisionType.NoRevision;
+                        style.chpx.Convert(new CharacterPropertiesMapping(_writer, _ctx.Doc, rev));
                     }
 
                     //write table properties

@@ -54,6 +54,7 @@
     <Compile Include="PictureMapping.cs" />
     <Compile Include="PropertiesMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RevisionData.cs" />
     <Compile Include="SectionPropertiesMapping.cs" />
     <Compile Include="SettingsMapping.cs" />
     <Compile Include="StyleSheetMapping.cs" />

@@ -414,20 +414,28 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             Int32 cp = initialCp;
 
-            //If it's a deleted run
-            if (chpx.IsDeleted)
+            RevisionData rev = new RevisionData(chpx);
+
+            if (rev.Type == RevisionData.RevisionType.Deleted)
             {
+                //If it's a deleted run
                 _writer.WriteStartElement("w", "del", OpenXmlNamespaces.WordprocessingML);
+                _writer.WriteAttributeString("w", "author", OpenXmlNamespaces.WordprocessingML, "[b2x: could not retrieve author]");
+                _writer.WriteAttributeString("w", "date", OpenXmlNamespaces.WordprocessingML, "[b2x: could not retrieve date]");
+            }
+            else if (rev.Type == RevisionData.RevisionType.Inserted)
+            {
+                //if it's a inserted run
+                _writer.WriteStartElement("w", "ins", OpenXmlNamespaces.WordprocessingML);
+                _writer.WriteAttributeString("w", "author", OpenXmlNamespaces.WordprocessingML, _doc.AuthorTable[rev.Isbt]);
+                rev.Dttm.Convert(new DateMapping(_writer));
             }
 
             //start run
             _writer.WriteStartElement("w", "r", OpenXmlNamespaces.WordprocessingML);
 
-            //append rsid
-            //_writer.WriteAttributeString("w", "rsidRPr", OpenXmlNamespaces.WordprocessingML, getChpxRsid(chpx).ToString());
-
             //write properties
-            chpx.Convert(new CharacterPropertiesMapping(_writer, _doc));
+            chpx.Convert(new CharacterPropertiesMapping(_writer, _doc, rev));
 
             if (chars.Count == 1 && chars[0] == TextBoundary.Picture)
             {
@@ -446,14 +454,16 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
             else
             {
-                cp = writeText(chars, cp, chpx.IsDeleted);
+                if(rev.Type == RevisionData.RevisionType.Deleted)
+                    cp = writeText(chars, cp, true);
+                else
+                    cp = writeText(chars, cp, false);
             }
 
             //end run
             _writer.WriteEndElement();
 
-            //If it's a deleted run
-            if (chpx.IsDeleted)
+            if (rev.Type == RevisionData.RevisionType.Deleted || rev.Type == RevisionData.RevisionType.Inserted)
             {
                 _writer.WriteEndElement();
             }
@@ -664,22 +674,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
 
             return result;
-        }
-
-        protected Int32 getChpxRsid(CharacterPropertyExceptions chpx)
-        {
-            Int32 ret = 0;
-            foreach (SinglePropertyModifier sprm in chpx.grpprl)
-            {
-                if (sprm.OpCode == 0x6815 || 
-                    sprm.OpCode == 0x6816 ||
-                    sprm.OpCode == 0x6817)
-                {
-                    ret = System.BitConverter.ToInt32(sprm.Arguments, 0);
-                    break;
-                }
-            }
-            return ret;
         }
 
         /// <summary>

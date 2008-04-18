@@ -133,7 +133,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     lvl.grpprlPapx.Convert(new ParagraphPropertiesMapping(_writer, _ctx, null));
 
                     //rPr
-                    lvl.grpprlChpx.Convert(new CharacterPropertiesMapping(_writer, _ctx.Doc));
+                    lvl.grpprlChpx.Convert(new CharacterPropertiesMapping(_writer, _ctx.Doc, new RevisionData(lvl.grpprlChpx)));
 
                     _writer.WriteEndElement();
                 }

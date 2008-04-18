@@ -40,16 +40,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public List<SinglePropertyModifier> grpprl;
 
-        /// <summary>
-        /// This PropertyExceptions is used for revision marking
-        /// </summary>
-        public bool HasOldProps;
-
-        /// <summary>
-        /// This PropertyExceptions has been deleted
-        /// </summary>
-        public bool IsDeleted;
-
         public PropertyExceptions()
         {
             this.grpprl = new List<SinglePropertyModifier>();
@@ -123,32 +113,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
                             //parse
                             SinglePropertyModifier sprm = new SinglePropertyModifier(sprmBytes);
-
-                            //check if it sets the PX to fHasOldProps or if it's a delete info
-                            switch (sprm.OpCode)
-                            {
-                                case 0x2664:
-                                    //PAPX fHasOldProps
-                                    this.HasOldProps = true;
-                                    break;
-                                case 0x2A83:
-                                    //CHPX fHasOldProps
-                                    this.HasOldProps = true;
-                                    break;
-                                case 0x3668:
-                                    //TAPX fHasOldProps
-                                    this.HasOldProps = true;
-                                    break;
-                                case 0x3239:
-                                    //SEPX fHasOldProps
-                                    this.HasOldProps = true;
-                                    break;
-                                case 0x0800:
-                                    //CHPX delete mark
-                                    this.IsDeleted = true;
-                                    break;
-                            }
-
                             grpprl.Add(sprm);
 
                             sprmStart += sprmBytes.Length;

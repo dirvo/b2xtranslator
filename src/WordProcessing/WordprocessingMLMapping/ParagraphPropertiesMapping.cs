@@ -91,10 +91,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 XmlElement rPr = _nodeFactory.CreateElement("w", "rPr", OpenXmlNamespaces.WordprocessingML);
                 
                 //append properties
-                _paraEndChpx.Convert(new CharacterPropertiesMapping(rPr, _ctx.Doc));
-                
+                _paraEndChpx.Convert(new CharacterPropertiesMapping(rPr, _ctx.Doc, new RevisionData(_paraEndChpx)));
+
+
+                RevisionData rev = new RevisionData(_paraEndChpx);
                 //append delete infos
-                if (_paraEndChpx.IsDeleted)
+                if (rev.Type == RevisionData.RevisionType.Deleted)
                 {
                     XmlElement del = _nodeFactory.CreateElement("w", "del", OpenXmlNamespaces.WordprocessingML);
                     rPr.AppendChild(del);

@@ -108,27 +108,29 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             XmlElement paperSrc = _nodeFactory.CreateElement("w", "paperSrc", OpenXmlNamespaces.WordprocessingML);
 
             //convert headers of this section
-            int headerCp = 0 + _ctx.Doc.FIB.ccpText;
-            Header oddHdr = _ctx.Doc.HeaderAndFooterTable.OddHeaders[_sectNr];
-            if (oddHdr.CharacterCount > 3)
+            if (_ctx.Doc.HeaderAndFooterTable.OddHeaders.Count > 0)
             {
-                HeaderPart oddPart = _ctx.Docx.MainDocumentPart.AddHeaderPart();
-                _ctx.Doc.Convert(new HeaderMapping(_ctx, oddPart, oddHdr));
-                appendRef(_sectPr, "headerReference", "default", oddPart.RelIdToString);
-            }
-            Header evenHdr = _ctx.Doc.HeaderAndFooterTable.EvenHeaders[_sectNr];
-            if (evenHdr.CharacterCount > 3)
-            {
-                HeaderPart evenPart = _ctx.Docx.MainDocumentPart.AddHeaderPart();
-                _ctx.Doc.Convert(new HeaderMapping(_ctx, evenPart, evenHdr));
-                appendRef(_sectPr, "headerReference", "even", evenPart.RelIdToString);
-            }
-            Header firstHdr = _ctx.Doc.HeaderAndFooterTable.FirstHeaders[_sectNr];
-            if (firstHdr.CharacterCount > 3)
-            {
-                HeaderPart firstPart = _ctx.Docx.MainDocumentPart.AddHeaderPart();
-                _ctx.Doc.Convert(new HeaderMapping(_ctx, firstPart, firstHdr));
-                appendRef(_sectPr, "headerReference", "first", firstPart.RelIdToString);
+                Header oddHdr = _ctx.Doc.HeaderAndFooterTable.OddHeaders[_sectNr];
+                if (oddHdr.CharacterCount > 3)
+                {
+                    HeaderPart oddPart = _ctx.Docx.MainDocumentPart.AddHeaderPart();
+                    _ctx.Doc.Convert(new HeaderMapping(_ctx, oddPart, oddHdr));
+                    appendRef(_sectPr, "headerReference", "default", oddPart.RelIdToString);
+                }
+                Header evenHdr = _ctx.Doc.HeaderAndFooterTable.EvenHeaders[_sectNr];
+                if (evenHdr.CharacterCount > 3)
+                {
+                    HeaderPart evenPart = _ctx.Docx.MainDocumentPart.AddHeaderPart();
+                    _ctx.Doc.Convert(new HeaderMapping(_ctx, evenPart, evenHdr));
+                    appendRef(_sectPr, "headerReference", "even", evenPart.RelIdToString);
+                }
+                Header firstHdr = _ctx.Doc.HeaderAndFooterTable.FirstHeaders[_sectNr];
+                if (firstHdr.CharacterCount > 3)
+                {
+                    HeaderPart firstPart = _ctx.Docx.MainDocumentPart.AddHeaderPart();
+                    _ctx.Doc.Convert(new HeaderMapping(_ctx, firstPart, firstHdr));
+                    appendRef(_sectPr, "headerReference", "first", firstPart.RelIdToString);
+                }
             }
 
             //append footer references

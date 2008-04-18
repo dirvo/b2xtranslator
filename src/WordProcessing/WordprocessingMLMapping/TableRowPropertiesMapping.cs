@@ -25,7 +25,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         public void Apply(TablePropertyExceptions tapx)
         {
             //delete infos
-            if (_rowEndChpx != null && _rowEndChpx.IsDeleted)
+            RevisionData rev = new RevisionData(_rowEndChpx);
+            if (_rowEndChpx != null && rev.Type == RevisionData.RevisionType.Deleted)
             {
                 XmlElement del = _nodeFactory.CreateElement("w", "del", OpenXmlNamespaces.WordprocessingML);
                 _trPr.AppendChild(del);

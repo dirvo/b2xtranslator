@@ -41,37 +41,71 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private WordDocument _doc;
         private XmlElement _rPr;
         private UInt16 _currentIstd;
-        private List<SinglePropertyModifier> _revisionStack;
-        private bool _collectRevisionData = true;
+        private RevisionData _revisionData;
 
-        public CharacterPropertiesMapping(XmlWriter writer, WordDocument doc)
+        public CharacterPropertiesMapping(XmlWriter writer, WordDocument doc, RevisionData rev)
             : base(writer)
         {
             _doc = doc;
             _rPr = _nodeFactory.CreateElement("w", "rPr", OpenXmlNamespaces.WordprocessingML);
-            _revisionStack = new List<SinglePropertyModifier>();
+            _revisionData = rev;
         }
 
-        public CharacterPropertiesMapping(XmlElement rPr, WordDocument doc)
+        public CharacterPropertiesMapping(XmlElement rPr, WordDocument doc, RevisionData rev)
             : base(null)
         {
             _doc = doc;
             _nodeFactory = rPr.OwnerDocument;
             _rPr = rPr;
-            _revisionStack = new List<SinglePropertyModifier>();
+            _revisionData = rev;
         }
 
         public void Apply(CharacterPropertyExceptions chpx)
+        {
+
+            //convert the normal SPRMS
+            convertSprms(chpx.grpprl, _rPr);
+
+            //apend revision changes
+            if (_revisionData.Type == RevisionData.RevisionType.Changed)
+            {
+                XmlElement rPrChange = _nodeFactory.CreateElement("w", "rPrChange", OpenXmlNamespaces.WordprocessingML);
+
+                //rsid
+                XmlAttribute id = _nodeFactory.CreateAttribute("w", "id", OpenXmlNamespaces.WordprocessingML);
+                id.Value = _revisionData.Rsid.ToString();
+                rPrChange.Attributes.Append(id);
+
+                //date
+                _revisionData.Dttm.Convert(new DateMapping(rPrChange));
+
+                //author
+                XmlAttribute author = _nodeFactory.CreateAttribute("w", "author", OpenXmlNamespaces.WordprocessingML);
+                author.Value = _doc.AuthorTable[_revisionData.Isbt];
+                rPrChange.Attributes.Append(author);
+
+                //convert revision stack
+                convertSprms(_revisionData.Changes, rPrChange);
+
+                _rPr.AppendChild(rPrChange);
+            }
+
+            //write properties
+            if (_writer!=null && (_rPr.ChildNodes.Count > 0 || _rPr.Attributes.Count > 0))
+            {
+                _rPr.WriteTo(_writer);
+            }
+        }
+
+        private void convertSprms(List<SinglePropertyModifier> sprms, XmlElement parent)
         {
             XmlElement shd = _nodeFactory.CreateElement("w", "shd", OpenXmlNamespaces.WordprocessingML);
             XmlElement rFonts = _nodeFactory.CreateElement("w", "rFonts", OpenXmlNamespaces.WordprocessingML);
             XmlElement color = _nodeFactory.CreateElement("w", "color", OpenXmlNamespaces.WordprocessingML);
             XmlAttribute colorVal = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
             XmlElement lang = _nodeFactory.CreateElement("w", "lang", OpenXmlNamespaces.WordprocessingML);
-            XmlElement rPrChange = _nodeFactory.CreateElement("w", "rPrChange", OpenXmlNamespaces.WordprocessingML);
-            XmlElement ins = _nodeFactory.CreateElement("w", "ins", OpenXmlNamespaces.WordprocessingML);
 
-            foreach (SinglePropertyModifier sprm in chpx.grpprl)
+            foreach (SinglePropertyModifier sprm in sprms)
             {
                 //no style is set at the moment
                 _currentIstd = UInt16.MaxValue;
@@ -81,108 +115,63 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //style id 
                     case 0x4A30:
                         _currentIstd = System.BitConverter.ToUInt16(sprm.Arguments, 0);
-                        appendValueElement(_rPr, "rStyle", StyleSheetMapping.MakeStyleId(_doc.Styles.Styles[_currentIstd].xstzName), true);
+                        appendValueElement(parent, "rStyle", StyleSheetMapping.MakeStyleId(_doc.Styles.Styles[_currentIstd].xstzName), true);
                         break;
                     
                     //Element flags
                     case 0x085A:
-                        appendFlagElement(_rPr, sprm, "rtl", true);
+                        appendFlagElement(parent, sprm, "rtl", true);
                         break;
                     case 0x0835:
-                        appendFlagElement(_rPr, sprm, "b", true);
+                        appendFlagElement(parent, sprm, "b", true);
                         break;
                     case 0x085C:
-                        appendFlagElement(_rPr, sprm, "bCs", true);
+                        appendFlagElement(parent, sprm, "bCs", true);
                         break;
                     case 0x083B:
-                        appendFlagElement(_rPr, sprm, "caps", true); ;
+                        appendFlagElement(parent, sprm, "caps", true); ;
                         break;
                     case 0x0882:
-                        appendFlagElement(_rPr, sprm, "cs", true);
+                        appendFlagElement(parent, sprm, "cs", true);
                         break;
                     case 0x2A53:
-                        appendFlagElement(_rPr, sprm, "dstrike", true);
+                        appendFlagElement(parent, sprm, "dstrike", true);
                         break;
                     case 0x0858:
-                        appendFlagElement(_rPr, sprm, "emboss", true);
+                        appendFlagElement(parent, sprm, "emboss", true);
                         break;
                     case 0x0854:
-                        appendFlagElement(_rPr, sprm, "imprint", true);
+                        appendFlagElement(parent, sprm, "imprint", true);
                         break;
                     case 0x0836:
-                        appendFlagElement(_rPr, sprm, "i", true);
+                        appendFlagElement(parent, sprm, "i", true);
                         break;
                     case 0x085D:
-                        appendFlagElement(_rPr, sprm, "iCs", true);
+                        appendFlagElement(parent, sprm, "iCs", true);
                         break;
                     case 0x0875:
-                        appendFlagElement(_rPr, sprm, "noProof", true);
+                        appendFlagElement(parent, sprm, "noProof", true);
                         break;
                     case 0x0838:
-                        appendFlagElement(_rPr, sprm, "outline", true);
+                        appendFlagElement(parent, sprm, "outline", true);
                         break;
                     case 0x0839:
-                        appendFlagElement(_rPr, sprm, "shadow", true);
+                        appendFlagElement(parent, sprm, "shadow", true);
                         break;
                     case 0x083A:
-                        appendFlagElement(_rPr, sprm, "smallCaps", true);
+                        appendFlagElement(parent, sprm, "smallCaps", true);
                         break;
                     case 0x0818:
-                        appendFlagElement(_rPr, sprm, "specVanish", true);
+                        appendFlagElement(parent, sprm, "specVanish", true);
                         break;
                     case 0x0837:
-                        appendFlagElement(_rPr, sprm, "strike", true);
+                        appendFlagElement(parent, sprm, "strike", true);
                         break;
                     case 0x083C:
-                        appendFlagElement(_rPr, sprm, "vanish", true);
+                        appendFlagElement(parent, sprm, "vanish", true);
                         break;
                     case 0x0811:
-                        appendFlagElement(_rPr, sprm, "webHidden", true);
-                        break;
-
-                    //revision data
-                    case 0xCA89:
-                        //revision mark
-                        _collectRevisionData = false;
-                        //author 
-                        Int16 isbt = System.BitConverter.ToInt16(sprm.Arguments, 1);
-                        //date
-                        byte[] dttmBytes = new byte[4];
-                        Array.Copy(sprm.Arguments, 3, dttmBytes, 0, 4);
-                        DateAndTime dttm = new DateAndTime(dttmBytes);
-                        if (_revisionStack.Count > 0)
-                        {
-                            appendValueAttribute(rPrChange, "author", _doc.AuthorTable[isbt]);
-                            dttm.Convert(new DateMapping(rPrChange));
-                        }
-                        else
-                        {
-                            //if no revision data has been collected, it's an insert of a new element
-                            appendValueAttribute(ins, "author", _doc.AuthorTable[isbt]);
-                            dttm.Convert(new DateMapping(ins));
-                        }
-                        break;
-                    case 0x0801:
-                        //revision mark
-                        _collectRevisionData = false;
-                        break;
-                    case 0x4804:
-                        //author
-                        isbt = System.BitConverter.ToInt16(sprm.Arguments, 0);
-                        //if no revision data has been collected, it's an insert of a new element
-                        if (_revisionStack.Count > 0)
-                            appendValueAttribute(rPrChange, "author", _doc.AuthorTable[isbt]);
-                        else
-                            appendValueAttribute(ins, "author", _doc.AuthorTable[isbt]);
-                        break;
-                    case 0x6805:
-                        //date
-                        dttm = new DateAndTime(sprm.Arguments);
-                        //if no revision data has been collected, it's an insert of a new element
-                        if (_revisionStack.Count > 0)
-                            dttm.Convert(new DateMapping(rPrChange));
-                        else
-                            dttm.Convert(new DateMapping(ins));
+                        appendFlagElement(parent, sprm, "webHidden", true);
                         break;
 
                     //language
@@ -224,14 +213,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0xCA72:
                         XmlNode bdr = _nodeFactory.CreateElement("w", "bdr", OpenXmlNamespaces.WordprocessingML);
                         appendBorderAttributes(new BorderCode(sprm.Arguments), bdr);
-                        _rPr.AppendChild(bdr);
+                        parent.AppendChild(bdr);
                         break;
 
                     //shading
                     case 0x4866:
                     case 0xCA71:
                         ShadingDescriptor desc = new ShadingDescriptor(sprm.Arguments);
-                        appendShading(_rPr, desc);
+                        appendShading(parent, desc);
                         break;
 
                     //color
@@ -250,23 +239,23 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     //highlightning
                     case 0x2A0C:
-                        appendValueElement(_rPr, "highlight", ((Global.ColorIdentifier)sprm.Arguments[0]).ToString(), true);
+                        appendValueElement(parent, "highlight", ((Global.ColorIdentifier)sprm.Arguments[0]).ToString(), true);
                         break;
 
                     //spacing
                     case 0x8840:
-                        appendValueElement(_rPr, "spacing", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString(), true);
+                        appendValueElement(parent, "spacing", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString(), true);
                         break;
 
                     //font size
                     case 0x4A43:
-                        appendValueElement(_rPr, "sz", sprm.Arguments[0].ToString(), true);
+                        appendValueElement(parent, "sz", sprm.Arguments[0].ToString(), true);
                         break;
                     case 0x484B:
-                        appendValueElement(_rPr, "kern", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString(), true);
+                        appendValueElement(parent, "kern", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString(), true);
                         break;
                     case 0x4A61:
-                        appendValueElement(_rPr, "szCs", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString(), true);
+                        appendValueElement(parent, "szCs", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString(), true);
                         break;
 
                     //font family
@@ -288,77 +277,41 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     //Underlining
                     case 0x2A3E:
-                        appendValueElement(_rPr, "u", lowerFirstChar(((Global.UnderlineCode)sprm.Arguments[0]).ToString()), true);
+                        appendValueElement(parent, "u", lowerFirstChar(((Global.UnderlineCode)sprm.Arguments[0]).ToString()), true);
                         break;
 
                     //char width
                     case 0x4852:
-                        appendValueElement(_rPr, "w", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString(), true);
+                        appendValueElement(parent, "w", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString(), true);
                         break;
 
                     //animation
                     case 0x2859:
-                        appendValueElement(_rPr, "effect", ((Global.TextAnimation)sprm.Arguments[0]).ToString(), true);
+                        appendValueElement(parent, "effect", ((Global.TextAnimation)sprm.Arguments[0]).ToString(), true);
                         break;
 
                     default:
                         break;
                 }
-
-                //put the sprm on the revision stack
-                if (_collectRevisionData)
-                {
-                    _revisionStack.Add(sprm);
-                }
-            }
-
-
-            //apend revision
-            if (rPrChange.Attributes.Count > 0 || rPrChange.ChildNodes.Count > 0)
-            {
-                _rPr.AppendChild(rPrChange);
-            }
-
-            //apend insertion
-            if (ins.Attributes.Count > 0)
-            {
-                _rPr.AppendChild(ins);
             }
 
             //apend lang
             if (lang.Attributes.Count > 0)
             {
-                _rPr.AppendChild(lang);
+                parent.AppendChild(lang);
             }
 
             //append fonts
             if (rFonts.Attributes.Count > 0)
             {
-                _rPr.AppendChild(rFonts);
+                parent.AppendChild(rFonts);
             }
 
             //append color
             if (colorVal.Value != "")
             {
                 color.Attributes.Append(colorVal);
-                _rPr.AppendChild(color);
-            }
-
-            //convert revision stack
-            if (chpx.HasOldProps && _rPr.ChildNodes.Count > 0)
-            {
-                //build a dummy chpx, to store the revision data
-                CharacterPropertyExceptions revisionChpx = new CharacterPropertyExceptions();
-                //copy the revision stack to the dummy
-                revisionChpx.grpprl = _revisionStack.GetRange(0, _revisionStack.Count);
-                //convert that dummy to rPrChange
-                revisionChpx.Convert(new CharacterPropertiesMapping(rPrChange, _doc));
-            }
-            
-            //write properties
-            if (_writer!=null && (_rPr.ChildNodes.Count > 0 || _rPr.Attributes.Count > 0))
-            {
-                _rPr.WriteTo(_writer);
+                parent.AppendChild(color);
             }
         }
 
