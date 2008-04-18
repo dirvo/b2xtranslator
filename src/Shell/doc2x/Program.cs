@@ -83,55 +83,56 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                 DateTime start = DateTime.Now;
 
                 //open the reader
-                StructuredStorageFile reader = new StructuredStorageFile(procFile.File.FullName);
-
-                //parse the document
-                WordDocument doc = new WordDocument(reader);
-
-                if (!doc.FIB.fComplex)
+                using (StructuredStorageFile reader = new StructuredStorageFile(procFile.File.FullName))
                 {
-                    using (WordprocessingDocument docx = WordprocessingDocument.Create(outputFile, WordprocessingDocumentType.Document))
+
+                    //parse the document
+                    WordDocument doc = new WordDocument(reader);
+
+                    if (!doc.FIB.fComplex)
                     {
-                        //Setup the writer
-                        XmlWriterSettings xws = new XmlWriterSettings();
-                        xws.OmitXmlDeclaration = false;
-                        xws.CloseOutput = true;
-                        xws.Encoding = Encoding.UTF8;
-                        xws.ConformanceLevel = ConformanceLevel.Document;
-
-                        //Setup the context
-                        ConversionContext context = new ConversionContext(doc);
-                        context.WriterSettings = xws;
-                        context.Docx = docx;
-
-                        //write settings.xml
-                        doc.DocumentProperties.Convert(new SettingsMapping(context));
-
-                        //Write styles.xml
-                        doc.Styles.Convert(new StyleSheetMapping(context));
-
-                        //Write numbering.xml
-                        doc.ListTable.Convert(new NumberingMapping(context));
-
-                        //Write fontTable.xml
-                        doc.FontTable.Convert(new FontTableMapping(context));
-
-                        //Write document.xml
-                        doc.Convert(new MainDocumentMapping(context));
-
-                        DateTime end = DateTime.Now;
-                        TimeSpan diff = end.Subtract(start);
-                        if (verboseLvl > VerboseLevel.Warning)
+                        using (WordprocessingDocument docx = WordprocessingDocument.Create(outputFile, WordprocessingDocumentType.Document))
                         {
-                            Console.WriteLine("Conversion finished in " + diff.TotalSeconds + " seconds");
+                            //Setup the writer
+                            XmlWriterSettings xws = new XmlWriterSettings();
+                            xws.OmitXmlDeclaration = false;
+                            xws.CloseOutput = true;
+                            xws.Encoding = Encoding.UTF8;
+                            xws.ConformanceLevel = ConformanceLevel.Document;
+
+                            //Setup the context
+                            ConversionContext context = new ConversionContext(doc);
+                            context.WriterSettings = xws;
+                            context.Docx = docx;
+
+                            //write settings.xml
+                            doc.DocumentProperties.Convert(new SettingsMapping(context));
+
+                            //Write styles.xml
+                            doc.Styles.Convert(new StyleSheetMapping(context));
+
+                            //Write numbering.xml
+                            doc.ListTable.Convert(new NumberingMapping(context));
+
+                            //Write fontTable.xml
+                            doc.FontTable.Convert(new FontTableMapping(context));
+
+                            //Write document.xml
+                            doc.Convert(new MainDocumentMapping(context));
+
+                            DateTime end = DateTime.Now;
+                            TimeSpan diff = end.Subtract(start);
+                            if (verboseLvl > VerboseLevel.Warning)
+                            {
+                                Console.WriteLine("Conversion finished in " + diff.TotalSeconds + " seconds");
+                            }
                         }
                     }
+                    else if (verboseLvl > VerboseLevel.None)
+                    {
+                        Console.WriteLine(inputFile + " has been fast-saved. This format is currently not supported.");
+                    }
                 }
-                else if (verboseLvl > VerboseLevel.None)
-                {
-                    Console.WriteLine(inputFile + " has been fast-saved. This format is currently not supported.");
-                }
-
             }
             catch (DirectoryNotFoundException)
             {

@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Diagnostics;
 
 [assembly: CLSCompliant(false)]
 
@@ -41,16 +42,13 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
     /// Author: math
     /// </summary>
     public class StructuredStorageFile : IStructuredStorageFile
-    {        
+    {
 
         FileHandler _fileHandler;
         Header _header;
         Fat _fat;
         MiniFat _miniFat;
         private DirectoryTree _directory;
-
-        private bool _disposed = false;
-
 
         ///// <summary>
         ///// Collection of all entry names contained in a compound file
@@ -114,7 +112,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         {
             _fileHandler = new FileHandler(fileName);
             _header = new Header(_fileHandler);
-            _fat = new Fat(_header, _fileHandler);            
+            _fat = new Fat(_header, _fileHandler);
             _directory = new DirectoryTree(_fat, _header, _fileHandler);
             _miniFat = new MiniFat(_fat, _header, _fileHandler, _directory.GetMiniStreamStart(), _directory.GetSizeOfMiniStream());
         }
@@ -169,26 +167,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        public void Dispose(bool disposing)
-        {
-            if (!_disposed)
-            {
-                if (disposing)
-                {
-                    // Dispose managed resources : none here
-                }
-                this.Close();
-                _disposed = true;
-            }
-        }
-
-        ~StructuredStorageFile()
-        {
-            Dispose(false);
+            this.Close();
         }
     }
 }
