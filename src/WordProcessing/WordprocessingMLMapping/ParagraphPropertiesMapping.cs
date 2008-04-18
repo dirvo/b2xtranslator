@@ -329,7 +329,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                             tabsPos.Value = System.BitConverter.ToInt16(sprm.Arguments, pos).ToString();
                             tab.Attributes.Append(tabsPos);
                             tabs.AppendChild(tab);
-                            pos += 2;
+                            
+                            //skip the tolerence array in sprm 0xC615
+                            if (sprm.OpCode == 0xC615)
+                                pos += 4;
+                            else
+                                pos += 2;
                         }
                         //read the added tabs
                         byte itbdAddMax = sprm.Arguments[pos];
