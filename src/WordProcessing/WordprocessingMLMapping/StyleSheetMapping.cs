@@ -75,7 +75,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     _writer.WriteEndElement();
 
                     // <w:basedOn val="" />
-                    if (style.istdBase != 4095)
+                    if (style.istdBase != 4095 && style.istdBase < sheet.Styles.Count)
                     {
                         _writer.WriteStartElement("w", "basedOn", OpenXmlNamespaces.WordprocessingML);
                         _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, MakeStyleId(sheet.Styles[(int)style.istdBase].xstzName));
@@ -83,14 +83,20 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     }
 
                     // <w:next val="" />
-                    _writer.WriteStartElement("w", "next", OpenXmlNamespaces.WordprocessingML);
-                    _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, MakeStyleId(sheet.Styles[(int)style.istdNext].xstzName));
-                    _writer.WriteEndElement();
+                    if (style.istdNext < sheet.Styles.Count)
+                    {
+                        _writer.WriteStartElement("w", "next", OpenXmlNamespaces.WordprocessingML);
+                        _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, MakeStyleId(sheet.Styles[(int)style.istdNext].xstzName));
+                        _writer.WriteEndElement();
+                    }
 
                     // <w:link val="" />
-                    _writer.WriteStartElement("w", "link", OpenXmlNamespaces.WordprocessingML);
-                    _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, MakeStyleId(sheet.Styles[(int)style.istdLink].xstzName));
-                    _writer.WriteEndElement();
+                    if (style.istdLink < sheet.Styles.Count)
+                    {
+                        _writer.WriteStartElement("w", "link", OpenXmlNamespaces.WordprocessingML);
+                        _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, MakeStyleId(sheet.Styles[(int)style.istdLink].xstzName));
+                        _writer.WriteEndElement();
+                    }
 
                     // <w:locked/>
                     if (style.fLocked)

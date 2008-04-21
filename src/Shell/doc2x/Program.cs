@@ -105,9 +105,6 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                             context.WriterSettings = xws;
                             context.Docx = docx;
 
-                            //write settings.xml
-                            doc.DocumentProperties.Convert(new SettingsMapping(context));
-
                             //Write styles.xml
                             doc.Styles.Convert(new StyleSheetMapping(context));
 
@@ -119,6 +116,9 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
 
                             //Write document.xml
                             doc.Convert(new MainDocumentMapping(context));
+
+                            //write settings.xml at last because of the rsid list
+                            doc.DocumentProperties.Convert(new SettingsMapping(context));
 
                             DateTime end = DateTime.Now;
                             TimeSpan diff = end.Subtract(start);

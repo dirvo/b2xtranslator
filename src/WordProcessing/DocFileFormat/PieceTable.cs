@@ -191,7 +191,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                         chars.Add(c);
                     }
                 }
-                else if (fcStart < pcd.fc && fcEnd <= pcdFcEnd)
+                else if (fcStart < pcd.fc && fcEnd >= pcd.fc && fcEnd <= pcdFcEnd)
                 {
                     //requested char range ends at this piece
                     //read from pcd.fc to fcEnd

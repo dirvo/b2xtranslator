@@ -66,9 +66,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             set { _allPapx = value; }
         }
 
+        /// <summary>
+        /// A list thta contains all revision ids.
+        /// </summary>
+        public List<string> AllRsids;
+
         public ConversionContext(WordDocument doc)
         {
             this.Doc = doc;
+            this.AllRsids = new List<string>();
 
             //build a dictionaries of all PAPX
             _allPapx = new Dictionary<Int32, ParagraphPropertyExceptions>();
@@ -86,6 +92,16 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 _allSepx.Add(doc.SectionTable.rgfc[i + 1], doc.SectionTable.grpsepx[i]);
             }
+        }
+
+        /// <summary>
+        /// Adds a new RSID to the list
+        /// </summary>
+        /// <param name="rsid"></param>
+        public void AddRsid(string rsid)
+        {
+            if (!this.AllRsids.Contains(rsid))
+                this.AllRsids.Add(rsid);
         }
     }
 }

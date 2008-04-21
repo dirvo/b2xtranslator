@@ -93,7 +93,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 //append properties
                 _paraEndChpx.Convert(new CharacterPropertiesMapping(rPr, _ctx.Doc, new RevisionData(_paraEndChpx)));
 
-
                 RevisionData rev = new RevisionData(_paraEndChpx);
                 //append delete infos
                 if (rev.Type == RevisionData.RevisionType.Deleted)
@@ -112,6 +111,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 switch (sprm.OpCode)
                 {
+                    //rsid for paragraph property enditing (write to parent element)
+                    case 0x6467:
+                        string rsid = String.Format("{0:x8}", System.BitConverter.ToInt32(sprm.Arguments, 0));
+                        _ctx.AddRsid(rsid);
+                        _writer.WriteAttributeString("w", "rsidP", OpenXmlNamespaces.WordprocessingML, rsid);
+                        break;
+
                     //attributes
                     case 0x6465:
                         XmlAttribute divId = _nodeFactory.CreateAttribute("w", "divId", OpenXmlNamespaces.WordprocessingML);

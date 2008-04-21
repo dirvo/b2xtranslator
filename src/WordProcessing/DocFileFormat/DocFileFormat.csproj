@@ -102,6 +102,7 @@
     <Compile Include="CharacterRange.cs" />
     <Compile Include="HeaderAndFooterTable.cs" />
     <Compile Include="InvalidFileException.cs" />
+    <Compile Include="LanguageId.cs" />
     <Compile Include="ListData.cs" />
     <Compile Include="ListFormatOverride.cs" />
     <Compile Include="ListFormatOverrideLevel.cs" />

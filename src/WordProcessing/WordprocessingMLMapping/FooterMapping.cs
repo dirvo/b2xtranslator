@@ -27,7 +27,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //convert the footer text
             _lastValidPapx = _doc.AllPapxFkps[0].grppapx[0];
             Int32 cp = _ftr.CharacterPosition;
-            while (cp < (_ftr.CharacterPosition + _ftr.CharacterCount))
+            //ignore the last 2 \r chars
+            while (cp < (_ftr.CharacterPosition + _ftr.CharacterCount - 2))
             {
                 Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
                 ParagraphPropertyExceptions papx = findValidPapx(fc);

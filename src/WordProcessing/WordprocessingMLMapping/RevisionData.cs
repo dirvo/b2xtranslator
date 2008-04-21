@@ -47,6 +47,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         public Int16 Isbt;
         public RevisionType Type;
         public List<SinglePropertyModifier> Changes;
+        public Int32 RsidDel;
+        public Int32 RsidProp;
         public Int32 Rsid;
 
         public RevisionData()
@@ -95,9 +97,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         this.Type = RevisionType.Deleted;
                         break;
                     case 0x6815:
+                        this.RsidProp = System.BitConverter.ToInt32(sprm.Arguments, 0);
+                        break;
                     case 0x6816:
-                    case 0x6817:
                         this.Rsid = System.BitConverter.ToInt32(sprm.Arguments, 0);
+                        break;
+                    case 0x6817:
+                        this.RsidDel = System.BitConverter.ToInt32(sprm.Arguments, 0);
                         break;
                 }
 

@@ -45,7 +45,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         protected ConversionContext _ctx;
         protected ParagraphPropertyExceptions _lastValidPapx;
         protected SectionPropertyExceptions _lastValidSepx;
-        protected int _sectionCount = 1;
+        protected int _sectionNr = 0;
 
         public DocumentMapping(ConversionContext ctx, OpenXmlPart targetPart)
             : base(XmlWriter.Create(targetPart.GetStream(), ctx.WriterSettings))
@@ -361,8 +361,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 //this is the last paragraph of this section
                 //write properties with section properties
-                papx.Convert(new ParagraphPropertiesMapping(_writer, _ctx, paraEndChpx, findValidSepx(cpEnd), _sectionCount));
-                _sectionCount++;
+                papx.Convert(new ParagraphPropertiesMapping(_writer, _ctx, paraEndChpx, findValidSepx(cpEnd), _sectionNr));
+                _sectionNr++;
             }
             else
             {
@@ -433,6 +433,26 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             //start run
             _writer.WriteStartElement("w", "r", OpenXmlNamespaces.WordprocessingML);
+
+            //append rsids
+            if (rev.Rsid != 0)
+            {
+                string rsid = String.Format("{0:x8}", rev.Rsid);
+                _writer.WriteAttributeString("w", "rsidR", OpenXmlNamespaces.WordprocessingML, rsid);
+                _ctx.AddRsid(rsid);
+            }
+            if (rev.RsidDel != 0)
+            {
+                string rsidDel = String.Format("{0:x8}", rev.RsidDel);
+                _writer.WriteAttributeString("w", "rsidDel", OpenXmlNamespaces.WordprocessingML, rsidDel);
+                _ctx.AddRsid(rsidDel);
+            }
+            if(rev.RsidProp != 0)
+            {
+                string rsidProp = String.Format("{0:x8}", rev.RsidProp);
+                _writer.WriteAttributeString("w", "rsidRPr", OpenXmlNamespaces.WordprocessingML, rsidProp);
+                _ctx.AddRsid(rsidProp);
+            }
 
             //write properties
             chpx.Convert(new CharacterPropertiesMapping(_writer, _doc, rev));

@@ -49,6 +49,6 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
         }
 
         public override string TargetName { get { return "footer" + this.PartIndex; } }
-        public override string TargetDirectory { get { return Parent.TargetDirectory; } }
+        public override string TargetDirectory { get { return ""; } }
     }
 }

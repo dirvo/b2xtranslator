@@ -27,12 +27,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             bestFit
         }
 
-        private FileInformationBlock _fib;
+        private ConversionContext _ctx;
 
         public SettingsMapping(ConversionContext ctx)
             : base(XmlWriter.Create(ctx.Docx.MainDocumentPart.AddSettingsPart().GetStream(), ctx.WriterSettings))
         {
-            _fib = ctx.Doc.FIB;
+            _ctx = ctx;
         }
 
         public void Apply(DocumentProperties dop)
@@ -175,6 +175,17 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 _writer.WriteElementString("w", "wrapTrailSpaces", OpenXmlNamespaces.WordprocessingML, "");
             _writer.WriteEndElement();
             
+            //convert the rsid list
+            _writer.WriteStartElement("w", "rsids", OpenXmlNamespaces.WordprocessingML);
+            _ctx.AllRsids.Sort();
+            foreach(string rsid in _ctx.AllRsids)
+            {
+                _writer.WriteStartElement("w", "rsid", OpenXmlNamespaces.WordprocessingML);
+                _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, rsid);
+                _writer.WriteEndElement();
+            }
+            _writer.WriteEndElement();
+
             //activeWritingStyle
             //alignBordersAndEdges
             //alwaysMergeEmptyNamespace

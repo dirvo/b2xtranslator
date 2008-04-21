@@ -73,9 +73,6 @@ namespace DocTranslatorTest
                     context.WriterSettings = xws;
                     context.Docx = docx;
 
-                    //write settings.xml
-                    doc.DocumentProperties.Convert(new SettingsMapping(context));
-
                     //write styles.xml
                     doc.Styles.Convert(new StyleSheetMapping(context));
 
@@ -114,6 +111,9 @@ namespace DocTranslatorTest
                     //            doc.Headers.FirstHeaders[i].CharacterCount
                     //            ));
                     //}
+
+                    //write settings.xml at last because of the rsid list
+                    doc.DocumentProperties.Convert(new SettingsMapping(context));
 
                     DateTime end = DateTime.Now;
                     TimeSpan diff = end.Subtract(start);

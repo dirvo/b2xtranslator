@@ -71,11 +71,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 XmlElement rPrChange = _nodeFactory.CreateElement("w", "rPrChange", OpenXmlNamespaces.WordprocessingML);
 
-                //rsid
-                XmlAttribute id = _nodeFactory.CreateAttribute("w", "id", OpenXmlNamespaces.WordprocessingML);
-                id.Value = _revisionData.Rsid.ToString();
-                rPrChange.Attributes.Append(id);
-
                 //date
                 _revisionData.Dttm.Convert(new DateMapping(rPrChange));
 
@@ -178,34 +173,38 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0x486D:
                     case 0x4873:
                         //latin
-                        Int16 langid = System.BitConverter.ToInt16(sprm.Arguments, 0);
-                        if(langid != 1024)
-                        {
-                            XmlAttribute langVal = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
-                            langVal.Value = langid.ToString();
-                            lang.Attributes.Append(langVal);
-                        }
+                        LanguageId langid = new LanguageId(System.BitConverter.ToInt16(sprm.Arguments, 0));
+                        langid.Convert(new LanguageIdMapping(lang, LanguageIdMapping.LanguageType.Default));
+                        //if(langid != 1024)
+                        //{
+
+                        //    XmlAttribute langVal = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
+                        //    langVal.Value = langid.ToString();
+                        //    lang.Attributes.Append(langVal);
+                        //}
                         break;
                     case 0x486E:
                     case 0x4874:
                         //east asia
-                        langid = System.BitConverter.ToInt16(sprm.Arguments, 0);
-                        if (langid != 1024)
-                        {
-                            XmlAttribute langEastAsia = _nodeFactory.CreateAttribute("w", "eastAsia", OpenXmlNamespaces.WordprocessingML);
-                            langEastAsia.Value = langid.ToString();
-                            lang.Attributes.Append(langEastAsia);
-                        }
+                        langid = new LanguageId(System.BitConverter.ToInt16(sprm.Arguments, 0));
+                        langid.Convert(new LanguageIdMapping(lang, LanguageIdMapping.LanguageType.EastAsian));
+                        //if (langid != 1024)
+                        //{
+                        //    XmlAttribute langEastAsia = _nodeFactory.CreateAttribute("w", "eastAsia", OpenXmlNamespaces.WordprocessingML);
+                        //    langEastAsia.Value = langid.ToString();
+                        //    lang.Attributes.Append(langEastAsia);
+                        //}
                         break;
                     case 0x485F:
                         //bidi
-                        langid = System.BitConverter.ToInt16(sprm.Arguments, 0);
-                        if (langid != 1024)
-                        {
-                            XmlAttribute langBidi = _nodeFactory.CreateAttribute("w", "bidi", OpenXmlNamespaces.WordprocessingML);
-                            langBidi.Value = langid.ToString();
-                            lang.Attributes.Append(langBidi);
-                        }
+                        langid = new LanguageId(System.BitConverter.ToInt16(sprm.Arguments, 0));
+                        langid.Convert(new LanguageIdMapping(lang, LanguageIdMapping.LanguageType.Complex));
+                        //if (langid != 1024)
+                        //{
+                        //    XmlAttribute langBidi = _nodeFactory.CreateAttribute("w", "bidi", OpenXmlNamespaces.WordprocessingML);
+                        //    langBidi.Value = langid.ToString();
+                        //    lang.Attributes.Append(langBidi);
+                        //}
                         break;
                     
                     //borders
