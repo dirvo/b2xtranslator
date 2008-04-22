@@ -127,6 +127,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public bool fFrame;
 
         /// <summary>
+        /// It's a nil BRC, bytes are FFFF.
+        /// </summary>
+        public bool fNil;
+
+        /// <summary>
         /// Creates a new BorderCode with default values
         /// </summary>
         public BorderCode()
@@ -139,7 +144,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <param name="bytes"></param>
         public BorderCode(byte[] bytes)
         {
-            if (bytes.Length == 8)
+            if (Utils.ArraySum(bytes) == bytes.Length * 255)
+            {
+                this.fNil = true;
+            }
+            else if (bytes.Length == 8)
             {
                 //it's a border code of Word 2000/2003
                 this.cv = System.BitConverter.ToInt32(bytes, 0);

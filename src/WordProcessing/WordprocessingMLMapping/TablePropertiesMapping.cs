@@ -128,7 +128,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //style
                     case 0x563a:
                     case 0xd63d:
-                        appendValueElement(_tblPr, "tblStyle", StyleSheetMapping.MakeStyleId(_styles.Styles[System.BitConverter.ToInt16(sprm.Arguments, 0)].xstzName), true);
+                        string id = StyleSheetMapping.MakeStyleId(_styles.Styles[System.BitConverter.ToInt16(sprm.Arguments, 0)].xstzName);
+                        if(id != "TableNormal")
+                            appendValueElement(_tblPr, "tblStyle", id, true);
                         break;
 
                     //bidi

@@ -134,6 +134,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                         //extract the vertical alignment out of the flag
                         VerticalCellAlignment vertAlign = (VerticalCellAlignment)((flags << 7) >> 30);
+
                         if (vertAlign != VerticalCellAlignment.top)
                             appendValueElement(_tcPr, "vAlign", vertAlign.ToString(), false);
 
@@ -145,12 +146,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         //extract the wrap out of the flag
                         bool fNoWrap = Utils.BitmaskToBool((int)flags, 0x2000);
                         if (fNoWrap)
-                            appendValueElement(_tcPr, "noWrap", "", false);
+                            appendValueElement(_tcPr, "noWrap", "", true);
 
                         //read the width of this cell
                         XmlElement tcW = _nodeFactory.CreateElement("w", "tcW", OpenXmlNamespaces.WordprocessingML);
                         XmlAttribute tcWtype = _nodeFactory.CreateAttribute("w", "type", OpenXmlNamespaces.WordprocessingML);
-                        tcWtype.Value = ((CellWidthType)((flags << 4) >> 13)).ToString();
+                        byte ftsWidth = (byte)((flags & 0x0E00) >> 9);
+                        tcWtype.Value = ((CellWidthType)ftsWidth).ToString();
+
                         tcW.Attributes.Append(tcWtype);
                         XmlAttribute tcWval = _nodeFactory.CreateAttribute("w", "w", OpenXmlNamespaces.WordprocessingML);
                         tcWval.Value = System.BitConverter.ToInt16(sprm.Arguments, cellPos + 2).ToString();
@@ -160,29 +163,25 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         //border top
                         byte[] brcTopBytes = new byte[4];
                         Array.Copy(sprm.Arguments, cellPos + 4, brcTopBytes, 0, 4);
-                        int sum = Utils.ArraySum(brcTopBytes);
-                        if (sum != 0 && sum != 4*255)
+                        if (Utils.ArraySum(brcTopBytes) != 0 )
                             _brcTop = new BorderCode(brcTopBytes);
 
                         //border left
                         byte[] brcLeftBytes = new byte[4];
                         Array.Copy(sprm.Arguments, cellPos + 8, brcLeftBytes, 0, 4);
-                        sum = Utils.ArraySum(brcLeftBytes);
-                        if (sum != 0 && sum != 4 * 255)
+                        if (Utils.ArraySum(brcLeftBytes) != 0)
                             _brcLeft = new BorderCode(brcLeftBytes);
 
                         //border bottom
                         byte[] brcBottomBytes = new byte[4];
                         Array.Copy(sprm.Arguments, cellPos + 12, brcBottomBytes, 0, 4);
-                        sum = Utils.ArraySum(brcBottomBytes);
-                        if (sum != 0 && sum != 4 * 255)
+                        if (Utils.ArraySum(brcBottomBytes) != 0)
                             _brcBottom = new BorderCode(brcBottomBytes);
                         
                         //border top
                         byte[] brcRightBytes = new byte[4];
                         Array.Copy(sprm.Arguments, cellPos + 16, brcRightBytes, 0, 4);
-                        sum = Utils.ArraySum(brcRightBytes);
-                        if (sum != 0 && sum != 4 * 255)
+                        if (Utils.ArraySum(brcRightBytes) != 0)
                             _brcRight = new BorderCode(brcRightBytes);
 
                         break;
@@ -225,7 +224,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0xD635:
                         first = sprm.Arguments[0];
                         lim = sprm.Arguments[1];
-                        byte ftsWidth = sprm.Arguments[2];
+                        ftsWidth = sprm.Arguments[2];
                         _width = System.BitConverter.ToInt16(sprm.Arguments, 3);
                         if (_cellIndex >= first && _cellIndex < lim)
                             appendDxaElement(_tcPr, "tcW", _width.ToString(), true);
@@ -252,7 +251,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         first = sprm.Arguments[0];
                         lim = sprm.Arguments[1];
                         if (_cellIndex >= first && _cellIndex < lim)
-                            appendValueElement(_tcPr, "noWrap", sprm.Arguments[2].ToString(), true);
+                        {
+                            fNoWrap = Utils.ByteToBool(sprm.Arguments[2]);
+                            if(fNoWrap)
+                                appendValueElement(_tcPr, "noWrap", "", true);
+                        }
+                            
                         break;
 
                     #region unusedSPRMS

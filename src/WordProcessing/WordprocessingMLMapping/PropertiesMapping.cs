@@ -83,9 +83,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         protected void appendValueElement(XmlElement node, string elementName, string elementValue, bool unique)
         {
             XmlElement ele = _nodeFactory.CreateElement("w", elementName, OpenXmlNamespaces.WordprocessingML);
-            XmlAttribute val = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
-            val.Value = elementValue;
-            ele.Attributes.Append(val);
+
+            if(elementValue != null && elementValue != "")
+            {
+                XmlAttribute val = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
+                val.Value = elementValue;
+                ele.Attributes.Append(val);
+            }
             if (unique)
             {
                 foreach (XmlElement exEle in node.ChildNodes)
@@ -141,22 +145,30 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
         protected void appendBorderAttributes(BorderCode brc, XmlNode border)
         {
-            //create xml
-            XmlAttribute val = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
-            val.Value = getBorderType(brc.brcType);
-            border.Attributes.Append(val);
+            if (brc.fNil)
+            {
+                XmlAttribute val = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
+                val.Value = "nil";
+                border.Attributes.Append(val);
+            }
+            else
+            {
+                XmlAttribute val = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
+                val.Value = getBorderType(brc.brcType);
+                border.Attributes.Append(val);
 
-            XmlAttribute color = _nodeFactory.CreateAttribute("w", "color", OpenXmlNamespaces.WordprocessingML);
-            color.Value = new RGBColor(brc.cv, RGBColor.ByteOrder.RedFirst).ThreeDigitHexCode;
-            border.Attributes.Append(color);
+                XmlAttribute color = _nodeFactory.CreateAttribute("w", "color", OpenXmlNamespaces.WordprocessingML);
+                color.Value = new RGBColor(brc.cv, RGBColor.ByteOrder.RedFirst).ThreeDigitHexCode;
+                border.Attributes.Append(color);
 
-            XmlAttribute space = _nodeFactory.CreateAttribute("w", "space", OpenXmlNamespaces.WordprocessingML);
-            space.Value = brc.dptSpace.ToString();
-            border.Attributes.Append(space);
+                XmlAttribute space = _nodeFactory.CreateAttribute("w", "space", OpenXmlNamespaces.WordprocessingML);
+                space.Value = brc.dptSpace.ToString();
+                border.Attributes.Append(space);
 
-            XmlAttribute sz = _nodeFactory.CreateAttribute("w", "sz", OpenXmlNamespaces.WordprocessingML);
-            sz.Value = brc.dptLineWidth.ToString();
-            border.Attributes.Append(sz);
+                XmlAttribute sz = _nodeFactory.CreateAttribute("w", "sz", OpenXmlNamespaces.WordprocessingML);
+                sz.Value = brc.dptLineWidth.ToString();
+                border.Attributes.Append(sz);
+            }
         }
 
         protected void appendShading(XmlElement parent, ShadingDescriptor desc)

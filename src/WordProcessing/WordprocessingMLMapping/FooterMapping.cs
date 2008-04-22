@@ -28,7 +28,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _lastValidPapx = _doc.AllPapxFkps[0].grppapx[0];
             Int32 cp = _ftr.CharacterPosition;
             //ignore the last 2 \r chars
-            while (cp < (_ftr.CharacterPosition + _ftr.CharacterCount - 2))
+            while (cp < (_ftr.CharacterPosition + _ftr.CharacterCount - 1))
             {
                 Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
                 ParagraphPropertyExceptions papx = findValidPapx(fc);
