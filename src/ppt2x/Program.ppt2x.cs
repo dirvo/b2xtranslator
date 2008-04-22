@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
-using DIaLOGIKa.b2xtranslator.Utils;
+using DIaLOGIKa.b2xtranslator.Tools;
 using DIaLOGIKa.b2xtranslator.PptFileFormat;
 using DIaLOGIKa.b2xtranslator.PptFileFormat.Records;
 using System.IO;
@@ -51,7 +51,7 @@ namespace DIaLOGIKa.b2xtranslator.ppt2x
 
                         if (text != null)
                         {
-                            Console.WriteLine("  * {0}", StringUtils.Inspect(text.Text));
+                            Console.WriteLine("  * {0}", Utils.StringInspect(text.Text));
                             textFound = true;
                         }
                     }
