@@ -119,13 +119,12 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
 
                             //write settings.xml at last because of the rsid list
                             doc.DocumentProperties.Convert(new SettingsMapping(context));
-
-                            DateTime end = DateTime.Now;
-                            TimeSpan diff = end.Subtract(start);
-                            if (verboseLvl > VerboseLevel.Warning)
-                            {
-                                Console.WriteLine("Conversion finished in " + diff.TotalSeconds + " seconds");
-                            }
+                        }
+                        DateTime end = DateTime.Now;
+                        TimeSpan diff = end.Subtract(start);
+                        if (verboseLvl > VerboseLevel.Warning)
+                        {
+                            Console.WriteLine("Conversion finished in " + diff.TotalSeconds + " seconds");
                         }
                     }
                     else if (verboseLvl > VerboseLevel.None)
