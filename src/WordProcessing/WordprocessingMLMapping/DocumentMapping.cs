@@ -590,7 +590,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 else if ((int)c > 31 && (int)c != 0xFFFF)
                 {
                     _writer.WriteChars(new char[] { c }, 0, 1);
-
                 }
 
                 cp++;

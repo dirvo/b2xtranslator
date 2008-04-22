@@ -45,12 +45,26 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private StyleSheet _styles;
         private List<Int16> _grid;
 
-        public enum WidthType
+        private enum WidthType
         {
             nil,
             auto,
             pct,
             dxa
+        }
+
+        private enum VerticalPositionCode
+        {
+            margin = 0,
+            page,
+            text
+        }
+
+        private enum HorizontalPositionCode
+        {
+            text = 0,
+            margin,
+            page
         }
 
         public TablePropertiesMapping(XmlWriter writer, StyleSheet styles, List<Int16> grid)
@@ -66,7 +80,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             XmlElement tblBorders = _nodeFactory.CreateElement("w", "tblBorders", OpenXmlNamespaces.WordprocessingML);
             XmlElement tblCellMar = _nodeFactory.CreateElement("w", "tblCellMar", OpenXmlNamespaces.WordprocessingML);
             XmlElement tblLayout = _nodeFactory.CreateElement("w", "tblLayout", OpenXmlNamespaces.WordprocessingML);
+            XmlElement tblpPr = _nodeFactory.CreateElement("w", "tblpPr", OpenXmlNamespaces.WordprocessingML);
             XmlAttribute layoutType = _nodeFactory.CreateAttribute("w", "type", OpenXmlNamespaces.WordprocessingML);
+
             layoutType.Value = "fixed";
 
             foreach (SinglePropertyModifier sprm in tapx.grpprl)
@@ -243,9 +259,39 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         addOrSetBorder(tblBorders, insideVBorder);
                         break;
 
-                    default:
+                    //floating table properties
+                    case 0x360D:
+                        byte flag = sprm.Arguments[0];
+                        VerticalPositionCode pcVert = (VerticalPositionCode)((flag & 0x30) >> 4);
+                        HorizontalPositionCode pcHorz = (HorizontalPositionCode)((flag & 0xC0) >> 6);
+                        appendValueAttribute(tblpPr, "horzAnchor", pcHorz.ToString());
+                        appendValueAttribute(tblpPr, "vertAnchor", pcVert.ToString());
+                        break;
+                    case 0x9410:
+                        appendValueAttribute(tblpPr, "leftFromText", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
+                        break;
+                    case 0x941e:
+                        appendValueAttribute(tblpPr, "rightFromText", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
+                        break;
+                    case 0x9411:
+                        appendValueAttribute(tblpPr, "topFromText", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
+                        break;
+                    case 0x941f:
+                        appendValueAttribute(tblpPr, "bottomFromText", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
+                        break;
+                    case 0x940e:
+                        appendValueAttribute(tblpPr, "tblpX", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
+                        break;
+                    case 0x940f:
+                        appendValueAttribute(tblpPr, "tblpY", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
                 }
+            }
+
+            //append floating props
+            if (tblpPr.Attributes.Count > 0)
+            {
+                _tblPr.AppendChild(tblpPr);
             }
 
             //append borders
