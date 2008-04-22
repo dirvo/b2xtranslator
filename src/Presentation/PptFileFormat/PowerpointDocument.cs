@@ -30,11 +30,11 @@ using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
-using PptFileFormat.Records;
+using DIaLOGIKa.b2xtranslator.PptFileFormat.Records;
 
-namespace PptFileFormat
+namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
-    class PowerpointDocument : IVisitable, IEnumerable<Record>
+    public class PowerpointDocument : IVisitable, IEnumerable<Record>
     {
         /// <summary>
         /// The stream "PowerPoint Document"
@@ -43,9 +43,9 @@ namespace PptFileFormat
 
         public List<Record> RootRecords = new List<Record>();
 
-        public PowerpointDocument(StructuredStorageFile reader)
+        public PowerpointDocument(StructuredStorageFile file)
         {
-            this.PowerpointDocumentStream = reader.GetStream("PowerPoint Document");
+            this.PowerpointDocumentStream = file.GetStream("PowerPoint Document");
 
             while (this.PowerpointDocumentStream.Position != this.PowerpointDocumentStream.Length)
             {

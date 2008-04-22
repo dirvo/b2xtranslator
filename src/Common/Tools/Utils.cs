@@ -185,5 +185,40 @@ namespace DIaLOGIKa.b2xtranslator.Tools
 
             return ret;
         }
+
+        // Would have been nice to use an extension method here... -- flgr
+        public static String StringInspect(String s)
+        {
+            StringBuilder result = new StringBuilder("\"");
+
+            foreach (char c in s)
+            {
+                switch (c)
+                {
+                    case '\r':
+                        result.Append(@"\r");
+                        break;
+
+                    case '\n':
+                        result.Append(@"\n");
+                        break;
+
+                    case '\v':
+                        result.Append(@"\v");
+                        break;
+
+                    default:
+                        if (Char.IsControl(c))
+                            result.AppendFormat("\\x{0:X2}", (int)c);
+                        else
+                            result.Append(c);
+                        break;
+                }
+            }
+
+            result.Append("\"");
+
+            return result.ToString();
+        }
     }
 }

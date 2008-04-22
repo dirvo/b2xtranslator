@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
-using DIaLOGIKa.b2xtranslator.Tools;
-using PptFileFormat.Records;
+using DIaLOGIKa.b2xtranslator.Utils;
+using DIaLOGIKa.b2xtranslator.PptFileFormat;
+using DIaLOGIKa.b2xtranslator.PptFileFormat.Records;
 using System.IO;
 
-namespace PptFileFormat
+namespace DIaLOGIKa.b2xtranslator.ppt2x
 {
     class Program
     {
@@ -24,30 +25,9 @@ namespace PptFileFormat
             ProcessingFile procFile = new ProcessingFile(inputFile);
             
             //open the reader
-            StructuredStorageFile reader = new StructuredStorageFile(procFile.File.FullName);
+            StructuredStorageFile file = new StructuredStorageFile(procFile.File.FullName);
 
-            foreach (DirectoryEntry entry in reader.AllStreamEntries)
-                Console.WriteLine(entry.Path);
-
-            Console.WriteLine();
-
-            PowerpointDocument pptDoc = new PowerpointDocument(reader);
-
-            // Dump unknown records
-            foreach (Record record in pptDoc)
-            {
-                UnknownRecord unknownRecord = record as UnknownRecord;
-
-                if (unknownRecord != null)
-                {
-                    string filename = String.Format(@"{0}\{1}.record", outputDir, unknownRecord.GetIdentifier());
-
-                    using (FileStream fs = new FileStream(filename, FileMode.Create))
-                    {
-                        unknownRecord.DumpToStream(fs);
-                    }
-                }
-            }
+            PowerpointDocument pptDoc = new PowerpointDocument(file);
 
             // Output record tree
             Console.WriteLine(pptDoc);
@@ -71,7 +51,7 @@ namespace PptFileFormat
 
                         if (text != null)
                         {
-                            Console.WriteLine("  * {0}", text.Text);
+                            Console.WriteLine("  * {0}", StringUtils.Inspect(text.Text));
                             textFound = true;
                         }
                     }
