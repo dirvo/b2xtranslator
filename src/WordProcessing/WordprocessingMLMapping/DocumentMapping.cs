@@ -47,6 +47,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         protected SectionPropertyExceptions _lastValidSepx;
         protected int _sectionNr = 0;
 
+        private class Symbol
+        {
+            public string FontName;
+            public string HexValue;
+        }
+
         public DocumentMapping(ConversionContext ctx, OpenXmlPart targetPart)
             : base(XmlWriter.Create(targetPart.GetStream(), ctx.WriterSettings))
         {
@@ -456,7 +462,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             //write properties
             chpx.Convert(new CharacterPropertiesMapping(_writer, _doc, rev));
-
             if (chars.Count == 1 && chars[0] == TextBoundary.Picture)
             {
                 ////its a picture
@@ -475,9 +480,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             else
             {
                 if(rev.Type == RevisionData.RevisionType.Deleted)
-                    cp = writeText(chars, cp, true);
+                    cp = writeText(chars, cp, chpx, true);
                 else
-                    cp = writeText(chars, cp, false);
+                    cp = writeText(chars, cp, chpx, false);
             }
 
             //end run
@@ -495,9 +500,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// Writes the given text to the document
         /// </summary>
         /// <param name="chars"></param>
-        protected Int32 writeText(List<char> chars, Int32 initialCp, bool writeDeletedText)
+        protected Int32 writeText(List<char> chars, Int32 initialCp, CharacterPropertyExceptions chpx, bool writeDeletedText)
         {
             Int32 cp = initialCp;
+            bool fSpec = isSpecial(chpx);
 
             //start text
             string textType = "t";
@@ -561,13 +567,25 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     _writer.WriteStartElement("w", "fldChar", OpenXmlNamespaces.WordprocessingML);
                     _writer.WriteAttributeString("w", "fldCharType", OpenXmlNamespaces.WordprocessingML, "separate");
                     _writer.WriteEndElement();
-
                 }
                 else if (c == TextBoundary.FieldEndMark)
                 {
                     _writer.WriteStartElement("w", "fldChar", OpenXmlNamespaces.WordprocessingML);
                     _writer.WriteAttributeString("w", "fldCharType", OpenXmlNamespaces.WordprocessingML, "end");
                     _writer.WriteEndElement();
+                }
+                else if(c == TextBoundary.Symbol && fSpec)
+                {
+                    //close previous w:t ...
+                    _writer.WriteEndElement();
+
+                    Symbol s = getSymbol(chpx);
+                    _writer.WriteStartElement("w", "sym", OpenXmlNamespaces.WordprocessingML);
+                    _writer.WriteAttributeString("w", "font", OpenXmlNamespaces.WordprocessingML, s.FontName);
+                    _writer.WriteAttributeString("w", "char", OpenXmlNamespaces.WordprocessingML, s.HexValue);
+                    _writer.WriteEndElement();
+
+                    _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
                 }
                 else if ((int)c > 31 && (int)c != 0xFFFF)
                 {
@@ -666,6 +684,30 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 {
                     //special value
                     ret = Utils.ByteToBool(sprm.Arguments[0]);
+                    break;
+                }
+            }
+            return ret;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="chpx"></param>
+        /// <returns></returns>
+        private Symbol getSymbol(CharacterPropertyExceptions chpx)
+        {
+            Symbol ret = null;
+            foreach (SinglePropertyModifier sprm in chpx.grpprl)
+            {
+                if (sprm.OpCode == 0x6A09)
+                {
+                    //special symbol
+                    ret = new Symbol();
+                    Int16 fontIndex = System.BitConverter.ToInt16(sprm.Arguments, 0);
+                    Int16 code = System.BitConverter.ToInt16(sprm.Arguments, 2);
+                    ret.FontName = _doc.FontTable[fontIndex].xszFtn;
+                    ret.HexValue = String.Format("{0:x4}", code);
                     break;
                 }
             }

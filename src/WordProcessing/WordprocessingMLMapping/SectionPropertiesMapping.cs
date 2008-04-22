@@ -67,6 +67,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             snapToChars,
         }
 
+        private Int16[] _colSpace;
+        private Int16[] _colWidth;
+        private Int16 _pgWidth, _marLeft, _marRight;
+
         /// <summary>
         /// Creates a new SectionPropertiesMapping which writes the 
         /// properties to the given writer
@@ -166,11 +170,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //page margins
                     case 0xB021:
                         //left margin
-                        appendValueAttribute(pgMar, "left", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
+                        _marLeft = System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        appendValueAttribute(pgMar, "left", _marLeft.ToString());
                         break;
                     case 0xB022:
                         //right margin
-                        appendValueAttribute(pgMar, "right", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
+                        _marRight = System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        appendValueAttribute(pgMar, "right", _marRight.ToString());
                         break;
                     case 0x9023:
                         //top margin
@@ -196,7 +202,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //page size and orientation
                     case 0xb01f:
                         //width
-                        appendValueAttribute(pgSz, "w", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
+                        _pgWidth = System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        appendValueAttribute(pgSz, "w", _pgWidth.ToString());
                         break;
                     case 0xb020:
                         //height
@@ -260,9 +267,21 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0x500B:
                         Int32 colNum = System.BitConverter.ToInt16(sprm.Arguments,0) + 1;
                         appendValueAttribute(cols, "num", colNum.ToString());
+                        _colSpace = new Int16[colNum];
+                        _colWidth = new Int16[colNum];
                         break;
                     case 0x900c:
                         appendValueAttribute(cols, "space", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
+                        break;
+                    case 0xf203:
+                        //col width
+                        byte index = sprm.Arguments[0];
+                        Int16 w = System.BitConverter.ToInt16(sprm.Arguments, 1);
+                        _colWidth[index] = w;
+                        break;
+                    case 0xf204:
+                        //col space
+                        _colSpace[sprm.Arguments[0]] = System.BitConverter.ToInt16(sprm.Arguments, 1);
                         break;
 
                     //bidi
@@ -294,8 +313,41 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0x301A:
                         appendValueElement(_sectPr, "vAlign", sprm.Arguments[0].ToString(), true);
                         break;
+                }
+            }
 
+            //build the columns
+            if (_colWidth != null)
+            {
+                //set to unequal width
+                XmlAttribute equalWidth = _nodeFactory.CreateAttribute("w", "equalWidth", OpenXmlNamespaces.WordprocessingML);
+                equalWidth.Value = "0";
+                cols.Attributes.Append(equalWidth);
 
+                //calculate the width of the last column:
+                //the last column width is not written to the document because it can be calculated.
+                if (_colWidth[_colWidth.Length - 1] == 0)
+                {
+                    Int16 lastColWidth = (Int16)(_pgWidth - _marLeft - _marRight);
+                    for (int i = 0; i < _colWidth.Length - 1; i++)
+                    {
+                        lastColWidth -= _colSpace[i];
+                        lastColWidth -= _colWidth[i];
+                    }
+                    _colWidth[_colWidth.Length - 1] = lastColWidth;
+                }
+
+                //append the xml elements
+                for (int i = 0; i < _colWidth.Length; i++)
+                {
+                    XmlElement col = _nodeFactory.CreateElement("w", "col", OpenXmlNamespaces.WordprocessingML);
+                    XmlAttribute w = _nodeFactory.CreateAttribute("w", "w", OpenXmlNamespaces.WordprocessingML);
+                    XmlAttribute space = _nodeFactory.CreateAttribute("w", "space", OpenXmlNamespaces.WordprocessingML);
+                    w.Value = _colWidth[i].ToString();
+                    space.Value = _colSpace[i].ToString();
+                    col.Attributes.Append(w);
+                    col.Attributes.Append(space);
+                    cols.AppendChild(col);
                 }
             }
 
@@ -324,6 +376,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
 
             //append columns
+
             if (cols.Attributes.Count > 0 || cols.ChildNodes.Count > 0)
             {
                 _sectPr.AppendChild(cols);

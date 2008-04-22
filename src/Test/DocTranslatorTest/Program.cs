@@ -85,33 +85,6 @@ namespace DocTranslatorTest
                     //write document.xml
                     doc.Convert(new MainDocumentMapping(context));
 
-                    ////write headers
-                    //int sectionCount = doc.Headers.OddHeaders.Count;
-                    //int headerCp = 0 + doc.FIB.ccpText;
-                    //for (int i = 0; i < sectionCount; i++)
-                    //{
-                    //    //odd headers
-                    //    if (doc.Headers.OddHeaders[i].CharacterCount > 3)
-                    //        doc.Convert(new HeaderMapping(
-                    //            context, headerCp + doc.Headers.OddHeaders[i].CharacterPosition,
-                    //            doc.Headers.OddHeaders[i].CharacterCount
-                    //            ));
-
-                    //    //even headers
-                    //    if(doc.Headers.EvenHeaders[i].CharacterCount > 3)
-                    //        doc.Convert(new HeaderMapping(
-                    //            context, headerCp + doc.Headers.EvenHeaders[i].CharacterPosition,
-                    //            doc.Headers.EvenHeaders[i].CharacterCount
-                    //            ));
-
-                    //    //first headers
-                    //    if(doc.Headers.FirstHeaders[i].CharacterCount > 3)
-                    //        doc.Convert(new HeaderMapping(
-                    //            context, headerCp + doc.Headers.FirstHeaders[i].CharacterPosition,
-                    //            doc.Headers.FirstHeaders[i].CharacterCount
-                    //            ));
-                    //}
-
                     //write settings.xml at last because of the rsid list
                     doc.DocumentProperties.Convert(new SettingsMapping(context));
 

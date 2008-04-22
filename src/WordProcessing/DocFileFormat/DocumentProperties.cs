@@ -1593,34 +1593,37 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                             this.cpMinRMHdrTxbx = System.BitConverter.ToInt32(bytes, 584);
                             this.rsidRoot = System.BitConverter.ToInt32(bytes, 588);
 
-                            //split bytes 592,593,594,595 into bits
-                            bits = new BitArray(new byte[] { bytes[592], bytes[593], bytes[594], bytes[595] });
-                            this.fTreatLockAtnAsReadOnly = bits[0];
-                            this.fStyleLock = bits[1];
-                            this.fAutoFmtOverride = bits[2];
-                            this.fRemoveWordML = bits[3];
-                            this.fApplyCustomXForm = bits[4];
-                            this.fStyeLockEnforced = bits[5];
-                            this.fFakeLockAtn = bits[6];
-                            this.fIgnoreMixedContent = bits[7];
-                            this.fShowPlaceholderText = bits[8];
-                            this.grf = Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 9, 23));
+                            if (bytes.Length == 610)
+                            {
+                                //split bytes 592,593,594,595 into bits
+                                bits = new BitArray(new byte[] { bytes[592], bytes[593], bytes[594], bytes[595] });
+                                this.fTreatLockAtnAsReadOnly = bits[0];
+                                this.fStyleLock = bits[1];
+                                this.fAutoFmtOverride = bits[2];
+                                this.fRemoveWordML = bits[3];
+                                this.fApplyCustomXForm = bits[4];
+                                this.fStyeLockEnforced = bits[5];
+                                this.fFakeLockAtn = bits[6];
+                                this.fIgnoreMixedContent = bits[7];
+                                this.fShowPlaceholderText = bits[8];
+                                this.grf = Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 9, 23));
 
-                            //split bytes 596 and 597 into bits
-                            bits = new BitArray(new byte[] { bytes[596], bytes[597] });
-                            this.fReadingModeInkLockDown = bits[0];
-                            this.fAcetateShowInkAtn = bits[1];
-                            this.fFilterDttm = bits[2];
-                            this.fEnforceDocProt = bits[3];
-                            this.iDocProtCur = (UInt16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 4, 3));
-                            this.fDispBkSpSaved = bits[7];
+                                //split bytes 596 and 597 into bits
+                                bits = new BitArray(new byte[] { bytes[596], bytes[597] });
+                                this.fReadingModeInkLockDown = bits[0];
+                                this.fAcetateShowInkAtn = bits[1];
+                                this.fFilterDttm = bits[2];
+                                this.fEnforceDocProt = bits[3];
+                                this.iDocProtCur = (UInt16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 4, 3));
+                                this.fDispBkSpSaved = bits[7];
 
-                            this.dxaPageLock = System.BitConverter.ToInt16(bytes, 598);
-                            this.dyaPageLock = System.BitConverter.ToInt16(bytes, 600);
-                            this.pctFontLock = System.BitConverter.ToInt32(bytes, 602);
-                            this.grfitbid = bytes[606];
-                            //byte 607 is unused
-                            this.ilfoMacAtCleanup = System.BitConverter.ToUInt16(bytes, 608);
+                                this.dxaPageLock = System.BitConverter.ToInt16(bytes, 598);
+                                this.dyaPageLock = System.BitConverter.ToInt16(bytes, 600);
+                                this.pctFontLock = System.BitConverter.ToInt32(bytes, 602);
+                                this.grfitbid = bytes[606];
+                                //byte 607 is unused
+                                this.ilfoMacAtCleanup = System.BitConverter.ToUInt16(bytes, 608);
+                            }
                         }
                         
                     }

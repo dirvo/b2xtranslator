@@ -58,5 +58,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public const char AnnotationReference = (char)5;
         public const char LineNumber = (char)6;
         public const char HandAnnotationPicture = (char)7;
+        public const char Symbol = (char)40;
     }
 }
