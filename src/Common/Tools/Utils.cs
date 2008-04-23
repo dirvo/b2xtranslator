@@ -35,6 +35,23 @@ namespace DIaLOGIKa.b2xtranslator.Tools
 {
     public class Utils
     {
+        public static int BitmaskToInt(int value, int mask)
+        {
+            int ret = value & mask;
+            
+            //shift for all trailing zeros
+            BitArray bits = new BitArray(new int[] { mask });
+            foreach (bool bit in bits)
+            {
+                if (!bit)
+                    ret = ret >> 1;
+                else
+                    break;
+            }
+
+            return ret;
+        }
+
         public static int ArraySum(byte[] values)
         {
             int ret = 0;
