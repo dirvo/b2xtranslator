@@ -46,6 +46,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         protected ParagraphPropertyExceptions _lastValidPapx;
         protected SectionPropertyExceptions _lastValidSepx;
         protected int _sectionNr = 0;
+        protected int _footnoteNr = 0;
 
         private class Symbol
         {
@@ -584,6 +585,26 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     _writer.WriteAttributeString("w", "font", OpenXmlNamespaces.WordprocessingML, s.FontName);
                     _writer.WriteAttributeString("w", "char", OpenXmlNamespaces.WordprocessingML, s.HexValue);
                     _writer.WriteEndElement();
+
+                    _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
+                }
+                else if (c == TextBoundary.AutoNumberedFootnoteReference && fSpec)
+                {
+                    //close previous w:t ...
+                    _writer.WriteEndElement();
+
+                    if (this.GetType() != typeof(FootnotesMapping))
+                    {
+                        _writer.WriteStartElement("w", "footnoteReference", OpenXmlNamespaces.WordprocessingML);
+                        _writer.WriteAttributeString("w", "id", OpenXmlNamespaces.WordprocessingML, _footnoteNr.ToString());
+                        _writer.WriteEndElement();
+                    }
+                    else
+                    {
+                        _writer.WriteElementString("w", "footnoteRef", OpenXmlNamespaces.WordprocessingML, "");
+                    }
+                    
+                    _footnoteNr++;
 
                     _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
                 }

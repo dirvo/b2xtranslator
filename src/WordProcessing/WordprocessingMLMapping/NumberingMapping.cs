@@ -102,7 +102,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     //number format
                     _writer.WriteStartElement("w", "numFmt", OpenXmlNamespaces.WordprocessingML);
-                    _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, getNumberFormat(lvl.nfc));
+                    _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, GetNumberFormat(lvl.nfc));
                     _writer.WriteEndElement();
 
                     //suffix
@@ -206,7 +206,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// </summary>
         /// <param name="nfc">The number format code</param>
         /// <returns>The OOXML attribute value</returns>
-        private string getNumberFormat(byte nfc)
+        public static string GetNumberFormat(int nfc)
         {
             switch (nfc)
             {
@@ -226,9 +226,110 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     return "cardinalText";
                 case 7:
                     return "ordinalText";
+                case 8:
+                    return "hex";
+                case 9:
+                    return "chicago";
+                case 10:
+                    return "ideographDigital";
+                case 11:
+                    return "japaneseCounting";
+                case 12:
+                    return "aiueo";
+                case 13:
+                    return "iroha";
+                case 14:
+                    return "decimalFullWidth";
+                case 15:
+                    return "decimalHalfWidth";
+                case 16:
+                    return "japaneseLegal";
+                case 17:
+                    return "japaneseDigitalTenThousand";
+                case 18:
+                    return "decimalEnclosedCircle";
+                case 19:
+                    return "decimalFullWidth2";
+                case 20:
+                    return "aiueoFullWidth";
+                case 21:
+                    return "irohaFullWidth";
+                case 22:
+                    return "decimalZero";
                 case 23:
                     return "bullet";
-                //ToDO: implement rest of the number formats
+                case 24:
+                    return "ganada";
+                case 25:
+                    return "chosung";
+                case 26:
+                    return "decimalEnclosedFullstop";
+                case 27:
+                    return "decimalEnclosedParen";
+                case 28:
+                    return "decimalEnclosedCircleChinese";
+                case 29:
+                    return "ideographEnclosedCircle";
+                case 30:
+                    return "ideographTraditional";
+                case 31:
+                    return "ideographZodiac";
+                case 32:
+                    return "ideographZodiacTraditional";
+                case 33:
+                    return "taiwaneseCounting";
+                case 34:
+                    return "ideographLegalTraditional";
+                case 35:
+                    return "taiwaneseCountingThousand";
+                case 36:
+                    return "taiwaneseDigital";
+                case 37:
+                    return "chineseCounting";
+                case 38:
+                    return "chineseLegalSimplified";
+                case 39:
+                    return "chineseCountingThousand";
+                case 40:
+                    return "koreanDigital";
+                case 41:
+                    return "koreanCounting";
+                case 42:
+                    return "koreanLegal";
+                case 43:
+                    return "koreanDigital2";
+                case 44:
+                    return "vietnameseCounting";
+                case 45:
+                    return "russianLower";
+                case 46:
+                    return "russianUpper";
+                case 47:
+                    return "none";
+                case 48:
+                    return "numberInDash";
+                case 49:
+                    return "hebrew1";
+                case 50:
+                    return "hebrew2";
+                case 51:
+                    return "arabicAlpha";
+                case 52:
+                    return "arabicAbjad";
+                case 53:
+                    return "hindiVowels";
+                case 54:
+                    return "hindiConsonants";
+                case 55:
+                    return "hindiNumbers";
+                case 56:
+                    return "hindiCounting";
+                case 57:
+                    return "thaiLetters";
+                case 58:
+                    return "thaiNumbers";
+                case 59:
+                    return "thaiCounting";
                 default:
                     return "decimal";
             }

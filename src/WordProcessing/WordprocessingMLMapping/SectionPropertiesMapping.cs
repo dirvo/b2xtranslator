@@ -67,6 +67,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             snapToChars,
         }
 
+        private enum FootnoteRestartCode
+        {
+            continuous,
+            eachSect,
+            eachPage
+        }
+
         private Int16[] _colSpace;
         private Int16[] _colWidth;
         private Int16 _pgWidth, _marLeft, _marRight;
@@ -110,6 +117,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             XmlElement cols = _nodeFactory.CreateElement("w", "cols", OpenXmlNamespaces.WordprocessingML);
             XmlElement pgBorders = _nodeFactory.CreateElement("w", "pgBorders", OpenXmlNamespaces.WordprocessingML);
             XmlElement paperSrc = _nodeFactory.CreateElement("w", "paperSrc", OpenXmlNamespaces.WordprocessingML);
+            XmlElement footnotePr = _nodeFactory.CreateElement("w", "footnotePr", OpenXmlNamespaces.WordprocessingML);
 
             //convert headers of this section
             if (_ctx.Doc.HeaderAndFooterTable.OddHeaders.Count > 0)
@@ -252,6 +260,28 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         addOrSetBorder(pgBorders, rightBorder);
                         break;
 
+                    //footnote porperties
+                    case 0x303c:
+                        //restart code
+                        FootnoteRestartCode fncFtn = (FootnoteRestartCode)System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        appendValueElement(footnotePr, "numRestart", fncFtn.ToString(), true);
+                        break;
+                    case 0x303b:
+                        //position code
+                        Int16 fpc = System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        if(fpc == 2)
+                            appendValueElement(footnotePr, "pos", "beneathText", true);
+                        break;
+                    case 0x5040:
+                        //number format
+                        Int16 nfc = System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        appendValueElement(footnotePr, "numFmt", NumberingMapping.GetNumberFormat(nfc), true);
+                        break;
+                    case 0x503f:
+                        Int16 nFtn = System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        appendValueElement(footnotePr, "numStart", nFtn.ToString(), true);
+                        break;
+
                     //doc grid
                     case 0x9031:
                         appendValueAttribute(docGrid, "linePitch", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
@@ -349,6 +379,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     col.Attributes.Append(space);
                     cols.AppendChild(col);
                 }
+            }
+
+            //append footnote properties
+            if (footnotePr.ChildNodes.Count > 0)
+            {
+                _sectPr.AppendChild(footnotePr);
             }
 
             //append page size

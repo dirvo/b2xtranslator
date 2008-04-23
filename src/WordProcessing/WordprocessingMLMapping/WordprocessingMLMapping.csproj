@@ -47,6 +47,7 @@
     <Compile Include="ApplicationPropertiesMapping.cs" />
     <Compile Include="FontTableMapping.cs" />
     <Compile Include="FooterMapping.cs" />
+    <Compile Include="FootnotesMapping.cs" />
     <Compile Include="HeaderMapping.cs" />
     <Compile Include="LanguageIdMapping.cs" />
     <Compile Include="MainDocumentMapping.cs" />

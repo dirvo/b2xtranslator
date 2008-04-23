@@ -82,8 +82,11 @@ namespace DocTranslatorTest
                     //write fontTable.xml
                     doc.FontTable.Convert(new FontTableMapping(context));
 
-                    //write document.xml
+                    //write document.xml and the header and footers
                     doc.Convert(new MainDocumentMapping(context));
+
+                    //write the footnotes
+                    doc.Convert(new FootnotesMapping(context));
 
                     //write settings.xml at last because of the rsid list
                     doc.DocumentProperties.Convert(new SettingsMapping(context));

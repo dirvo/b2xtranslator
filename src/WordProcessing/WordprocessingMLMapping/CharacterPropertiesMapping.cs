@@ -43,6 +43,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private UInt16 _currentIstd;
         private RevisionData _revisionData;
 
+        private enum SuperscriptIndex
+        {
+            baseline,
+            superscript,
+            subscript
+        }
+
         public CharacterPropertiesMapping(XmlWriter writer, WordDocument doc, RevisionData rev)
             : base(writer)
         {
@@ -168,6 +175,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0x0811:
                         appendFlagElement(parent, sprm, "webHidden", true);
                         break;
+                    case 0x2A48:
+                        SuperscriptIndex iss = (SuperscriptIndex)sprm.Arguments[0];
+                        appendValueElement(parent, "vertAlign", iss.ToString(), true);
+                        break;
 
                     //language
                     case 0x486D:
@@ -175,36 +186,17 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         //latin
                         LanguageId langid = new LanguageId(System.BitConverter.ToInt16(sprm.Arguments, 0));
                         langid.Convert(new LanguageIdMapping(lang, LanguageIdMapping.LanguageType.Default));
-                        //if(langid != 1024)
-                        //{
-
-                        //    XmlAttribute langVal = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
-                        //    langVal.Value = langid.ToString();
-                        //    lang.Attributes.Append(langVal);
-                        //}
                         break;
                     case 0x486E:
                     case 0x4874:
                         //east asia
                         langid = new LanguageId(System.BitConverter.ToInt16(sprm.Arguments, 0));
                         langid.Convert(new LanguageIdMapping(lang, LanguageIdMapping.LanguageType.EastAsian));
-                        //if (langid != 1024)
-                        //{
-                        //    XmlAttribute langEastAsia = _nodeFactory.CreateAttribute("w", "eastAsia", OpenXmlNamespaces.WordprocessingML);
-                        //    langEastAsia.Value = langid.ToString();
-                        //    lang.Attributes.Append(langEastAsia);
-                        //}
                         break;
                     case 0x485F:
                         //bidi
                         langid = new LanguageId(System.BitConverter.ToInt16(sprm.Arguments, 0));
                         langid.Convert(new LanguageIdMapping(lang, LanguageIdMapping.LanguageType.Complex));
-                        //if (langid != 1024)
-                        //{
-                        //    XmlAttribute langBidi = _nodeFactory.CreateAttribute("w", "bidi", OpenXmlNamespaces.WordprocessingML);
-                        //    langBidi.Value = langid.ToString();
-                        //    lang.Attributes.Append(langBidi);
-                        //}
                         break;
                     
                     //borders

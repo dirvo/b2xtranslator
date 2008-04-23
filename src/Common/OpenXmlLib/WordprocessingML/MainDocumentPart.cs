@@ -37,6 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
         protected FontTablePart _fontTablePart;
         protected NumberingDefinitionsPart _numberingDefinitionsPart;
         protected SettingsPart _settingsPart;
+        protected FootnotesPart _footnotesPart;
 
         protected int _imagePartCount = 0;
         protected int _headerPartCount = 0;
@@ -94,6 +95,17 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
         public FontTablePart FontTablePart
         {
             get { return _fontTablePart; }
+        }
+
+        public FootnotesPart AddFootnotesPart()
+        {
+            _footnotesPart = new FootnotesPart(this);
+            return this.AddPart(_footnotesPart);
+        }
+
+        public FootnotesPart FootnotesPart
+        {
+            get { return _footnotesPart; }
         }
 
         public NumberingDefinitionsPart AddNumberingDefinitionsPart()

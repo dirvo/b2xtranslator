@@ -143,6 +143,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 this.DataStream = null;
             }
 
+            VirtualStreamReader tablereader = new VirtualStreamReader(TableStream);
+            byte[] fndRef = tablereader.ReadBytes(this.FIB.fcPlcffndRef, (int)this.FIB.lcbPlcffndRef);
+
             //parse properties
             this.DocumentProperties = new DocumentProperties(this.FIB, this.TableStream);
 
