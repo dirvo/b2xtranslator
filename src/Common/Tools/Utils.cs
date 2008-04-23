@@ -35,23 +35,7 @@ namespace DIaLOGIKa.b2xtranslator.Tools
 {
     public class Utils
     {
-        public static int BitmaskToInt(int value, int mask)
-        {
-            int ret = value & mask;
-            
-            //shift for all trailing zeros
-            BitArray bits = new BitArray(new int[] { mask });
-            foreach (bool bit in bits)
-            {
-                if (!bit)
-                    ret = ret >> 1;
-                else
-                    break;
-            }
-
-            return ret;
-        }
-
+        
         public static int ArraySum(byte[] values)
         {
             int ret = 0;
@@ -80,6 +64,22 @@ namespace DIaLOGIKa.b2xtranslator.Tools
             return Convert.ToByte(value);
         }
 
+        public static int BitmaskToInt(int value, int mask)
+        {
+            int ret = value & mask;
+            //shift for all trailing zeros
+            BitArray bits = new BitArray(new int[] { mask });
+            foreach (bool bit in bits)
+            {
+                if (!bit)
+                    ret = ret >> 1;
+                else
+                    break;
+            }
+            return ret;
+        }
+
+        [Obsolete("Causes endless loops, use BitmaskToInt instead")]
         public static Int32 BitmaskToInt32(Int32 value, Int32 mask)
         {
             value = value & mask;
@@ -88,6 +88,7 @@ namespace DIaLOGIKa.b2xtranslator.Tools
             return value;
         }
 
+        [Obsolete("Causes endless loops, use BitmaskToInt instead")]
         public static UInt32 BitmaskToUInt32(UInt32 value, UInt32 mask)
         {
             value = value & mask;
@@ -96,6 +97,7 @@ namespace DIaLOGIKa.b2xtranslator.Tools
             return value;
         }
 
+        [Obsolete("Causes endless loops, use BitmaskToInt instead")]
         public static UInt16 BitmaskToUInt16(UInt32 value, UInt32 mask)
         {
             return Convert.ToUInt16(BitmaskToUInt32(value, mask));

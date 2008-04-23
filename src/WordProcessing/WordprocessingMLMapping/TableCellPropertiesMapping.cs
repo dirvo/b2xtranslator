@@ -151,7 +151,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         //read the width of this cell
                         XmlElement tcW = _nodeFactory.CreateElement("w", "tcW", OpenXmlNamespaces.WordprocessingML);
                         XmlAttribute tcWtype = _nodeFactory.CreateAttribute("w", "type", OpenXmlNamespaces.WordprocessingML);
-                        byte ftsWidth = (byte)((flags & 0x0E00) >> 9);
+
+                        int ftsWidth = Utils.BitmaskToInt(flags, 0x0e00);
                         tcWtype.Value = ((CellWidthType)ftsWidth).ToString();
 
                         tcW.Attributes.Append(tcWtype);
