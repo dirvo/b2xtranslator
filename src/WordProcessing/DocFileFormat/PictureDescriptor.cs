@@ -157,19 +157,23 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <param name="chpx">The CHPX that holds a SPRM for fcPic</param>
         public PictureDescriptor(CharacterPropertyExceptions chpx, VirtualStream dataStream)
         {
+            VirtualStreamReader dataReader = new VirtualStreamReader(dataStream);
+
             //Get start and length of the PICT
             Int32 fc = getFcPic(chpx);
             if (fc >= 0)
             {
-                byte[] lcbBytes = new byte[4];
-                dataStream.Read(lcbBytes, 0, 4, fc);
-                Int32 lcb = System.BitConverter.ToInt32(lcbBytes, 0);
+                dataStream.Seek(fc, System.IO.SeekOrigin.Begin);
+                Int32 lcb = dataReader.ReadInt32();
+
+                //byte[] lcbBytes = new byte[4];
+                //dataStream.Read(lcbBytes, 0, 4, fc);
+                //Int32 lcb = System.BitConverter.ToInt32(lcbBytes, 0);
 
                 if (lcb > 0)
                 {
                     //read the bytes of the PIC
-                    byte[] pictBytes = new byte[lcb];
-                    dataStream.Read(pictBytes, 0, lcb, fc+4);
+                    byte[] pictBytes = dataReader.ReadBytes(lcb);
 
                     //parse
                     parseBytes(pictBytes);
@@ -228,44 +232,54 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 this.dyaOrigin = System.BitConverter.ToInt16(bytes, 64);
                 this.cProps = System.BitConverter.ToInt16(bytes, 66);
 
-                ////variable part starts at byte 0x50
-                //int readPos = 0x50;
-
-                ////skip the first 40 bytes
-                //readPos += 40;
-
-                ////read the name
-                //string temp = "";
-                //while (temp != "\0")
-                //{
-                //    this.Name += temp;
-                //    temp = Encoding.Unicode.GetString(bytes, readPos, 2);
-                //    readPos += 2;
-                //}
-                ////name section is terminated by another \0
-                //readPos += 2;
-
-                ////skip the next 79 bytes
-                //readPos += 79;
-
-                ////read the picture
-                //this.Picture = new byte[bytes.Length - readPos];
-                //Array.Copy(bytes, readPos, this.Picture, 0, this.Picture.Length);
-
-                ////set the picture type, compare the first 3 bytes
-                //if (this.Picture[0] == 0xFF && this.Picture[1] == 0xD8 && this.Picture[2] == 0xFF)
-                //{
-                //    this.Type = PictureType.jpg;
-                //}
-                //else if (this.Picture[0] == 0x89 && this.Picture[1] == 0x50 && this.Picture[2] == 0x4E)
-                //{
-                //    this.Type = PictureType.png;
-                //}
+                //read the picture
+                Int32 picStart = getPictureStart(bytes);
+                if (picStart != -1)
+                {
+                    this.Picture = new byte[bytes.Length - picStart];
+                    Array.Copy(bytes, picStart, this.Picture, 0, this.Picture.Length);
+                }
             }
         }
 
         /// <summary>
-        /// Returns the fcPic into the "data" stream, where the picture begins.
+        /// Searches for the beginning of the real picture file.
+        /// </summary>
+        /// <param name="pic">the bytes of the PIC structure</param>
+        /// <returns>the position where the picture starts</returns>
+        private int getPictureStart(byte[] pic)
+        {
+            int ret = -1;
+
+            for (int i = 66; i < pic.Length; i++)
+            {
+                if (pic[i] == 0x89 && pic.Length > i + 3)
+                {
+                    //possible PNG start
+                    if (pic[i + 1] == 0x50 && pic[i + 2] == 0x4E && pic[i + 3] == 0x47)
+                    {
+                        ret = i;
+                        this.Type = PictureType.png;
+                        break;
+                    }
+                }
+                else if (pic[i] == 0xFF && pic.Length > i + 2)
+                {
+                    //possible PNG start
+                    if (pic[i + 1] == 0xD8 && pic[i + 2] == 0xFF)
+                    {
+                        ret = i;
+                        this.Type = PictureType.jpg;
+                        break;
+                    }
+                }
+            }
+
+            return ret;
+        }
+
+        /// <summary>
+        /// Returns the fcPic into the "data" stream, where the PIC begins.
         /// Returns -1 if the CHPX has no fcPic.
         /// </summary>
         /// <param name="chpx">The CHPX</param>
@@ -275,14 +289,22 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             Int32 ret = -1;
             foreach (SinglePropertyModifier sprm in chpx.grpprl)
             {
-                if (sprm.OpCode == 0x6A03)
-                {
-                    ret = System.BitConverter.ToInt32(sprm.Arguments, 0);
-                    break;
-                }
+                switch (sprm.OpCode)
+	            {
+                    case 0x6A03:
+                        ret = System.BitConverter.ToInt32(sprm.Arguments, 0);
+                        break;
+                    case 0x6a12:
+                        ret = System.BitConverter.ToInt32(sprm.Arguments, 0);
+                        break;
+                    case 0x0806:
+                        break;
+	            }
+                
             }
             return ret;
         }
+
 
         #region IVisitable Members
 

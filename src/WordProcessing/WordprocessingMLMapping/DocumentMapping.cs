@@ -129,7 +129,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             int gridIndex = 0;
             int cellIndex = 0;
-            while (!(_doc.Text[cp] == TextBoundary.CellOrRowMark && tai.fTtp) && tai.fInTable)
+            while (!(_doc.Text[cp] == TextMark.CellOrRowMark && tai.fTtp) && tai.fInTable)
             {
                 cp = writeTableCell(cp, tapx, grid, ref gridIndex, cellIndex);
                 cellIndex++;
@@ -221,7 +221,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             while (tai.fTtp==false && tai.fInTable==true)
             {
-                while (_doc.Text[cp] != TextBoundary.CellOrRowMark)
+                while (_doc.Text[cp] != TextMark.CellOrRowMark)
                 {
                     cp++;
                 }
@@ -249,7 +249,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             while (tai.fTtp == false && tai.fInTable == true)
             {
-                while (_doc.Text[cp] != TextBoundary.CellOrRowMark)
+                while (_doc.Text[cp] != TextMark.CellOrRowMark)
                 {
                     cp++;
                 }
@@ -279,7 +279,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             //find cell end
             Int32 cpCellEnd = initialCp;
-            while (_doc.Text[cpCellEnd] != TextBoundary.CellOrRowMark)
+            while (_doc.Text[cpCellEnd] != TextMark.CellOrRowMark)
             {
                 cpCellEnd++;
             }
@@ -315,14 +315,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             //search the paragraph end
             Int32 cpParaEnd = cp;
-            while (_doc.Text[cpParaEnd] != TextBoundary.ParagraphEnd && 
-                _doc.Text[cpParaEnd] != TextBoundary.CellOrRowMark &&
-                !(_doc.Text[cpParaEnd] == TextBoundary.PageBreakOrSectionMark && isSectionEnd(cpParaEnd) ))
+            while (_doc.Text[cpParaEnd] != TextMark.ParagraphEnd && 
+                _doc.Text[cpParaEnd] != TextMark.CellOrRowMark &&
+                !(_doc.Text[cpParaEnd] == TextMark.PageBreakOrSectionMark && isSectionEnd(cpParaEnd) ))
             {
                 cpParaEnd++;
             }
 
-            if (_doc.Text[cpParaEnd] == TextBoundary.PageBreakOrSectionMark)
+            if (_doc.Text[cpParaEnd] == TextMark.PageBreakOrSectionMark)
             {
                 //there is a page break OR section mark,
                 //write the section only if it's a section mark
@@ -463,28 +463,29 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             //write properties
             chpx.Convert(new CharacterPropertiesMapping(_writer, _doc, rev));
-            if (chars.Count == 1 && chars[0] == TextBoundary.Picture)
-            {
-                ////its a picture
-                //PictureDescriptor pict = new PictureDescriptor(chpx, _doc.DataStream);
 
-                ////sometimes there is a picture mark without a picture,
-                ////do not convert these marks (occurs in hyperlinks e.g.)
-                //if (pict.mfp.mm > 98)
-                //{
-                //    ImagePart imgPart = copyPicture(pict);
-                //    pict.Convert(new PictureMapping(_writer, imgPart));
-                //}
+            //if (chars.Count == 1 && chars[0] == TextMark.Picture)
+            //{
+            //    //its a picture
+            //    PictureDescriptor pict = new PictureDescriptor(chpx, _doc.DataStream);
 
-                cp++;
-            }
-            else
-            {
+            //    //sometimes there is a picture mark without a picture,
+            //    //do not convert these marks (occurs in hyperlinks e.g.)
+            //    if (pict.mfp.mm > 98)
+            //    {
+            //        ImagePart imgPart = copyPicture(pict);
+            //        pict.Convert(new PictureMapping(_writer, imgPart));
+            //    }
+
+            //    cp++;
+            //}
+            //else
+            //{
                 if(rev.Type == RevisionData.RevisionType.Deleted)
                     cp = writeText(chars, cp, chpx, true);
                 else
                     cp = writeText(chars, cp, chpx, false);
-            }
+            //}
 
             //end run
             _writer.WriteEndElement();
@@ -522,26 +523,21 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //write text
             foreach (char c in chars)
             {
-                if (c == TextBoundary.Tab)
+                if (c == TextMark.Tab)
                 {
                     _writer.WriteEndElement();
                     _writer.WriteElementString("w", "tab", OpenXmlNamespaces.WordprocessingML, "");
                     _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
                 }
-                else if (c == TextBoundary.HardLineBreak)
+                else if (c == TextMark.HardLineBreak)
                 {
                     _writer.WriteElementString("w", "br", OpenXmlNamespaces.WordprocessingML, "");
                 }
-                else if (c == TextBoundary.Picture)
-                {
-                    //do nothing
-                    //see picture conversion above
-                }
-                else if (c == TextBoundary.ParagraphEnd)
+                else if (c == TextMark.ParagraphEnd)
                 {
                     //do nothing
                 }
-                else if (c == TextBoundary.PageBreakOrSectionMark)
+                else if (c == TextMark.PageBreakOrSectionMark)
                 {
                     //write page break, section breaks are written by writeParagraph() method
                     if (!isSectionEnd(cp))
@@ -551,31 +547,31 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         _writer.WriteEndElement();
                     }
                 }
-                else if (c == TextBoundary.ColumnBreak)
+                else if (c == TextMark.ColumnBreak)
                 {
                     _writer.WriteStartElement("w", "br", OpenXmlNamespaces.WordprocessingML);
                     _writer.WriteAttributeString("w", "type", OpenXmlNamespaces.WordprocessingML, "column");
                     _writer.WriteEndElement();
                 }
-                else if (c == TextBoundary.FieldBeginMark)
+                else if (c == TextMark.FieldBeginMark)
                 {
                     _writer.WriteStartElement("w", "fldChar", OpenXmlNamespaces.WordprocessingML);
                     _writer.WriteAttributeString("w", "fldCharType", OpenXmlNamespaces.WordprocessingML, "begin");
                     _writer.WriteEndElement();
                 }
-                else if (c == TextBoundary.FieldSeperator)
+                else if (c == TextMark.FieldSeperator)
                 {
                     _writer.WriteStartElement("w", "fldChar", OpenXmlNamespaces.WordprocessingML);
                     _writer.WriteAttributeString("w", "fldCharType", OpenXmlNamespaces.WordprocessingML, "separate");
                     _writer.WriteEndElement();
                 }
-                else if (c == TextBoundary.FieldEndMark)
+                else if (c == TextMark.FieldEndMark)
                 {
                     _writer.WriteStartElement("w", "fldChar", OpenXmlNamespaces.WordprocessingML);
                     _writer.WriteAttributeString("w", "fldCharType", OpenXmlNamespaces.WordprocessingML, "end");
                     _writer.WriteEndElement();
                 }
-                else if(c == TextBoundary.Symbol && fSpec)
+                else if(c == TextMark.Symbol && fSpec)
                 {
                     //close previous w:t ...
                     _writer.WriteEndElement();
@@ -588,7 +584,45 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
                 }
-                else if (c == TextBoundary.AutoNumberedFootnoteReference && fSpec)
+                else if (c == TextMark.DrawnObject && fSpec)
+                {
+                    ////close previous w:t ...
+                    //_writer.WriteEndElement();
+
+                    ////drawing or picture
+                    //PictureDescriptor pict = new PictureDescriptor(chpx, _doc.WordDocumentStream);
+
+                    ////sometimes there is a picture mark without a picture,
+                    ////do not convert these marks (occurs in hyperlinks e.g.)
+                    //if (pict.mfp.mm > 98)
+                    //{
+                    //    ImagePart imgPart = copyPicture(pict);
+                    //    pict.Convert(new PictureMapping(_writer, imgPart));
+                    //}
+
+                    //_writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
+
+                    _writer.WriteString("[DrawnObject]");
+                }
+                else if (c == TextMark.Picture && fSpec)
+                {
+                    //close previous w:t ...
+                    _writer.WriteEndElement();
+
+                    //drawing or picture
+                    PictureDescriptor pict = new PictureDescriptor(chpx, _doc.DataStream);
+
+                    //sometimes there is a picture mark without a picture,
+                    //do not convert these marks (occurs in hyperlinks e.g.)
+                    if (pict.mfp.mm > 98)
+                    {
+                        ImagePart imgPart = copyPicture(pict);
+                        pict.Convert(new PictureMapping(_writer, imgPart));
+                    }
+
+                    _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
+                }
+                else if (c == TextMark.AutoNumberedFootnoteReference && fSpec)
                 {
                     //close previous w:t ...
                     _writer.WriteEndElement();
@@ -603,7 +637,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     {
                         _writer.WriteElementString("w", "footnoteRef", OpenXmlNamespaces.WordprocessingML, "");
                     }
-                    
+
                     _footnoteNr++;
 
                     _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);

@@ -77,7 +77,7 @@
     <Compile Include="StyleSheetInformation.cs" />
     <Compile Include="TabDescriptor.cs" />
     <Compile Include="TablePropertyExceptions.cs" />
-    <Compile Include="TextBoundary.cs" />
+    <Compile Include="TextMark.cs" />
     <Compile Include="WordDocument.cs" />
   </ItemGroup>
   <ItemGroup>

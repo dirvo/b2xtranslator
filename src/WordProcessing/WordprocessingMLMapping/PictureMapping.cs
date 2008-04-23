@@ -9,6 +9,7 @@ using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using System.IO;
 using System.Drawing;
 using DIaLOGIKa.b2xtranslator.Tools;
+using System.Globalization;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
@@ -38,10 +39,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             //size
             style.Append("width:");
-            style.Append((int)new TwipsValue(pict.dxaGoal).ToPoints());
+            double widthPt = new TwipsValue(pict.dxaGoal * 0.001 * pict.mx).ToPoints();
+            style.Append(widthPt.ToString(new CultureInfo("en-US")));
             style.Append("pt;");
             style.Append("height:");
-            style.Append((int)new TwipsValue(pict.dyaGoal).ToPoints());
+            double heightPt = new TwipsValue(pict.dyaGoal * 0.001 * pict.my).ToPoints();
+            style.Append(heightPt.ToString(new CultureInfo("en-US")));
             style.Append("pt;");
 
             //end style
