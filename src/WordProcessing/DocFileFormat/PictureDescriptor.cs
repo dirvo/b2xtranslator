@@ -77,11 +77,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public UInt16 my;
 
         /// <summary>
-        /// The bytes of the picture
-        /// </summary>
-        public byte[] Picture;
-
-        /// <summary>
         /// The type of the picture
         /// </summary>
         public PictureType Type;
@@ -232,13 +227,15 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 this.dyaOrigin = System.BitConverter.ToInt16(bytes, 64);
                 this.cProps = System.BitConverter.ToInt16(bytes, 66);
 
-                //read the picture
-                Int32 picStart = getPictureStart(bytes);
-                if (picStart != -1)
-                {
-                    this.Picture = new byte[bytes.Length - picStart];
-                    Array.Copy(bytes, picStart, this.Picture, 0, this.Picture.Length);
-                }
+                //ToDo: Parse the OfficeDrawing Stuff
+
+                ////read the picture
+                //Int32 picStart = getPictureStart(bytes);
+                //if (picStart != -1)
+                //{
+                //    this.Picture = new byte[bytes.Length - picStart];
+                //    Array.Copy(bytes, picStart, this.Picture, 0, this.Picture.Length);
+                //}
             }
         }
 

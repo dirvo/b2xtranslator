@@ -586,11 +586,17 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 }
                 else if (c == TextMark.DrawnObject && fSpec)
                 {
+                    //ToDo: Drawing Mapping
+                    _writer.WriteString("[DrawingObject]");
+                }
+                else if (c == TextMark.Picture && fSpec)
+                {
+                    _writer.WriteString("[Picture]");
                     ////close previous w:t ...
                     //_writer.WriteEndElement();
 
                     ////drawing or picture
-                    //PictureDescriptor pict = new PictureDescriptor(chpx, _doc.WordDocumentStream);
+                    //PictureDescriptor pict = new PictureDescriptor(chpx, _doc.DataStream);
 
                     ////sometimes there is a picture mark without a picture,
                     ////do not convert these marks (occurs in hyperlinks e.g.)
@@ -601,26 +607,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //}
 
                     //_writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
-
-                    _writer.WriteString("[DrawnObject]");
-                }
-                else if (c == TextMark.Picture && fSpec)
-                {
-                    //close previous w:t ...
-                    _writer.WriteEndElement();
-
-                    //drawing or picture
-                    PictureDescriptor pict = new PictureDescriptor(chpx, _doc.DataStream);
-
-                    //sometimes there is a picture mark without a picture,
-                    //do not convert these marks (occurs in hyperlinks e.g.)
-                    if (pict.mfp.mm > 98)
-                    {
-                        ImagePart imgPart = copyPicture(pict);
-                        pict.Convert(new PictureMapping(_writer, imgPart));
-                    }
-
-                    _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
                 }
                 else if (c == TextMark.AutoNumberedFootnoteReference && fSpec)
                 {
@@ -686,8 +672,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     break;
             }
 
-            //write the picture
-            imgPart.GetStream().Write(pict.Picture, 0, pict.Picture.Length);
+            //ToDo: write the picture
 
             return imgPart;
         }
