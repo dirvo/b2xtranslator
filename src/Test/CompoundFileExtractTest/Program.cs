@@ -50,7 +50,7 @@ namespace CompoundFileExtractTest
             const int bytesToReadAtOnce = 1024;
             char[] invalidChars = Path.GetInvalidFileNameChars();
 
-            TraceLogger.LogLevel = TraceLogger.LoggingLevel.ERROR;
+            TraceLogger.LogLevel = TraceLogger.LoggingLevel.Error;
             ConsoleTraceListener consoleTracer = new ConsoleTraceListener();
             Trace.Listeners.Add(consoleTracer);
             Trace.AutoFlush = true;
