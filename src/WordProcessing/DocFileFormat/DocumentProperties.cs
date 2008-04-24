@@ -1634,6 +1634,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             catch (Exception)
             {
                 //this DOP was probably not written by Word
+                TraceLogger.Warning("Unexpected length of DOP ({0} bytes) in input file.", (int)fib.lcbDop);
             }
         }
 

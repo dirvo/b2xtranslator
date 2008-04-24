@@ -152,7 +152,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             MongolianMongolian = 2128,
             Nepali = 1121,
             NepaliIndia = 2145,
-            NorwegianBokmål = 1044,
+            NorwegianBokmal = 1044,
             NorwegianNynorsk = 2068,
             Oriya = 1096,
             Oromo = 1138,

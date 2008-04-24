@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("DocFileFormat")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("DIaLOGIKa GmbH")]
+[assembly: AssemblyCompany("DIaLOGIKa")]
 [assembly: AssemblyProduct("DocFileFormat")]
 [assembly: AssemblyCopyright("Copyright © DIaLOGIKa GmbH 2008")]
 [assembly: AssemblyTrademark("")]

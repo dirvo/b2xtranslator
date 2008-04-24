@@ -24,7 +24,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             {
                 tableStream.Read(uniChar, 0, 2, (int)(fib.fcSttbfRMark + pos));
                 char cPos = Encoding.Unicode.GetString(uniChar).ToCharArray()[0];
-                if ((int)cPos > 19)
+                if ((int)cPos > 0x1F)
                 {
                     name.Append(cPos);
                 }

@@ -355,7 +355,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     return "ne-NP";
                 case LanguageId.LanguageCode.NepaliIndia:
                     return "ne-ID";
-                case LanguageId.LanguageCode.NorwegianBokmål:
+                case LanguageId.LanguageCode.NorwegianBokmal:
                     return "nb-NO";
                     //also possible: no-NO
                 case LanguageId.LanguageCode.NorwegianNynorsk:

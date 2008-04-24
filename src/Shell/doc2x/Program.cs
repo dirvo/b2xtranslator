@@ -37,6 +37,7 @@ using System.IO;
 using DIaLOGIKa.b2xtranslator.ZipUtils;
 using DIaLOGIKa.b2xtranslator.Tools;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace DIaLOGIKa.b2xtranslator.doc2x
 {
@@ -120,7 +121,7 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
 
                         DateTime end = DateTime.Now;
                         TimeSpan diff = end.Subtract(start);
-                        TraceLogger.Info("Conversion finished in {0} seconds", diff.TotalSeconds);
+                        TraceLogger.Info("Conversion of file {0} finished in {1} seconds", inputFile, diff.TotalSeconds.ToString(CultureInfo.InvariantCulture));
                     }
                     else 
                     {
@@ -140,12 +141,12 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
             }
             catch (ReadBytesAmountMismatchException ex)
             {
-                TraceLogger.Error("The input file is not a valid .doc file.");
+                TraceLogger.Error("The input file is not a valid Microsoft Word 97-2003 file.");
                 TraceLogger.Debug(ex.ToString());
             }
             catch (MagicNumberException ex)
             {
-                TraceLogger.Error("The input file is not a valid .doc file.");
+                TraceLogger.Error("The input file is not a valid Microsoft Word 97-2003 file.");
                 TraceLogger.Debug(ex.ToString());
             }
             catch (UnspportedFileVersionException ex)
@@ -155,7 +156,7 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
             }
             catch (ByteParseException ex)
             {
-                TraceLogger.Error("The input file is not a valid .doc file.");
+                TraceLogger.Error("The input file is not a valid Microsoft Word 97-2003 file.");
                 TraceLogger.Debug(ex.ToString());
             }
             catch (ZipCreationException ex)
@@ -243,14 +244,14 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
         {
             StringBuilder usage = new StringBuilder();
             usage.AppendLine("Usage: doc2x filename [-o filename] [-v level] [-?]");
-            usage.AppendLine("-o <filename>     change output filename");
-            usage.AppendLine("-v <level>        set trace level, where <level> is one of the following:");
-            usage.AppendLine("                      none (0)    print nothing");
-            usage.AppendLine("                      error (1)   print all errors");
-            usage.AppendLine("                      warning (2) print all errors and warnings");
-            usage.AppendLine("                      info (3)    print all errors, warnings and infos (default)");
-            usage.AppendLine("                      debug (4)   print all errors, warnings, infos and debug messages");
-            usage.AppendLine("-?              print this help");
+            usage.AppendLine("-o <filename>  change output filename");
+            usage.AppendLine("-v <level>     set trace level, where <level> is one of the following:");
+            usage.AppendLine("                  none (0)    print nothing");
+            usage.AppendLine("                  error (1)   print all errors");
+            usage.AppendLine("                  warning (2) print all errors and warnings");
+            usage.AppendLine("                  info (3)    print all errors, warnings and infos (default)");
+            usage.AppendLine("                  debug (4)   print all errors, warnings, infos and debug messages");
+            usage.AppendLine("-?             print this help");
             Console.WriteLine(usage.ToString());
         }
     }

@@ -36,7 +36,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Utils")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("DIaLOGIKa GmbH")]
+[assembly: AssemblyCompany("DIaLOGIKa")]
 [assembly: AssemblyProduct("Utils")]
 [assembly: AssemblyCopyright("Copyright © DIaLOGIKa GmbH 2008")]
 [assembly: AssemblyTrademark("")]

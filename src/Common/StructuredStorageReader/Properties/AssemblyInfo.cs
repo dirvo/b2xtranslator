@@ -36,7 +36,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("StructuredStorageReader")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("DIaLOGIKa GmbH")]
+[assembly: AssemblyCompany("DIaLOGIKa")]
 [assembly: AssemblyProduct("StructuredStorageReader")]
 [assembly: AssemblyCopyright("Copyright © DIaLOGIKa GmbH 2008")]
 [assembly: AssemblyTrademark("")]
