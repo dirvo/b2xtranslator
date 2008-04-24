@@ -7,8 +7,8 @@
     <ProjectGuid>{6EAD0A6A-8DF0-4CA3-8D5E-3C871E7FCB62}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PptFileFormat</RootNamespace>
-    <AssemblyName>PptFileFormat</AssemblyName>
+    <RootNamespace>DIaLOGIKa.b2xtranslator.PptFileFormat</RootNamespace>
+    <AssemblyName>DIaLOGIKa.b2xtranslator.PptFileFormat</AssemblyName>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>2.0</OldToolsVersion>
@@ -55,14 +55,34 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DocumentAtom.cs" />
+    <Compile Include="GPointAtom.cs" />
+    <Compile Include="GRatioAtom.cs" />
+    <Compile Include="GrColorAtom.cs" />
+    <Compile Include="List.cs" />
     <Compile Include="PowerpointDocument.cs" />
+    <Compile Include="PPDrawing.cs" />
+    <Compile Include="PPDrawingGroup.cs" />
+    <Compile Include="PptDocumentRecord.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Records.cs" />
+    <Compile Include="Slide.cs" />
+    <Compile Include="SlideAtom.cs" />
+    <Compile Include="SlideListWithText.cs" />
+    <Compile Include="SSlideLayoutAtom.cs" />
+    <Compile Include="StyleTextPropAtom.cs" />
+    <Compile Include="TextAtom.cs" />
+    <Compile Include="TextBytesAtom.cs" />
+    <Compile Include="TextCharsAtom.cs" />
+    <Compile Include="TextHeaderAtom.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\CommonTranslatorLib\CommonTranslatorLib.csproj">
       <Project>{0F0F6BAF-BC5D-4DC6-AE53-8257305EE5CA}</Project>
       <Name>CommonTranslatorLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\OfficeDrawing\OfficeDrawing.csproj">
+      <Project>{AA46A3F1-919F-48FB-970C-753F58A857F6}</Project>
+      <Name>OfficeDrawing</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Common\StructuredStorageReader\StructuredStorageReader.csproj">
       <Project>{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}</Project>

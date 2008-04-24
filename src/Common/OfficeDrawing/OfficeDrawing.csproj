@@ -4,12 +4,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{90C862C6-C6CB-4C72-8E58-FA3F8625E93B}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{AA46A3F1-919F-48FB-970C-753F58A857F6}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ppt2x</RootNamespace>
-    <AssemblyName>ppt2x</AssemblyName>
-    <ApplicationIcon>ppt2x.ico</ApplicationIcon>
+    <RootNamespace>DIaLOGIKa.b2xtranslator.OfficeDrawing</RootNamespace>
+    <AssemblyName>DIaLOGIKa.b2xtranslator.OfficeDrawing</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,33 +33,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="ClientData.cs" />
+    <Compile Include="ClientTextbox.cs" />
+    <Compile Include="DrawingContainer.cs" />
+    <Compile Include="DrawingGroup.cs" />
+    <Compile Include="DrawingGroupRecord.cs" />
+    <Compile Include="GroupContainer.cs" />
+    <Compile Include="OfficeRecordAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Common\CommonTranslatorLib\CommonTranslatorLib.csproj">
-      <Project>{0F0F6BAF-BC5D-4DC6-AE53-8257305EE5CA}</Project>
-      <Name>CommonTranslatorLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Common\OfficeDrawing\OfficeDrawing.csproj">
-      <Project>{AA46A3F1-919F-48FB-970C-753F58A857F6}</Project>
-      <Name>OfficeDrawing</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Common\StructuredStorageReader\StructuredStorageReader.csproj">
-      <Project>{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}</Project>
-      <Name>StructuredStorageReader</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Common\Tools\Tools.csproj">
-      <Project>{B44FAEE0-B32E-4682-AA42-618C893F14C6}</Project>
-      <Name>Tools</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Presentation\PptFileFormat\PptFileFormat.csproj">
-      <Project>{6EAD0A6A-8DF0-4CA3-8D5E-3C871E7FCB62}</Project>
-      <Name>PptFileFormat</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ppt2x.ico" />
+    <Compile Include="Record.cs" />
+    <Compile Include="RegularContainer.cs" />
+    <Compile Include="ShapeContainer.cs" />
+    <Compile Include="UnknownRecord.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

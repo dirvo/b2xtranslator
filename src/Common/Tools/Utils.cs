@@ -35,7 +35,6 @@ namespace DIaLOGIKa.b2xtranslator.Tools
 {
     public class Utils
     {
-        
         public static int ArraySum(byte[] values)
         {
             int ret = 0;
