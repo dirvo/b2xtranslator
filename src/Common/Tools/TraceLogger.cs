@@ -34,17 +34,16 @@ namespace DIaLOGIKa.b2xtranslator.Tools
 {
     public static class TraceLogger
     {
-
         public enum LoggingLevel
         {
-            DEBUG = 0,
-            INFO,
-            WARNING,
-            ERROR
+            None = 0,
+            Error,
+            Warning,
+            Info,
+            Debug
         }
 
-
-        static LoggingLevel _logLevel = LoggingLevel.WARNING;
+        static LoggingLevel _logLevel = LoggingLevel.Info;
         public static LoggingLevel LogLevel
         {
             get { return TraceLogger._logLevel; }
@@ -54,7 +53,7 @@ namespace DIaLOGIKa.b2xtranslator.Tools
 
         private static void WriteLine(string msg, LoggingLevel level)
         {
-            if (_logLevel <= level)
+            if (_logLevel >= level)
                 System.Diagnostics.Trace.WriteLine(string.Format("{0} " + msg, System.DateTime.Now));
         }
 
@@ -64,7 +63,7 @@ namespace DIaLOGIKa.b2xtranslator.Tools
             if (msg == null || msg == "")
                 return;
 
-            WriteLine("[D] " + string.Format(msg, objs), LoggingLevel.DEBUG);
+            WriteLine("[D] " + string.Format(msg, objs), LoggingLevel.Debug);
         }
 
 
@@ -73,7 +72,7 @@ namespace DIaLOGIKa.b2xtranslator.Tools
             if (msg == null || msg == "")
                 return;
 
-            WriteLine("[I] " + string.Format(msg, objs), LoggingLevel.INFO);
+            WriteLine("[I] " + string.Format(msg, objs), LoggingLevel.Info);
         }
 
 
@@ -82,7 +81,7 @@ namespace DIaLOGIKa.b2xtranslator.Tools
             if (msg == null || msg == "")
                 return;
 
-            WriteLine("[W] " + string.Format(msg, objs), LoggingLevel.WARNING);
+            WriteLine("[W] " + string.Format(msg, objs), LoggingLevel.Warning);
         }
 
 
@@ -91,7 +90,7 @@ namespace DIaLOGIKa.b2xtranslator.Tools
             if (msg == null || msg == "")
                 return;
 
-            WriteLine("[E] " + string.Format(msg, objs), LoggingLevel.ERROR);
+            WriteLine("[E] " + string.Format(msg, objs), LoggingLevel.Error);
         }
     }
 }

@@ -36,28 +36,22 @@ using DIaLOGIKa.b2xtranslator.WordprocessingMLMapping;
 using System.IO;
 using DIaLOGIKa.b2xtranslator.ZipUtils;
 using DIaLOGIKa.b2xtranslator.Tools;
+using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.doc2x
 {
     public class Program
     {
-        private enum VerboseLevel
-        {
-            None = 0,
-            Error,
-            Warning,
-            Info,
-            Debug
-        }
-
         private static string inputFile;
         private static string outputFile;
-        private static VerboseLevel verboseLvl = VerboseLevel.Error;
-
+        
         public static void Main(string[] args)
         {
             //parse arguments
             parseArgs(args);
+
+            // let the Console listen to the Trace messages
+            Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
 
             try
             {
@@ -77,7 +71,7 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                     }
                 }
 
-                Console.WriteLine("Converting file {0}", inputFile);
+                TraceLogger.Info("Converting file {0} into {1}", inputFile, outputFile);
 
                 //start time
                 DateTime start = DateTime.Now;
@@ -123,63 +117,57 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                             //write settings.xml at last because of the rsid list
                             doc.DocumentProperties.Convert(new SettingsMapping(context));
                         }
+
                         DateTime end = DateTime.Now;
                         TimeSpan diff = end.Subtract(start);
-                        if (verboseLvl > VerboseLevel.Warning)
-                        {
-                            Console.WriteLine("Conversion finished in " + diff.TotalSeconds + " seconds");
-                        }
+                        TraceLogger.Info("Conversion finished in {0} seconds", diff.TotalSeconds);
                     }
-                    else if (verboseLvl > VerboseLevel.None)
+                    else 
                     {
-                        Console.WriteLine(inputFile + " has been fast-saved. This format is currently not supported.");
+                        TraceLogger.Error("{0} has been fast-saved. This format is currently not supported.", inputFile);
                     }
                 }
             }
-            catch (DirectoryNotFoundException)
+            catch (DirectoryNotFoundException ex)
             {
-                if (verboseLvl > VerboseLevel.None)
-                    Console.WriteLine("The input file does not exist.");
+                TraceLogger.Error("The input file does not exist.");
+                TraceLogger.Debug(ex.ToString());
             }
-            catch (FileNotFoundException)
+            catch (FileNotFoundException ex)
             {
-                if (verboseLvl > VerboseLevel.None)
-                    Console.WriteLine("The input file does not exist.");
+                TraceLogger.Error("The input file does not exist.");
+                TraceLogger.Debug(ex.ToString());
             }
-            catch (ReadBytesAmountMismatchException)
+            catch (ReadBytesAmountMismatchException ex)
             {
-                if (verboseLvl > VerboseLevel.None)
-                    Console.WriteLine("The input file is not a valid .doc file.");
+                TraceLogger.Error("The input file is not a valid .doc file.");
+                TraceLogger.Debug(ex.ToString());
             }
-            catch (MagicNumberException)
+            catch (MagicNumberException ex)
             {
-                if (verboseLvl > VerboseLevel.None)
-                    Console.WriteLine("The input file is not a valid .doc file.");
+                TraceLogger.Error("The input file is not a valid .doc file.");
+                TraceLogger.Debug(ex.ToString());
             }
-            catch (UnspportedFileVersionException)
+            catch (UnspportedFileVersionException ex)
             {
-                if (verboseLvl > VerboseLevel.None)
-                    Console.WriteLine("Doc2x doesn't support file older than Word 97.");
+                TraceLogger.Error("Doc2x doesn't support files older than Word 97.");
+                TraceLogger.Debug(ex.ToString());
             }
-            catch (ByteParseException)
+            catch (ByteParseException ex)
             {
-                if (verboseLvl > VerboseLevel.None)
-                    Console.WriteLine("The input file is not a valid .doc file.");
+                TraceLogger.Error("The input file is not a valid .doc file.");
+                TraceLogger.Debug(ex.ToString());
             }
-            catch (ZipCreationException)
+            catch (ZipCreationException ex)
             {
-                if (verboseLvl > VerboseLevel.None)
-                {
-                    Console.WriteLine("Could not create the output file.");
-                    Console.WriteLine("Perhaps the specified outputfile was a directory or contained invalid characters.");
-                }
+                TraceLogger.Error("Could not create output file {0}.", outputFile);
+                //TraceLogger.Error("Perhaps the specified outputfile was a directory or contained invalid characters.");
+                TraceLogger.Debug(ex.ToString());
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                if (verboseLvl > VerboseLevel.None)
-                    Console.WriteLine("Conversion failed.");
-                if (verboseLvl > VerboseLevel.Info)
-                    Console.WriteLine(e.ToString());
+                TraceLogger.Error("Conversion failed.");
+                TraceLogger.Debug(ex.ToString());
             }
         }
 
@@ -210,27 +198,27 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                         int vLvl;
                         if (Int32.TryParse(verbose, out vLvl))
                         {
-                            verboseLvl = (VerboseLevel)vLvl;
+                            TraceLogger.LogLevel = (TraceLogger.LoggingLevel)vLvl;
                         }
                         else if (verbose == "error")
                         {
-                            verboseLvl = VerboseLevel.Error;
+                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.Error;
                         }
                         else if (verbose == "warning")
                         {
-                            verboseLvl = VerboseLevel.Warning;
+                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.Warning;
                         }
                         else if (verbose == "info")
                         {
-                            verboseLvl = VerboseLevel.Info;
+                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.Info;
                         }
                         else if (verbose == "debug")
                         {
-                            verboseLvl = VerboseLevel.Debug;
+                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.Debug;
                         }
                         else if (verbose == "none")
                         {
-                            verboseLvl = VerboseLevel.None;
+                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.None;
                         }
                     }
                     else if (args[i].ToLower() == "-o")
@@ -242,7 +230,7 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
             }
             catch (Exception)
             {
-                Console.WriteLine("At least one of the required arguments was not correctly set.\n");
+                TraceLogger.Error("At least one of the required arguments was not correctly set.\n");
                 printUsage();
                 Environment.Exit(1);
             }
@@ -255,13 +243,13 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
         {
             StringBuilder usage = new StringBuilder();
             usage.AppendLine("Usage: doc2x filename [-o filename] [-v level] [-?]");
-            usage.AppendLine("-o <filename>   change output filename");
-            usage.AppendLine("-v <level>      set trace level, where <level> is one of the following:");
-            usage.AppendLine("    none (0)    print nothing");
-            usage.AppendLine("    error (1)   print all errors (default)");
-            usage.AppendLine("    warning (2) print all errors and warnings");
-            usage.AppendLine("    info (3)    print all errors, warnings and infos");
-            usage.AppendLine("    debug (4)   print all errors, warnings, infos and debug messages");
+            usage.AppendLine("-o <filename>     change output filename");
+            usage.AppendLine("-v <level>        set trace level, where <level> is one of the following:");
+            usage.AppendLine("                      none (0)    print nothing");
+            usage.AppendLine("                      error (1)   print all errors");
+            usage.AppendLine("                      warning (2) print all errors and warnings");
+            usage.AppendLine("                      info (3)    print all errors, warnings and infos (default)");
+            usage.AppendLine("                      debug (4)   print all errors, warnings, infos and debug messages");
             usage.AppendLine("-?              print this help");
             Console.WriteLine(usage.ToString());
         }
