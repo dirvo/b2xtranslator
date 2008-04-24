@@ -1255,128 +1255,57 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             byte[] bytes = new byte[fib.lcbDop];
             tableStream.Read(bytes, 0, (int)fib.lcbDop, fib.fcDop);
 
-            if (bytes.Length > 0)
+            try
             {
-                BitArray bits;
-
-                //split byte 0 and 1 into bits
-                bits = new BitArray(new byte[] { bytes[0], bytes[1] });
-                this.ffacingPages = bits[0];
-                this.fWindowControl = bits[1];
-                this.fPMHMainDoc = bits[2];
-                this.grfSuppression = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 3, 2));
-                this.Fpc = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 5, 2));
-
-                //split byte 2 and 3 into bits
-                bits = new BitArray(new byte[] { bytes[2], bytes[3] });
-                this.rncFtn = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 0, 2));
-                this.nFtn = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 2, 14));
-
-                //split byte 4 and 5 into bits
-                bits = new BitArray(new byte[] { bytes[4], bytes[5] });
-                this.fOutlineDirtySave = bits[0];
-                this.fOnlyMacPics = bits[8];
-                this.fOnlyWinPics = bits[9];
-                this.fLabelDoc = bits[10];
-                this.fHyphCapitals = bits[11];
-                this.fAutoHyphen = bits[12];
-                this.fFormNoFields = bits[13];
-                this.fLinkStyles = bits[14];
-                this.fRevMarking = bits[15];
-
-                //split byte 6 and 7 into bits
-                bits = new BitArray(new byte[] { bytes[6], bytes[7] });
-                this.fBackup = bits[0];
-                this.fExactWords = bits[1];
-                this.fPagHidden = bits[2];
-                this.fPagResults = bits[3];
-                this.fLockAtn = bits[4];
-                this.fMirrorMargins = bits[5];
-                //bit 6 is reserved
-                this.fDflttrueType = bits[7];
-                this.fProtEnabled = bits[8];
-                this.fDispFormFldSel = bits[9];
-                this.fRMView = bits[10];
-                this.fRMPrint = bits[11];
-                //bit 12 and 13 are reserved
-                this.fLockRev = bits[14];
-                this.fEmbedFonts = bits[15];
-
-                //split byte 8 and 9 into bits
-                bits = new BitArray(new byte[] { bytes[8], bytes[9] });
-                this.fNoTabForInd = bits[0];
-                this.fNoSpaceRaiseLower = bits[1];
-                this.fSuppressSpbfAfterPageBreak = bits[2];
-                this.fWrapTrailSpaces = bits[3];
-                this.fMapPrintTextColor = bits[4];
-                this.fNoColumnBalance = bits[5];
-                this.fConvMailMergeEsc = bits[6];
-                this.fSuppressTopSpacing = bits[7];
-                this.fOrigWordTableRules = bits[8];
-                this.fTransparentMetafiles = bits[9];
-                this.fShowBreaksInFrames = bits[10];
-                this.fSwapBordersFacingPgs = bits[11];
-
-                this.dxaTab = System.BitConverter.ToUInt16(bytes, 10);
-                this.dxaHotZ = System.BitConverter.ToUInt16(bytes, 14);
-                this.cConsecHypLim = System.BitConverter.ToUInt16(bytes, 16);
-
-                byte[] createdbytes = new byte[4];
-                Array.Copy(bytes, 20, createdbytes, 0, createdbytes.Length);
-                this.dttmCreated = new DateAndTime(createdbytes);
-
-                byte[] revisedbytes = new byte[4];
-                Array.Copy(bytes, 24, revisedbytes, 0, revisedbytes.Length);
-                this.dttmRevised = new DateAndTime(revisedbytes);
-
-                byte[] printbytes = new byte[4];
-                Array.Copy(bytes, 28, printbytes, 0, printbytes.Length);
-                this.dttmLastPrint = new DateAndTime(printbytes);
-
-                this.nRevision = System.BitConverter.ToInt16(bytes, 32);
-                this.tmEdited = System.BitConverter.ToInt32(bytes, 34);
-                this.cWords = System.BitConverter.ToInt32(bytes, 38);
-                this.cCh = System.BitConverter.ToInt32(bytes, 42);
-                this.cPg = System.BitConverter.ToInt16(bytes, 46);
-                this.cParas = System.BitConverter.ToInt32(bytes, 48);
-
-                //split byte 52 and 53 into bits
-                bits = new BitArray(new byte[] { bytes[52], bytes[53] });
-                this.rncEdn = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 0, 2));
-                this.nEdn = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 2, 14));
-
-                //split byte 54 and 55 into bits
-                bits = new BitArray(new byte[] { bytes[54], bytes[55] });
-                this.Epc = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 0, 2));
-                this.nfcFtnRef = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 2, 4));
-                this.nfcEdnRef = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 6, 4));
-                this.fPrintFormData = bits[10];
-                this.fSaveFormData = bits[11];
-                this.fShadeFormData = bits[12];
-                //bits 13 and 14 are reserved
-                this.fWCFtnEdn = bits[15];
-
-                this.cLines = System.BitConverter.ToInt32(bytes, 56);
-                this.cWordsFtnEdn = System.BitConverter.ToInt32(bytes, 60);
-                this.cChFtnEdn = System.BitConverter.ToInt32(bytes, 64);
-                this.cPgFtnEdn = System.BitConverter.ToInt16(bytes, 68);
-                this.cParasFtnEdn = System.BitConverter.ToInt32(bytes, 70);
-                this.cLinesFtnEdn = System.BitConverter.ToInt32(bytes, 74);
-                this.lKeyProtDoc = System.BitConverter.ToInt32(bytes, 78);
-
-                //split byte 82 and 83 into bits
-                bits = new BitArray(new byte[] { bytes[82], bytes[83] });
-                this.wvkSaved = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 0, 3));
-                this.wScaleSaved = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 3, 9));
-                this.zkSaved = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 12, 2));
-                this.fRotateFontW6 = bits[14];
-                this.iGutterPos = bits[15];
-
-                //compatibility options section
-                if (bytes.Length > 84)
+                if (bytes.Length > 0)
                 {
-                    //split byte 84,85,86,87 into bits
-                    bits = new BitArray(new byte[] { bytes[84], bytes[85], bytes[86], bytes[87] });
+                    BitArray bits;
+
+                    //split byte 0 and 1 into bits
+                    bits = new BitArray(new byte[] { bytes[0], bytes[1] });
+                    this.ffacingPages = bits[0];
+                    this.fWindowControl = bits[1];
+                    this.fPMHMainDoc = bits[2];
+                    this.grfSuppression = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 3, 2));
+                    this.Fpc = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 5, 2));
+
+                    //split byte 2 and 3 into bits
+                    bits = new BitArray(new byte[] { bytes[2], bytes[3] });
+                    this.rncFtn = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 0, 2));
+                    this.nFtn = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 2, 14));
+
+                    //split byte 4 and 5 into bits
+                    bits = new BitArray(new byte[] { bytes[4], bytes[5] });
+                    this.fOutlineDirtySave = bits[0];
+                    this.fOnlyMacPics = bits[8];
+                    this.fOnlyWinPics = bits[9];
+                    this.fLabelDoc = bits[10];
+                    this.fHyphCapitals = bits[11];
+                    this.fAutoHyphen = bits[12];
+                    this.fFormNoFields = bits[13];
+                    this.fLinkStyles = bits[14];
+                    this.fRevMarking = bits[15];
+
+                    //split byte 6 and 7 into bits
+                    bits = new BitArray(new byte[] { bytes[6], bytes[7] });
+                    this.fBackup = bits[0];
+                    this.fExactWords = bits[1];
+                    this.fPagHidden = bits[2];
+                    this.fPagResults = bits[3];
+                    this.fLockAtn = bits[4];
+                    this.fMirrorMargins = bits[5];
+                    //bit 6 is reserved
+                    this.fDflttrueType = bits[7];
+                    this.fProtEnabled = bits[8];
+                    this.fDispFormFldSel = bits[9];
+                    this.fRMView = bits[10];
+                    this.fRMPrint = bits[11];
+                    //bit 12 and 13 are reserved
+                    this.fLockRev = bits[14];
+                    this.fEmbedFonts = bits[15];
+
+                    //split byte 8 and 9 into bits
+                    bits = new BitArray(new byte[] { bytes[8], bytes[9] });
                     this.fNoTabForInd = bits[0];
                     this.fNoSpaceRaiseLower = bits[1];
                     this.fSuppressSpbfAfterPageBreak = bits[2];
@@ -1389,245 +1318,322 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     this.fTransparentMetafiles = bits[9];
                     this.fShowBreaksInFrames = bits[10];
                     this.fSwapBordersFacingPgs = bits[11];
-                    //bits 12,13,14,15 are reserved
-                    this.fSuppressTopSpacingMac5 = bits[16];
-                    this.fTruncDxaExpand = bits[17];
-                    this.fPrintBodyBeforeHdr = bits[18];
-                    this.fNoLeading = bits[19];
-                    //bits 20 is reserved
-                    this.fMWSmallCaps = bits[21];
-                    //bits 22-31 are reserved
 
-                    if (bytes.Length > 88)
+                    this.dxaTab = System.BitConverter.ToUInt16(bytes, 10);
+                    this.dxaHotZ = System.BitConverter.ToUInt16(bytes, 14);
+                    this.cConsecHypLim = System.BitConverter.ToUInt16(bytes, 16);
+
+                    byte[] createdbytes = new byte[4];
+                    Array.Copy(bytes, 20, createdbytes, 0, createdbytes.Length);
+                    this.dttmCreated = new DateAndTime(createdbytes);
+
+                    byte[] revisedbytes = new byte[4];
+                    Array.Copy(bytes, 24, revisedbytes, 0, revisedbytes.Length);
+                    this.dttmRevised = new DateAndTime(revisedbytes);
+
+                    byte[] printbytes = new byte[4];
+                    Array.Copy(bytes, 28, printbytes, 0, printbytes.Length);
+                    this.dttmLastPrint = new DateAndTime(printbytes);
+
+                    this.nRevision = System.BitConverter.ToInt16(bytes, 32);
+                    this.tmEdited = System.BitConverter.ToInt32(bytes, 34);
+                    this.cWords = System.BitConverter.ToInt32(bytes, 38);
+                    this.cCh = System.BitConverter.ToInt32(bytes, 42);
+                    this.cPg = System.BitConverter.ToInt16(bytes, 46);
+                    this.cParas = System.BitConverter.ToInt32(bytes, 48);
+
+                    //split byte 52 and 53 into bits
+                    bits = new BitArray(new byte[] { bytes[52], bytes[53] });
+                    this.rncEdn = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 0, 2));
+                    this.nEdn = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 2, 14));
+
+                    //split byte 54 and 55 into bits
+                    bits = new BitArray(new byte[] { bytes[54], bytes[55] });
+                    this.Epc = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 0, 2));
+                    this.nfcFtnRef = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 2, 4));
+                    this.nfcEdnRef = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 6, 4));
+                    this.fPrintFormData = bits[10];
+                    this.fSaveFormData = bits[11];
+                    this.fShadeFormData = bits[12];
+                    //bits 13 and 14 are reserved
+                    this.fWCFtnEdn = bits[15];
+
+                    this.cLines = System.BitConverter.ToInt32(bytes, 56);
+                    this.cWordsFtnEdn = System.BitConverter.ToInt32(bytes, 60);
+                    this.cChFtnEdn = System.BitConverter.ToInt32(bytes, 64);
+                    this.cPgFtnEdn = System.BitConverter.ToInt16(bytes, 68);
+                    this.cParasFtnEdn = System.BitConverter.ToInt32(bytes, 70);
+                    this.cLinesFtnEdn = System.BitConverter.ToInt32(bytes, 74);
+                    this.lKeyProtDoc = System.BitConverter.ToInt32(bytes, 78);
+
+                    //split byte 82 and 83 into bits
+                    bits = new BitArray(new byte[] { bytes[82], bytes[83] });
+                    this.wvkSaved = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 0, 3));
+                    this.wScaleSaved = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 3, 9));
+                    this.zkSaved = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 12, 2));
+                    this.fRotateFontW6 = bits[14];
+                    this.iGutterPos = bits[15];
+
+                    //compatibility options section
+                    if (bytes.Length > 84)
                     {
-                        this.adt = (UInt16)System.BitConverter.ToInt16(bytes, 88);
+                        //split byte 84,85,86,87 into bits
+                        bits = new BitArray(new byte[] { bytes[84], bytes[85], bytes[86], bytes[87] });
+                        this.fNoTabForInd = bits[0];
+                        this.fNoSpaceRaiseLower = bits[1];
+                        this.fSuppressSpbfAfterPageBreak = bits[2];
+                        this.fWrapTrailSpaces = bits[3];
+                        this.fMapPrintTextColor = bits[4];
+                        this.fNoColumnBalance = bits[5];
+                        this.fConvMailMergeEsc = bits[6];
+                        this.fSuppressTopSpacing = bits[7];
+                        this.fOrigWordTableRules = bits[8];
+                        this.fTransparentMetafiles = bits[9];
+                        this.fShowBreaksInFrames = bits[10];
+                        this.fSwapBordersFacingPgs = bits[11];
+                        //bits 12,13,14,15 are reserved
+                        this.fSuppressTopSpacingMac5 = bits[16];
+                        this.fTruncDxaExpand = bits[17];
+                        this.fPrintBodyBeforeHdr = bits[18];
+                        this.fNoLeading = bits[19];
+                        //bits 20 is reserved
+                        this.fMWSmallCaps = bits[21];
+                        //bits 22-31 are reserved
 
-                        byte[] doptypoBytes = new byte[310];
-                        Array.Copy(bytes, 90, doptypoBytes, 0, doptypoBytes.Length);
-                        this.doptypography = new DocumentTypographyInfo(doptypoBytes);
-
-                        byte[] dogridBytes = new byte[10];
-                        Array.Copy(bytes, 400, dogridBytes, 0, dogridBytes.Length);
-                        this.dogrid = new DrawingObjectGrid(dogridBytes);
-
-                        //split byte 410 and 411 into bits
-                        bits = new BitArray(new byte[] { bytes[410], bytes[411] });
-                        //bit 0 is reserved
-                        this.lvl = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 1, 4));
-                        this.fGramAllDone = bits[5];
-                        this.fGramAllClean = bits[6];
-                        this.fSubsetFonts = bits[7];
-                        this.fHideLastVersion = bits[8];
-                        this.fHtmlDoc = bits[9];
-                        //bit 10 is reserved
-                        this.fSnapBorder = bits[11];
-                        this.fIncludeHeader = bits[12];
-                        this.fIncludeFooter = bits[13];
-                        this.fForcePageSizePag = bits[14];
-                        this.fMinFontSizePag = bits[15];
-
-                        //split byte 412 and 413 into bits
-                        bits = new BitArray(new byte[] { bytes[412], bytes[413] });
-                        this.fHaveVersions = bits[0];
-                        this.fAutoVersion = bits[1];
-                        //other bits are reserved
-
-                        byte[] asumybits = new byte[12];
-                        Array.Copy(bytes, 414, asumybits, 0, asumybits.Length);
-                        this.asumyi = new AutoSummaryInfo(asumybits);
-
-                        this.cChWS = System.BitConverter.ToInt32(bytes, 426);
-                        this.cChWSFtnEdn = System.BitConverter.ToInt32(bytes, 430);
-                        this.grfDocEvents = System.BitConverter.ToInt32(bytes, 434);
-
-                        //split bytes 438-441 in bits
-                        bits = new BitArray(new byte[] { bytes[438], bytes[439], bytes[440], bytes[441] });
-                        this.fVirusPromted = bits[0];
-                        this.fVirusLoadSafe = bits[1];
-                        this.KeyVirusSession30 = (Int32)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 2, 30));
-
-                        this.cDBC = System.BitConverter.ToInt32(bytes, 480);
-                        this.cDBCFtnEdn = System.BitConverter.ToInt32(bytes, 484);
-                        this.nfcEdnRef = System.BitConverter.ToInt16(bytes, 492);
-                        this.nfcFtnRef = System.BitConverter.ToInt16(bytes, 494);
-                        this.hpsZoonFontPag = System.BitConverter.ToInt16(bytes, 496);
-                        this.dywDispPag = System.BitConverter.ToInt16(bytes, 498);
-
-                        //WORD 2000, 2002, 2003 PART
-                        if (bytes.Length > 500)
+                        if (bytes.Length > 88)
                         {
-                            this.ilvlLastBulletMain = bytes[500];
-                            this.ilvlLastNumberMain = bytes[501];
-                            this.istdClickTypePara = System.BitConverter.ToInt16(bytes, 502);
+                            this.adt = (UInt16)System.BitConverter.ToInt16(bytes, 88);
 
-                            //split byte 504 and 505 into bits
-                            bits = new BitArray(new byte[] { bytes[504], bytes[505] });
-                            this.fLADAllDone = bits[0];
-                            this.fEnvelopeVis = bits[1];
-                            this.fMaybeTentativeListInDoc = bits[2];
-                            this.fMaybeFitText = bits[3];
-                            this.fRelyOnCss_WebOpt = bits[9];
-                            this.fRelyOnVML_WebOpt = bits[10];
-                            this.fAllowPNG_WebOpt = bits[11];
-                            this.screenSize_WebOpt = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 12, 4));
+                            byte[] doptypoBytes = new byte[310];
+                            Array.Copy(bytes, 90, doptypoBytes, 0, doptypoBytes.Length);
+                            this.doptypography = new DocumentTypographyInfo(doptypoBytes);
 
-                            //split byte 506 and 507 into bits
-                            bits = new BitArray(new byte[] { bytes[506], bytes[507] });
-                            this.fOrganizeInFolder_WebOpt = bits[0];
-                            this.fUseLongFileNames_WebOpt = bits[1];
-                            this.iPixelsPerInch_WebOpt = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 2, 10));
-                            this.fWebOptionsInit = bits[12];
-                            this.fMaybeFEL = bits[13];
-                            this.fCharLineUnits = bits[14];
-                            this.fMaybeRTLTables = bits[15];
+                            byte[] dogridBytes = new byte[10];
+                            Array.Copy(bytes, 400, dogridBytes, 0, dogridBytes.Length);
+                            this.dogrid = new DrawingObjectGrid(dogridBytes);
 
-                            //split bytes 508,509,510,511 into bits
-                            bits = new BitArray(new byte[] { bytes[508], bytes[509], bytes[510], bytes[511] });
-                            this.fNoTabForInd = bits[0];
-                            this.fNoSpaceRaiseLower = bits[1];
-                            this.fSuppressSpbfAfterPageBreak = bits[2];
-                            this.fWrapTrailSpaces = bits[3];
-                            this.fMapPrintTextColor = bits[4];
-                            this.fNoColumnBalance = bits[5];
-                            this.fConvMailMergeEsc = bits[6];
-                            this.fSuppressTopSpacing = bits[7];
-                            this.fOrigWordTableRules = bits[8];
-                            this.fTransparentMetafiles = bits[9];
-                            this.fShowBreaksInFrames = bits[10];
-                            this.fSwapBordersFacingPgs = bits[11];
-                            this.fLeaveBackslashAlone = bits[12];
-                            this.fExpShRtn = bits[13];
-                            this.fDntULTrlSpc = bits[14];
-                            this.fDntBlnSbDbWid = bits[15];
-                            this.fSuppressTopSpacingMac5 = bits[16];
-                            this.fTruncDxaExpand = bits[17];
-                            this.fPrintBodyBeforeHdr = bits[18];
-                            this.fNoLeading = bits[19];
-                            this.fMakeSpaceForUL = bits[20];
-                            this.fMWSmallCaps = bits[21];
-                            this.f2ptExtLeadingOnly = bits[22];
-                            this.fTruncFontHeight = bits[23];
-                            this.fSubOnSize = bits[24];
-                            this.fLineWrapLikeWord6 = bits[25];
-                            this.fWW6BorderRules = bits[26];
-                            this.fExactOnTop = bits[27];
-                            this.fExtraAfter = bits[28];
-                            this.fWPSpace = bits[29];
-                            this.fWPJust = bits[30];
-                            this.fPrintMet = bits[31];
+                            //split byte 410 and 411 into bits
+                            bits = new BitArray(new byte[] { bytes[410], bytes[411] });
+                            //bit 0 is reserved
+                            this.lvl = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 1, 4));
+                            this.fGramAllDone = bits[5];
+                            this.fGramAllClean = bits[6];
+                            this.fSubsetFonts = bits[7];
+                            this.fHideLastVersion = bits[8];
+                            this.fHtmlDoc = bits[9];
+                            //bit 10 is reserved
+                            this.fSnapBorder = bits[11];
+                            this.fIncludeHeader = bits[12];
+                            this.fIncludeFooter = bits[13];
+                            this.fForcePageSizePag = bits[14];
+                            this.fMinFontSizePag = bits[15];
 
-                            //split bytes 512,513,514,515 into bits
-                            bits = new BitArray(new byte[] { bytes[512], bytes[513], bytes[514], bytes[515] });
-                            this.fSpLayoutLikeWW8 = bits[0];
-                            this.fFtnLayoutLikeWW8 = bits[1];
-                            this.fDontUseHTMLParagraphAutoSpacing = bits[2];
-                            this.fDontAdjustLineHeightInTable = bits[3];
-                            this.fForgetLastTabAlign = bits[4];
-                            this.fUseAutoSpaceForFullWidthAlpha = bits[5];
-                            this.fAlignTablesRowByRow = bits[6];
-                            this.fLayoutRawTableWidth = bits[7];
-                            this.fLayoutTableRowsApart = bits[8];
-                            this.fUserWord97LineBreakingRules = bits[9];
-                            this.fDontBreakWrappedTables = bits[10];
-                            this.fDontSnapToGridInCell = bits[11];
-                            this.fDontAllowFieldEndSelect = bits[12];
-                            this.fApplyBreakingRules = bits[13];
-                            this.fDontWrapTextWithPunct = bits[14];
-                            this.fDontUseAsianBreakRules = bits[15];
-                            this.fUseWord2002TableStyleRules = bits[16];
-                            this.fGrowAutofit = bits[17];
-                            //bits 18-31 are unused
+                            //split byte 412 and 413 into bits
+                            bits = new BitArray(new byte[] { bytes[412], bytes[413] });
+                            this.fHaveVersions = bits[0];
+                            this.fAutoVersion = bits[1];
+                            //other bits are reserved
 
-                            //bytes 516-539 are unused
+                            byte[] asumybits = new byte[12];
+                            Array.Copy(bytes, 414, asumybits, 0, asumybits.Length);
+                            this.asumyi = new AutoSummaryInfo(asumybits);
 
-                            //split bytes 540,541,542,543 into bits
-                            bits = new BitArray(new byte[] { bytes[540], bytes[541], bytes[542], bytes[543] });
-                            this.verCompatPreW10 = (UInt16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 0, 16));
-                            this.fNoMargPgvwSaved = bits[16];
-                            this.fNoMargPgvWPag = bits[17];
-                            this.fWebViewPag = bits[18];
-                            this.fSeeDrawingsPag = bits[19];
-                            this.fBulletProofed = bits[20];
-                            this.fCorrupted = bits[21];
-                            this.fSaveUim = bits[22];
-                            this.fFilterPrivacy = bits[23];
-                            this.fInFReplaceNoRM = bits[24];
-                            this.fSeenRepairs = bits[25];
-                            this.fHasXML = bits[26];
-                            this.fSeeScriptAnchorsPag = bits[27];
-                            this.fValidateXML = bits[28];
-                            this.fSaveIfInvalidXML = bits[29];
-                            this.fShowXMLErrors = bits[30];
-                            this.fAlwaysMergeEmptyNamespace = bits[31];
+                            this.cChWS = System.BitConverter.ToInt32(bytes, 426);
+                            this.cChWSFtnEdn = System.BitConverter.ToInt32(bytes, 430);
+                            this.grfDocEvents = System.BitConverter.ToInt32(bytes, 434);
 
-                            this.cpMaxListCacheMainDoc = System.BitConverter.ToInt32(bytes, 544);
+                            //split bytes 438-441 in bits
+                            bits = new BitArray(new byte[] { bytes[438], bytes[439], bytes[440], bytes[441] });
+                            this.fVirusPromted = bits[0];
+                            this.fVirusLoadSafe = bits[1];
+                            this.KeyVirusSession30 = (Int32)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 2, 30));
 
-                            //split bytes 548,549 into bits
-                            bits = new BitArray(new byte[] { bytes[548], bytes[549] });
-                            this.fDoNotEmbedSystemFont = bits[0];
-                            this.fWordCompact = bits[1];
-                            this.fLiveRecover = bits[2];
-                            this.fEmbedFactoids = bits[3];
-                            this.fFactoidXML = bits[4];
-                            this.fFactoidAllDone = bits[5];
-                            this.fFolioPrint = bits[6];
-                            this.fReverseFolio = bits[7];
-                            this.iTextLineEnding = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 8, 3));
-                            this.fHideFcc = bits[11];
-                            this.fAcetateShowMarkup = bits[12];
-                            this.fAcetateShowAtn = bits[13];
-                            this.fAcetateShowInsDel = bits[14];
-                            this.fAcetateShowProps = bits[15];
+                            this.cDBC = System.BitConverter.ToInt32(bytes, 480);
+                            this.cDBCFtnEdn = System.BitConverter.ToInt32(bytes, 484);
+                            this.nfcEdnRef = System.BitConverter.ToInt16(bytes, 492);
+                            this.nfcFtnRef = System.BitConverter.ToInt16(bytes, 494);
+                            this.hpsZoonFontPag = System.BitConverter.ToInt16(bytes, 496);
+                            this.dywDispPag = System.BitConverter.ToInt16(bytes, 498);
 
-                            this.istdTableDflt = System.BitConverter.ToUInt16(bytes, 550);
-                            this.verCompat = System.BitConverter.ToUInt16(bytes, 552);
-                            this.grfFmtFilter = System.BitConverter.ToUInt16(bytes, 554);
-                            this.iFolioPages = System.BitConverter.ToInt16(bytes, 556);
-                            this.cpgText = System.BitConverter.ToUInt16(bytes, 558);
-                            this.cpMinRMText = System.BitConverter.ToInt32(bytes, 560);
-                            this.cpMinRMFtn = System.BitConverter.ToInt32(bytes, 564);
-                            this.cpMinRMHdd = System.BitConverter.ToInt32(bytes, 568);
-                            this.cpMinRMAtn = System.BitConverter.ToInt32(bytes, 572);
-                            this.cpMinRMEdn = System.BitConverter.ToInt32(bytes, 576);
-                            this.cpMinRMTxbx = System.BitConverter.ToInt32(bytes, 580);
-                            this.cpMinRMHdrTxbx = System.BitConverter.ToInt32(bytes, 584);
-                            this.rsidRoot = System.BitConverter.ToInt32(bytes, 588);
-
-                            if (bytes.Length == 610)
+                            //WORD 2000, 2002, 2003 PART
+                            if (bytes.Length > 500)
                             {
-                                //split bytes 592,593,594,595 into bits
-                                bits = new BitArray(new byte[] { bytes[592], bytes[593], bytes[594], bytes[595] });
-                                this.fTreatLockAtnAsReadOnly = bits[0];
-                                this.fStyleLock = bits[1];
-                                this.fAutoFmtOverride = bits[2];
-                                this.fRemoveWordML = bits[3];
-                                this.fApplyCustomXForm = bits[4];
-                                this.fStyeLockEnforced = bits[5];
-                                this.fFakeLockAtn = bits[6];
-                                this.fIgnoreMixedContent = bits[7];
-                                this.fShowPlaceholderText = bits[8];
-                                this.grf = Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 9, 23));
+                                this.ilvlLastBulletMain = bytes[500];
+                                this.ilvlLastNumberMain = bytes[501];
+                                this.istdClickTypePara = System.BitConverter.ToInt16(bytes, 502);
 
-                                //split bytes 596 and 597 into bits
-                                bits = new BitArray(new byte[] { bytes[596], bytes[597] });
-                                this.fReadingModeInkLockDown = bits[0];
-                                this.fAcetateShowInkAtn = bits[1];
-                                this.fFilterDttm = bits[2];
-                                this.fEnforceDocProt = bits[3];
-                                this.iDocProtCur = (UInt16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 4, 3));
-                                this.fDispBkSpSaved = bits[7];
+                                //split byte 504 and 505 into bits
+                                bits = new BitArray(new byte[] { bytes[504], bytes[505] });
+                                this.fLADAllDone = bits[0];
+                                this.fEnvelopeVis = bits[1];
+                                this.fMaybeTentativeListInDoc = bits[2];
+                                this.fMaybeFitText = bits[3];
+                                this.fRelyOnCss_WebOpt = bits[9];
+                                this.fRelyOnVML_WebOpt = bits[10];
+                                this.fAllowPNG_WebOpt = bits[11];
+                                this.screenSize_WebOpt = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 12, 4));
 
-                                this.dxaPageLock = System.BitConverter.ToInt16(bytes, 598);
-                                this.dyaPageLock = System.BitConverter.ToInt16(bytes, 600);
-                                this.pctFontLock = System.BitConverter.ToInt32(bytes, 602);
-                                this.grfitbid = bytes[606];
-                                //byte 607 is unused
-                                this.ilfoMacAtCleanup = System.BitConverter.ToUInt16(bytes, 608);
+                                //split byte 506 and 507 into bits
+                                bits = new BitArray(new byte[] { bytes[506], bytes[507] });
+                                this.fOrganizeInFolder_WebOpt = bits[0];
+                                this.fUseLongFileNames_WebOpt = bits[1];
+                                this.iPixelsPerInch_WebOpt = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 2, 10));
+                                this.fWebOptionsInit = bits[12];
+                                this.fMaybeFEL = bits[13];
+                                this.fCharLineUnits = bits[14];
+                                this.fMaybeRTLTables = bits[15];
+
+                                //split bytes 508,509,510,511 into bits
+                                bits = new BitArray(new byte[] { bytes[508], bytes[509], bytes[510], bytes[511] });
+                                this.fNoTabForInd = bits[0];
+                                this.fNoSpaceRaiseLower = bits[1];
+                                this.fSuppressSpbfAfterPageBreak = bits[2];
+                                this.fWrapTrailSpaces = bits[3];
+                                this.fMapPrintTextColor = bits[4];
+                                this.fNoColumnBalance = bits[5];
+                                this.fConvMailMergeEsc = bits[6];
+                                this.fSuppressTopSpacing = bits[7];
+                                this.fOrigWordTableRules = bits[8];
+                                this.fTransparentMetafiles = bits[9];
+                                this.fShowBreaksInFrames = bits[10];
+                                this.fSwapBordersFacingPgs = bits[11];
+                                this.fLeaveBackslashAlone = bits[12];
+                                this.fExpShRtn = bits[13];
+                                this.fDntULTrlSpc = bits[14];
+                                this.fDntBlnSbDbWid = bits[15];
+                                this.fSuppressTopSpacingMac5 = bits[16];
+                                this.fTruncDxaExpand = bits[17];
+                                this.fPrintBodyBeforeHdr = bits[18];
+                                this.fNoLeading = bits[19];
+                                this.fMakeSpaceForUL = bits[20];
+                                this.fMWSmallCaps = bits[21];
+                                this.f2ptExtLeadingOnly = bits[22];
+                                this.fTruncFontHeight = bits[23];
+                                this.fSubOnSize = bits[24];
+                                this.fLineWrapLikeWord6 = bits[25];
+                                this.fWW6BorderRules = bits[26];
+                                this.fExactOnTop = bits[27];
+                                this.fExtraAfter = bits[28];
+                                this.fWPSpace = bits[29];
+                                this.fWPJust = bits[30];
+                                this.fPrintMet = bits[31];
+
+                                //split bytes 512,513,514,515 into bits
+                                bits = new BitArray(new byte[] { bytes[512], bytes[513], bytes[514], bytes[515] });
+                                this.fSpLayoutLikeWW8 = bits[0];
+                                this.fFtnLayoutLikeWW8 = bits[1];
+                                this.fDontUseHTMLParagraphAutoSpacing = bits[2];
+                                this.fDontAdjustLineHeightInTable = bits[3];
+                                this.fForgetLastTabAlign = bits[4];
+                                this.fUseAutoSpaceForFullWidthAlpha = bits[5];
+                                this.fAlignTablesRowByRow = bits[6];
+                                this.fLayoutRawTableWidth = bits[7];
+                                this.fLayoutTableRowsApart = bits[8];
+                                this.fUserWord97LineBreakingRules = bits[9];
+                                this.fDontBreakWrappedTables = bits[10];
+                                this.fDontSnapToGridInCell = bits[11];
+                                this.fDontAllowFieldEndSelect = bits[12];
+                                this.fApplyBreakingRules = bits[13];
+                                this.fDontWrapTextWithPunct = bits[14];
+                                this.fDontUseAsianBreakRules = bits[15];
+                                this.fUseWord2002TableStyleRules = bits[16];
+                                this.fGrowAutofit = bits[17];
+                                //bits 18-31 are unused
+
+                                //bytes 516-539 are unused
+
+                                //split bytes 540,541,542,543 into bits
+                                bits = new BitArray(new byte[] { bytes[540], bytes[541], bytes[542], bytes[543] });
+                                this.verCompatPreW10 = (UInt16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 0, 16));
+                                this.fNoMargPgvwSaved = bits[16];
+                                this.fNoMargPgvWPag = bits[17];
+                                this.fWebViewPag = bits[18];
+                                this.fSeeDrawingsPag = bits[19];
+                                this.fBulletProofed = bits[20];
+                                this.fCorrupted = bits[21];
+                                this.fSaveUim = bits[22];
+                                this.fFilterPrivacy = bits[23];
+                                this.fInFReplaceNoRM = bits[24];
+                                this.fSeenRepairs = bits[25];
+                                this.fHasXML = bits[26];
+                                this.fSeeScriptAnchorsPag = bits[27];
+                                this.fValidateXML = bits[28];
+                                this.fSaveIfInvalidXML = bits[29];
+                                this.fShowXMLErrors = bits[30];
+                                this.fAlwaysMergeEmptyNamespace = bits[31];
+
+                                this.cpMaxListCacheMainDoc = System.BitConverter.ToInt32(bytes, 544);
+
+                                //split bytes 548,549 into bits
+                                bits = new BitArray(new byte[] { bytes[548], bytes[549] });
+                                this.fDoNotEmbedSystemFont = bits[0];
+                                this.fWordCompact = bits[1];
+                                this.fLiveRecover = bits[2];
+                                this.fEmbedFactoids = bits[3];
+                                this.fFactoidXML = bits[4];
+                                this.fFactoidAllDone = bits[5];
+                                this.fFolioPrint = bits[6];
+                                this.fReverseFolio = bits[7];
+                                this.iTextLineEnding = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 8, 3));
+                                this.fHideFcc = bits[11];
+                                this.fAcetateShowMarkup = bits[12];
+                                this.fAcetateShowAtn = bits[13];
+                                this.fAcetateShowInsDel = bits[14];
+                                this.fAcetateShowProps = bits[15];
+
+                                this.istdTableDflt = System.BitConverter.ToUInt16(bytes, 550);
+                                this.verCompat = System.BitConverter.ToUInt16(bytes, 552);
+                                this.grfFmtFilter = System.BitConverter.ToUInt16(bytes, 554);
+                                this.iFolioPages = System.BitConverter.ToInt16(bytes, 556);
+                                this.cpgText = System.BitConverter.ToUInt16(bytes, 558);
+                                this.cpMinRMText = System.BitConverter.ToInt32(bytes, 560);
+                                this.cpMinRMFtn = System.BitConverter.ToInt32(bytes, 564);
+                                this.cpMinRMHdd = System.BitConverter.ToInt32(bytes, 568);
+                                this.cpMinRMAtn = System.BitConverter.ToInt32(bytes, 572);
+                                this.cpMinRMEdn = System.BitConverter.ToInt32(bytes, 576);
+                                this.cpMinRMTxbx = System.BitConverter.ToInt32(bytes, 580);
+                                this.cpMinRMHdrTxbx = System.BitConverter.ToInt32(bytes, 584);
+                                this.rsidRoot = System.BitConverter.ToInt32(bytes, 588);
+
+                                if (bytes.Length == 610)
+                                {
+                                    //split bytes 592,593,594,595 into bits
+                                    bits = new BitArray(new byte[] { bytes[592], bytes[593], bytes[594], bytes[595] });
+                                    this.fTreatLockAtnAsReadOnly = bits[0];
+                                    this.fStyleLock = bits[1];
+                                    this.fAutoFmtOverride = bits[2];
+                                    this.fRemoveWordML = bits[3];
+                                    this.fApplyCustomXForm = bits[4];
+                                    this.fStyeLockEnforced = bits[5];
+                                    this.fFakeLockAtn = bits[6];
+                                    this.fIgnoreMixedContent = bits[7];
+                                    this.fShowPlaceholderText = bits[8];
+                                    this.grf = Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 9, 23));
+
+                                    //split bytes 596 and 597 into bits
+                                    bits = new BitArray(new byte[] { bytes[596], bytes[597] });
+                                    this.fReadingModeInkLockDown = bits[0];
+                                    this.fAcetateShowInkAtn = bits[1];
+                                    this.fFilterDttm = bits[2];
+                                    this.fEnforceDocProt = bits[3];
+                                    this.iDocProtCur = (UInt16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 4, 3));
+                                    this.fDispBkSpSaved = bits[7];
+
+                                    this.dxaPageLock = System.BitConverter.ToInt16(bytes, 598);
+                                    this.dyaPageLock = System.BitConverter.ToInt16(bytes, 600);
+                                    this.pctFontLock = System.BitConverter.ToInt32(bytes, 602);
+                                    this.grfitbid = bytes[606];
+                                    //byte 607 is unused
+                                    this.ilfoMacAtCleanup = System.BitConverter.ToUInt16(bytes, 608);
+                                }
                             }
                         }
-                        
                     }
                 }
+            }
+            catch (Exception)
+            {
+                //this DOP was probably not written by Word
             }
         }
 
