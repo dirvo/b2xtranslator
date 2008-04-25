@@ -31,7 +31,7 @@ using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
 {
-    public class MainDocumentPart : UniqueOpenXmlPart
+    public class MainDocumentPart : ContentPart
     {
         protected StyleDefinitionsPart _styleDefinitionsPart;
         protected FontTablePart _fontTablePart;
@@ -39,7 +39,6 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
         protected SettingsPart _settingsPart;
         protected FootnotesPart _footnotesPart;
 
-        protected int _imagePartCount = 0;
         protected int _headerPartCount = 0;
         protected int _footerPartCount = 0;
         
@@ -117,11 +116,6 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
         public NumberingDefinitionsPart NumberingDefinitionsPart
         {
             get { return _numberingDefinitionsPart; }
-        }
-
-        public ImagePart AddImagePart(ImagePartType type)
-        {
-            return this.AddPart(new ImagePart(type, this, ++_imagePartCount));
         }
 
         public HeaderPart AddHeaderPart()

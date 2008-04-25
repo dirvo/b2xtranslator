@@ -4,10 +4,10 @@ using System.Text;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
 {
-    public class SettingsPart : UniqueOpenXmlPart
+    public class SettingsPart : OpenXmlPart
     {
         internal SettingsPart(OpenXmlPartContainer parent)
-            : base(parent)
+            : base(parent, 0)
         {
         }
 

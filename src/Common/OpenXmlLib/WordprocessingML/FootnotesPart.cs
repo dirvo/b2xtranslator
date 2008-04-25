@@ -4,10 +4,10 @@ using System.Text;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
 {
-    public class FootnotesPart : UniqueOpenXmlPart
+    public class FootnotesPart : ContentPart
     {
         public FootnotesPart(OpenXmlPartContainer parent)
-            : base(parent)
+            : base(parent, 0)
         {
         }
         

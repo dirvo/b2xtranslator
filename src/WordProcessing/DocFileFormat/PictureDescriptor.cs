@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
+using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
@@ -146,96 +147,73 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public Int16 cProps;
 
+        public ShapeContainer ShapeContainer;
+
+        public BlipStoreEntry BlipStoreEntry;
+
         /// <summary>
         /// Parses the CHPX for a fcPic an loads the PictureDescriptor at this offset
         /// </summary>
         /// <param name="chpx">The CHPX that holds a SPRM for fcPic</param>
-        public PictureDescriptor(CharacterPropertyExceptions chpx, VirtualStream dataStream)
+        public PictureDescriptor(CharacterPropertyExceptions chpx, VirtualStream stream)
         {
-            VirtualStreamReader dataReader = new VirtualStreamReader(dataStream);
-
             //Get start and length of the PICT
             Int32 fc = getFcPic(chpx);
             if (fc >= 0)
             {
-                dataStream.Seek(fc, System.IO.SeekOrigin.Begin);
-                Int32 lcb = dataReader.ReadInt32();
-
-                //byte[] lcbBytes = new byte[4];
-                //dataStream.Read(lcbBytes, 0, 4, fc);
-                //Int32 lcb = System.BitConverter.ToInt32(lcbBytes, 0);
-
-                if (lcb > 0)
-                {
-                    //read the bytes of the PIC
-                    byte[] pictBytes = dataReader.ReadBytes(lcb);
-
-                    //parse
-                    parseBytes(pictBytes);
-                }
+                parse(stream, fc);
             }
         }
 
-        /// <summary>
-        /// Parses the bytes to retrieve a PictureDescriptor
-        /// </summary>
-        /// <param name="bytes">The bytes beginng at cbHeader, including the picture</param>
-        public PictureDescriptor(byte[] bytes)
+        private void parse(VirtualStream stream, Int32 fc)
         {
-            parseBytes(bytes);
-        }
+            stream.Seek(fc, System.IO.SeekOrigin.Begin);
+            VirtualStreamReader reader = new VirtualStreamReader(stream);
 
-        private void parseBytes(byte[] bytes)
-        {
-            UInt16 cbHeader = System.BitConverter.ToUInt16(bytes, 0);
+            Int32 lcb = reader.ReadInt32();
 
-            this.mfp = new MetafilePicture();
-            this.mfp.mm = System.BitConverter.ToInt16(bytes, 2);
-            this.mfp.xExt = System.BitConverter.ToInt16(bytes, 4);
-            this.mfp.yExt = System.BitConverter.ToInt16(bytes, 6);
-            this.mfp.hMf = System.BitConverter.ToInt16(bytes, 8);
-
-            if (this.mfp.mm > 98)
+            if (lcb > 0)
             {
-                this.rcWinMf = new byte[14];
-                Array.Copy(bytes, 10, this.rcWinMf, 0, 14);
+                UInt16 cbHeader = reader.ReadUInt16();
 
-                //dimensions
-                this.dxaGoal = System.BitConverter.ToInt16(bytes, 24);
-                this.dyaGoal = System.BitConverter.ToInt16(bytes, 26);
-                this.mx = System.BitConverter.ToUInt16(bytes, 28);
-                this.my = System.BitConverter.ToUInt16(bytes, 30);
+                this.mfp = new MetafilePicture();
+                this.mfp.mm = reader.ReadInt16();
+                this.mfp.xExt = reader.ReadInt16();
+                this.mfp.yExt = reader.ReadInt16();
+                this.mfp.hMf = reader.ReadInt16();
 
-                //cropping
-                this.dxaCropLeft = System.BitConverter.ToInt16(bytes, 32);
-                this.dyaCropTop = System.BitConverter.ToInt16(bytes, 34);
-                this.dxaCropRight = System.BitConverter.ToInt16(bytes, 36);
-                this.dyaCropBottom = System.BitConverter.ToInt16(bytes, 38);
+                if (this.mfp.mm > 98)
+                {
+                    this.rcWinMf = reader.ReadBytes(14);
 
-                //border
-                byte[] brc = new byte[4];
-                Array.Copy(bytes, 46, brc, 0, 4);
-                this.brcTop = new BorderCode(brc);
-                Array.Copy(bytes, 50, brc, 0, 4);
-                this.brcLeft = new BorderCode(brc);
-                Array.Copy(bytes, 54, brc, 0, 4);
-                this.brcBottom = new BorderCode(brc);
-                Array.Copy(bytes, 58, brc, 0, 4);
-                this.brcRight = new BorderCode(brc);
+                    //dimensions
+                    this.dxaGoal = reader.ReadInt16();
+                    this.dyaGoal = reader.ReadInt16();
+                    this.mx = reader.ReadUInt16();
+                    this.my = reader.ReadUInt16();
 
-                this.dxaOrigin = System.BitConverter.ToInt16(bytes, 62);
-                this.dyaOrigin = System.BitConverter.ToInt16(bytes, 64);
-                this.cProps = System.BitConverter.ToInt16(bytes, 66);
+                    //cropping
+                    this.dxaCropLeft = reader.ReadInt16();
+                    this.dyaCropTop = reader.ReadInt16();
+                    this.dxaCropRight = reader.ReadInt16();
+                    this.dyaCropBottom = reader.ReadInt16();
 
-                //ToDo: Parse the OfficeDrawing Stuff
+                    Int16 brcl = reader.ReadInt16();
 
-                ////read the picture
-                //Int32 picStart = getPictureStart(bytes);
-                //if (picStart != -1)
-                //{
-                //    this.Picture = new byte[bytes.Length - picStart];
-                //    Array.Copy(bytes, picStart, this.Picture, 0, this.Picture.Length);
-                //}
+                    //borders
+                    this.brcTop = new BorderCode(reader.ReadBytes(4));
+                    this.brcLeft = new BorderCode(reader.ReadBytes(4));
+                    this.brcBottom = new BorderCode(reader.ReadBytes(4));
+                    this.brcRight = new BorderCode(reader.ReadBytes(4));
+
+                    this.dxaOrigin = reader.ReadInt16();
+                    this.dyaOrigin = reader.ReadInt16();
+                    this.cProps = reader.ReadInt16();
+
+                    //Parse the OfficeDrawing Stuff
+                    this.ShapeContainer = (ShapeContainer)Record.readRecord(reader);
+                    this.BlipStoreEntry = (BlipStoreEntry)Record.readRecord(reader);    
+                }
             }
         }
 

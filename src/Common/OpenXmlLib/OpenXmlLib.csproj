@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppPropertiesPart.cs" />
+    <Compile Include="ContentPart.cs" />
     <Compile Include="PresentationML\PresentationPart.cs" />
     <Compile Include="PresentationML\SlideLayoutPart.cs" />
     <Compile Include="PresentationML\SlideMasterPart.cs" />
@@ -53,7 +54,6 @@
     <Compile Include="WordprocessingML\FootnotesPart.cs" />
     <Compile Include="WordprocessingML\HeaderPart.cs" />
     <Compile Include="ImagePart.cs" />
-    <Compile Include="UniqueOpenXmlPart.cs" />
     <Compile Include="WordprocessingML\MainDocumentPart.cs" />
     <Compile Include="OpenXmlPackage.cs" />
     <Compile Include="OpenXmlPart.cs" />

@@ -33,7 +33,7 @@ using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
-    [OfficeRecordAttribute(TypeCode = 3999)]
+    [OfficeRecordAttribute(3999)]
     public class TextHeaderAtom : Record
     {
         public UInt32 TextType;

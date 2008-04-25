@@ -10,6 +10,7 @@ using System.IO;
 using System.Drawing;
 using DIaLOGIKa.b2xtranslator.Tools;
 using System.Globalization;
+using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
@@ -27,53 +28,101 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
         public void Apply(PictureDescriptor pict)
         {
-            //start w:pict
-            _writer.WriteStartElement("w", "pict", OpenXmlNamespaces.WordprocessingML);
+            Shape shape = findShape(pict.ShapeContainer);
 
-            //start v:rect
-            _writer.WriteStartElement("v", "rect", OpenXmlNamespaces.VectorML);
+            _writer.WriteStartElement("w", "drawing", OpenXmlNamespaces.WordprocessingML);
 
-            //start style attribute
-            _writer.WriteStartAttribute("style");
-            StringBuilder style = new StringBuilder();
+            if (shape.fHaveAnchor)
+            {
+                _writer.WriteStartElement("wp", "anchor", OpenXmlNamespaces.WordprocessingDrawingML);
+            }
+            else
+            {
+                _writer.WriteStartElement("wp", "inline", OpenXmlNamespaces.WordprocessingDrawingML);
+            }
 
-            //size
-            style.Append("width:");
-            double widthPt = new TwipsValue(pict.dxaGoal * 0.001 * pict.mx).ToPoints();
-            style.Append(widthPt.ToString(new CultureInfo("en-US")));
-            style.Append("pt;");
-            style.Append("height:");
-            double heightPt = new TwipsValue(pict.dyaGoal * 0.001 * pict.my).ToPoints();
-            style.Append(heightPt.ToString(new CultureInfo("en-US")));
-            style.Append("pt;");
+            //convert the picture
+            _writer.WriteStartElement("a", "graphic", OpenXmlNamespaces.DrawingML);
+            _writer.WriteStartElement("a", "graphicData", OpenXmlNamespaces.DrawingML);
+            _writer.WriteAttributeString("uri", OpenXmlNamespaces.DrawingMLPicture);
+            _writer.WriteStartElement("pic", "pic", OpenXmlNamespaces.DrawingMLPicture);
 
-            //end style
-            _writer.WriteString(style.ToString());
-            _writer.WriteEndAttribute();
 
-            //write image
-            _writer.WriteStartElement("v", "imagedata", OpenXmlNamespaces.VectorML);
 
-            //id
-            _writer.WriteAttributeString("r", "id", OpenXmlNamespaces.Relationships, _xmlPart.RelIdToString);
+            //write p:blipFil
+            _writer.WriteStartElement("pic", "blipFill", OpenXmlNamespaces.DrawingMLPicture);
 
-            //cropping
-            if (pict.dyaCropTop != 0)
-                _writer.WriteAttributeString("croptop", pict.dyaCropTop.ToString());
-            if (pict.dxaCropRight != 0)
-                _writer.WriteAttributeString("cropright", pict.dxaCropRight.ToString());
-            if (pict.dyaCropBottom != 0)
-                _writer.WriteAttributeString("cropbottom", pict.dyaCropBottom.ToString());
-            if (pict.dxaCropLeft != 0)
-                _writer.WriteAttributeString("cropleft", pict.dxaCropLeft.ToString());
-
+            _writer.WriteStartElement("a", "blip", OpenXmlNamespaces.DrawingML);
+            _writer.WriteAttributeString("r", "embed", OpenXmlNamespaces.Relationships, _xmlPart.RelIdToString);
             _writer.WriteEndElement();
 
-            //close v:rect
+            _writer.WriteStartElement("a", "stretch", OpenXmlNamespaces.DrawingML);
+            _writer.WriteElementString("a", "fillRect", OpenXmlNamespaces.DrawingML, "");
             _writer.WriteEndElement();
 
-            //close w:pict
+            //close p:blipFill
             _writer.WriteEndElement();
+
+
+
+            //write p:spPr
+            _writer.WriteStartElement("pic", "spPr", OpenXmlNamespaces.DrawingMLPicture);
+            
+            //write frame
+            _writer.WriteStartElement("a", "xfrm", OpenXmlNamespaces.DrawingML);
+            _writer.WriteStartElement("a", "off", OpenXmlNamespaces.DrawingML);
+            _writer.WriteAttributeString("x", "0");
+            _writer.WriteAttributeString("y", "0");
+            _writer.WriteEndElement();
+            _writer.WriteStartElement("a", "ext", OpenXmlNamespaces.DrawingML);
+            _writer.WriteAttributeString("cx", "3810000");
+            _writer.WriteAttributeString("cy", "3810000");
+            _writer.WriteEndElement();
+            _writer.WriteEndElement();
+
+            //write preset geometry
+            _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
+            _writer.WriteAttributeString("prst", "rect");
+            _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
+            _writer.WriteEndElement();
+
+            //close p:spPr
+            _writer.WriteEndElement();
+
+
+
+
+            //close p:pic
+            _writer.WriteEndElement();
+
+            //close a:graphic and a:graphicData
+            _writer.WriteEndElement();
+            _writer.WriteEndElement();
+
+            //close wp:anchor or wp:inline
+            _writer.WriteEndElement();
+
+            //close w:drawing
+            _writer.WriteEndElement();
+        }
+
+        /// <summary>
+        /// Finds the first Shape in the ShapeContainer 
+        /// </summary>
+        private Shape findShape(ShapeContainer con)
+        {
+            Shape ret = null;
+
+            foreach (Record rec in con.Children)
+            {
+                if (rec.GetType() == typeof(Shape))
+                {
+                    ret = (Shape)rec;
+                    break;
+                }
+            }
+
+            return ret;
         }
     }
 }

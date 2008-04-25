@@ -4,14 +4,14 @@ using System.Text;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML
 {
-    public class PresentationPart : UniqueOpenXmlPart
+    public class PresentationPart : OpenXmlPart
     {
         protected int _slideLayoutCounter = 0;
         protected int _slideMasterCounter = 0;
         protected int _slideCounter = 0;
         
         public PresentationPart(OpenXmlPartContainer parent)
-            : base(parent)
+            : base(parent, 0)
         {
         }
 

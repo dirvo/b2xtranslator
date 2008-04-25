@@ -30,10 +30,10 @@ using System.Text;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
 {
-    public class CommentsPart : UniqueOpenXmlPart
+    public class CommentsPart : OpenXmlPart
     {
         internal CommentsPart(OpenXmlPartContainer parent)
-            : base(parent)
+            : base(parent, 0)
         {
         }
 

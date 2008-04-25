@@ -31,7 +31,7 @@ using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
 {
-    public class FooterPart : OpenXmlPart
+    public class FooterPart : ContentPart
     {
         public FooterPart(OpenXmlPartContainer parent, int partIndex)
             : base(parent, partIndex)

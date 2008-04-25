@@ -34,6 +34,9 @@ using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
 using DIaLOGIKa.b2xtranslator.Tools;
+using DIaLOGIKa.b2xtranslator.OfficeDrawing;
+using System.IO.Compression;
+using System.IO;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
@@ -47,6 +50,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         protected SectionPropertyExceptions _lastValidSepx;
         protected int _sectionNr = 0;
         protected int _footnoteNr = 0;
+        protected ContentPart _targetPart;
 
         private class Symbol
         {
@@ -54,10 +58,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             public string HexValue;
         }
 
-        public DocumentMapping(ConversionContext ctx, OpenXmlPart targetPart)
+        public DocumentMapping(ConversionContext ctx, ContentPart targetPart)
             : base(XmlWriter.Create(targetPart.GetStream(), ctx.WriterSettings))
         {
             _ctx = ctx;
+            _targetPart = targetPart;
         }
 
         public abstract void Apply(WordDocument doc);
@@ -592,8 +597,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 else if (c == TextMark.Picture && fSpec)
                 {
                     _writer.WriteString("[Picture]");
-                    ////close previous w:t ...
-                    //_writer.WriteEndElement();
 
                     ////drawing or picture
                     //PictureDescriptor pict = new PictureDescriptor(chpx, _doc.DataStream);
@@ -602,11 +605,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     ////do not convert these marks (occurs in hyperlinks e.g.)
                     //if (pict.mfp.mm > 98)
                     //{
+                    //    //close previous w:t ...
+                    //    _writer.WriteEndElement();
+
                     //    ImagePart imgPart = copyPicture(pict);
                     //    pict.Convert(new PictureMapping(_writer, imgPart));
-                    //}
+                    //    copyPicture(pict);
 
-                    //_writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
+                    //    _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
+                    //}
                 }
                 else if (c == TextMark.AutoNumberedFootnoteReference && fSpec)
                 {
@@ -656,23 +663,59 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             //create the image part
             ImagePart imgPart = null;
-            switch (pict.Type)
+            switch (pict.BlipStoreEntry.btWin32)
             {
-                case PictureDescriptor.PictureType.jpg:
-                    imgPart = _ctx.Docx.MainDocumentPart.AddImagePart(ImagePartType.Jpeg);
+                case BlipStoreEntry.BlipType.msoblipEMF:
+                    imgPart = _targetPart.AddImagePart(ImagePartType.Emf);
                     break;
-                case PictureDescriptor.PictureType.png:
-                    imgPart = _ctx.Docx.MainDocumentPart.AddImagePart(ImagePartType.Png);
+                case BlipStoreEntry.BlipType.msoblipWMF:
+                    imgPart = _targetPart.AddImagePart(ImagePartType.Wmf);
                     break;
-                case PictureDescriptor.PictureType.wmf:
-                    imgPart = _ctx.Docx.MainDocumentPart.AddImagePart(ImagePartType.Wmf);
+                case BlipStoreEntry.BlipType.msoblipJPEG:
+                case BlipStoreEntry.BlipType.msoblipCMYKJPEG:
+                    imgPart = _targetPart.AddImagePart(ImagePartType.Jpeg);
                     break;
-                default:
-                    imgPart = _ctx.Docx.MainDocumentPart.AddImagePart(ImagePartType.Png);
+                case BlipStoreEntry.BlipType.msoblipPNG:
+                    imgPart = _targetPart.AddImagePart(ImagePartType.Png);
                     break;
+                case BlipStoreEntry.BlipType.msoblipTIFF:
+                    imgPart = _targetPart.AddImagePart(ImagePartType.Tiff);
+                    break;
+                case BlipStoreEntry.BlipType.msoblipPICT:
+                case BlipStoreEntry.BlipType.msoblipDIB:
+                case BlipStoreEntry.BlipType.msoblipERROR:
+                case BlipStoreEntry.BlipType.msoblipUNKNOWN:
+                case BlipStoreEntry.BlipType.msoblipLastClient:
+                case BlipStoreEntry.BlipType.msoblipFirstClient:
+                    throw new MappingException("Can not convert picture of type " + pict.BlipStoreEntry.btWin32);
             }
 
-            //ToDo: write the picture
+            //write the picture
+            Stream outStream = imgPart.GetStream();
+            switch (pict.BlipStoreEntry.btWin32)
+	        {
+                case BlipStoreEntry.BlipType.msoblipEMF:
+                case BlipStoreEntry.BlipType.msoblipWMF:
+
+                    //it's a meta image
+                    MetafilePictBlip metaBlip = (MetafilePictBlip)pict.BlipStoreEntry.Blip;
+
+                    //meta images can be compressed
+                    byte[] decompressed = metaBlip.Decrompress();
+                    outStream.Write(decompressed, 0, decompressed.Length);
+
+                    break;
+                case BlipStoreEntry.BlipType.msoblipJPEG:
+                case BlipStoreEntry.BlipType.msoblipCMYKJPEG:
+                case BlipStoreEntry.BlipType.msoblipPNG:
+                case BlipStoreEntry.BlipType.msoblipTIFF:
+
+                    //it's a bitmap image
+                    BitmapBlip bitBlip = (BitmapBlip)pict.BlipStoreEntry.Blip;
+                    outStream.Write(bitBlip.m_pvBits, 0, bitBlip.m_pvBits.Length);
+
+                    break;
+	        }
 
             return imgPart;
         }

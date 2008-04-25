@@ -34,7 +34,7 @@ using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
-    [OfficeRecordAttribute(TypeCode = 1007)]
+    [OfficeRecordAttribute(1007)]
     public class SlideAtom : Record
     {
         public SSlideLayoutAtom Layout;

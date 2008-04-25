@@ -199,16 +199,17 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 
                     if (attr != null)
                     {
-                        UInt16 typeCode = attr.TypeCode;
-
-                        if (result.ContainsKey(typeCode))
+                        //add the type codes of the array
+                        foreach (UInt16 typeCode in attr.TypeCodes)
                         {
-                            throw new Exception(String.Format(
-                                "Tried to register TypeCode {0} to {1}, but it is already registered to {2}",
-                                typeCode, t, result[typeCode]));
+                            if (result.ContainsKey(typeCode))
+                            {
+                                throw new Exception(String.Format(
+                                    "Tried to register TypeCode {0} to {1}, but it is already registered to {2}",
+                                    typeCode, t, result[typeCode]));
+                            }
+                            result.Add(typeCode, t);
                         }
-
-                        result.Add(attr.TypeCode, t);
                     }
                 }
             }

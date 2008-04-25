@@ -159,6 +159,12 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                 TraceLogger.Error("Input file {0} is not a valid Microsoft Word 97-2003 file.", inputFile);
                 TraceLogger.Debug(ex.ToString());
             }
+            catch (MappingException ex)
+            {
+                TraceLogger.Error("There was an error while converting the file: ");
+                TraceLogger.Error(ex.Message);
+                TraceLogger.Debug(ex.ToString());
+            }
             catch (ZipCreationException ex)
             {
                 TraceLogger.Error("Could not create output file {0}.", outputFile);

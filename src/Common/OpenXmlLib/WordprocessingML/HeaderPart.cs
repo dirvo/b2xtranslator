@@ -30,7 +30,7 @@ using System.Text;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
 {
-    public class HeaderPart : OpenXmlPart
+    public class HeaderPart : ContentPart
     {
         public HeaderPart(OpenXmlPartContainer parent, int partIndex)
             : base(parent, partIndex)

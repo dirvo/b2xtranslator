@@ -31,10 +31,10 @@ using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
 {
-    public class StyleDefinitionsPart : UniqueOpenXmlPart
+    public class StyleDefinitionsPart : OpenXmlPart
     {
         public StyleDefinitionsPart(OpenXmlPartContainer parent)
-            : base(parent)
+            : base(parent, 0)
         {
         }
 

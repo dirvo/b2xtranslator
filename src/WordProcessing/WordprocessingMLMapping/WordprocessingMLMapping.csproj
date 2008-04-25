@@ -51,6 +51,7 @@
     <Compile Include="HeaderMapping.cs" />
     <Compile Include="LanguageIdMapping.cs" />
     <Compile Include="MainDocumentMapping.cs" />
+    <Compile Include="MappingException.cs" />
     <Compile Include="NumberingMapping.cs" />
     <Compile Include="ParagraphPropertiesMapping.cs" />
     <Compile Include="DocumentMapping.cs" />
@@ -70,6 +71,10 @@
     <ProjectReference Include="..\..\Common\CommonTranslatorLib\CommonTranslatorLib.csproj">
       <Project>{0F0F6BAF-BC5D-4DC6-AE53-8257305EE5CA}</Project>
       <Name>CommonTranslatorLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\OfficeDrawing\OfficeDrawing.csproj">
+      <Project>{AA46A3F1-919F-48FB-970C-753F58A857F6}</Project>
+      <Name>OfficeDrawing</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Common\OpenXmlLib\OpenXmlLib.csproj">
       <Project>{4C10271C-CD9B-49F5-9479-3C6EB7404E75}</Project>

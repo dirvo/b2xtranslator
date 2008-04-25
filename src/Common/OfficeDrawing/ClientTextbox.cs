@@ -32,7 +32,7 @@ using System.IO;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 {
-    [OfficeRecordAttribute(TypeCode = 0xF00D)]
+    [OfficeRecordAttribute(0xF00D)]
     public class ClientTextbox : RegularContainer
     {
         public ClientTextbox(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)

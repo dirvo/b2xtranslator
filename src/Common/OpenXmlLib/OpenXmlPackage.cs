@@ -44,7 +44,10 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 
         protected CorePropertiesPart _coreFilePropertiesPart;
         protected AppPropertiesPart _appPropertiesPart;
+
+        protected int _imageCounter;
         #endregion
+
 
         protected OpenXmlPackage(string fileName)
         {
@@ -107,11 +110,16 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
                 _defaultTypes.Add(extension, contentType);
         }
 
-
         internal void AddContentTypeOverride(string partNameAbsolute, string contentType)
         {
             if (!_partOverrides.ContainsKey(partNameAbsolute))
                 _partOverrides.Add(partNameAbsolute, contentType);
+        }
+
+        internal int GetNextImageId()
+        {
+            _imageCounter++;
+            return _imageCounter;
         }
 
         protected void WritePackage(OpenXmlWriter writer)

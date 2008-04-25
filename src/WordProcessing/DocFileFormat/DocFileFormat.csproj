@@ -85,6 +85,10 @@
       <Project>{0F0F6BAF-BC5D-4DC6-AE53-8257305EE5CA}</Project>
       <Name>CommonTranslatorLib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Common\OfficeDrawing\OfficeDrawing.csproj">
+      <Project>{AA46A3F1-919F-48FB-970C-753F58A857F6}</Project>
+      <Name>OfficeDrawing</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Common\StructuredStorageReader\StructuredStorageReader.csproj">
       <Project>{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}</Project>
       <Name>StructuredStorageReader</Name>

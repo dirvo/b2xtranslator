@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2008, DIaLOGIKa
  * All rights reserved.
  *
@@ -24,17 +24,28 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 {
-    public abstract class UniqueOpenXmlPart : OpenXmlPart
+    public abstract class ContentPart : OpenXmlPart
     {
-        public UniqueOpenXmlPart(OpenXmlPartContainer parent)
+        public ContentPart(OpenXmlPartContainer parent)
             : base(parent, 0)
         {
+        }
+
+        public ContentPart(OpenXmlPartContainer parent, int partIndex)
+            : base(parent, partIndex)
+        {
+        }
+
+        public ImagePart AddImagePart(ImagePartType type)
+        {
+            return this.AddPart(new ImagePart(type, this, Package.GetNextImageId()));
         }
     }
 }

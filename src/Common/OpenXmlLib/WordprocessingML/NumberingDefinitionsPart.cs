@@ -30,10 +30,10 @@ using System.Text;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
 {
-    public class NumberingDefinitionsPart : UniqueOpenXmlPart
+    public class NumberingDefinitionsPart : OpenXmlPart
     {
         public NumberingDefinitionsPart(OpenXmlPartContainer parent)
-            : base(parent)
+            : base(parent, 0)
         {
         }
         

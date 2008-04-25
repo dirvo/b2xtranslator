@@ -32,7 +32,7 @@ using System.IO;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 {
-    [OfficeRecordAttribute(TypeCode = 0xF006)]
+    [OfficeRecordAttribute(0xF006)]
     public class DrawingGroupRecord : Record
     {
         public class FileIdCluster

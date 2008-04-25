@@ -34,7 +34,7 @@ using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
-    [OfficeRecordAttribute(TypeCode = 4001)]
+    [OfficeRecordAttribute(4001)]
     public class StyleTextPropAtom : Record
     {
         [FlagsAttribute]

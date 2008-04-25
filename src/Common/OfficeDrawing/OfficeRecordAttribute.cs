@@ -37,6 +37,13 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
     [AttributeUsage(AttributeTargets.Class)]
     public class OfficeRecordAttribute : Attribute
     {
-        public UInt16 TypeCode;
+        public OfficeRecordAttribute() { }
+
+        public OfficeRecordAttribute(params UInt16[] typecodes)
+        {
+            this.TypeCodes = typecodes;
+        }
+
+        public UInt16[] TypeCodes = new UInt16[0];
     }
 }

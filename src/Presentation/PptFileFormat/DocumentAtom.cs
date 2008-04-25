@@ -34,7 +34,7 @@ using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
-    [OfficeRecordAttribute(TypeCode = 1001)]
+    [OfficeRecordAttribute(1001)]
     public class DocumentAtom : Record
     {
         public GPointAtom SlideSize;

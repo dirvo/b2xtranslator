@@ -32,10 +32,10 @@ using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
 {
-    public class WorkbookPart : UniqueOpenXmlPart
+    public class WorkbookPart : OpenXmlPart
     {
         public WorkbookPart(OpenXmlPartContainer parent)
-            : base(parent)
+            : base(parent, 0)
         {
         }
 
