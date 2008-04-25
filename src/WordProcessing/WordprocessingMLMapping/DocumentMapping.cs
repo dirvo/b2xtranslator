@@ -687,7 +687,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 case BlipStoreEntry.BlipType.msoblipUNKNOWN:
                 case BlipStoreEntry.BlipType.msoblipLastClient:
                 case BlipStoreEntry.BlipType.msoblipFirstClient:
-                    throw new MappingException("Can not convert picture of type " + pict.BlipStoreEntry.btWin32);
+                    throw new MappingException("Cannot convert picture of type " + pict.BlipStoreEntry.btWin32);
             }
 
             //write the picture
