@@ -131,22 +131,22 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
             }
             catch (DirectoryNotFoundException ex)
             {
-                TraceLogger.Error("The input file does not exist.");
+                TraceLogger.Error(ex.Message);
                 TraceLogger.Debug(ex.ToString());
             }
             catch (FileNotFoundException ex)
             {
-                TraceLogger.Error("The input file does not exist.");
+                TraceLogger.Error(ex.Message);
                 TraceLogger.Debug(ex.ToString());
             }
             catch (ReadBytesAmountMismatchException ex)
             {
-                TraceLogger.Error("The input file is not a valid Microsoft Word 97-2003 file.");
+                TraceLogger.Error("Input file {0} is not a valid Microsoft Word 97-2003 file.", inputFile);
                 TraceLogger.Debug(ex.ToString());
             }
             catch (MagicNumberException ex)
             {
-                TraceLogger.Error("The input file is not a valid Microsoft Word 97-2003 file.");
+                TraceLogger.Error("Input file {0} is not a valid Microsoft Word 97-2003 file.", inputFile);
                 TraceLogger.Debug(ex.ToString());
             }
             catch (UnspportedFileVersionException ex)
