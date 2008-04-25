@@ -161,8 +161,7 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
             }
             catch (MappingException ex)
             {
-                TraceLogger.Error("There was an error while converting the file: ");
-                TraceLogger.Error(ex.Message);
+                TraceLogger.Error("There was an error while converting file {0}: {1}", inputFile, ex.Message);
                 TraceLogger.Debug(ex.ToString());
             }
             catch (ZipCreationException ex)
