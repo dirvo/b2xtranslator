@@ -151,12 +151,12 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
             }
             catch (UnspportedFileVersionException ex)
             {
-                TraceLogger.Error("Doc2x doesn't support files older than Word 97.");
+                TraceLogger.Error("File {0} has been created with a Word version older than Word 97.", inputFile);
                 TraceLogger.Debug(ex.ToString());
             }
             catch (ByteParseException ex)
             {
-                TraceLogger.Error("The input file is not a valid Microsoft Word 97-2003 file.");
+                TraceLogger.Error("Input file {0} is not a valid Microsoft Word 97-2003 file.", inputFile);
                 TraceLogger.Debug(ex.ToString());
             }
             catch (ZipCreationException ex)
@@ -167,7 +167,7 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
             }
             catch (Exception ex)
             {
-                TraceLogger.Error("Conversion failed.");
+                TraceLogger.Error("Conversion of file {0} failed.", inputFile);
                 TraceLogger.Debug(ex.ToString());
             }
         }
