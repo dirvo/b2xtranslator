@@ -31,11 +31,16 @@ using System.Text;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
+using System.Reflection;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
     public class PowerpointDocument : IVisitable, IEnumerable<Record>
     {
+        static PowerpointDocument() {
+            Record.UpdateTypeToRecordClassMapping(Assembly.GetExecutingAssembly(), typeof(PowerpointDocument).Namespace);
+        }
+
         /// <summary>
         /// The stream "PowerPoint Document"
         /// </summary>

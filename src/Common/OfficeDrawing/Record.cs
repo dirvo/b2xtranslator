@@ -175,20 +175,26 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             return result.ToString();
         }
 
-        public static Dictionary<UInt16, Type> TypeToRecordClassMapping = GetTypeToRecordClassMapping();
+        private static Dictionary<UInt16, Type> TypeToRecordClassMapping = new Dictionary<UInt16, Type>();
 
-        private static Dictionary<UInt16, Type> GetTypeToRecordClassMapping()
+        static Record()
         {
-            Dictionary<UInt16, Type> result = new Dictionary<UInt16, Type>();
+            UpdateTypeToRecordClassMapping(Assembly.GetExecutingAssembly(), typeof(Record).Namespace);
+        }
 
-            // Note: We return a Dictionary that maps Office record TypeCodes to Office record classes.
-            // We do this by querying all classes in the current assembly, filtering by namespace
-            // PptFileFormat.Records and looking for attributes of type OfficeRecord.
-            //
-            // If in doubt see usage below.
-            foreach (Type t in Assembly.GetExecutingAssembly().GetTypes())
+        /// <summary>
+        /// Updates the Dictionary used for mapping Office record TypeCodes to Office record classes.
+        /// This is done by querying all classes in the specified assembly filtered by the specified
+        /// namespace and looking for attributes of type OfficeRecordAttribute.
+        /// </summary>
+        /// 
+        /// <param name="assembly">Assembly to scan</param>
+        /// <param name="ns">Namespace to scan or null for all namespaces</param>
+        public static void UpdateTypeToRecordClassMapping(Assembly assembly, String ns)
+        {
+            foreach (Type t in assembly.GetTypes())
             {
-                if (t.Namespace == typeof(Record).Namespace)
+                if (ns == null || t.Namespace == ns)
                 {
                     object[] attrs = t.GetCustomAttributes(typeof(OfficeRecordAttribute), false);
 
@@ -199,22 +205,20 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 
                     if (attr != null)
                     {
-                        //add the type codes of the array
+                        // Add the type codes of the array
                         foreach (UInt16 typeCode in attr.TypeCodes)
                         {
-                            if (result.ContainsKey(typeCode))
+                            if (TypeToRecordClassMapping.ContainsKey(typeCode))
                             {
                                 throw new Exception(String.Format(
                                     "Tried to register TypeCode {0} to {1}, but it is already registered to {2}",
-                                    typeCode, t, result[typeCode]));
+                                    typeCode, t, TypeToRecordClassMapping[typeCode]));
                             }
-                            result.Add(typeCode, t);
+                            TypeToRecordClassMapping.Add(typeCode, t);
                         }
                     }
                 }
             }
-
-            return result;
         }
 
         public static Record readRecord(Stream stream)

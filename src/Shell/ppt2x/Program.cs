@@ -24,7 +24,7 @@ namespace DIaLOGIKa.b2xtranslator.ppt2x
             string inputFile = args[0];
             ProcessingFile procFile = new ProcessingFile(inputFile);
             
-            //open the reader
+            // Open the reader
             StructuredStorageFile file = new StructuredStorageFile(procFile.File.FullName);
 
             PowerpointDocument pptDoc = new PowerpointDocument(file);

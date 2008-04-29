@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
@@ -49,7 +50,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         public override string ToString(uint depth)
         {
             return String.Format("{0}\n{1}Text = {2}",
-                base.ToString(depth), IndentationForDepth(depth + 1), this.Text);
+                base.ToString(depth), IndentationForDepth(depth + 1), Utils.StringInspect(this.Text));
         }
     }
 
