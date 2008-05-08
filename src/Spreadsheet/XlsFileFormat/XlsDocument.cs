@@ -33,22 +33,44 @@ using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
-    public class XlsDocument : BinaryDocument
+    public class XlsDocument :  IVisitable
     {
+        /// <summary>
+        /// Some constant strings 
+        /// </summary>
         private const string WORKBOOK = "Workbook";
 
-        private IStreamReader _workbookReader;
+        /// <summary>
+        /// The workbook streamreader 
+        /// </summary>
+        private VirtualStreamReader workBookStreamReader; 
 
+        /// <summary>
+        /// The Workbookextractor / container 
+        /// </summary>
+        public WorkbookExtractor workBookExtr; 
+
+
+        /// <summary>
+        /// Ctor 
+        /// </summary>
+        /// <param name="file"></param>
         public XlsDocument(IStructuredStorageFile file)
         {
-            _workbookReader = new VirtualStreamReader(file.GetStream(WORKBOOK));
 
-            // TODO: start parsing here
+            this.workBookStreamReader = new VirtualStreamReader(file.GetStream(WORKBOOK));
+
+            this.workBookExtr = new WorkbookExtractor(this.workBookStreamReader); 
         }
 
-        public override void Convert<T>(T mapping)
+
+        #region IVisitable Members
+
+        public void Convert<T>(T mapping)
         {
-            throw new Exception("The method or operation is not implemented.");
+            ((IMapping<XlsDocument>)mapping).Apply(this);
         }
+
+        #endregion
     }
 }

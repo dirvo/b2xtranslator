@@ -293,11 +293,15 @@
     <Compile Include="BiffString.cs" />
     <Compile Include="Exception\ExtractorException.cs" />
     <Compile Include="Exception\RecordParseException.cs" />
+    <Compile Include="Extractor.cs" />
     <Compile Include="FileInformationExtractor.cs" />
     <Compile Include="BiffRecords\FORMAT.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RecordNumbers.cs" />
+    <Compile Include="SheetData.cs" />
+    <Compile Include="SheetExtractor.cs" />
     <Compile Include="StreamExtractor.cs" />
+    <Compile Include="WorkbookExtractor.cs" />
     <Compile Include="XlsDocument.cs" />
   </ItemGroup>
   <ItemGroup>

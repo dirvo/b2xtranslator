@@ -43,6 +43,13 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         public const RecordNumber ID = RecordNumber.BOUNDSHEET;
 
         /// <summary>
+        /// Some enum definitions 
+        /// </summary>
+        public enum hiddenFlags:int {visible=0, hidden=1, veryhidden=2 };
+        public enum sheetTypes:int { worksheet=0, macrosheet=1, chart=2, visualbasic=6 }; 
+
+
+        /// <summary>
         /// Stream position of the start of the BOF record for the sheet
         /// </summary>
         public UInt32 lbPlyPos;
@@ -63,17 +70,82 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         public byte[] rgch;
         // TODO: check for correct interpretation of Unicode strings
 
+        /// <summary>
+        /// The hidden status of the workbook 
+        /// </summary>
+        public int hiddenState;
+
+        /// <summary>
+        /// The sheet type value
+        /// </summary>
+        public int sheetType; 
+
+        /// <summary>
+        /// extracts the boundsheetdata from the biffrecord  
+        /// </summary>
+        /// <param name="reader">IStreamReader </param>
+        /// <param name="id">Type of the record </param>
+        /// <param name="length">Length of the record</param>
         public BOUNDSHEET(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
 
-            // initialize class members from stream
-            // TODO: place code here
+            byte[] buffer = new byte[length];
+            buffer = reader.ReadBytes(length);
+            
+
+            this.lbPlyPos = System.BitConverter.ToUInt32(buffer, 0);
+            this.grbit = System.BitConverter.ToUInt16(buffer, 4); 
+              //   (int)System.BitConverter.ToInt16(buffer, 4);
+            this.cch = (byte)buffer.GetValue(6); 
+
+            this.rgch = new byte[this.cch];
+            for (int i = 0; i < this.cch; i++)
+            {
+                this.rgch[i] = buffer[i + 8]; 
+            }
+
+            // Setting the hidden state value 
+            // Bitmask is 0003h -> first two bits 
+            this.hiddenState = Utils.BitmaskToInt(this.grbit, 0x0003); 
+
+            // Setting the sheet type value 
+            this.sheetType = Utils.BitmaskToInt(this.grbit, 0xFF00);
             
             // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            // Debug.trace(this.Offset + this.Length == this.Reader.BaseStream.Position); 
         }
+
+        /// <summary>
+        /// Simple ToString Method 
+        /// </summary>
+        /// <returns>String from the object</returns>
+        public override String ToString()
+        {
+            String returnvalue = "BOUNDSHEET - RECORD: \n";
+            returnvalue += "-- Name: " + this.getBoundsheetName() + "\n";
+            returnvalue += "-- Offset: " + this.lbPlyPos + "\n";
+            returnvalue += "-- HiddenState: " + (hiddenFlags)this.hiddenState + "\n";
+            returnvalue += "-- Sheettype: " + (sheetTypes)this.sheetType + "\n"; 
+            return returnvalue; 
+        }
+
+
+        /// <summary>
+        /// Helper Method to get the boundsheetname 
+        /// </summary>
+        /// <returns>Boundsheetname </returns>
+        public String getBoundsheetName()
+        {
+            String returnvalue = ""; 
+            for (int i = 0; i < this.rgch.Length; i++)
+            {
+                returnvalue += (char)this.rgch[i];
+            }
+            return returnvalue; 
+        }
+
     }
 }

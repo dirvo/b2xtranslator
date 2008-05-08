@@ -59,7 +59,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                     bh.length = this.SummaryStream.ReadUInt16();
 
                     byte[] buf = new byte[bh.length];
-                    if (bh.length != this.SummaryStream.Read(buf, bh.length))
+                    if (bh.length != this.SummaryStream.ReadByte())
                         sw.WriteLine("EOF");
 
                     sw.Write("BIFF {0}\t{1}\t", bh.id, bh.length);

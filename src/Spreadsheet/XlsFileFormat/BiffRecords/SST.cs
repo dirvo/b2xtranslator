@@ -37,17 +37,85 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     {
         public const RecordNumber ID = RecordNumber.SST;
 
+        public UInt32 cstTotal;
+        public UInt32 cstUnique;
+
+        public List<String> StringList; 
+
         public SST(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
+            this.StringList = new List<string>(); 
+            // byte[] buffer = new byte[length];
+            // buffer = reader.ReadBytes(length);
 
-            // initialize class members from stream
-            // TODO: place code here
+
+            this.cstTotal = (UInt32)reader.ReadUInt32();
+            this.cstUnique = reader.ReadUInt32(); 
+
+            // run over the different strings 
+            // there are x strings where x = cstUnique 
+            for (int i = 0; i < this.cstUnique; i++)
+            {
+                // first get the char count of this string 
+                UInt16 cch = reader.ReadUInt16();
+                // get the grbit mask 
+                Byte grbit = reader.ReadByte();
+
+                bool isCompressedString = false; 
+                bool isExtString = false;
+                bool isRichString = false; 
+
+                // demask the grbit 
+                isCompressedString = !Utils.BitmaskToBool((int)grbit, 0x0001);
+                isExtString = Utils.BitmaskToBool((int)grbit, 0x0004);
+                isRichString = Utils.BitmaskToBool((int)grbit, 0x0008);
+
+                if (isExtString)
+                {
+
+                }
+                else if (isRichString)
+                {
+
+                }
+                else
+                {
+                    if (isCompressedString)
+                    {
+                        String buffer = "";
+                        for (int j = 0; j < cch; j++)
+                        {
+                            buffer += (char)reader.ReadByte(); 
+                        }
+                        this.StringList.Add(buffer); 
+                    }
+                }
+
+            }
             
             // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            // Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+        }
+
+        /// <summary>
+        /// The ToString Method
+        /// </summary>
+        /// <returns></returns>
+        public override String ToString()
+        {
+            String back = "";
+            back += "Number Strings Total: " + this.cstTotal + "\n";
+            back += "Number Unique Strings: " + this.cstUnique + "\n";
+            back += "Strings: \n" ;
+            foreach (String var in this.StringList)
+            {
+                back += var + "\n"; 
+            }
+
+            return back; 
         }
     }
 }
