@@ -210,48 +210,15 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     this.dyaOrigin = reader.ReadInt16();
                     this.cProps = reader.ReadInt16();
 
+                    //byte[] records = reader.ReadBytes( (int)(reader.BaseStream.Length - reader.BaseStream.Position));
+
                     //Parse the OfficeDrawing Stuff
                     this.ShapeContainer = (ShapeContainer)Record.readRecord(reader);
-                    this.BlipStoreEntry = (BlipStoreEntry)Record.readRecord(reader);    
                 }
             }
         }
 
-        /// <summary>
-        /// Searches for the beginning of the real picture file.
-        /// </summary>
-        /// <param name="pic">the bytes of the PIC structure</param>
-        /// <returns>the position where the picture starts</returns>
-        private int getPictureStart(byte[] pic)
-        {
-            int ret = -1;
 
-            for (int i = 66; i < pic.Length; i++)
-            {
-                if (pic[i] == 0x89 && pic.Length > i + 3)
-                {
-                    //possible PNG start
-                    if (pic[i + 1] == 0x50 && pic[i + 2] == 0x4E && pic[i + 3] == 0x47)
-                    {
-                        ret = i;
-                        this.Type = PictureType.png;
-                        break;
-                    }
-                }
-                else if (pic[i] == 0xFF && pic.Length > i + 2)
-                {
-                    //possible PNG start
-                    if (pic[i + 1] == 0xD8 && pic[i + 2] == 0xFF)
-                    {
-                        ret = i;
-                        this.Type = PictureType.jpg;
-                        break;
-                    }
-                }
-            }
-
-            return ret;
-        }
 
         /// <summary>
         /// Returns the fcPic into the "data" stream, where the PIC begins.

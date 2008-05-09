@@ -30,79 +30,27 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             Shape shape = findShape(pict.ShapeContainer);
 
-            _writer.WriteStartElement("w", "drawing", OpenXmlNamespaces.WordprocessingML);
+            _writer.WriteStartElement("w", "pict", OpenXmlNamespaces.WordprocessingML);
 
-            if (shape.fHaveAnchor)
-            {
-                _writer.WriteStartElement("wp", "anchor", OpenXmlNamespaces.WordprocessingDrawingML);
-            }
-            else
-            {
-                _writer.WriteStartElement("wp", "inline", OpenXmlNamespaces.WordprocessingDrawingML);
-            }
+            //v:shape
+            _writer.WriteStartElement("v", "shape", OpenXmlNamespaces.VectorML);
+            _writer.WriteAttributeString("v", "type", OpenXmlNamespaces.VectorML, "rect");
 
-            //convert the picture
-            _writer.WriteStartElement("a", "graphic", OpenXmlNamespaces.DrawingML);
-            _writer.WriteStartElement("a", "graphicData", OpenXmlNamespaces.DrawingML);
-            _writer.WriteAttributeString("uri", OpenXmlNamespaces.DrawingMLPicture);
-            _writer.WriteStartElement("pic", "pic", OpenXmlNamespaces.DrawingMLPicture);
+            CultureInfo en = new CultureInfo("en-US");
+            StringBuilder style = new StringBuilder();
+            style.Append("width:").Append(new TwipsValue(pict.dxaGoal).ToPoints().ToString(en)).Append("pt;");
+            style.Append("height:").Append(new TwipsValue(pict.dyaGoal).ToPoints().ToString(en)).Append("pt;");
+            _writer.WriteAttributeString("style", style.ToString());
 
-
-
-            //write p:blipFil
-            _writer.WriteStartElement("pic", "blipFill", OpenXmlNamespaces.DrawingMLPicture);
-
-            _writer.WriteStartElement("a", "blip", OpenXmlNamespaces.DrawingML);
-            _writer.WriteAttributeString("r", "embed", OpenXmlNamespaces.Relationships, _xmlPart.RelIdToString);
+            //v:imageData
+            _writer.WriteStartElement("v", "imageData", OpenXmlNamespaces.VectorML);
+            _writer.WriteAttributeString("r", "id", OpenXmlNamespaces.Relationships, _xmlPart.RelIdToString);
             _writer.WriteEndElement();
 
-            _writer.WriteStartElement("a", "stretch", OpenXmlNamespaces.DrawingML);
-            _writer.WriteElementString("a", "fillRect", OpenXmlNamespaces.DrawingML, "");
+            //close v:shape
             _writer.WriteEndElement();
 
-            //close p:blipFill
-            _writer.WriteEndElement();
-
-
-
-            //write p:spPr
-            _writer.WriteStartElement("pic", "spPr", OpenXmlNamespaces.DrawingMLPicture);
-            
-            //write frame
-            _writer.WriteStartElement("a", "xfrm", OpenXmlNamespaces.DrawingML);
-            _writer.WriteStartElement("a", "off", OpenXmlNamespaces.DrawingML);
-            _writer.WriteAttributeString("x", "0");
-            _writer.WriteAttributeString("y", "0");
-            _writer.WriteEndElement();
-            _writer.WriteStartElement("a", "ext", OpenXmlNamespaces.DrawingML);
-            _writer.WriteAttributeString("cx", "3810000");
-            _writer.WriteAttributeString("cy", "3810000");
-            _writer.WriteEndElement();
-            _writer.WriteEndElement();
-
-            //write preset geometry
-            _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-            _writer.WriteAttributeString("prst", "rect");
-            _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-            _writer.WriteEndElement();
-
-            //close p:spPr
-            _writer.WriteEndElement();
-
-
-
-
-            //close p:pic
-            _writer.WriteEndElement();
-
-            //close a:graphic and a:graphicData
-            _writer.WriteEndElement();
-            _writer.WriteEndElement();
-
-            //close wp:anchor or wp:inline
-            _writer.WriteEndElement();
-
-            //close w:drawing
+            //close w:pict
             _writer.WriteEndElement();
         }
 

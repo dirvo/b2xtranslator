@@ -36,6 +36,7 @@
   <ItemGroup>
     <Compile Include="BitmapBlip.cs" />
     <Compile Include="BlipStoreEntry.cs" />
+    <Compile Include="ClientAnchor.cs" />
     <Compile Include="ClientData.cs" />
     <Compile Include="ClientTextbox.cs" />
     <Compile Include="DrawingContainer.cs" />
@@ -49,6 +50,7 @@
     <Compile Include="RegularContainer.cs" />
     <Compile Include="Shape.cs" />
     <Compile Include="ShapeContainer.cs" />
+    <Compile Include="ShapeOptions.cs" />
     <Compile Include="UnknownRecord.cs" />
   </ItemGroup>
   <ItemGroup>

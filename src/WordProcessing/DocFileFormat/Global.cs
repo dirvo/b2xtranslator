@@ -80,6 +80,35 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             shimmer
         }
 
+        public enum FarEastLayout
+        { 
+            none,
+            tatenakayoko,
+            warichu,
+            kumimoji,
+            all
+        }
+
+        public enum WarichuBracket
+        {
+            none,
+            parentheses,
+            squareBrackets,
+            angledBrackets,
+            braces
+        }
+
+        public enum HyphenationRule
+        { 
+            none,
+            normal,
+            addLetterBefore,
+            changeLetterBefore,
+            deleteLetterBefore,
+            changeLetterAfter,
+            deleteAndChange
+        }
+
         public enum UnderlineCode
         {
             none = 0,

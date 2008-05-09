@@ -46,6 +46,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public Dictionary<Int32, Int32> FileCharacterPositions;
 
         /// <summary>
+        /// A dictionary with file character positions as keys and the matching CPs as values
+        /// </summary>
+        public Dictionary<Int32, Int32> CharacterPositions;
+
+        /// <summary>
         /// Parses the pice table and creates a list of PieceDescriptors.
         /// </summary>
         /// <param name="fib">The FIB</param>
@@ -58,6 +63,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             this.Pieces = new List<PieceDescriptor>();
             this.FileCharacterPositions = new Dictionary<int, int>();
+            this.CharacterPositions = new Dictionary<int, int>();
 
             int pos = 0;
             bool goon = true;
@@ -101,14 +107,18 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                             {
                                 multi = 2;
                             }
-                            for (int c = pcd.cpStart; c < pcd.cpEnd; c++)
+                            for (int c = pcd.cpStart; c <= pcd.cpEnd; c++)
                             {
-                                this.FileCharacterPositions.Add(c, f);
-                                f+=multi;
+                                if(!this.FileCharacterPositions.ContainsKey(c))
+                                    this.FileCharacterPositions.Add(c, f);
+                                if(!this.CharacterPositions.ContainsKey(f))
+                                    this.CharacterPositions.Add(f, c);
+
+                                f += multi;
                             }
                         }
                         this.FileCharacterPositions.Add(this.FileCharacterPositions.Count, fib.fcMac);
-
+                        this.CharacterPositions.Add(fib.fcMac, this.FileCharacterPositions.Count);
 
                         //piecetable was found
                         goon = false;

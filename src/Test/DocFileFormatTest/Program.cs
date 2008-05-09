@@ -37,10 +37,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
 {
     class Program
     {
+        private static string method, file;
         private static StructuredStorageFile reader;
-        private static VirtualStream wordDocumentStream, tableStream, dataStream;
-        private static FileInformationBlock fib;
-        private static string file, method;
+        private static WordDocument doc;
 
         static void Main(string[] args)
         {
@@ -50,36 +49,18 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
                 parseArgs(args);
 
                 reader = new StructuredStorageFile(file);
-
-                //get the "WordDocument" stream
-                wordDocumentStream = reader.GetStream("WordDocument");
-
-                //parse the FIB
-                fib = new FileInformationBlock(wordDocumentStream);
-
-                //get the tablestream
-                if (fib.fWhichTblStm)
-                    tableStream = reader.GetStream("1Table");
-                else
-                    tableStream = reader.GetStream("0Table");
-
-                //get the data stream
-                try
-                {
-                    dataStream = reader.GetStream("DataStream");
-                }
-                catch (StreamNotFoundException)
-                {
-                    dataStream = null;
-                }
-
+                doc = new WordDocument(reader);
 
                 method = method.ToUpper();
 
                 //starting
-                if (!fib.fComplex)
+                if (!doc.FIB.fComplex)
                 {
-                    if (method == "FKPPAPX")
+                    if (method == "BUILDCHP")
+                    {
+                        buildFirstCHP();
+                    }
+                    else if (method == "FKPPAPX")
                     {
                         testFKPPAPX();
                     }
@@ -128,18 +109,23 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
             }
             finally
             {
-                if(reader != null)
-                reader.Close();
+                if (reader != null)
+                    reader.Close();
             }
+        }
+
+        private static void buildFirstCHP()
+        {
+            CharacterPropertyExceptions chpx = doc.AllChpxFkps[0].grpchpx[0];
+            ParagraphPropertyExceptions papx = doc.AllPapxFkps[0].grppapx[0];
+            CharacterProperties chp = new CharacterProperties(doc.Styles, chpx, papx);
         }
 
         private static void testPieceTable()
         {
-            PieceTable pct = new PieceTable(fib, tableStream);
+            Console.WriteLine("There are " + doc.PieceTable.Pieces.Count + " pieces in the table");
 
-            Console.WriteLine("There are " + pct.Pieces.Count + " pieces in the table");
-            
-            foreach (PieceDescriptor pcd in pct.Pieces)
+            foreach (PieceDescriptor pcd in doc.PieceTable.Pieces)
             {
                 //Console.WriteLine("\t"+pcd.cpStart + " - " + pcd.cpEnd + " : " + pcd.encoding.ToString() + " , starts at 0x" + String.Format("{0:x04}", pcd.fc));
                 Console.WriteLine("Piece starts at "+ String.Format("{0:X04}", pcd.fc) + " and hast encoding "+pcd.encoding.ToString());
@@ -149,33 +135,33 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
         private static void testPERF()
         {
             //start reading bytes
-            byte[] dopBytes = new byte[fib.lcbDop];
-            tableStream.Read(dopBytes, dopBytes.Length, fib.fcDop);
+            byte[] dopBytes = new byte[doc.FIB.lcbDop];
+            doc.TableStream.Read(dopBytes, dopBytes.Length, doc.FIB.fcDop);
             
             //start parsing
             
             //FIB
             DateTime fibStart = DateTime.Now;
-            FileInformationBlock fib2 = new FileInformationBlock(wordDocumentStream);
+            FileInformationBlock fib2 = new FileInformationBlock(doc.WordDocumentStream);
             DateTime fibEnd = DateTime.Now;
             TimeSpan fibDiff = fibEnd.Subtract(fibStart);
 
             //DOP
             DateTime dopStart = DateTime.Now;
-            DocumentProperties dop = new DocumentProperties(fib, tableStream);
+            DocumentProperties dop = new DocumentProperties(doc.FIB, doc.TableStream);
             DateTime dopEnd = DateTime.Now;
             TimeSpan dopDiff = dopEnd.Subtract(dopStart);
 
             //STSH
             DateTime stshStart = DateTime.Now;
-            StyleSheet stsh = new StyleSheet(fib, tableStream, dataStream);
+            StyleSheet stsh = new StyleSheet(doc.FIB, doc.TableStream, doc.DataStream);
             DateTime stshEnd = DateTime.Now;
             TimeSpan stshDiff = stshEnd.Subtract(stshStart);
 
             //FKP
             DateTime fkpStart = DateTime.Now;
-            List<FormattedDiskPagePAPX> papxe = FormattedDiskPagePAPX.GetAllPAPXFKPs(fib, wordDocumentStream, tableStream, dataStream);
-            List<FormattedDiskPageCHPX> chpxe = FormattedDiskPageCHPX.GetAllCHPXFKPs(fib, wordDocumentStream, tableStream);
+            List<FormattedDiskPagePAPX> papxe = FormattedDiskPagePAPX.GetAllPAPXFKPs(doc.FIB, doc.WordDocumentStream, doc.TableStream, doc.DataStream);
+            List<FormattedDiskPageCHPX> chpxe = FormattedDiskPageCHPX.GetAllCHPXFKPs(doc.FIB, doc.WordDocumentStream, doc.TableStream);
             DateTime fkpEnd = DateTime.Now;
             TimeSpan fkpDiff = fkpEnd.Subtract(fkpStart);
 
@@ -189,9 +175,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
 
         private static void testDOP()
         {
-            byte[] dopBytes = new byte[fib.lcbDop];
-            tableStream.Read(dopBytes, dopBytes.Length, fib.fcDop);
-            DocumentProperties dop = new DocumentProperties(fib, tableStream);
+            byte[] dopBytes = new byte[doc.FIB.lcbDop];
+            doc.TableStream.Read(dopBytes, dopBytes.Length, doc.FIB.fcDop);
+            DocumentProperties dop = new DocumentProperties(doc.FIB, doc.TableStream);
 
             Console.WriteLine("Initial Footnote number: " + dop.nFtn);
         }
@@ -234,7 +220,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
         /// </summary>
         private static void testSTSH()
         {
-            StyleSheet stsh = new StyleSheet(fib, tableStream, dataStream);
+            StyleSheet stsh = new StyleSheet(doc.FIB, doc.TableStream, doc.DataStream);
             Console.WriteLine("Stylesheet contains " + stsh.Styles.Count + " Styles");
 
             for (int i=0; i<stsh.Styles.Count; i++)
@@ -280,7 +266,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
         private static void testFKPPAPX()
         {
             //Get all PAPX FKPs
-            List<FormattedDiskPagePAPX> papxFkps = FormattedDiskPagePAPX.GetAllPAPXFKPs(fib, wordDocumentStream, tableStream, dataStream);
+            List<FormattedDiskPagePAPX> papxFkps = FormattedDiskPagePAPX.GetAllPAPXFKPs(doc.FIB, doc.WordDocumentStream, doc.TableStream, doc.DataStream);
             Console.WriteLine("There are " + papxFkps.Count + " FKPs with PAPX in this file: \n");
             foreach (FormattedDiskPagePAPX fkp in papxFkps)
             {
@@ -309,7 +295,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
         /// </summary>
         private static void testFKPCHPX()
         {
-            List<FormattedDiskPageCHPX> chpxFkps = FormattedDiskPageCHPX.GetAllCHPXFKPs(fib, wordDocumentStream, tableStream);
+            List<FormattedDiskPageCHPX> chpxFkps = FormattedDiskPageCHPX.GetAllCHPXFKPs(doc.FIB, doc.WordDocumentStream, doc.TableStream);
             Console.WriteLine("There are " + chpxFkps.Count + " FKPs with CHPX in this file: \n");
             foreach (FormattedDiskPageCHPX fkp in chpxFkps)
             {

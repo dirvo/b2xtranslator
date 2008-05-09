@@ -596,24 +596,24 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 }
                 else if (c == TextMark.Picture && fSpec)
                 {
-                    _writer.WriteString("[Picture]");
+                    //_writer.WriteString("[Picture]");
 
-                    ////drawing or picture
-                    //PictureDescriptor pict = new PictureDescriptor(chpx, _doc.DataStream);
+                    //drawing or picture
+                    PictureDescriptor pict = new PictureDescriptor(chpx, _doc.DataStream);
 
-                    ////sometimes there is a picture mark without a picture,
-                    ////do not convert these marks (occurs in hyperlinks e.g.)
-                    //if (pict.mfp.mm > 98)
-                    //{
-                    //    //close previous w:t ...
-                    //    _writer.WriteEndElement();
+                    //sometimes there is a picture mark without a picture,
+                    //do not convert these marks (occurs in hyperlinks e.g.)
+                    if (pict.mfp.mm > 98)
+                    {
+                        //close previous w:t ...
+                        _writer.WriteEndElement();
 
-                    //    ImagePart imgPart = copyPicture(pict);
-                    //    pict.Convert(new PictureMapping(_writer, imgPart));
-                    //    copyPicture(pict);
+                        ImagePart imgPart = copyPicture(pict);
+                        pict.Convert(new PictureMapping(_writer, imgPart));
+                        copyPicture(pict);
 
-                    //    _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
-                    //}
+                        _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
+                    }
                 }
                 else if (c == TextMark.AutoNumberedFootnoteReference && fSpec)
                 {
