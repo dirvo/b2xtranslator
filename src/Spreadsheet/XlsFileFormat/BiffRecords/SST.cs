@@ -30,30 +30,58 @@ using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 using DIaLOGIKa.b2xtranslator.Tools;
 using System.Diagnostics;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
+    /// <summary>
+    /// This class extracts the SST-Record Data from the specific biffrecord 
+    /// </summary>
     public class SST : BiffRecord
     {
+        /// <summary>
+        /// a simple struct to hold the format data from strings 
+        /// </summary>
+        public struct StringFormatAssignment
+        {
+            public int StringNumber;
+            public UInt16 CharNumber;
+            public UInt16 FontRecord;
+        }
+
+        /// <summary>
+        /// the own record data id 
+        /// </summary>
         public const RecordNumber ID = RecordNumber.SST;
 
+        /// <summary>
+        /// Total and unique number of strings in this SST-Biffrecord 
+        /// </summary>
         public UInt32 cstTotal;
         public UInt32 cstUnique;
 
-        public List<String> StringList; 
+        public List<String> StringList;
+        public List<StringFormatAssignment> FormatList;
 
+        /// <summary>
+        /// Ctor 
+        /// </summary>
+        /// <param name="reader">Reader to parse the document </param>
+        /// <param name="id">BiffRecord ID</param>
+        /// <param name="length">The lengt of the biffrecord </param>
         public SST(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
-            this.StringList = new List<string>(); 
-            // byte[] buffer = new byte[length];
-            // buffer = reader.ReadBytes(length);
+            this.StringList = new List<string>();
+            this.FormatList = new List<StringFormatAssignment>();
 
 
             this.cstTotal = (UInt32)reader.ReadUInt32();
-            this.cstUnique = reader.ReadUInt32(); 
+            this.cstUnique = reader.ReadUInt32();
 
             // run over the different strings 
             // there are x strings where x = cstUnique 
@@ -64,9 +92,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
                 // get the grbit mask 
                 Byte grbit = reader.ReadByte();
 
-                bool isCompressedString = false; 
+                bool isCompressedString = false;
                 bool isExtString = false;
-                bool isRichString = false; 
+                bool isRichString = false;
 
                 // demask the grbit 
                 isCompressedString = !Utils.BitmaskToBool((int)grbit, 0x0001);
@@ -75,27 +103,87 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 
                 if (isExtString)
                 {
+                    // Two versions, first is extended string and no rich string 
+                    // second is extended and rich string 
 
+                    // first 
+                    if (!isRichString)
+                    {
+                        Int32 cchExtRst = reader.ReadInt32();
+                        String buffer = "";
+                        for (int j = 0; j < cch; j++)
+                        {
+                            buffer += System.BitConverter.ToChar(reader.ReadBytes(2), 0);
+                        }
+                        this.StringList.Add(buffer);
+
+                        // read undocumented data structure ExtRst 
+                        byte[] ExtRst = reader.ReadBytes(cchExtRst);
+                    } //second 
+                    else
+                    {
+                        UInt16 countFormatingRuns = reader.ReadUInt16();
+                        Int32 cchExtRst = reader.ReadInt32();
+                        String buffer = "";
+                        for (int j = 0; j < cch; j++)
+                        {
+                            buffer += System.BitConverter.ToChar(reader.ReadBytes(2), 0);
+                        }
+                        this.StringList.Add(buffer);
+                        // read formating run structures 
+                        byte[] rgSTRUN = reader.ReadBytes(countFormatingRuns * 4);
+                        byte[] ExtRst = reader.ReadBytes(cchExtRst);
+
+                    }
                 }
-                else if (isRichString)
+                // Rich strings are formated string values, there are some more information 
+                else if (isRichString && !isExtString)
                 {
-
+                    // get number of formating runs !! 
+                    UInt16 countFormatingRuns = reader.ReadUInt16();
+                    String buffer = Encoding.Unicode.GetString(reader.ReadBytes(cch));
+                    
+                    for (int j = 0; j < cch; j++)
+                    {
+                        buffer += (char)reader.ReadByte();
+                    }
+                    this.StringList.Add(buffer);
+                    // get formating data 
+                    for (int j = 0; j < countFormatingRuns; j++)
+                    {
+                        StringFormatAssignment format;
+                        format.StringNumber = i;
+                        format.CharNumber = reader.ReadUInt16();
+                        format.FontRecord = reader.ReadUInt16();
+                        this.FormatList.Add(format);
+                    }
                 }
                 else
                 {
+                    // compressed strings are strings which use only one byte per character 
                     if (isCompressedString)
                     {
                         String buffer = "";
                         for (int j = 0; j < cch; j++)
                         {
-                            buffer += (char)reader.ReadByte(); 
+                            buffer += (char)reader.ReadByte();
                         }
-                        this.StringList.Add(buffer); 
+                        this.StringList.Add(buffer);
+                    }
+                    // not compressed strings are two bytes long 
+                    else
+                    {
+                        String buffer = "";
+                        for (int j = 0; j < cch; j++)
+                        {
+                            buffer += System.BitConverter.ToChar(reader.ReadBytes(2), 0);
+                        }
+                        this.StringList.Add(buffer);
                     }
                 }
 
             }
-            
+
             // assert that the correct number of bytes has been read from the stream
             // Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
         }
@@ -109,13 +197,15 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
             String back = "";
             back += "Number Strings Total: " + this.cstTotal + "\n";
             back += "Number Unique Strings: " + this.cstUnique + "\n";
-            back += "Strings: \n" ;
+            back += "Strings: \n";
             foreach (String var in this.StringList)
             {
-                back += var + "\n"; 
+                back += var + "\n";
             }
 
-            return back; 
+            return back;
         }
+
+   
     }
 }

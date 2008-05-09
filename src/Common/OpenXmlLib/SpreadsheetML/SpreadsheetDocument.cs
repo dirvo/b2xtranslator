@@ -27,20 +27,45 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
 {
+    /// <summary>
+    /// Includes some information about the spreadsheetdocument 
+    /// </summary>
     public class SpreadsheetDocument : OpenXmlPackage
     {
+        protected WorkbookPart workBookPart;
+
+        /// <summary>
+        /// Ctor 
+        /// </summary>
+        /// <param name="fileName">Filename of the file which should be written</param>
         protected SpreadsheetDocument(string fileName)
             : base(fileName)
         {
+            this.workBookPart = new WorkbookPart(this);
+            this.AddPart(this.workBookPart);
         }
 
+        /// <summary>
+        /// creates a new excel document with the choosen filename 
+        /// </summary>
+        /// <param name="fileName">The name of the file which should be written</param>
+        /// <returns>The object itself</returns>
         public static SpreadsheetDocument Create(string fileName)
         {
             SpreadsheetDocument spreadsheet = new SpreadsheetDocument(fileName);
             return spreadsheet;
+        }
+
+        /// <summary>
+        /// returns the workbookPart from the new excel document 
+        /// </summary>
+        public WorkbookPart WorkbookPart
+        {
+            get { return this.workBookPart; }
         }
     }
 }

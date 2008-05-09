@@ -24,53 +24,33 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 using System;
 using System.Collections.Generic;
-using System.Collections;
 using System.Text;
-using System.IO;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
 
-
-namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
+namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
 {
-    /// <summary>
-    /// Simple struct to hold the biff record data 
-    /// </summary>
-    struct BiffHeader
+    public class SharedStringPart : OpenXmlPart
     {
-        public RecordNumber id;
-        public UInt16 length;
-    }
-
-    /// <summary>
-    /// Abstract class which implements some extractor properties and methods 
-    /// </summary>
-    public abstract class Extractor
-    {
-        public VirtualStreamReader StreamReader;   
-
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="sum">workbookstream </param>
-        public Extractor(VirtualStreamReader reader)
+        public SharedStringPart(OpenXmlPartContainer parent)
+            : base(parent, 0)
         {
-            this.StreamReader = reader;
-            if (StreamReader == null)
-            {
-                throw new ExtractorException(ExtractorException.NULLPOINTEREXCEPTION);
-            }
         }
 
-        /// <summary>
-        /// extracts the data from the given stream !!!
-        /// </summary>
-        public abstract void extractData(); 
+
+        public override string ContentType
+        {
+            get { return SpreadsheetMLContentTypes.SharedStrings; }
+        }
+
+        public override string RelationshipType
+        {
+            get { return OpenXmlRelationshipTypes.OfficeDocument; }
+        }
+
+        public override string TargetName { get { return "sharedStrings"; } }
+        public override string TargetDirectory { get { return "xl"; } }
     }
 }

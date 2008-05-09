@@ -27,50 +27,64 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections;
 using System.Text;
-using System.IO;
-using System.Collections.ObjectModel;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
+using System.Xml;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib;
+using DIaLOGIKa.b2xtranslator.ExcelprocessingMLMapping;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat; 
 using System.Diagnostics;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
 
 
-namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
+namespace DIaLOGIKa.b2xtranslator.ExcelprocessingMLMapping
 {
-    /// <summary>
-    /// Simple struct to hold the biff record data 
-    /// </summary>
-    struct BiffHeader
-    {
-        public RecordNumber id;
-        public UInt16 length;
-    }
 
-    /// <summary>
-    /// Abstract class which implements some extractor properties and methods 
-    /// </summary>
-    public abstract class Extractor
+    public class SSTMapping : AbstractOpenXmlMapping,
+          IMapping<WorkbookExtractor>
     {
-        public VirtualStreamReader StreamReader;   
+        ExcelContext xlsContext;
 
         /// <summary>
-        /// Ctor
+        /// Ctor 
         /// </summary>
-        /// <param name="sum">workbookstream </param>
-        public Extractor(VirtualStreamReader reader)
+        /// <param name="xlsContext">The excel context object</param>
+        public SSTMapping(ExcelContext xlsContext)
+            :base(XmlWriter.Create(xlsContext.SpreadDoc.WorkbookPart.AddSharedStringPart().GetStream(), xlsContext.WriterSettings) )
         {
-            this.StreamReader = reader;
-            if (StreamReader == null)
-            {
-                throw new ExtractorException(ExtractorException.NULLPOINTEREXCEPTION);
-            }
+            this.xlsContext = xlsContext;
         }
 
         /// <summary>
-        /// extracts the data from the given stream !!!
+        /// The overload apply method 
+        /// Creates the sharedstring xml document 
         /// </summary>
-        public abstract void extractData(); 
+        /// <param name="wbextr">Workbookextractor</param>
+        public void Apply(WorkbookExtractor wbextr)
+        {
+            _writer.WriteStartDocument();
+            _writer.WriteStartElement("sst");
+            // count="x" uniqueCount="y" 
+            _writer.WriteAttributeString("count",  wbextr.sst.cstTotal.ToString());
+            _writer.WriteAttributeString("uniqueCount", wbextr.sst.cstUnique.ToString());
+
+
+
+            // create the string entries 
+            foreach (String var in wbextr.sst.StringList)
+            {
+                _writer.WriteStartElement("si" );
+                _writer.WriteElementString("t", var);
+                _writer.WriteEndElement();
+               
+            }            
+
+            // close tags 
+            _writer.WriteEndElement();
+            _writer.WriteEndDocument();
+
+            // close writer 
+            _writer.Flush();
+        }
     }
+
 }
