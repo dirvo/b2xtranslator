@@ -27,12 +27,61 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Text;
+using System.IO;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
-namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
+
+namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
 {
-
-    public class SheetData
+    /// <summary>
+    /// This class is a container for the extracted data 
+    /// Implements the IVisitable Interface 
+    /// </summary>
+    public class WorkBookData: IVisitable
     {
+        /// <summary>
+        /// This attribute stores the SharedStringTable Data
+        /// </summary>
+        private SSTData sstData;
+        public SSTData SstData
+        {
+            get { return sstData; }
+            set { sstData = value; }
+        }
+
+        public List<BoundSheetData> boundSheetDataList; 
+
+        /// <summary>
+        /// Ctor 
+        /// </summary>
+        public WorkBookData()
+        {
+            boundSheetDataList = new List<BoundSheetData>(); 
+        }
+
+        /// <summary>
+        /// Adds a BoundSheetData Element to the internal list 
+        /// </summary>
+        /// <param name="bsd">The Boundsheetdata element</param>
+        public void addBoundSheetData(BoundSheetData bsd)
+        {
+            this.boundSheetDataList.Add(bsd); 
+        }
+
+        #region IVisitable Members
+
+        public void Convert<T>(T mapping)
+        {
+            ((IMapping<WorkBookData>)mapping).Apply(this);
+        }
+
+        #endregion
     }
 }

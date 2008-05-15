@@ -37,6 +37,8 @@
     <Compile Include="ExcelMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SSTMapping.cs" />
+    <Compile Include="WorkbookMapping.cs" />
+    <Compile Include="WorksheetMapping.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\CommonTranslatorLib\CommonTranslatorLib.csproj">

@@ -14,18 +14,19 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
     /// <summary>
     /// This class should extract the specific worksheet data. 
     /// </summary>
-    public class SheetExtractor : Extractor
+    public class BoundSheetExtractor : Extractor
     {
 
-        private SheetData sheetData;
+        private BoundSheetData bsd;
 
         /// <summary>
         /// CTor 
         /// </summary>
         /// <param name="reader"></param>
-        public SheetExtractor(VirtualStreamReader reader)
+        public BoundSheetExtractor(VirtualStreamReader reader, BoundSheetData bsd)
             : base(reader) 
         {
+            this.bsd = bsd;
             this.extractData(); 
         }
 
@@ -48,12 +49,17 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                     if (bh.id == RecordNumber.EOF)
                     {
                         this.StreamReader.BaseStream.Seek(0, SeekOrigin.End); 
-                        sw.Write("EOF"); 
-                    } 
+                        sw.Write("EOF");
+                    }
+                    else if (bh.id == RecordNumber.LABELSST)
+                    {
+                        LABELSST labelsst = new LABELSST(this.StreamReader, bh.id, bh.length);
+                        this.bsd.addLabelSST(labelsst); 
+                    }
                     else
                     {
 
-                        /*
+                        
                         byte[] buffer = new byte[bh.length];
                         buffer = this.StreamReader.ReadBytes(bh.length);
                         if (bh.length != buffer.Length)
@@ -69,7 +75,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                             if (count % 16 == 0 && count < buffer.Length)
                                 sw.Write("\n\t\t\t");
                         }
-                        sw.Write("\n"); */ 
+                        sw.Write("\n"); 
                     }
                 }
             }

@@ -33,6 +33,7 @@ using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer; 
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
@@ -41,15 +42,6 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// </summary>
     public class SST : BiffRecord
     {
-        /// <summary>
-        /// a simple struct to hold the format data from strings 
-        /// </summary>
-        public struct StringFormatAssignment
-        {
-            public int StringNumber;
-            public UInt16 CharNumber;
-            public UInt16 FontRecord;
-        }
 
         /// <summary>
         /// the own record data id 
@@ -141,8 +133,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
                 {
                     // get number of formating runs !! 
                     UInt16 countFormatingRuns = reader.ReadUInt16();
-                    String buffer = Encoding.Unicode.GetString(reader.ReadBytes(cch));
-                    
+                    // String buffer = Encoding.Unicode.GetString(reader.ReadBytes(cch));
+                    String buffer = ""; 
                     for (int j = 0; j < cch; j++)
                     {
                         buffer += (char)reader.ReadByte();
@@ -151,7 +143,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
                     // get formating data 
                     for (int j = 0; j < countFormatingRuns; j++)
                     {
-                        StringFormatAssignment format;
+                        StringFormatAssignment format = new StringFormatAssignment();
                         format.StringNumber = i;
                         format.CharNumber = reader.ReadUInt16();
                         format.FontRecord = reader.ReadUInt16();

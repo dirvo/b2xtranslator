@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ExcelprocessingMLMapping")]
+[assembly: AssemblyTitle("SpreadsheetMLMapping")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("DIaLOGIKa")]
-[assembly: AssemblyProduct("ExcelprocessingMLMapping")]
+[assembly: AssemblyProduct("SpreadsheetMLMapping")]
 [assembly: AssemblyCopyright("Copyright © DIaLOGIKa 2008")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

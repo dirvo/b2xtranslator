@@ -31,16 +31,17 @@ using System.Text;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
-using DIaLOGIKa.b2xtranslator.ExcelprocessingMLMapping;
+using DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat; 
 using System.Diagnostics;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer; 
 
 
-namespace DIaLOGIKa.b2xtranslator.ExcelprocessingMLMapping
+namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
 
     public class SSTMapping : AbstractOpenXmlMapping,
-          IMapping<WorkbookExtractor>
+          IMapping<SSTData>
     {
         ExcelContext xlsContext;
 
@@ -49,7 +50,7 @@ namespace DIaLOGIKa.b2xtranslator.ExcelprocessingMLMapping
         /// </summary>
         /// <param name="xlsContext">The excel context object</param>
         public SSTMapping(ExcelContext xlsContext)
-            :base(XmlWriter.Create(xlsContext.SpreadDoc.WorkbookPart.AddSharedStringPart().GetStream(), xlsContext.WriterSettings) )
+            :base(XmlWriter.Create(xlsContext.SpreadDoc.AddSharedStringPart().GetStream(), xlsContext.WriterSettings) )
         {
             this.xlsContext = xlsContext;
         }
@@ -58,19 +59,19 @@ namespace DIaLOGIKa.b2xtranslator.ExcelprocessingMLMapping
         /// The overload apply method 
         /// Creates the sharedstring xml document 
         /// </summary>
-        /// <param name="wbextr">Workbookextractor</param>
-        public void Apply(WorkbookExtractor wbextr)
+        /// <param name="SSTData">SharedStringData Object</param>
+        public void Apply(SSTData sstData)
         {
             _writer.WriteStartDocument();
             _writer.WriteStartElement("sst");
             // count="x" uniqueCount="y" 
-            _writer.WriteAttributeString("count",  wbextr.sst.cstTotal.ToString());
-            _writer.WriteAttributeString("uniqueCount", wbextr.sst.cstUnique.ToString());
+            _writer.WriteAttributeString("count", sstData.cstTotal.ToString());
+            _writer.WriteAttributeString("uniqueCount", sstData.cstUnique.ToString());
 
 
 
             // create the string entries 
-            foreach (String var in wbextr.sst.StringList)
+            foreach (String var in sstData.StringList)
             {
                 _writer.WriteStartElement("si" );
                 _writer.WriteElementString("t", var);

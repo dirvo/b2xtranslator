@@ -27,61 +27,60 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.OpenXmlLib;
+using System.IO;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
-using DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet; 
-using System.Xml;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
-namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
+namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
 {
-    /// <summary>
-    /// Includes some attributes and methods required by the mapping classes 
-    /// </summary>
-    public class ExcelContext
+    public class SSTData: IVisitable
     {
-        private SpreadsheetDocument spreadDoc;
-        private XmlWriterSettings writerSettings;
-        private XlsDocument xlsDoc;
+        /// <summary>
+        /// Total and unique number of strings in this SST-Biffrecord 
+        /// </summary>
+        public UInt32 cstTotal;
+        public UInt32 cstUnique;
 
         /// <summary>
-        /// The settings of the XmlWriter which writes to the part
+        /// Two lists to store the shared String Data 
         /// </summary>
-        public XmlWriterSettings WriterSettings
-        {
-            get { return writerSettings; }
-            set { writerSettings = value; }
-        }
-
-        /// <summary>
-        /// The XlsDocument 
-        /// </summary>
-        public SpreadsheetDocument SpreadDoc
-        {
-            get { return spreadDoc; }
-            set { this.spreadDoc = value; }
-        }
-
-        /// <summary>
-        /// The XlsDocument 
-        /// </summary>
-        public XlsDocument XlsDoc
-        {
-            get { return xlsDoc; }
-            set { this.xlsDoc = value; }
-        }
+        public List<String> StringList;
+        public List<StringFormatAssignment> FormatList;
 
         /// <summary>
         /// Ctor 
         /// </summary>
-        /// <param name="xlsDoc">Xls document </param>
-        /// <param name="writerSettings">the xml writer settings </param>
-        public ExcelContext(XlsDocument xlsDoc, XmlWriterSettings writerSettings)
+        /// <param name="sst">The SST BiffRecord</param>
+        public SSTData(SST sst)
         {
-            this.xlsDoc = xlsDoc;
-            this.writerSettings = writerSettings; 
+            this.copySSTData(sst); 
         }
+
+        /// <summary>
+        /// copies the different datasources from the SST BiffRecord 
+        /// </summary>
+        /// <param name="sst">The SST BiffRecord </param>
+        public void copySSTData(SST sst)
+        {
+            this.StringList = sst.StringList;
+            this.FormatList = sst.FormatList;
+            this.cstTotal = sst.cstTotal;
+            this.cstUnique = sst.cstUnique; 
+        }
+
+        #region IVisitable Members
+
+        public void Convert<T>(T mapping)
+        {
+            ((IMapping<SSTData>)mapping).Apply(this);
+        }
+
+        #endregion
     }
-
-
 }

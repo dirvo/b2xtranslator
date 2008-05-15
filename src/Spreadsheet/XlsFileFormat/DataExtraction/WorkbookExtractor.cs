@@ -36,6 +36,7 @@ using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer; 
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
@@ -50,18 +51,20 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
         public List<BOUNDSHEET> boundsheets;
 
-        public List<SheetData> sheets;
-        public SST sst; 
+        public List<BoundSheetData> sheets;
+
+        public WorkBookData workBookData; 
 
         /// <summary>
         /// Ctor 
         /// </summary>
         /// <param name="reader">Reader</param>
-        public WorkbookExtractor(VirtualStreamReader reader) 
+        public WorkbookExtractor(VirtualStreamReader reader, WorkBookData workBookData) 
            : base(reader) 
         {         
             this.boundsheets = new List<BOUNDSHEET>();
-            this.sheets = new List<SheetData>();
+            this.sheets = new List<BoundSheetData>();
+            this.workBookData = workBookData; 
             this.oldOffset = 0; 
 
             this.extractData(); 
@@ -86,20 +89,24 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
                     if (bh.id == RecordNumber.BOUNDSHEET)
                     {
+                        // Creates a BoundSheetData element
+                        BoundSheetData bsd = new BoundSheetData();
+                        this.workBookData.addBoundSheetData(bsd); 
+
                         // Extracts the Boundsheet data 
                         BOUNDSHEET bs = new BOUNDSHEET(this.StreamReader, bh.id, bh.length);
                         
                         this.oldOffset = this.StreamReader.BaseStream.Position;
                         this.StreamReader.BaseStream.Seek(bs.lbPlyPos, SeekOrigin.Begin);
-                        
-                        SheetExtractor se = new SheetExtractor(this.StreamReader);
+                        bsd.worksheetName = bs.getBoundsheetName(); 
+                        BoundSheetExtractor se = new BoundSheetExtractor(this.StreamReader,bsd);
                         this.StreamReader.BaseStream.Seek(oldOffset, SeekOrigin.Begin); 
                         
                         sw.Write(bs.ToString());
                     } else if (bh.id == RecordNumber.SST)
                     {
-                        this.sst = new SST(this.StreamReader, bh.id, bh.length);
-
+                        SST sst = new SST(this.StreamReader, bh.id, bh.length);
+                        this.workBookData.SstData = new SSTData(sst); 
                         sw.Write(sst.ToString()); 
                     }
 

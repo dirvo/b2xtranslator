@@ -30,6 +30,7 @@ using System.Text;
 using System.IO;
 using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer; 
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
@@ -48,7 +49,12 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// <summary>
         /// The Workbookextractor / container 
         /// </summary>
-        public WorkbookExtractor workBookExtr; 
+        private WorkbookExtractor workBookExtr;
+
+        /// <summary>
+        /// This attribute stores the hole Workbookdata 
+        /// </summary>
+        public WorkBookData workBookData; 
 
 
         /// <summary>
@@ -57,10 +63,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// <param name="file"></param>
         public XlsDocument(IStructuredStorageFile file)
         {
-
+            this.workBookData = new WorkBookData(); 
             this.workBookStreamReader = new VirtualStreamReader(file.GetStream(WORKBOOK));
 
-            this.workBookExtr = new WorkbookExtractor(this.workBookStreamReader); 
+            this.workBookExtr = new WorkbookExtractor(this.workBookStreamReader, this.workBookData); 
         }
 
 

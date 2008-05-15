@@ -28,60 +28,43 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.OpenXmlLib;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
-using DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet; 
-using System.Xml;
 
-namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
+namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
 {
     /// <summary>
-    /// Includes some attributes and methods required by the mapping classes 
+    /// a simple class to hold the format data from strings 
     /// </summary>
-    public class ExcelContext
+    public class StringFormatAssignment
     {
-        private SpreadsheetDocument spreadDoc;
-        private XmlWriterSettings writerSettings;
-        private XlsDocument xlsDoc;
 
         /// <summary>
-        /// The settings of the XmlWriter which writes to the part
+        /// Some public attributes to store and share the data 
         /// </summary>
-        public XmlWriterSettings WriterSettings
-        {
-            get { return writerSettings; }
-            set { writerSettings = value; }
-        }
+        public int StringNumber;
+        public UInt16 CharNumber;
+        public UInt16 FontRecord;
 
         /// <summary>
-        /// The XlsDocument 
+        /// Ctor with no parameters 
         /// </summary>
-        public SpreadsheetDocument SpreadDoc
+        public StringFormatAssignment()
         {
-            get { return spreadDoc; }
-            set { this.spreadDoc = value; }
-        }
-
-        /// <summary>
-        /// The XlsDocument 
-        /// </summary>
-        public XlsDocument XlsDoc
-        {
-            get { return xlsDoc; }
-            set { this.xlsDoc = value; }
+            this.StringNumber = 0;
+            this.CharNumber = 0;
+            this.FontRecord = 0; 
         }
 
         /// <summary>
         /// Ctor 
         /// </summary>
-        /// <param name="xlsDoc">Xls document </param>
-        /// <param name="writerSettings">the xml writer settings </param>
-        public ExcelContext(XlsDocument xlsDoc, XmlWriterSettings writerSettings)
+        /// <param name="StringNumber"></param>
+        /// <param name="CharNumber"></param>
+        /// <param name="FontRecord"></param>
+        public StringFormatAssignment(int StringNumber, UInt16 CharNumber, UInt16 FontRecord)
         {
-            this.xlsDoc = xlsDoc;
-            this.writerSettings = writerSettings; 
+            this.StringNumber = StringNumber;
+            this.CharNumber = CharNumber;
+            this.FontRecord = FontRecord; 
         }
     }
-
-
 }

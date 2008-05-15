@@ -30,12 +30,26 @@ using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 using DIaLOGIKa.b2xtranslator.Tools;
 using System.Diagnostics;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer; 
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
+    /// <summary>
+    /// This class extracts the data from a LABELSST Record
+    /// This record describes a cell that contains a string constant from the shared string table 
+    /// </summary>
     public class LABELSST : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.LABELSST;
+
+        /// <summary>
+        /// Some public attributes to store the data from this record 
+        /// </summary>
+        public UInt16 rw;       // Row 
+        public UInt16 col;      // Column 
+        public UInt16 ixfe;     // index to the XF record 
+        public UInt32 isst;     // index into the SST record 
+
 
         public LABELSST(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
@@ -43,11 +57,18 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
 
-            // initialize class members from stream
-            // TODO: place code here
-            
+            UInt16 rw;       // Row 
+            UInt16 col;      // Column 
+            UInt16 ixfe;     // index of the XF record 
+            UInt32 isst;     // index to the SST record 
+
+            this.rw = reader.ReadUInt16();
+            this.col = reader.ReadUInt16();
+            this.ixfe = reader.ReadUInt16();
+            this.isst = reader.ReadUInt32();
+           
             // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            // Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
         }
     }
 }

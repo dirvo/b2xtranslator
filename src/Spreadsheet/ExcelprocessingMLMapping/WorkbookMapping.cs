@@ -28,60 +28,63 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.OpenXmlLib;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
-using DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet; 
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using System.Xml;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib;
+using DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
+using System.Diagnostics;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
-    /// <summary>
-    /// Includes some attributes and methods required by the mapping classes 
-    /// </summary>
-    public class ExcelContext
+    public class WorkbookMapping : AbstractOpenXmlMapping,
+          IMapping<WorkBookData>
     {
-        private SpreadsheetDocument spreadDoc;
-        private XmlWriterSettings writerSettings;
-        private XlsDocument xlsDoc;
-
-        /// <summary>
-        /// The settings of the XmlWriter which writes to the part
-        /// </summary>
-        public XmlWriterSettings WriterSettings
-        {
-            get { return writerSettings; }
-            set { writerSettings = value; }
-        }
-
-        /// <summary>
-        /// The XlsDocument 
-        /// </summary>
-        public SpreadsheetDocument SpreadDoc
-        {
-            get { return spreadDoc; }
-            set { this.spreadDoc = value; }
-        }
-
-        /// <summary>
-        /// The XlsDocument 
-        /// </summary>
-        public XlsDocument XlsDoc
-        {
-            get { return xlsDoc; }
-            set { this.xlsDoc = value; }
-        }
+        ExcelContext xlsContext;
 
         /// <summary>
         /// Ctor 
         /// </summary>
-        /// <param name="xlsDoc">Xls document </param>
-        /// <param name="writerSettings">the xml writer settings </param>
-        public ExcelContext(XlsDocument xlsDoc, XmlWriterSettings writerSettings)
+        /// <param name="xlsContext">The excel context object</param>
+        public WorkbookMapping(ExcelContext xlsContext)
+            : base(XmlWriter.Create(xlsContext.SpreadDoc.WorkbookPart.GetStream(), xlsContext.WriterSettings))
         {
-            this.xlsDoc = xlsDoc;
-            this.writerSettings = writerSettings; 
+            this.xlsContext = xlsContext;
         }
+
+        /// <summary>
+        /// The overload apply method 
+        /// Creates the Workbook xml document 
+        /// </summary>
+        /// <param name="bsd">BoundSheetData</param>
+        public void Apply(WorkBookData bsd)
+        {
+            _writer.WriteStartDocument();
+            _writer.WriteStartElement("workbook" , SpreadsheetMLContentTypes.Workbook);
+            _writer.WriteStartElement("sheets");
+
+            foreach (BoundSheetData var in bsd.boundSheetDataList)
+            {
+
+                _writer.WriteStartElement("sheet");
+                _writer.WriteAttributeString("name", var.worksheetName);
+                _writer.WriteAttributeString("sheetId", var.worksheetId.ToString());
+
+                _writer.WriteAttributeString("r", "id", OpenXmlContentTypes.Xml, var.worksheetRef);
+                _writer.WriteEndElement(); 
+            }
+
+
+            // close tags 
+            _writer.WriteEndElement();      // close sheetData 
+            _writer.WriteEndElement();      // close worksheet
+            _writer.WriteEndDocument();
+
+            // close writer 
+            _writer.Flush();
+        }
+
     }
-
-
 }
