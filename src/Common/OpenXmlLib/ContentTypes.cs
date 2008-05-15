@@ -105,6 +105,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string WordprocessingML = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
         public const string WordprocessingDrawingML = "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing";
         public const string VectorML = "urn:schemas-microsoft-com:vml";
+
+        // SpreadsheetML Namespaces
     }
 
     public static class OpenXmlRelationshipTypes
@@ -138,5 +140,10 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string SlideLayout = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout";
         public const string Slide = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide";
         public const string SlideMaster = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster";
+    
+        // SpreadsheetML
+
+        public const string WorkSheet = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet";
+        public const string sharedStrings = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings"; 
     }
 }

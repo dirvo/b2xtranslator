@@ -47,7 +47,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
 
         public override string RelationshipType
         {
-            get { return OpenXmlRelationshipTypes.OfficeDocument; }
+            get { return OpenXmlRelationshipTypes.sharedStrings; }
         }
 
         public override string TargetName { get { return "sharedStrings"; } }

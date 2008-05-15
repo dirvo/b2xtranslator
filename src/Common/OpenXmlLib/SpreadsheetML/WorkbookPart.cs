@@ -34,11 +34,13 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
 {
     public class WorkbookPart : OpenXmlPart
     {
-        protected SharedStringPart sharedStringPart; 
+        private UInt16 worksheetnumber;
+        protected WorksheetPart workSheetPart; 
 
         public WorkbookPart(OpenXmlPartContainer parent)
             : base(parent, 0)
         {
+            this.worksheetnumber = 1; 
         }
 
         public override string ContentType
@@ -51,10 +53,24 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
             get { return OpenXmlRelationshipTypes.OfficeDocument; }
         }
 
-        public SharedStringPart AddSharedStringPart()
+        /// <summary>
+        /// returns the worksheet part from the new excel document 
+        /// </summary>
+        /// <returns></returns>
+        public WorksheetPart AddWorksheetPart()
         {
-            this.sharedStringPart = new SharedStringPart(this);
-            return this.AddPart(this.sharedStringPart);
+            this.workSheetPart = new WorksheetPart(this, this.worksheetnumber);
+            this.worksheetnumber++;
+            return this.AddPart(this.workSheetPart);
+        }
+
+        /// <summary>
+        /// return the latest created worksheetpart
+        /// </summary>
+        /// <returns></returns>
+        public WorksheetPart GetWorksheetPart()
+        {
+            return this.workSheetPart; 
         }
 
         public override string TargetName { get { return "workbook"; } }
