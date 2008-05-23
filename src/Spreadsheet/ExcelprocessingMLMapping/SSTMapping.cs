@@ -50,7 +50,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         /// </summary>
         /// <param name="xlsContext">The excel context object</param>
         public SSTMapping(ExcelContext xlsContext)
-            :base(XmlWriter.Create(xlsContext.SpreadDoc.AddSharedStringPart().GetStream(), xlsContext.WriterSettings) )
+            :base(XmlWriter.Create(xlsContext.SpreadDoc.WorkbookPart.AddSharedStringPart().GetStream(), xlsContext.WriterSettings) )
         {
             this.xlsContext = xlsContext;
         }
@@ -63,7 +63,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         public void Apply(SSTData sstData)
         {
             _writer.WriteStartDocument();
-            _writer.WriteStartElement("sst");
+            _writer.WriteStartElement("sst",OpenXmlNamespaces.SharedStringML);
             // count="x" uniqueCount="y" 
             _writer.WriteAttributeString("count", sstData.cstTotal.ToString());
             _writer.WriteAttributeString("uniqueCount", sstData.cstUnique.ToString());

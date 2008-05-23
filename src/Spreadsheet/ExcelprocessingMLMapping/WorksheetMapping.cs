@@ -62,8 +62,8 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         public void Apply(BoundSheetData bsd)
         {
             _writer.WriteStartDocument();
-            _writer.WriteStartElement("worksheet", SpreadsheetMLContentTypes.Worksheet);
-            _writer.WriteStartElement("sheetData", SpreadsheetMLContentTypes.Worksheet);
+            _writer.WriteStartElement("worksheet", OpenXmlNamespaces.WorkBookML);
+            _writer.WriteStartElement("sheetData");
 
             foreach (LABELSST cell in bsd.LABELSSTList)
             {

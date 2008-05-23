@@ -35,7 +35,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
     public class WorkbookPart : OpenXmlPart
     {
         private UInt16 worksheetnumber;
-        protected WorksheetPart workSheetPart; 
+        protected WorksheetPart workSheetPart;
+        protected SharedStringPart sharedStringPart; 
 
         public WorkbookPart(OpenXmlPartContainer parent)
             : base(parent, 0)
@@ -75,6 +76,17 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
 
         public override string TargetName { get { return "workbook"; } }
         public override string TargetDirectory { get { return "xl"; } }
+
+
+        /// <summary>
+        /// returns the sharedstringtable part from the new excel document 
+        /// </summary>
+        /// <returns></returns>
+        public SharedStringPart AddSharedStringPart()
+        {
+            this.sharedStringPart = new SharedStringPart(this);
+            return this.AddPart(this.sharedStringPart);
+        }
     }
 }
 

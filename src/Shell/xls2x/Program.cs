@@ -75,10 +75,11 @@ namespace xls2x
 
                         //Setup the writer
                         XmlWriterSettings xws = new XmlWriterSettings();
-                        xws.OmitXmlDeclaration = false;
+                        xws.OmitXmlDeclaration = true;
                         xws.CloseOutput = true;
                         xws.Encoding = Encoding.UTF8;
                         xws.ConformanceLevel = ConformanceLevel.Document;
+                        
 
                         ExcelContext xlsContext = new ExcelContext(xlsDoc, xws);
                         xlsContext.SpreadDoc = spreadx; 

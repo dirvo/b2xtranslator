@@ -107,6 +107,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string VectorML = "urn:schemas-microsoft-com:vml";
 
         // SpreadsheetML Namespaces
+        public const string SharedStringML = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        public const string WorkBookML = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"; 
     }
 
     public static class OpenXmlRelationshipTypes

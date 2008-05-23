@@ -62,7 +62,10 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         public void Apply(WorkBookData bsd)
         {
             _writer.WriteStartDocument();
-            _writer.WriteStartElement("workbook" , SpreadsheetMLContentTypes.Workbook);
+            _writer.WriteStartElement("workbook", OpenXmlNamespaces.WorkBookML);
+           
+
+
             _writer.WriteStartElement("sheets");
 
             foreach (BoundSheetData var in bsd.boundSheetDataList)
@@ -72,7 +75,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 _writer.WriteAttributeString("name", var.worksheetName);
                 _writer.WriteAttributeString("sheetId", var.worksheetId.ToString());
 
-                _writer.WriteAttributeString("r", "id", OpenXmlContentTypes.Xml, var.worksheetRef);
+                _writer.WriteAttributeString("r", "id", OpenXmlNamespaces.Relationships, var.worksheetRef);
                 _writer.WriteEndElement(); 
             }
 

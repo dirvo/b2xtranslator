@@ -37,17 +37,56 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     {
         public const RecordNumber ID = RecordNumber.MULRK;
 
+        public UInt16 rw;              // Row 
+        public UInt16 colFirst;        // first column 
+        public UInt16 colLast;         // Last column  
+        List<UInt16> ixfe;             // List Records 
+        List<double> rknumber;
+
         public MULRK(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
+            this.ixfe = new List<UInt16>();
+            this.rknumber = new List<double>(); 
 
-            // initialize class members from stream
-            // TODO: place code here
-            
+            // count records - 6 standard non variable values !!! 
+            int count = (this.Length - 6) / 6 ;
+            this.rw = reader.ReadUInt16();
+            this.colFirst = reader.ReadUInt16();
+            for (int i = 0; i < count; i++)
+            {
+                this.ixfe.Add(reader.ReadUInt16());
+                Byte[] buffer = reader.ReadBytes(4);
+
+                rknumber.Add(this.NumFromRK(buffer)); 
+            }
+            this.colLast = reader.ReadUInt16(); 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+       }
+
+        public double NumFromRK(Byte[] rk)
+        {
+            double num=0;
+            int high = 1023; 
+            UInt32 number; 
+            number = System.BitConverter.ToUInt32(rk, 0);
+            UInt32 mant = 0;
+            // masking the mantisse 
+            mant = number & 0x000ffffc;
+            // shifting the result by 2  
+            mant = mant >> 2; 
+            
+            UInt32 exp = 0;
+            // masking the exponent 
+            exp = number & 0x7ff00000;
+            // shifting the exponent by 20 
+            exp = exp >> 20; 
+            // (1 + (Mantisse / 2^18)) * 2 ^ (Exponent - 1023) 
+            num = (1 + (mant / System.Math.Pow(2.0, 18.0))) * System.Math.Pow(2, (double)(exp - high)); 
+            return num; 
         }
     }
 }

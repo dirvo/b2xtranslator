@@ -35,7 +35,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
     public class SharedStringPart : OpenXmlPart
     {
         public SharedStringPart(OpenXmlPartContainer parent)
-            : base(parent, 0)
+            : base(parent,0)
         {
         }
 
@@ -51,6 +51,6 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
         }
 
         public override string TargetName { get { return "sharedStrings"; } }
-        public override string TargetDirectory { get { return "xl"; } }
+        public override string TargetDirectory { get { return ""; } }
     }
 }

@@ -56,8 +56,12 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                         LABELSST labelsst = new LABELSST(this.StreamReader, bh.id, bh.length);
                         this.bsd.addLabelSST(labelsst); 
                     }
-                    else
+                    else if (bh.id == RecordNumber.MULRK) 
                     {
+                        MULRK mulrk = new MULRK(this.StreamReader, bh.id, bh.length); 
+
+                    } else 
+                    { 
 
                         
                         byte[] buffer = new byte[bh.length];

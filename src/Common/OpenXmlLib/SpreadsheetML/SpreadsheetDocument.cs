@@ -37,7 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
     public class SpreadsheetDocument : OpenXmlPackage
     {
         protected WorkbookPart workBookPart;
-        protected SharedStringPart sharedStringPart; 
+        
 
         /// <summary>
         /// Ctor 
@@ -67,16 +67,6 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
         public WorkbookPart WorkbookPart
         {
             get { return this.workBookPart; }
-        }
-
-        /// <summary>
-        /// returns the sharedstringtable part from the new excel document 
-        /// </summary>
-        /// <returns></returns>
-        public SharedStringPart AddSharedStringPart()
-        {
-            this.sharedStringPart = new SharedStringPart(this);
-            return this.AddPart(this.sharedStringPart);
         }
     }
 }
