@@ -204,7 +204,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         REFMODE = 0x0F, 	// Reference Mode
         REFRESHALL = 0x1B7, 	// Refresh Flag
         RIGHTMARGIN = 0x27, 	// Right Margin Measurement
-        RK = 0x7E, 	// Cell Value, RK Number
+        RK = 0x27E, 	// Cell Value, RK Number
         ROW = 0x208, 	// Describes a Row
         RSTRING = 0xD6, 	// Cell with Character Formatting
         SAVERECALC = 0x5F, 	// Recalculate Before Save
@@ -294,5 +294,6 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         XFCRC = 0x87C, 	// XF Extensions Checksum
         XFEXT = 0x87D, 	// XF Extension
         XL5MODIFY = 0x162 	// Flag for DSF
+
     }
 }

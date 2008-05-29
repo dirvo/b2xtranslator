@@ -40,6 +40,12 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         UInt16 _length;
         long _offset;
 
+        /// <summary>
+        /// Ctor 
+        /// </summary>
+        /// <param name="reader">Streamreader</param>
+        /// <param name="id">Record ID - Recordtype</param>
+        /// <param name="length">The recordlegth</param>
         public BiffRecord(IStreamReader reader, RecordNumber id, UInt16 length)
         {
             _reader = reader;

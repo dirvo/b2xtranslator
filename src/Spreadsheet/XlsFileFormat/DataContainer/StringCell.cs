@@ -24,66 +24,57 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
-using DIaLOGIKa.b2xtranslator.Tools;
+using System.IO;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer; 
+using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
-namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
+namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
 {
     /// <summary>
-    /// This class extracts the data from a LABELSST Record
-    /// This record describes a cell that contains a string constant from the shared string table 
+    /// This class stores the data about cell with a reference to a value in the 
+    /// SharedStringTable 
     /// </summary>
-    public class LABELSST : BiffRecord
+    public class StringCell : AbstractCellData
     {
-        public const RecordNumber ID = RecordNumber.LABELSST;
+        /// <summary>
+        /// String which stores the index to the sharedstringtable 
+        /// </summary>
+        private String valueString;
 
         /// <summary>
-        /// Some public attributes to store the data from this record 
+        /// This method is used to get the Value from this cell 
         /// </summary>
-
-        /// <summary>
-        /// Rownumber 
-        /// </summary>
-        public UInt16 rw;      
-
-        /// <summary>
-        /// Colnumber 
-        /// </summary>
-        public UInt16 col;     
-        
-        /// <summary>
-        /// index to the XF record 
-        /// </summary>
-        public UInt16 ixfe;    
-
-        /// <summary>
-        /// index into the SST record  
-        /// </summary>
-        public UInt32 isst;     
-
-        /// <summary>
-        /// Ctor 
-        /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="id"></param>
-        /// <param name="length"></param>
-        public LABELSST(IStreamReader reader, RecordNumber id, UInt16 length)
-            : base(reader, id, length)
+        /// <returns></returns>
+        public override string getValue()
         {
-            // assert that the correct record type is instantiated
-            Debug.Assert(this.Id == ID);
-            this.rw = reader.ReadUInt16();
-            this.col = reader.ReadUInt16();
-            this.ixfe = reader.ReadUInt16();
-            this.isst = reader.ReadUInt32();
-           
-            // assert that the correct number of bytes has been read from the stream
-            // Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            return this.valueString; 
         }
+
+        /// <summary>
+        /// This method is used to set the value of the cell
+        /// </summary>
+        /// <param name="obj"></param>
+        public override void setValue(object obj)
+        {
+            if (obj is string) 
+            {
+                this.valueString = (string) obj; 
+            }
+            if (obj is UInt32)
+            {
+                this.valueString = ((UInt32)obj).ToString(); 
+            }
+        }
+
+
     }
 }

@@ -37,12 +37,43 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     {
         public const RecordNumber ID = RecordNumber.MULRK;
 
-        public UInt16 rw;              // Row 
-        public UInt16 colFirst;        // first column 
-        public UInt16 colLast;         // Last column  
-        List<UInt16> ixfe;             // List Records 
-        List<double> rknumber;
 
+
+
+
+
+        /// <summary>
+        /// Row 
+        /// </summary>
+        public UInt16 rw;
+
+        /// <summary>
+        /// First column number 
+        /// </summary>
+        public UInt16 colFirst;        
+
+        /// <summary>
+        /// The last affected column 
+        /// </summary>
+        public UInt16 colLast;         
+
+        /// <summary>
+        /// List with format indexes 
+        /// </summary>
+        public List<UInt16> ixfe;      // List records 
+
+        /// <summary>
+        /// List with the numbers 
+        /// </summary>
+        public List<double> rknumber;  // List double values 
+
+
+        /// <summary>
+        /// Ctor 
+        /// </summary>
+        /// <param name="reader">Streamreader</param>
+        /// <param name="id">Record ID - Recordtype</param>
+        /// <param name="length">The recordlegth</param>
         public MULRK(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
@@ -60,33 +91,11 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
                 this.ixfe.Add(reader.ReadUInt16());
                 Byte[] buffer = reader.ReadBytes(4);
 
-                rknumber.Add(this.NumFromRK(buffer)); 
+                rknumber.Add(MSFloatingPointConverter.NumFromRK(buffer)); 
             }
             this.colLast = reader.ReadUInt16(); 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
        }
-
-        public double NumFromRK(Byte[] rk)
-        {
-            double num=0;
-            int high = 1023; 
-            UInt32 number; 
-            number = System.BitConverter.ToUInt32(rk, 0);
-            UInt32 mant = 0;
-            // masking the mantisse 
-            mant = number & 0x000ffffc;
-            // shifting the result by 2  
-            mant = mant >> 2; 
-            
-            UInt32 exp = 0;
-            // masking the exponent 
-            exp = number & 0x7ff00000;
-            // shifting the exponent by 20 
-            exp = exp >> 20; 
-            // (1 + (Mantisse / 2^18)) * 2 ^ (Exponent - 1023) 
-            num = (1 + (mant / System.Math.Pow(2.0, 18.0))) * System.Math.Pow(2, (double)(exp - high)); 
-            return num; 
-        }
     }
 }

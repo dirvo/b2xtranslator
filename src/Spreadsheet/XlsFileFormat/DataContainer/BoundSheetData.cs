@@ -49,16 +49,26 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// List with the cellrecords from the boundsheet 
         /// </summary>
         public List<LABELSST> LABELSSTList;
+        public List<MULRK> MULRKList;
+        public List<NUMBER> NUMBERList;
+        public List<RK> SINGLERKList; 
         public String worksheetName;
         public int worksheetId;
-        public String worksheetRef; 
+        public String worksheetRef;
+        public SortedList<Int32, RowData> rowDataTable; 
+        
 
         /// <summary>
         /// Ctor 
         /// </summary>
         public BoundSheetData()
         {
-            this.LABELSSTList = new List<LABELSST>(); 
+            this.LABELSSTList = new List<LABELSST>();
+            this.MULRKList = new List<MULRK>();
+            this.NUMBERList = new List<NUMBER>();
+            this.SINGLERKList = new List<RK>(); 
+            this.rowDataTable = new SortedList<int,RowData>(); 
+            
         }
 
         /// <summary>
@@ -67,7 +77,92 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// <param name="labelsstdata">A LABELSSTData element</param>
         public void addLabelSST(LABELSST labelsst)
         {
-            this.LABELSSTList.Add(labelsst); 
+            this.LABELSSTList.Add(labelsst);
+            RowData rowData = this.getSpecificRow(labelsst.rw);
+            StringCell cell = new StringCell();
+            cell.setValue(labelsst.isst);
+            cell.Col = labelsst.col;
+            cell.Row = labelsst.rw;
+            cell.TemplateID = labelsst.ixfe;
+            rowData.addCell(cell); 
+        }
+
+        /// <summary>
+        /// Adds a mulrk record element to the internal list 
+        /// a mulrk record stores some integer or floatingpoint values 
+        /// </summary>
+        /// <param name="mulrk">The MULRK Record</param>
+        public void addMULRK(MULRK mulrk)
+        {
+            this.MULRKList.Add(mulrk);
+            RowData rowData = this.getSpecificRow(mulrk.rw);
+            if (mulrk.ixfe.Count == mulrk.rknumber.Count)
+            {
+                for (int i = 0; i < mulrk.rknumber.Count; i++)
+                {
+                    NumberCell cell = new NumberCell();
+                    cell.Col = mulrk.colFirst + i;
+                    cell.Row = mulrk.rw;
+                    cell.setValue(mulrk.rknumber[i]);
+                    cell.TemplateID = mulrk.ixfe[i];
+                    rowData.addCell(cell); 
+                }
+            }
+        }
+
+        /// <summary>
+        /// Adds a NUMBER Biffrecord to the internal list 
+        /// additional the method adds the specific NUMBER Data to a data container 
+        /// </summary>
+        /// <param name="number">NUMBER Biffrecord</param>
+        public void addNUMBER(NUMBER number)
+        {
+            this.NUMBERList.Add(number);
+            RowData rowData = this.getSpecificRow(number.rw);
+            NumberCell cell = new NumberCell();
+            cell.setValue(number.num);
+            cell.Col = number.col;
+            cell.Row = number.rw;
+            cell.TemplateID = number.ixfe;
+            rowData.addCell(cell); 
+        }
+
+        /// <summary>
+        /// Adds a RK Biffrecord to the internal list 
+        /// additional the method adds the specific RK Data to a data container 
+        /// </summary>
+        /// <param name="number">NUMBER Biffrecord</param>
+        public void addRK(RK singlerk)
+        {
+            this.SINGLERKList.Add(singlerk);
+            RowData rowData = this.getSpecificRow(singlerk.rw);
+            NumberCell cell = new NumberCell();
+            cell.setValue(singlerk.num);
+            cell.Col = singlerk.col;
+            cell.Row = singlerk.rw;
+            cell.TemplateID = singlerk.ixfe;
+            rowData.addCell(cell); 
+        }
+
+
+        /// <summary>
+        /// Looks for a specific row number and if it doesn't exist the method will create the one.
+        /// </summary>
+        /// <param name="rownumber">the specific rownumber as integer</param>
+        /// <returns></returns>
+        public RowData getSpecificRow(int rownumber)
+        {
+            RowData rowData;
+            if (this.rowDataTable.ContainsKey(rownumber))
+            {
+                rowData = (RowData)this.rowDataTable[rownumber];
+            }
+            else
+            {
+                rowData = new RowData(rownumber);
+                this.rowDataTable.Add(rownumber, rowData);
+            }
+            return rowData; 
         }
 
 

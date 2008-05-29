@@ -34,6 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BiffRecord.cs" />
+    <Compile Include="BiffRecords\RK.cs" />
     <Compile Include="BiffRecords\ADDIN.cs" />
     <Compile Include="BiffRecords\ADDMENU.cs" />
     <Compile Include="BiffRecords\ARRAY.cs" />
@@ -200,7 +201,6 @@
     <Compile Include="BiffRecords\REFMODE.cs" />
     <Compile Include="BiffRecords\REFRESHALL.cs" />
     <Compile Include="BiffRecords\RIGHTMARGIN.cs" />
-    <Compile Include="BiffRecords\RK.cs" />
     <Compile Include="BiffRecords\ROW.cs" />
     <Compile Include="BiffRecords\RSTRING.cs" />
     <Compile Include="BiffRecords\SAVERECALC.cs" />
@@ -291,7 +291,11 @@
     <Compile Include="BiffRecords\XFEXT.cs" />
     <Compile Include="BiffRecords\XL5MODIFY.cs" />
     <Compile Include="BiffString.cs" />
+    <Compile Include="DataContainer\AbstractCellData.cs" />
+    <Compile Include="DataContainer\NumberCell.cs" />
+    <Compile Include="DataContainer\RowData.cs" />
     <Compile Include="DataContainer\SSTData.cs" />
+    <Compile Include="DataContainer\StringCell.cs" />
     <Compile Include="DataContainer\StringFormatAssignment.cs" />
     <Compile Include="DataContainer\WorkBookData.cs" />
     <Compile Include="Exception\ExtractorException.cs" />
@@ -299,6 +303,7 @@
     <Compile Include="DataExtraction\Extractor.cs" />
     <Compile Include="DataExtraction\FileInformationExtractor.cs" />
     <Compile Include="BiffRecords\FORMAT.cs" />
+    <Compile Include="MSFloatingPointConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RecordNumbers.cs" />
     <Compile Include="DataContainer\BoundSheetData.cs" />

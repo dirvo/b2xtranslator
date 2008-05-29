@@ -45,7 +45,7 @@ namespace xls2x
     class Program
     {
         // Some static variables to store input data 
-        private static string inputFileString;
+        private static string[] inputFileString;
         private static string outputDir; 
 
         static void Main(string[] args)
@@ -55,22 +55,25 @@ namespace xls2x
             if (Directory.Exists(Program.outputDir))
                 Directory.Delete(Program.outputDir);
 
-            Directory.CreateDirectory(Program.outputDir);
-            Console.Out.WriteLine("Files will be created into Directory {0}", Program.outputDir); 
+            // Directory.CreateDirectory(Program.outputDir);
+            Console.Out.WriteLine("Files will be created into Directory {0}", Program.outputDir);
 
-            
+            foreach (string file in inputFileString)
+            {
+                
+           
             try
             {
                 //copy processing file
                 // ProcessingFile procFile = new ProcessingFile(inputFileString);
 
                 //open the reader
-                using (StructuredStorageFile reader = new StructuredStorageFile(inputFileString))
+                using (StructuredStorageFile reader = new StructuredStorageFile(file))
                 {
 
                     //parse the document
                     XlsDocument xlsDoc = new XlsDocument(reader);
-                    using (SpreadsheetDocument spreadx = SpreadsheetDocument.Create("testfile.xlsx"))
+                    using (SpreadsheetDocument spreadx = SpreadsheetDocument.Create(file + ".xlsx"))
                     {
 
                         //Setup the writer
@@ -104,6 +107,8 @@ namespace xls2x
 
         }
 
+        }
+
 
         /// <summary>
         /// Parses the arguments 
@@ -111,8 +116,8 @@ namespace xls2x
         /// <param name="args"></param>
         static void parseArgs(String[] args)
         {
-            Program.inputFileString = args[0]; 
-            Program.outputDir = args[1]; 
+            Program.inputFileString = args; 
+            
         }
 
     }

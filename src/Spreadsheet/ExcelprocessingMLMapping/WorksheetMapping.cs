@@ -64,17 +64,39 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             _writer.WriteStartDocument();
             _writer.WriteStartElement("worksheet", OpenXmlNamespaces.WorkBookML);
             _writer.WriteStartElement("sheetData");
+           //  bsd.rowDataTable.Values
 
+
+
+            foreach (RowData row in bsd.rowDataTable.Values)
+            {
+
+                // write row start tag
+                // Row 
+                _writer.WriteStartElement("row");
+                _writer.WriteAttributeString("r", (row.Row +1).ToString());
+                foreach (AbstractCellData cell in row.Cells)
+                {
+                    // Col 
+                    _writer.WriteStartElement("c");
+                    _writer.WriteAttributeString("r", this.intToABCString((int)cell.Col, (cell.Row + 1).ToString()));
+                    if (cell is StringCell)
+                    {
+                        _writer.WriteAttributeString("t", "s");
+                    } 
+                    // Data !!! 
+                    _writer.WriteElementString("v", cell.getValue());
+
+                    _writer.WriteEndElement();  // close cell (c)  
+                }
+
+
+                _writer.WriteEndElement();  // close row 
+            }
+            /*  
+            /// Adding strings to the new worksheet 
             foreach (LABELSST cell in bsd.LABELSSTList)
             {
-                /*
-                 *   <row r="2" spans="2:5">
-                        <c r="B2" t="s">
-                            <v>0</v> 
-                           </c>
-                     </row>
-
-                 * */
                 // Row 
                 _writer.WriteStartElement("row");
                 _writer.WriteAttributeString("r", cell.rw.ToString());
@@ -88,7 +110,36 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 _writer.WriteEndElement();  // close cell (c)  
                 _writer.WriteEndElement();  // close row 
 
-            }
+            } 
+            
+            /// adding the numbers to the new worksheet 
+            foreach (MULRK cell in bsd.MULRKList)
+            {
+                // Row 
+                _writer.WriteStartElement("row");
+                _writer.WriteAttributeString("r", cell.rw.ToString());
+                int count = 0; 
+                foreach (double number in cell.rknumber)
+                {
+                    
+                    // Col 
+                    _writer.WriteStartElement("c");
+                    _writer.WriteAttributeString("r", this.intToABCString((int)cell.colFirst + count, cell.rw.ToString()));
+                    
+                    // _writer.WriteAttributeString("t");
+                    // Data !!! 
+                    _writer.WriteElementString("v", number.ToString());
+
+                    _writer.WriteEndElement();  // close cell (c)       
+                    count++; 
+                }
+
+                _writer.WriteEndElement();  // close row 
+
+            } 
+            */ 
+
+            
 
             // close tags 
             _writer.WriteEndElement();      // close sheetData 

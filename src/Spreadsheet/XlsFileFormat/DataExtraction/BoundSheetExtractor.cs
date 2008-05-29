@@ -16,13 +16,16 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
     /// </summary>
     public class BoundSheetExtractor : Extractor
     {
-
+        /// <summary>
+        /// Datacontainer for the worksheet
+        /// </summary>
         private BoundSheetData bsd;
 
         /// <summary>
         /// CTor 
         /// </summary>
         /// <param name="reader"></param>
+        /// <param name="bsd"> Boundsheetdata container</param>
         public BoundSheetExtractor(VirtualStreamReader reader, BoundSheetData bsd)
             : base(reader) 
         {
@@ -31,7 +34,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         }
 
         /// <summary>
-        /// 
+        /// Extracting the data from the stream 
         /// </summary>
         public override void extractData()
         {
@@ -58,12 +61,22 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                     }
                     else if (bh.id == RecordNumber.MULRK) 
                     {
-                        MULRK mulrk = new MULRK(this.StreamReader, bh.id, bh.length); 
+                        MULRK mulrk = new MULRK(this.StreamReader, bh.id, bh.length);
+                        this.bsd.addMULRK(mulrk);
+                    }
+                    else if (bh.id == RecordNumber.NUMBER)
+                    {
+                        NUMBER number = new NUMBER(this.StreamReader, bh.id, bh.length);
+                        this.bsd.addNUMBER(number);
 
-                    } else 
-                    { 
-
-                        
+                    }
+                    else if (bh.id == RecordNumber.RK)
+                    {
+                        RK rk = new RK(this.StreamReader, bh.id, bh.length);
+                        this.bsd.addRK(rk);
+                    } 
+                    else 
+                    {   
                         byte[] buffer = new byte[bh.length];
                         buffer = this.StreamReader.ReadBytes(bh.length);
                         if (bh.length != buffer.Length)
