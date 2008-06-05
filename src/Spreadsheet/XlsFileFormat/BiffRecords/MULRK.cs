@@ -37,11 +37,6 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     {
         public const RecordNumber ID = RecordNumber.MULRK;
 
-
-
-
-
-
         /// <summary>
         /// Row 
         /// </summary>
@@ -91,7 +86,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
                 this.ixfe.Add(reader.ReadUInt16());
                 Byte[] buffer = reader.ReadBytes(4);
 
-                rknumber.Add(MSFloatingPointConverter.NumFromRK(buffer)); 
+                rknumber.Add(ExcelHelperClass.NumFromRK(buffer)); 
             }
             this.colLast = reader.ReadUInt16(); 
             // assert that the correct number of bytes has been read from the stream

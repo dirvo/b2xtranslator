@@ -24,60 +24,43 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
-using DIaLOGIKa.b2xtranslator.Tools;
+using System.IO;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
-namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
+namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
 {
     /// <summary>
-    /// This Biffrecord stores some microsoft specific number data 
+    /// This class stores data from empty cells 
+    /// this is necessary for the merge cell records 
     /// </summary>
-    public class RK : BiffRecord
+    public class BlankCell : AbstractCellData
     {
-        public const RecordNumber ID = RecordNumber.NUMBER;
-
-
         /// <summary>
-        /// Row 
+        /// Returns nothing  it is only the overridden method for this class 
         /// </summary>
-        public UInt16 rw;
-        /// <summary>
-        /// Column
-        /// </summary>
-        public UInt16 col;
-        /// <summary>
-        /// Index to the XF Record 
-        /// </summary>
-        public UInt16 ixfe;
-
-        /// <summary>
-        /// The floating point number
-        /// </summary>
-        public Double num;
-
-        /// <summary>
-        /// Ctor 
-        /// </summary>
-        /// <param name="reader">Streamreader</param>
-        /// <param name="id">Record ID - Recordtype</param>
-        /// <param name="length">The recordlegth</param>
-        public RK(IStreamReader reader, RecordNumber id, UInt16 length)
-            : base(reader, id, length)
+        /// <returns>Nothing / empty string</returns>
+        public override string getValue()
         {
-            // assert that the correct record type is instantiated
-            // Debug.Assert(this.Id == ID);
+            return "";
+        }
 
-            this.rw = reader.ReadUInt16();
-            this.col = reader.ReadUInt16();
-            this.ixfe = reader.ReadUInt16();
-            this.num = ExcelHelperClass.NumFromRK(reader.ReadBytes(4));  
-            
-            // assert that the correct number of bytes has been read from the stream
-            // Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        public override void setValue(object obj)
+        {
+            /// do nothing ;) 
         }
     }
 }

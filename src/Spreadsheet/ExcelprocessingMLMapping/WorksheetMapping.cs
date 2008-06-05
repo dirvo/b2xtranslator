@@ -79,7 +79,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 {
                     // Col 
                     _writer.WriteStartElement("c");
-                    _writer.WriteAttributeString("r", this.intToABCString((int)cell.Col, (cell.Row + 1).ToString()));
+                    _writer.WriteAttributeString("r", ExcelHelperClass.intToABCString((int)cell.Col, (cell.Row + 1).ToString()));
                     if (cell is StringCell)
                     {
                         _writer.WriteAttributeString("t", "s");
@@ -92,57 +92,34 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
 
                 _writer.WriteEndElement();  // close row 
-            }
-            /*  
-            /// Adding strings to the new worksheet 
-            foreach (LABELSST cell in bsd.LABELSSTList)
-            {
-                // Row 
-                _writer.WriteStartElement("row");
-                _writer.WriteAttributeString("r", cell.rw.ToString());
-                // Col 
-                _writer.WriteStartElement("c");
-                _writer.WriteAttributeString("r", this.intToABCString((int)cell.col, cell.rw.ToString()));
-                _writer.WriteAttributeString("t", "s");
-                // Data !!! 
-                _writer.WriteElementString("v", cell.isst.ToString());
-
-                _writer.WriteEndElement();  // close cell (c)  
-                _writer.WriteEndElement();  // close row 
-
-            } 
-            
-            /// adding the numbers to the new worksheet 
-            foreach (MULRK cell in bsd.MULRKList)
-            {
-                // Row 
-                _writer.WriteStartElement("row");
-                _writer.WriteAttributeString("r", cell.rw.ToString());
-                int count = 0; 
-                foreach (double number in cell.rknumber)
-                {
-                    
-                    // Col 
-                    _writer.WriteStartElement("c");
-                    _writer.WriteAttributeString("r", this.intToABCString((int)cell.colFirst + count, cell.rw.ToString()));
-                    
-                    // _writer.WriteAttributeString("t");
-                    // Data !!! 
-                    _writer.WriteElementString("v", number.ToString());
-
-                    _writer.WriteEndElement();  // close cell (c)       
-                    count++; 
-                }
-
-                _writer.WriteEndElement();  // close row 
-
-            } 
-            */ 
-
-            
+            }          
 
             // close tags 
             _writer.WriteEndElement();      // close sheetData 
+
+
+            // Add the mergecell part 
+            //
+            // - <mergeCells count="2">
+            //        <mergeCell ref="B3:C3" /> 
+            //        <mergeCell ref="E3:F4" /> 
+            //     </mergeCells>
+            if (bsd.MERGECELLSData != null)
+            {
+                _writer.WriteStartElement("mergeCells");
+                _writer.WriteAttributeString("count", bsd.MERGECELLSData.cmcs.ToString());
+                foreach (MergeCellData mcell in bsd.MERGECELLSData.mergeCellDataList)
+                {
+                    _writer.WriteStartElement("mergeCell");
+                    _writer.WriteAttributeString("ref", mcell.getOXMLFormatedData());
+                    _writer.WriteEndElement();
+                }
+                // close mergeCells Tag 
+                _writer.WriteEndElement(); 
+            }
+
+
+
             _writer.WriteEndElement();      // close worksheet
             _writer.WriteEndDocument();
             bsd.worksheetId = this.xlsContext.SpreadDoc.WorkbookPart.GetWorksheetPart().RelId;
@@ -151,25 +128,5 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             // close writer 
             _writer.Flush();
         }
-
-        /// <summary>
-        /// converts the integer column value to a string like AB 
-        /// </summary>
-        /// <returns>String</returns>
-        public String intToABCString(int colnumber, string rownumber)
-        {
-            String value = "";
-            int remain = 0;
-            while (colnumber != 0)
-            {
-                remain = colnumber % 26;
-                colnumber = colnumber / 26;
-                remain += 65;
-                value += (char)remain;
-            }
-            return value + rownumber;
-        }
-
     }
-
 }

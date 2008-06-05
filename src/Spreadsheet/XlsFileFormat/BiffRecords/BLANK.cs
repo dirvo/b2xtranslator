@@ -33,21 +33,44 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
+    /// <summary>
+    /// This class is used to read data from a BLANK BiffRecord 
+    /// </summary>
     public class BLANK : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.BLANK;
 
+        /// <summary>
+        /// Row 
+        /// </summary>
+        public UInt16 rw;
+        /// <summary>
+        /// Column
+        /// </summary>
+        public UInt16 col;
+        /// <summary>
+        /// Index to the XF Record 
+        /// </summary>
+        public UInt16 ixfe;
+
+        /// <summary>
+        /// Ctor 
+        /// </summary>
+        /// <param name="reader">Streamreader</param>
+        /// <param name="id">Record ID - Recordtype</param>
+        /// <param name="length">The recordlegth</param>
         public BLANK(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
 
-            // initialize class members from stream
-            // TODO: place code here
+            this.rw = this.Reader.ReadUInt16();
+            this.col = this.Reader.ReadUInt16();
+            this.ixfe = this.Reader.ReadUInt16(); 
             
             // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            // Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
         }
     }
 }

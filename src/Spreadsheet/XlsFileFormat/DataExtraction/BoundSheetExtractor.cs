@@ -74,7 +74,22 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                     {
                         RK rk = new RK(this.StreamReader, bh.id, bh.length);
                         this.bsd.addRK(rk);
-                    } 
+                    }
+                    else if (bh.id == RecordNumber.MERGECELLS)
+                    {
+                        MERGECELLS mergecells = new MERGECELLS(this.StreamReader, bh.id, bh.length);
+                        this.bsd.MERGECELLSData = mergecells;
+                    }
+                    else if (bh.id == RecordNumber.BLANK)
+                    {
+                        BLANK blankcell = new BLANK(this.StreamReader, bh.id, bh.length);
+                        this.bsd.addBLANK(blankcell);
+                    }
+                    else if (bh.id == RecordNumber.MULBLANK)
+                    {
+                        MULBLANK mulblank = new MULBLANK(this.StreamReader, bh.id, bh.length);
+                        this.bsd.addMULBLANK(mulblank);
+                    }
                     else 
                     {   
                         byte[] buffer = new byte[bh.length];

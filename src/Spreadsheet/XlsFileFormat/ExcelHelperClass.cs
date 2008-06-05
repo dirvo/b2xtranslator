@@ -7,7 +7,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
     /// <summary>
     /// Assembly of some static methods 
     /// </summary>
-    public class MSFloatingPointConverter
+    public class ExcelHelperClass
     {
         /// <summary>
         /// This method is used to parse a RK Recordnumber  
@@ -78,6 +78,41 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                 num *= 100;
             }
             return num;
+        }
+
+        /// <summary>
+        /// converts the integer column value to a string like AB 
+        /// excel binary format has a cap at column 256 -> IV, so there is no need to 
+        /// create an almighty algorithm ;) 
+        /// </summary>
+        /// <returns>String</returns>
+        public static String intToABCString(int colnumber, string rownumber)
+        {
+            String value = "";
+            int remain = 0; 
+            if (colnumber < 26)
+            {
+                value += (char)(colnumber + 65);
+            }
+            else if (colnumber < Math.Pow(26, 2))
+            {
+                remain = colnumber % 26;
+                colnumber = colnumber / 26;
+                value += (char)(colnumber + 64);
+                value = value + (char)(remain + 65); 
+            }
+            else if (colnumber < Math.Pow(26, 3))
+            {
+                remain = colnumber % (int)Math.Pow(26, 2);
+                colnumber = colnumber / (int)Math.Pow(26, 2);
+                value += (char)(colnumber + 64);
+                colnumber = remain; 
+                remain = colnumber % 26;
+                colnumber = colnumber / 26;
+                value = value + (char)(colnumber + 64);
+                value = value + (char)(remain + 65); 
+            }
+            return value + rownumber; 
         }
     }
 }

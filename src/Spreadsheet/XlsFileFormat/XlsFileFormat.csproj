@@ -292,6 +292,8 @@
     <Compile Include="BiffRecords\XL5MODIFY.cs" />
     <Compile Include="BiffString.cs" />
     <Compile Include="DataContainer\AbstractCellData.cs" />
+    <Compile Include="DataContainer\BlankCell.cs" />
+    <Compile Include="DataContainer\MergeCellData.cs" />
     <Compile Include="DataContainer\NumberCell.cs" />
     <Compile Include="DataContainer\RowData.cs" />
     <Compile Include="DataContainer\SSTData.cs" />
@@ -303,7 +305,7 @@
     <Compile Include="DataExtraction\Extractor.cs" />
     <Compile Include="DataExtraction\FileInformationExtractor.cs" />
     <Compile Include="BiffRecords\FORMAT.cs" />
-    <Compile Include="MSFloatingPointConverter.cs" />
+    <Compile Include="ExcelHelperClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RecordNumbers.cs" />
     <Compile Include="DataContainer\BoundSheetData.cs" />

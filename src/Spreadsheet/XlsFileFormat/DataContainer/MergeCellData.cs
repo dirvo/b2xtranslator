@@ -40,29 +40,61 @@ using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
 {
     /// <summary>
-    /// Class stores data from a NUMBER Biffrecord 
+    /// This class is used  to store the data from a mergecell biffrecord 
     /// </summary>
-    public class NumberCell : AbstractCellData
+    public class MergeCellData
     {
         /// <summary>
-        /// Value from the cell 
+        /// First row from the merge cell 
         /// </summary>
-        private double value;
+        public UInt16 rwFirst;
+        /// <summary>
+        /// Last row from the merge cell 
+        /// </summary>
+        public UInt16 rwLast;
+        /// <summary>
+        /// First column of the merge cell 
+        /// </summary>
+        public UInt16 colFirst;
+        /// <summary>
+        /// Last colum of the merge cell 
+        /// </summary>
+        public UInt16 colLast;
 
+        /// <summary>
+        /// Ctor 
+        /// </summary>
+        public MergeCellData(): this(0,0,0,0) { }
 
-        public override string getValue()
+        /// <summary>
+        /// Ctor 
+        /// </summary>
+        /// <param name="rwFirst">First row</param>
+        /// <param name="rwLast">Last row</param>
+        /// <param name="colFirst">First column</param>
+        /// <param name="colLast">Last column</param>
+        public MergeCellData(UInt16 rwFirst, UInt16 rwLast, UInt16 colFirst, UInt16 colLast)
         {
-            return this.value.ToString();
+            this.rwFirst = rwFirst;
+            this.rwLast = rwLast;
+            this.colFirst = colFirst;
+            this.colLast = colLast; 
         }
 
-        public override void setValue(object obj)
+        /// <summary>
+        /// Converts the classattributes to a string which can be used in the new open xml standard 
+        /// This would be: 
+        ///     mergeCell ref="B3:C3" 
+        ///     ref is  the from the first cell to the last cell 
+        /// </summary>
+        /// <returns></returns>
+        public string getOXMLFormatedData()
         {
-            if (obj is double)
-            {
-                this.value = (double)obj;
-            }
+            String returnvalue = "";
+            returnvalue += ExcelHelperClass.intToABCString(this.colFirst, (this.rwFirst+1).ToString());
+            returnvalue += ":";
+            returnvalue += ExcelHelperClass.intToABCString(this.colLast, (this.rwLast+1).ToString());
+            return returnvalue; 
         }
-
-
     }
 }
