@@ -149,8 +149,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         public ShapeContainer ShapeContainer;
 
-        public BlipStoreEntry BlipStoreEntry;
-
         /// <summary>
         /// Parses the CHPX for a fcPic an loads the PictureDescriptor at this offset
         /// </summary>
@@ -210,8 +208,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     this.dyaOrigin = reader.ReadInt16();
                     this.cProps = reader.ReadInt16();
 
-                    //byte[] records = reader.ReadBytes( (int)(reader.BaseStream.Length - reader.BaseStream.Position));
-
                     //Parse the OfficeDrawing Stuff
                     this.ShapeContainer = (ShapeContainer)Record.readRecord(reader);
                 }
@@ -226,20 +222,20 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         /// <param name="chpx">The CHPX</param>
         /// <returns></returns>
-        private Int32 getFcPic(CharacterPropertyExceptions chpx)
+        public static Int32 getFcPic(CharacterPropertyExceptions chpx)
         {
             Int32 ret = -1;
             foreach (SinglePropertyModifier sprm in chpx.grpprl)
             {
                 switch (sprm.OpCode)
 	            {
-                    case 0x6A03:
+                    case SinglePropertyModifier.OperationCode.sprmCPicLocation:
                         ret = System.BitConverter.ToInt32(sprm.Arguments, 0);
                         break;
-                    case 0x6a12:
+                    case SinglePropertyModifier.OperationCode.sprmCHsp:
                         ret = System.BitConverter.ToInt32(sprm.Arguments, 0);
                         break;
-                    case 0x0806:
+                    case SinglePropertyModifier.OperationCode.sprmCFData:
                         break;
 	            }
                 

@@ -32,10 +32,24 @@ using System.IO;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 {
-    [OfficeRecordAttribute(0xF002)]
-    public class DrawingContainer : RegularContainer
+    [OfficeRecordAttribute(0xF008)]
+    public class DrawingRecord : Record
     {
-        public DrawingContainer(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
-            : base(_reader, size, typeCode, version, instance) { }
+        /// <summary>
+        /// The number of shapes in this drawing
+        /// </summary>
+        public UInt32 csp;
+
+        /// <summary>
+        /// The last MSOSPID given to an SP in this DG
+        /// </summary>
+        public Int32 spidCur;
+
+        public DrawingRecord(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance) 
+        {
+            this.csp = this.Reader.ReadUInt32();
+            this.spidCur = this.Reader.ReadInt32();
+        }
     }
 }

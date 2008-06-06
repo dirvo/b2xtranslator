@@ -37,6 +37,8 @@ using DIaLOGIKa.b2xtranslator.Tools;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 using System.IO.Compression;
 using System.IO;
+using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using System.Threading;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
@@ -63,6 +65,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             _ctx = ctx;
             _targetPart = targetPart;
+            Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
         }
 
         public abstract void Apply(WordDocument doc);
@@ -178,7 +181,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 foreach (SinglePropertyModifier sprm in papx.grpprl)
                 {
                     //find the tDef SPRM
-                    if(sprm.OpCode == 0xd608)
+                    if (sprm.OpCode == SinglePropertyModifier.OperationCode.sprmTDefTable)
                     {
                         byte itcMac = sprm.Arguments[0];
                         for (int i = 0; i < itcMac; i++)
@@ -466,31 +469,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 _ctx.AddRsid(rsidProp);
             }
 
-            //write properties
-            chpx.Convert(new CharacterPropertiesMapping(_writer, _doc, rev));
-
-            //if (chars.Count == 1 && chars[0] == TextMark.Picture)
-            //{
-            //    //its a picture
-            //    PictureDescriptor pict = new PictureDescriptor(chpx, _doc.DataStream);
-
-            //    //sometimes there is a picture mark without a picture,
-            //    //do not convert these marks (occurs in hyperlinks e.g.)
-            //    if (pict.mfp.mm > 98)
-            //    {
-            //        ImagePart imgPart = copyPicture(pict);
-            //        pict.Convert(new PictureMapping(_writer, imgPart));
-            //    }
-
-            //    cp++;
-            //}
-            //else
-            //{
-                if(rev.Type == RevisionData.RevisionType.Deleted)
-                    cp = writeText(chars, cp, chpx, true);
-                else
-                    cp = writeText(chars, cp, chpx, false);
-            //}
+            if(rev.Type == RevisionData.RevisionType.Deleted)
+                cp = writeText(chars, cp, chpx, true);
+            else
+                cp = writeText(chars, cp, chpx, false);
 
             //end run
             _writer.WriteEndElement();
@@ -591,27 +573,23 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 }
                 else if (c == TextMark.DrawnObject && fSpec)
                 {
-                    //ToDo: Drawing Mapping
-                    _writer.WriteString("[DrawingObject]");
-                }
-                else if (c == TextMark.Picture && fSpec)
-                {
-                    //_writer.WriteString("[Picture]");
-
-                    //drawing or picture
-                    PictureDescriptor pict = new PictureDescriptor(chpx, _doc.DataStream);
-
-                    //sometimes there is a picture mark without a picture,
-                    //do not convert these marks (occurs in hyperlinks e.g.)
-                    if (pict.mfp.mm > 98)
+                    FileShapeAddress fspa = _doc.OfficeDrawingTable[cp];
+                    if (fspa.ShapeContainer != null)
                     {
                         //close previous w:t ...
                         _writer.WriteEndElement();
-
-                        ImagePart imgPart = copyPicture(pict);
-                        pict.Convert(new PictureMapping(_writer, imgPart));
-                        copyPicture(pict);
-
+                        fspa.Convert(new VMLShapeMapping(_writer, _targetPart));
+                        _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
+                    }
+                }
+                else if (c == TextMark.Picture && fSpec)
+                {
+                    PictureDescriptor pict = new PictureDescriptor(chpx, _doc.DataStream);
+                    if (pict.mfp.mm > 98 && pict.ShapeContainer != null)
+                    {
+                        //close previous w:t ...
+                        _writer.WriteEndElement();
+                        pict.Convert(new VMLPictureMapping(_writer, _targetPart));
                         _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
                     }
                 }
@@ -653,72 +631,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
         #region HelpFunctions
 
-        /// <summary>
-        /// Copies the picture from the binary stream to the zip archive 
-        /// and creates the relationships for the image.
-        /// </summary>
-        /// <param name="pict">The PictureDescriptor</param>
-        /// <returns>The created ImagePart</returns>
-        protected ImagePart copyPicture(PictureDescriptor pict)
-        {
-            //create the image part
-            ImagePart imgPart = null;
-            switch (pict.BlipStoreEntry.btWin32)
-            {
-                case BlipStoreEntry.BlipType.msoblipEMF:
-                    imgPart = _targetPart.AddImagePart(ImagePartType.Emf);
-                    break;
-                case BlipStoreEntry.BlipType.msoblipWMF:
-                    imgPart = _targetPart.AddImagePart(ImagePartType.Wmf);
-                    break;
-                case BlipStoreEntry.BlipType.msoblipJPEG:
-                case BlipStoreEntry.BlipType.msoblipCMYKJPEG:
-                    imgPart = _targetPart.AddImagePart(ImagePartType.Jpeg);
-                    break;
-                case BlipStoreEntry.BlipType.msoblipPNG:
-                    imgPart = _targetPart.AddImagePart(ImagePartType.Png);
-                    break;
-                case BlipStoreEntry.BlipType.msoblipTIFF:
-                    imgPart = _targetPart.AddImagePart(ImagePartType.Tiff);
-                    break;
-                case BlipStoreEntry.BlipType.msoblipPICT:
-                case BlipStoreEntry.BlipType.msoblipDIB:
-                case BlipStoreEntry.BlipType.msoblipERROR:
-                case BlipStoreEntry.BlipType.msoblipUNKNOWN:
-                case BlipStoreEntry.BlipType.msoblipLastClient:
-                case BlipStoreEntry.BlipType.msoblipFirstClient:
-                    throw new MappingException("Cannot convert picture of type " + pict.BlipStoreEntry.btWin32);
-            }
-
-            //write the picture
-            Stream outStream = imgPart.GetStream();
-            switch (pict.BlipStoreEntry.btWin32)
-	        {
-                case BlipStoreEntry.BlipType.msoblipEMF:
-                case BlipStoreEntry.BlipType.msoblipWMF:
-
-                    //it's a meta image
-                    MetafilePictBlip metaBlip = (MetafilePictBlip)pict.BlipStoreEntry.Blip;
-
-                    //meta images can be compressed
-                    byte[] decompressed = metaBlip.Decrompress();
-                    outStream.Write(decompressed, 0, decompressed.Length);
-
-                    break;
-                case BlipStoreEntry.BlipType.msoblipJPEG:
-                case BlipStoreEntry.BlipType.msoblipCMYKJPEG:
-                case BlipStoreEntry.BlipType.msoblipPNG:
-                case BlipStoreEntry.BlipType.msoblipTIFF:
-
-                    //it's a bitmap image
-                    BitmapBlip bitBlip = (BitmapBlip)pict.BlipStoreEntry.Blip;
-                    outStream.Write(bitBlip.m_pvBits, 0, bitBlip.m_pvBits.Length);
-
-                    break;
-	        }
-
-            return imgPart;
-        }
+       
 
         /// <summary>
         /// Checks if the PAPX is old
@@ -730,7 +643,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             bool ret = false;
             foreach (SinglePropertyModifier sprm in papx.grpprl)
             {
-                if (sprm.OpCode == 0x2664)
+                if(sprm.OpCode == SinglePropertyModifier.OperationCode.sprmPWall)
                 {
                     //sHasOldProps
                     ret = true;
@@ -750,19 +663,20 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             bool ret = false;
             foreach (SinglePropertyModifier sprm in chpx.grpprl)
             {
-                if (sprm.OpCode == 0x6A03 || sprm.OpCode == 0x6A12)
+                if (sprm.OpCode == SinglePropertyModifier.OperationCode.sprmCPicLocation ||
+                    sprm.OpCode == SinglePropertyModifier.OperationCode.sprmCHsp)
                 {
                     //special picture
                     ret = true;
                     break;
                 }
-                else if (sprm.OpCode == 0x6A09)
+                else if (sprm.OpCode == SinglePropertyModifier.OperationCode.sprmCSymbol)
                 {
                     //special symbol
                     ret = true;
                     break;
                 }
-                else if (sprm.OpCode == 0x0855)
+                else if (sprm.OpCode == SinglePropertyModifier.OperationCode.sprmCFSpec)
                 {
                     //special value
                     ret = Utils.ByteToBool(sprm.Arguments[0]);
@@ -782,7 +696,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             Symbol ret = null;
             foreach (SinglePropertyModifier sprm in chpx.grpprl)
             {
-                if (sprm.OpCode == 0x6A09)
+                if (sprm.OpCode == SinglePropertyModifier.OperationCode.sprmCSymbol)
                 {
                     //special symbol
                     ret = new Symbol();

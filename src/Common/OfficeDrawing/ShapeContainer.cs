@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 {
@@ -36,7 +37,8 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
     public class ShapeContainer : RegularContainer
     {
         public ShapeContainer(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
-            : base(_reader, size, typeCode, version, instance) { }
+            : base(_reader, size, typeCode, version, instance) 
+        { 
+        }
     }
-
 }

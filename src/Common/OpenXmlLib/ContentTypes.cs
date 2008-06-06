@@ -109,6 +109,10 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         // SpreadsheetML Namespaces
         public const string SharedStringML = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
         public const string WorkBookML = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"; 
+
+        //Office
+        public const string Office = "urn:schemas-microsoft-com:office:office";
+        public const string OfficeWord = "urn:schemas-microsoft-com:office:word";
     }
 
     public static class OpenXmlRelationshipTypes

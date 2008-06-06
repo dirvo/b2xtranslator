@@ -173,7 +173,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             foreach (SinglePropertyModifier sprm in sepx.grpprl)
             {
-                switch (sprm.OpCode)
+                switch ((int)sprm.OpCode)
                 {
                     //page margins
                     case 0xB021:

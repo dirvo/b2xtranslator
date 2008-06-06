@@ -44,7 +44,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         ConversionContext _ctx;
 
         public StyleSheetMapping(ConversionContext ctx)
-            : base(XmlWriter.Create(ctx.Docx.MainDocumentPart.AddStyleDefinitionsPart().GetStream(), ctx.WriterSettings))
+            : base(XmlWriter.Create(ctx.Docx.MainDocumentPart.StyleDefinitionsPart.GetStream(), ctx.WriterSettings))
         {
             _ctx = ctx;
         }

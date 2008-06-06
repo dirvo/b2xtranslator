@@ -87,7 +87,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             foreach (SinglePropertyModifier sprm in tapx.grpprl)
             {
-                switch (sprm.OpCode)
+                switch ((int)sprm.OpCode)
                 {
                     //preferred table width
                     case 0xF614:

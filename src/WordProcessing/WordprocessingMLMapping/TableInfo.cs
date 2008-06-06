@@ -64,29 +64,29 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             foreach (SinglePropertyModifier sprm in papx.grpprl)
             {
-                if (sprm.OpCode == 0x2416)
+                if (sprm.OpCode == SinglePropertyModifier.OperationCode.sprmPFInTable)
                 {
                     this.fInTable = Utils.ByteToBool(sprm.Arguments[0]);
                 }
-                if (sprm.OpCode == 0x2417)
+                if (sprm.OpCode == SinglePropertyModifier.OperationCode.sprmPFTtp)
                 {
                     this.fTtp = Utils.ByteToBool(sprm.Arguments[0]);
                 }
-                if (sprm.OpCode == 0x244B)
+                if (sprm.OpCode == SinglePropertyModifier.OperationCode.sprmPFInnerTableCell)
                 {
                     this.fInnerTableCell = Utils.ByteToBool(sprm.Arguments[0]);
                 }
-                if (sprm.OpCode == 0x244C)
+                if (sprm.OpCode == SinglePropertyModifier.OperationCode.sprmPFInnerTtp)
                 {
                     this.fInnerTtp = Utils.ByteToBool(sprm.Arguments[0]);
                 }
-                if (sprm.OpCode == 0x6649)
+                if (sprm.OpCode == SinglePropertyModifier.OperationCode.sprmPItap)
                 {
                     this.iTap = System.BitConverter.ToUInt32(sprm.Arguments, 0);
                     if (this.iTap > 0)
                         this.fInTable = true;
                 }
-                if (sprm.OpCode == 0x66A)
+                if ((int)sprm.OpCode == 0x66A)
                 {
                     //add value!
                     this.iTap = System.BitConverter.ToUInt32(sprm.Arguments, 0);

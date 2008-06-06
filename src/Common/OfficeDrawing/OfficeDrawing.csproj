@@ -42,7 +42,9 @@
     <Compile Include="DrawingContainer.cs" />
     <Compile Include="DrawingGroup.cs" />
     <Compile Include="DrawingGroupRecord.cs" />
+    <Compile Include="DrawingRecord.cs" />
     <Compile Include="GroupContainer.cs" />
+    <Compile Include="GroupShapeRecord.cs" />
     <Compile Include="MetafilePictBlip.cs" />
     <Compile Include="OfficeRecordAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -54,6 +56,10 @@
     <Compile Include="UnknownRecord.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CommonTranslatorLib\CommonTranslatorLib.csproj">
+      <Project>{0F0F6BAF-BC5D-4DC6-AE53-8257305EE5CA}</Project>
+      <Name>CommonTranslatorLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Tools\Tools.csproj">
       <Project>{B44FAEE0-B32E-4682-AA42-618C893F14C6}</Project>
       <Name>Tools</Name>

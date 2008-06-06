@@ -109,7 +109,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             foreach (SinglePropertyModifier sprm in papx.grpprl)
             {
-                switch (sprm.OpCode)
+                switch ((int)sprm.OpCode)
                 {
                     //rsid for paragraph property enditing (write to parent element)
                     case 0x6467:
@@ -339,7 +339,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                             tabs.AppendChild(tab);
                             
                             //skip the tolerence array in sprm 0xC615
-                            if (sprm.OpCode == 0xC615)
+                            if (sprm.OpCode == SinglePropertyModifier.OperationCode.sprmPChgTabs)
                                 pos += 4;
                             else
                                 pos += 2;

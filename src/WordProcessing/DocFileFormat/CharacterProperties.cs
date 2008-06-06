@@ -193,19 +193,19 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 switch (sprm.OpCode)
                 {
                     //style id 
-                    case 0x4A30:
+                    case SinglePropertyModifier.OperationCode.sprmCIstd:
                         this.istd = System.BitConverter.ToUInt16(sprm.Arguments, 0);
                         break;
                     //font size
-                    case 0x4A43:
+                    case SinglePropertyModifier.OperationCode.sprmCHps:
                         this.hps = sprm.Arguments[0];
                         break;
                     //bold
-                    case 0x0835:
+                    case SinglePropertyModifier.OperationCode.sprmCFBold:
                         this.fBold = handleToogleValue(this.fBold, sprm.Arguments[0]);
                         break;
                     //italic
-                    case 0x0836:
+                    case SinglePropertyModifier.OperationCode.sprmCFItalic:
                         this.fItalic = handleToogleValue(this.fItalic, sprm.Arguments[0]);
                         break;
                 }
@@ -269,7 +269,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             int ret = 10; //default value for istd
             foreach (SinglePropertyModifier sprm in chpx.grpprl)
             {
-                if (sprm.OpCode == 0x4A30)
+                if (sprm.OpCode == SinglePropertyModifier.OperationCode.sprmCIstd)
                 {
                     ret = (int)System.BitConverter.ToInt16(sprm.Arguments, 0);
                     break;

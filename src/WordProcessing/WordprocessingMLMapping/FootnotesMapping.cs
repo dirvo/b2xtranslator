@@ -10,7 +10,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
     public class FootnotesMapping : DocumentMapping
     {
         public FootnotesMapping(ConversionContext ctx)
-            : base(ctx, ctx.Docx.MainDocumentPart.AddFootnotesPart())
+            : base(ctx, ctx.Docx.MainDocumentPart.FootnotesPart)
         {
             _ctx = ctx;
         }

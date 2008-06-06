@@ -50,7 +50,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         }
 
         public FontTableMapping(ConversionContext ctx)
-            : base(XmlWriter.Create(ctx.Docx.MainDocumentPart.AddFontTablePart().GetStream(), ctx.WriterSettings))
+            : base(XmlWriter.Create(ctx.Docx.MainDocumentPart.FontTablePart.GetStream(), ctx.WriterSettings))
         {
         }
 

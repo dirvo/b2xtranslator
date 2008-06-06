@@ -69,7 +69,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 {
                     this.grpprl.Add(sprm);
                 }
-                else if (sprm.OpCode == 0x646b)
+                else if ((int)sprm.OpCode == 0x646b)
                 {
                     //there is a native TAP in the data stream
                     UInt32 fc = System.BitConverter.ToUInt32(sprm.Arguments, 0);

@@ -47,76 +47,79 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
         {
         }
 
-        public override string ContentType
-        {
-            get { return WordprocessingMLContentTypes.MainDocument; }
-        }
-
-        public override string RelationshipType
-        {
-            get { return OpenXmlRelationshipTypes.OfficeDocument; }
-        }
-
+        public override string ContentType { get { return WordprocessingMLContentTypes.MainDocument; } }
+        public override string RelationshipType { get { return OpenXmlRelationshipTypes.OfficeDocument; } }
         public override string TargetName { get { return "document"; } }
         public override string TargetDirectory { get { return "word"; } }
 
-
-        public StyleDefinitionsPart AddStyleDefinitionsPart()
-        {
-            _styleDefinitionsPart = new StyleDefinitionsPart(this);
-            return this.AddPart(_styleDefinitionsPart);
-        }
+        // unique parts
 
         public StyleDefinitionsPart StyleDefinitionsPart
         {
-            get { return _styleDefinitionsPart; }
-        }
-
-
-        public SettingsPart AddSettingsPart()
-        {
-            _settingsPart = new SettingsPart(this);
-            return this.AddPart(_settingsPart);
+            get
+            {
+                if (_styleDefinitionsPart == null)
+                {
+                    _styleDefinitionsPart = new StyleDefinitionsPart(this);
+                    this.AddPart(_styleDefinitionsPart);
+                }
+                return _styleDefinitionsPart;
+            }
         }
 
         public SettingsPart SettingsPart
         {
-            get { return _settingsPart; }
-        }
-
-
-        public FontTablePart AddFontTablePart()
-        {
-            _fontTablePart = new FontTablePart(this);
-            return this.AddPart(_fontTablePart);
-        }
-
-        public FontTablePart FontTablePart
-        {
-            get { return _fontTablePart; }
-        }
-
-        public FootnotesPart AddFootnotesPart()
-        {
-            _footnotesPart = new FootnotesPart(this);
-            return this.AddPart(_footnotesPart);
-        }
-
-        public FootnotesPart FootnotesPart
-        {
-            get { return _footnotesPart; }
-        }
-
-        public NumberingDefinitionsPart AddNumberingDefinitionsPart()
-        {
-            _numberingDefinitionsPart = new NumberingDefinitionsPart(this);
-            return this.AddPart(_numberingDefinitionsPart);
+            get
+            {
+                if (_settingsPart == null)
+                {
+                    _settingsPart = new SettingsPart(this);
+                    this.AddPart(_settingsPart);
+                }
+                return _settingsPart;
+            }
         }
 
         public NumberingDefinitionsPart NumberingDefinitionsPart
         {
-            get { return _numberingDefinitionsPart; }
+            get
+            {
+                if (_numberingDefinitionsPart == null)
+                {
+                    _numberingDefinitionsPart = new NumberingDefinitionsPart(this);
+                    this.AddPart(_numberingDefinitionsPart);
+                }
+                return _numberingDefinitionsPart;
+            }
         }
+
+        public FontTablePart FontTablePart
+        {
+            get
+            {
+                if (_fontTablePart == null)
+                {
+                    _fontTablePart = new FontTablePart(this);
+                    this.AddPart(_fontTablePart);
+                }
+                return _fontTablePart;
+            }
+        }
+
+        public FootnotesPart FootnotesPart
+        {
+            get
+            {
+                if (_footnotesPart == null)
+                {
+                    _footnotesPart = new FootnotesPart(this);
+                    this.AddPart(_footnotesPart);
+                }
+                return _footnotesPart;
+            }
+        }
+
+        // non unique parts
 
         public HeaderPart AddHeaderPart()
         {

@@ -75,7 +75,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
         protected void appendValueAttribute(XmlElement node, string attributeName, string attributeValue)
         {
-            XmlAttribute att = _nodeFactory.CreateAttribute("w", attributeName, OpenXmlNamespaces.WordprocessingML);
+            appendValueAttribute(node, "w", attributeName, attributeValue, OpenXmlNamespaces.WordprocessingML);
+        }
+
+        protected void appendValueAttribute(XmlElement node, string prefix, string attributeName, string attributeValue, string ns)
+        {
+            XmlAttribute att = _nodeFactory.CreateAttribute(prefix, attributeName, ns);
             att.Value = attributeValue;
             node.Attributes.Append(att);
         }

@@ -101,6 +101,8 @@
   <ItemGroup>
     <Compile Include="AuthorTable.cs" />
     <Compile Include="CharacterProperties.cs" />
+    <Compile Include="DrawingObjectTable.cs" />
+    <Compile Include="FileShapeAddress.cs" />
     <Compile Include="FontFamilyName.cs" />
     <Compile Include="FontTable.cs" />
     <Compile Include="Global.cs" />
@@ -114,6 +116,7 @@
     <Compile Include="ListFormatOverrideTable.cs" />
     <Compile Include="ListLevel.cs" />
     <Compile Include="ListTable.cs" />
+    <Compile Include="OfficeDrawingTable.cs" />
     <Compile Include="PictureBulletInformation.cs" />
     <Compile Include="PictureDescriptor.cs" />
     <Compile Include="SectionPropertyExceptions.cs" />

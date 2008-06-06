@@ -49,7 +49,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         }
 
         public NumberingMapping(ConversionContext ctx)
-            : base(XmlWriter.Create(ctx.Docx.MainDocumentPart.AddNumberingDefinitionsPart().GetStream(), ctx.WriterSettings))
+            : base(XmlWriter.Create(ctx.Docx.MainDocumentPart.NumberingDefinitionsPart.GetStream(), ctx.WriterSettings))
         {
             _ctx = ctx;
         }

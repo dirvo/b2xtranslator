@@ -112,7 +112,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 //no style is set at the moment
                 _currentIstd = UInt16.MaxValue;
 
-                switch (sprm.OpCode)
+                switch ((int)sprm.OpCode)
                 {
                     //style id 
                     case 0x4A30:

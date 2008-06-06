@@ -34,7 +34,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             foreach (SinglePropertyModifier sprm in tapx.grpprl)
             {
-                switch (sprm.OpCode)  
+                switch ((int)sprm.OpCode)  
                 {
                     //width after
                     case 0xF618:

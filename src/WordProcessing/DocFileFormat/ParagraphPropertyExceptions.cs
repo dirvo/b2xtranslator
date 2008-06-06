@@ -65,7 +65,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             //where a list of SPRM is saved.
             foreach (SinglePropertyModifier sprm in this.grpprl)
             {
-                if (sprm.OpCode == 0x6645 || sprm.OpCode == 0x6646)
+                if(sprm.OpCode == SinglePropertyModifier.OperationCode.sprmPHugePapx || (int)sprm.OpCode == 0x6646)
                 {
                     IStreamReader reader = new VirtualStreamReader(dataStream);
                     UInt32 fc = System.BitConverter.ToUInt32(sprm.Arguments, 0);

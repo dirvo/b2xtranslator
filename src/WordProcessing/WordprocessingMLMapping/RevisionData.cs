@@ -67,7 +67,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             foreach (SinglePropertyModifier sprm in chpx.grpprl)
             {
-                switch (sprm.OpCode)
+                switch ((int)sprm.OpCode)
                 {
                     //revision data
                     case 0xCA89:

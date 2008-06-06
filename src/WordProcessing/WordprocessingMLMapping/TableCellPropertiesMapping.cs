@@ -89,7 +89,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             foreach (SinglePropertyModifier sprm in tapx.grpprl)
             {
-                switch (sprm.OpCode)
+                switch ((int)sprm.OpCode)
 	            {
                     //The TDef SPRM contains an array with the boundaries of the cells, 
                     //followed by a block of cell information for each cell.

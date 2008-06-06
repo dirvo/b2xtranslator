@@ -61,7 +61,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     if (sprmStart + 2 < bytes.Length)
                     {
                         //make spra
-                        UInt16 opCode = System.BitConverter.ToUInt16(bytes, sprmStart);
+                        SinglePropertyModifier.OperationCode opCode = (SinglePropertyModifier.OperationCode)System.BitConverter.ToUInt16(bytes, sprmStart);
                         byte spra = (byte)((Int32)opCode >> 13);
 
                         // get size of operand
@@ -74,8 +74,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                             //some opCode need special treatment
                             switch (opCode)
                             {
-                                case (UInt16)SinglePropertyModifier.SpecialSprm.sprmTDefTable:
-                                case (UInt16)SinglePropertyModifier.SpecialSprm.sprmTDefTable10:
+                                case SinglePropertyModifier.OperationCode.sprmTDefTable:
+                                case SinglePropertyModifier.OperationCode.sprmTDefTable10:
                                     //The opSize of the table definition is stored in 2 bytes instead of 1
                                     lenByte = 2;
                                     opSize = System.BitConverter.ToInt16(bytes, sprmStart + 2);
@@ -83,7 +83,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                                     //byte needed for the length
                                     opSize--;
                                     break;
-                                case (UInt16)SinglePropertyModifier.SpecialSprm.sprmPChgTabs:
+                                case SinglePropertyModifier.OperationCode.sprmPChgTabs:
                                     //The tab operand can be bigger than 255 bytes (length byte is set to 255).
                                     //In this case a special calculation of the opSize is needed
                                     lenByte = 1;

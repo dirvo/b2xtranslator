@@ -92,6 +92,21 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public ListTable ListTable;
 
         /// <summary>
+        /// The drawing object table ....
+        /// </summary>
+        public DrawingObjectTable DrawingObjectTable;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public OfficeDrawingTable OfficeDrawingTable;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public OfficeDrawingTable OfficeDrawingTableHeader;
+
+        /// <summary>
         /// The DocumentProperties of the word document
         /// </summary>
         public DocumentProperties DocumentProperties;
@@ -172,6 +187,12 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             //read section table
             this.SectionTable = new SectionTable(this.FIB, this.TableStream, this.WordDocumentStream);
+
+            //read the DO table
+            this.DrawingObjectTable = new DrawingObjectTable(this.FIB, this.TableStream);
+
+            //read the OfficeDrawing table
+            this.OfficeDrawingTable = new OfficeDrawingTable(this, OfficeDrawingTable.OfficeDrawingTableType.MainDocument);
 
             //read headers and footer table
             this.HeaderAndFooterTable = new HeaderAndFooterTable(this);

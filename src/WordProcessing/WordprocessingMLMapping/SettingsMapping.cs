@@ -30,7 +30,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private ConversionContext _ctx;
 
         public SettingsMapping(ConversionContext ctx)
-            : base(XmlWriter.Create(ctx.Docx.MainDocumentPart.AddSettingsPart().GetStream(), ctx.WriterSettings))
+            : base(XmlWriter.Create(ctx.Docx.MainDocumentPart.SettingsPart.GetStream(), ctx.WriterSettings))
         {
             _ctx = ctx;
         }

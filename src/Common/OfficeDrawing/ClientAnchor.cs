@@ -8,10 +8,12 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
     [OfficeRecordAttribute(0xF010)]
     public class ClientAnchor : Record
     {
+        public byte[] bytes;
+
         public ClientAnchor(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {
-            byte[] bytes = this.Reader.ReadBytes((int)size);
+            this.bytes = this.Reader.ReadBytes((int)this.BodySize);
         }
     }
 }

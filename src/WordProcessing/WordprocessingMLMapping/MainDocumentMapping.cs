@@ -22,6 +22,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //start the document
             _writer.WriteStartDocument();
             _writer.WriteStartElement("w", "document", OpenXmlNamespaces.WordprocessingML);
+
+            //write namespaces
+            _writer.WriteAttributeString("xmlns", "v", null, OpenXmlNamespaces.VectorML);
+            _writer.WriteAttributeString("xmlns", "o", null, OpenXmlNamespaces.Office);
+            _writer.WriteAttributeString("xmlns", "w10", null, OpenXmlNamespaces.OfficeWord);
+            _writer.WriteAttributeString("xmlns", "r", null, OpenXmlNamespaces.Relationships);
+
             _writer.WriteStartElement("w", "body", OpenXmlNamespaces.WordprocessingML);
 
             //convert the document

@@ -29,13 +29,32 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Drawing;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 {
-    [OfficeRecordAttribute(0xF002)]
-    public class DrawingContainer : RegularContainer
+    [OfficeRecordAttribute(0xF009)]
+    public class GroupShapeRecord : Record
     {
-        public DrawingContainer(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
-            : base(_reader, size, typeCode, version, instance) { }
+        /// <summary>
+        /// 
+        /// </summary>
+        public Rectangle rcgBounds;
+
+        public GroupShapeRecord(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance)
+        { 
+            //read the rectangle (16 bytes)
+            Int32 left = this.Reader.ReadInt32();
+            Int32 top = this.Reader.ReadInt32();
+            Int32 right = this.Reader.ReadInt32();
+            Int32 bottom = this.Reader.ReadInt32();
+
+            this.rcgBounds = new Rectangle(
+                new Point(left, top),
+                new Size(right-left, bottom-top)
+            );
+        }
     }
+
 }
