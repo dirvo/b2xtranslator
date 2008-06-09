@@ -9,6 +9,13 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
     public class FileShapeAddress : IVisitable
     {
+        public enum AnchorType
+        {
+            margin,
+            page,
+            text
+        }
+
         /// <summary>
         /// Shape Identifier. Used in conjunction with the office art data 
         /// (found via fcDggInfo in the FIB) to find the actual data for this shape.
@@ -48,7 +55,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// 2 relative to text (column for horizontal text; paragraph for vertical text)<br/>
         /// 3 reserved for future use
         /// </summary>
-        public UInt16 bx;
+        public AnchorType bx;
 
         /// <summary>
         /// Y position of shape relative to anchor CP<br/>
@@ -57,7 +64,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// 2 relative to text (column for horizontal text; paragraph for vertical text)<br/>
         /// 3 reserved for future use
         /// </summary>
-        public UInt16 by;
+        public AnchorType by;
 
         /// <summary>
         /// Text wrapping mode <br/>
@@ -123,8 +130,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             UInt16 flag = reader.ReadUInt16();
             this.fHdr = Tools.Utils.BitmaskToBool(flag, 0x0001);
-            this.bx = (UInt16)Tools.Utils.BitmaskToInt(flag, 0x0006);
-            this.by = (UInt16)Tools.Utils.BitmaskToInt(flag, 0x0018);
+            this.bx = (AnchorType)Tools.Utils.BitmaskToInt(flag, 0x0006);
+            this.by = (AnchorType)Tools.Utils.BitmaskToInt(flag, 0x0018);
             this.wr = (UInt16)Tools.Utils.BitmaskToInt(flag, 0x01E0);
             this.wrk = (UInt16)Tools.Utils.BitmaskToInt(flag, 0x1E00);
             this.fRcaSimple = Tools.Utils.BitmaskToBool(flag, 0x2000);

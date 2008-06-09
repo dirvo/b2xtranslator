@@ -40,5 +40,27 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             : base(_reader, size, typeCode, version, instance) 
         { 
         }
+
+        /// <summary>
+        /// Searches all OptionEntry in the ShapeContainer and puts them into a list.
+        /// </summary>
+        /// <param name="shapeContainer">The ShapeContainer</param>
+        /// <returns>A List containing all OptionEntry of the ShapeContainer</returns>
+        public List<ShapeOptions.OptionEntry> ExtractOptions()
+        {
+            List<ShapeOptions.OptionEntry> ret = new List<ShapeOptions.OptionEntry>();
+
+            //build the list of all option entries of this shape
+            foreach (Record rec in this.Children)
+            {
+                if (rec.GetType() == typeof(ShapeOptions))
+                {
+                    ShapeOptions opt = (ShapeOptions)rec;
+                    ret.AddRange(opt.Options);
+                }
+            }
+
+            return ret;
+        }
     }
 }

@@ -149,6 +149,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         public ShapeContainer ShapeContainer;
 
+        public BlipStoreEntry BlipStoreEntry;
+
         /// <summary>
         /// Parses the CHPX for a fcPic an loads the PictureDescriptor at this offset
         /// </summary>
@@ -210,6 +212,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
                     //Parse the OfficeDrawing Stuff
                     this.ShapeContainer = (ShapeContainer)Record.readRecord(reader);
+                    this.BlipStoreEntry = (BlipStoreEntry)Record.readRecord(reader);
                 }
             }
         }

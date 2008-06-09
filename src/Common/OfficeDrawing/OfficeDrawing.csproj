@@ -45,14 +45,19 @@
     <Compile Include="DrawingRecord.cs" />
     <Compile Include="GroupContainer.cs" />
     <Compile Include="GroupShapeRecord.cs" />
+    <Compile Include="IsoscelesTriangleType.cs" />
     <Compile Include="MetafilePictBlip.cs" />
     <Compile Include="OfficeRecordAttribute.cs" />
+    <Compile Include="OfficeShapeTypeAttribute.cs" />
+    <Compile Include="PictureFrameType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Record.cs" />
+    <Compile Include="RectangleType.cs" />
     <Compile Include="RegularContainer.cs" />
     <Compile Include="Shape.cs" />
     <Compile Include="ShapeContainer.cs" />
     <Compile Include="ShapeOptions.cs" />
+    <Compile Include="ShapeType.cs" />
     <Compile Include="UnknownRecord.cs" />
   </ItemGroup>
   <ItemGroup>

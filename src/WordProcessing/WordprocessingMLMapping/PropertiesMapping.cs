@@ -204,7 +204,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             parent.AppendChild(shd);
         }
 
-        private string getBorderType(byte type)
+        protected string getBorderType(byte type)
         {
             switch (type)
             {

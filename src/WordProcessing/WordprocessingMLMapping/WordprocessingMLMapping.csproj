@@ -67,6 +67,7 @@
     <Compile Include="TableInfo.cs" />
     <Compile Include="TablePropertiesMapping.cs" />
     <Compile Include="TableRowPropertiesMapping.cs" />
+    <Compile Include="VMLShapeTypeMapping.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\CommonTranslatorLib\CommonTranslatorLib.csproj">

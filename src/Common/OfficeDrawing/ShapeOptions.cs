@@ -483,7 +483,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
         public ShapeOptions(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {
-            //long pos = this.Reader.BaseStream.Position;
+            long pos = this.Reader.BaseStream.Position;
 
             //instance is the count of properties stored in this record
             this.Options = new OptionEntry[instance];
@@ -512,7 +512,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
                 }
             }
 
-            //this.Reader.BaseStream.Seek(pos + size, SeekOrigin.Begin);
+            this.Reader.BaseStream.Seek(pos + size, SeekOrigin.Begin);
         }
     }
 }

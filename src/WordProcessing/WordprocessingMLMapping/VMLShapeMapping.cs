@@ -27,12 +27,18 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         public void Apply(FileShapeAddress fspa)
         {
             Shape shape = (Shape)fspa.ShapeContainer.Children[0];
-            List<ShapeOptions.OptionEntry> options = getOptions(fspa.ShapeContainer);
+            List<ShapeOptions.OptionEntry> options = fspa.ShapeContainer.ExtractOptions();
 
             _writer.WriteStartElement("w", "pict", OpenXmlNamespaces.WordprocessingML);
 
             //append id
-            appendValueAttribute(_shapeNode, null, "id", getShapeId(shape), OpenXmlNamespaces.VectorML);
+            appendValueAttribute(_shapeNode, null, "id", getShapeId(shape), null);
+
+            //append type
+            if (shape.ShapeType != null)
+            {
+                appendValueAttribute(_shapeNode, null, "type", "#" + VMLShapeTypeMapping.GenerateTypeId(shape.ShapeType), null);
+            }
 
             //build style
             StringBuilder style = new StringBuilder();
@@ -47,13 +53,30 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             appendStyleProperty(style, "margin-top", top.ToPoints() + "pt");
             appendStyleProperty(style, "width", width.ToPoints() + "pt");
             appendStyleProperty(style, "height", height.ToPoints() + "pt");
+            appendStyleProperty(style, "mso-position-horizontal-relative", fspa.bx.ToString());
+            appendStyleProperty(style, "mso-position-vertical-relative", fspa.by.ToString());
 
             foreach (ShapeOptions.OptionEntry entry in options)
             {
                 switch (entry.pid)  
                 {
                     case ShapeOptions.PropertyId.pWrapPolygonVertices:
-                        appendValueAttribute(_shapeNode, null, "wrapcoords", getWrapCoords(entry), OpenXmlNamespaces.VectorML);
+                        appendValueAttribute(_shapeNode, "wrapcoords", getWrapCoords(entry));
+                        break;
+
+                    case ShapeOptions.PropertyId.lineColor:
+                        RGBColor lineColor = new RGBColor((int)entry.op, RGBColor.ByteOrder.RedFirst);
+                        appendValueAttribute(_shapeNode, null, "strokecolor", "#" + lineColor.ThreeDigitHexCode, null);
+                        break;
+
+                    case ShapeOptions.PropertyId.lineWidth:
+                        EmuValue lineWidth = new EmuValue((int)entry.op);
+                        appendValueAttribute(_shapeNode, null, "strokeweight", lineWidth.ToPoints() + "pt", null);
+                        break;
+
+                    case ShapeOptions.PropertyId.fillColor:
+                        RGBColor fillColor = new RGBColor((int)entry.op, RGBColor.ByteOrder.RedFirst);
+                        appendValueAttribute(_shapeNode, null, "fillcolor", "#" + fillColor.ThreeDigitHexCode, null);
                         break;
 
                     case ShapeOptions.PropertyId.Pib:
@@ -70,7 +93,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
 
             //append the style
-            appendValueAttribute(_shapeNode, null, "style", style.ToString(), OpenXmlNamespaces.VectorML);
+            appendValueAttribute(_shapeNode, null,"style", style.ToString(), null);
 
             //append imagedata
             //if (_imagedata.Attributes.Count > 0)
@@ -78,8 +101,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             //append wrap
             XmlElement wrap = _nodeFactory.CreateElement("w10", "wrap", OpenXmlNamespaces.OfficeWord);
-            appendValueAttribute(wrap, null, "type", getWrapType(fspa), OpenXmlNamespaces.OfficeWord);
+            appendValueAttribute(wrap, null, "type", getWrapType(fspa), null);
             _shapeNode.AppendChild(wrap);
+
+            //write the shapeType
+            if (shape.ShapeType != null)
+            {
+                shape.ShapeType.Convert(new VMLShapeTypeMapping(_writer));
+            }
 
             //write the shape
             _shapeNode.WriteTo(_writer);
@@ -88,6 +117,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _writer.Flush();
         }
 
+        
 
         private void appendStyleProperty(StringBuilder b, string propName, string propValue)
         {
@@ -134,29 +164,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private string copyImage(UInt32 pib)
         {
             return "";
-        }
-
-
-        /// <summary>
-        /// Searches all OptionEntry in the ShapeContainer and puts them into a list.
-        /// </summary>
-        /// <param name="shapeContainer">The ShapeContainer</param>
-        /// <returns>A List containing all OptionEntry of the ShapeContainer</returns>
-        private List<ShapeOptions.OptionEntry> getOptions(ShapeContainer shapeContainer)
-        {
-            List<ShapeOptions.OptionEntry> ret = new List<ShapeOptions.OptionEntry>();
-
-            //build the list of all option entries of this shape
-            foreach (Record rec in shapeContainer.Children)
-            {
-                if (rec.GetType() == typeof(ShapeOptions))
-                {
-                    ShapeOptions opt = (ShapeOptions)rec;
-                    ret.AddRange(opt.Options);
-                }
-            }
-
-            return ret;
         }
 
 
