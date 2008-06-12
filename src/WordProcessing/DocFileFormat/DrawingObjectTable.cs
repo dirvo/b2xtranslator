@@ -18,7 +18,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             this.drawingGroup = (DrawingGroup)Record.readRecord(reader);
 
-            //word always writes an empty byte between the two record ...
+            //word writes an empty byte between the two record ...
             //I don't know why ...
             reader.ReadByte(); 
 
@@ -41,10 +41,20 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 Record groupChild = group.Children[i];
                 if(groupChild.TypeCode == 0xF003)
                 {
-                    //it's a group of shapes
+                    //It's a group of shapes
+                    GroupContainer subgroup = (GroupContainer)groupChild;
+
+                    //the referenced shape must be the first shape in the group
+                    ShapeContainer container = (ShapeContainer)subgroup.Children[0];
+                    Shape shape = (Shape)container.Children[1];
+                    if (shape.spid == spid)
+                    {
+                        ret = container;
+                    }
                 }
                 else if (groupChild.TypeCode == 0xF004)
                 {
+                    //It's a singe shape
                     ShapeContainer container = (ShapeContainer)groupChild;
                     Shape shape = (Shape)container.Children[0];
                     if (shape.spid == spid)

@@ -55,6 +55,7 @@
     <Compile Include="NumberingMapping.cs" />
     <Compile Include="ParagraphPropertiesMapping.cs" />
     <Compile Include="DocumentMapping.cs" />
+    <Compile Include="TextboxMapping.cs" />
     <Compile Include="VMLPictureMapping.cs" />
     <Compile Include="PropertiesMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

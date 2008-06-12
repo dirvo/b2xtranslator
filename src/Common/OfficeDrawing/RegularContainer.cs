@@ -58,6 +58,26 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             }
         }
 
+        /// <summary>
+        /// Finds the first child of the given type.
+        /// </summary>
+        /// <param name="typeofRecord">The child record</param>
+        /// <returns>The child or null</returns>
+        public Record FindChildRecord(Type typeofRecord)
+        {
+            Record ret = null;
+            foreach (Record child in this.Children)
+            {
+                if (child.GetType() == typeofRecord)
+                {
+                    ret = child;
+                    break;
+                }
+            }
+            return ret;
+        }
+
+
         override public string ToString(uint depth)
         {
             StringBuilder result = new StringBuilder(base.ToString(depth));

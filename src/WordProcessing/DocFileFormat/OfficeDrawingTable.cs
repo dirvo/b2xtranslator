@@ -19,7 +19,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         {
             VirtualStreamReader reader = new VirtualStreamReader(doc.TableStream);
 
-            //FSPA hast size 26 + 4 byte for the FC = 30 byte
+            //FSPA has size 26 + 4 byte for the FC = 30 byte
             int n = 0;
             int startFc = 0;
             if(type == OfficeDrawingTableType.MainDocument)

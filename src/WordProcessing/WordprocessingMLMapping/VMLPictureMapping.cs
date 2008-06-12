@@ -28,8 +28,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
         public void Apply(PictureDescriptor pict)
         {
-            ImagePart imgPart = copyPicture(pict);
-            copyPicture(pict);
+            ImagePart imgPart = copyPicture(pict.BlipStoreEntry);
+            //copyPicture(pict);
 
             Shape shape = (Shape)pict.ShapeContainer.Children[0];
             List<ShapeOptions.OptionEntry> options = pict.ShapeContainer.ExtractOptions();
@@ -53,19 +53,19 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 {
                     case ShapeOptions.PropertyId.borderBottomColor:
                         RGBColor bottomColor = new RGBColor((int)entry.op, RGBColor.ByteOrder.RedFirst);
-                        _writer.WriteAttributeString("o", "borderbottomcolor", OpenXmlNamespaces.Office, "#"+bottomColor.ThreeDigitHexCode);
+                        _writer.WriteAttributeString("o", "borderbottomcolor", OpenXmlNamespaces.Office, "#"+bottomColor.SixDigitHexCode);
                         break;
                     case ShapeOptions.PropertyId.borderLeftColor:
                         RGBColor leftColor = new RGBColor((int)entry.op, RGBColor.ByteOrder.RedFirst);
-                        _writer.WriteAttributeString("o", "borderleftcolor", OpenXmlNamespaces.Office, "#" + leftColor.ThreeDigitHexCode);
+                        _writer.WriteAttributeString("o", "borderleftcolor", OpenXmlNamespaces.Office, "#" + leftColor.SixDigitHexCode);
                         break;
                     case ShapeOptions.PropertyId.borderRightColor:
                         RGBColor rightColor = new RGBColor((int)entry.op, RGBColor.ByteOrder.RedFirst);
-                        _writer.WriteAttributeString("o", "borderrightcolor", OpenXmlNamespaces.Office, "#" + rightColor.ThreeDigitHexCode);
+                        _writer.WriteAttributeString("o", "borderrightcolor", OpenXmlNamespaces.Office, "#" + rightColor.SixDigitHexCode);
                         break;
                     case ShapeOptions.PropertyId.borderTopColor:
                         RGBColor topColor = new RGBColor((int)entry.op, RGBColor.ByteOrder.RedFirst);
-                        _writer.WriteAttributeString("o", "bordertopcolor", OpenXmlNamespaces.Office, "#" + topColor.ThreeDigitHexCode);
+                        _writer.WriteAttributeString("o", "bordertopcolor", OpenXmlNamespaces.Office, "#" + topColor.SixDigitHexCode);
                         break;
 
                 }
@@ -109,12 +109,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// </summary>
         /// <param name="pict">The PictureDescriptor</param>
         /// <returns>The created ImagePart</returns>
-        protected ImagePart copyPicture(PictureDescriptor pict)
+        protected ImagePart copyPicture(BlipStoreEntry bse)
         {
             //create the image part
             ImagePart imgPart = null;
 
-            switch (pict.BlipStoreEntry.btWin32)
+            switch (bse.btWin32)
             {
                 case BlipStoreEntry.BlipType.msoblipEMF:
                     imgPart = _targetPart.AddImagePart(ImagePartType.Emf);
@@ -138,38 +138,42 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 case BlipStoreEntry.BlipType.msoblipUNKNOWN:
                 case BlipStoreEntry.BlipType.msoblipLastClient:
                 case BlipStoreEntry.BlipType.msoblipFirstClient:
-                    throw new MappingException("Cannot convert picture of type " + pict.BlipStoreEntry.btWin32);
+                    throw new MappingException("Cannot convert picture of type " + bse.btWin32);
             }
 
-            //write the picture
+
             Stream outStream = imgPart.GetStream();
-            switch (pict.BlipStoreEntry.btWin32)
+
+            //write the blip
+            if (bse.Blip != null)
             {
-                case BlipStoreEntry.BlipType.msoblipEMF:
-                case BlipStoreEntry.BlipType.msoblipWMF:
+                switch (bse.btWin32)
+                {
+                    case BlipStoreEntry.BlipType.msoblipEMF:
+                    case BlipStoreEntry.BlipType.msoblipWMF:
 
-                    //it's a meta image
-                    MetafilePictBlip metaBlip = (MetafilePictBlip)pict.BlipStoreEntry.Blip;
+                        //it's a meta image
+                        MetafilePictBlip metaBlip = (MetafilePictBlip)bse.Blip;
 
-                    //meta images can be compressed
-                    byte[] decompressed = metaBlip.Decrompress();
-                    outStream.Write(decompressed, 0, decompressed.Length);
+                        //meta images can be compressed
+                        byte[] decompressed = metaBlip.Decrompress();
+                        outStream.Write(decompressed, 0, decompressed.Length);
 
-                    break;
-                case BlipStoreEntry.BlipType.msoblipJPEG:
-                case BlipStoreEntry.BlipType.msoblipCMYKJPEG:
-                case BlipStoreEntry.BlipType.msoblipPNG:
-                case BlipStoreEntry.BlipType.msoblipTIFF:
+                        break;
+                    case BlipStoreEntry.BlipType.msoblipJPEG:
+                    case BlipStoreEntry.BlipType.msoblipCMYKJPEG:
+                    case BlipStoreEntry.BlipType.msoblipPNG:
+                    case BlipStoreEntry.BlipType.msoblipTIFF:
 
-                    //it's a bitmap image
-                    BitmapBlip bitBlip = (BitmapBlip)pict.BlipStoreEntry.Blip;
-                    outStream.Write(bitBlip.m_pvBits, 0, bitBlip.m_pvBits.Length);
+                        //it's a bitmap image
+                        BitmapBlip bitBlip = (BitmapBlip)bse.Blip;
+                        outStream.Write(bitBlip.m_pvBits, 0, bitBlip.m_pvBits.Length);
 
-                    break;
+                        break;
+                }
             }
 
             return imgPart;
         }
-
     }
 }

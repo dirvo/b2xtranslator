@@ -5,6 +5,7 @@ using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
+using DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {

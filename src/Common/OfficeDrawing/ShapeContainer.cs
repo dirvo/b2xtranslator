@@ -34,7 +34,7 @@ using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 {
     [OfficeRecordAttribute(0xF004)]
-    public class ShapeContainer : RegularContainer
+    public class ShapeContainer : RegularContainer, IVisitable
     {
         public ShapeContainer(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance) 
@@ -62,5 +62,14 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 
             return ret;
         }
+
+        #region IVisitable Members
+
+        public void Convert<T>(T mapping)
+        {
+            ((IMapping<ShapeContainer>)mapping).Apply(this);
+        }
+
+        #endregion
     }
 }

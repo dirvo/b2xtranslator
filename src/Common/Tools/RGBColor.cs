@@ -43,8 +43,8 @@ namespace DIaLOGIKa.b2xtranslator.Tools
         public byte Green;
         public byte Blue;
         public byte Alpha;
-        public string ThreeDigitHexCode;
-        public string FourDigitHexCode;
+        public string SixDigitHexCode;
+        public string EightDigitHexCode;
 
         public RGBColor(int cv, ByteOrder order)
         {
@@ -54,33 +54,33 @@ namespace DIaLOGIKa.b2xtranslator.Tools
             {
                 //R
                 this.Red = bytes[0];
-                ThreeDigitHexCode = String.Format("{0:x2}", this.Red);
+                SixDigitHexCode = String.Format("{0:x2}", this.Red);
                 //G
                 this.Green = bytes[1];
-                ThreeDigitHexCode += String.Format("{0:x2}", this.Green);
+                SixDigitHexCode += String.Format("{0:x2}", this.Green);
                 //B
                 this.Blue = bytes[2];
-                ThreeDigitHexCode += String.Format("{0:x2}", this.Blue);
-                FourDigitHexCode = ThreeDigitHexCode;
+                SixDigitHexCode += String.Format("{0:x2}", this.Blue);
+                EightDigitHexCode = SixDigitHexCode;
                 //Alpha
                 this.Alpha = bytes[3];
-                FourDigitHexCode += String.Format("{0:x2}", this.Alpha);
+                EightDigitHexCode += String.Format("{0:x2}", this.Alpha);
             }
             else if (order == ByteOrder.RedLast)
             {
                 //R
                 this.Red = bytes[2];
-                ThreeDigitHexCode = String.Format("{0:x2}", this.Red);
+                SixDigitHexCode = String.Format("{0:x2}", this.Red);
                 //G
                 this.Green = bytes[1];
-                ThreeDigitHexCode += String.Format("{0:x2}", this.Green);
+                SixDigitHexCode += String.Format("{0:x2}", this.Green);
                 //B
                 this.Blue = bytes[0];
-                ThreeDigitHexCode += String.Format("{0:x2}", this.Blue);
-                FourDigitHexCode = ThreeDigitHexCode;
+                SixDigitHexCode += String.Format("{0:x2}", this.Blue);
+                EightDigitHexCode = SixDigitHexCode;
                 //Alpha
                 this.Alpha = bytes[3];
-                FourDigitHexCode += String.Format("{0:x2}", this.Alpha);
+                EightDigitHexCode += String.Format("{0:x2}", this.Alpha);
             }
 
         }

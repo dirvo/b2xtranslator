@@ -7,7 +7,7 @@ using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class FileShapeAddress : IVisitable
+    public class FileShapeAddress
     {
         public enum AnchorType
         {
@@ -142,14 +142,5 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             this.ShapeContainer = parentDoc.DrawingObjectTable.GetShapeContainer(this.spid);
         }
-
-        #region IVisitable Members
-
-        public void Convert<T>(T mapping)
-        {
-            ((IMapping<FileShapeAddress>)mapping).Apply(this);
-        }
-
-        #endregion
     }
 }

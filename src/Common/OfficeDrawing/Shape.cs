@@ -4,6 +4,7 @@ using System.Text;
 using System.IO;
 using System.Collections;
 using DIaLOGIKa.b2xtranslator.Tools;
+using DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 {

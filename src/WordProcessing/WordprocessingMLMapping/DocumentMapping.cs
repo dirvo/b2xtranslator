@@ -60,6 +60,24 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             public string HexValue;
         }
 
+        /// <summary>
+        /// Creates a new DocumentMapping that writes to the given XmlWriter
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <param name="targetPart"></param>
+        public DocumentMapping(ConversionContext ctx, ContentPart targetPart, XmlWriter writer)
+            : base(writer)
+        {
+            _ctx = ctx;
+            _targetPart = targetPart;
+            Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+        }
+
+        /// <summary>
+        /// Creates a new DocumentMapping that creates a new XmLWriter on to the given ContentPart
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <param name="targetPart"></param>
         public DocumentMapping(ConversionContext ctx, ContentPart targetPart)
             : base(XmlWriter.Create(targetPart.GetStream(), ctx.WriterSettings))
         {
@@ -578,7 +596,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     {
                         //close previous w:t ...
                         _writer.WriteEndElement();
-                        fspa.Convert(new VMLShapeMapping(_writer, _targetPart));
+                        fspa.ShapeContainer.Convert(new VMLShapeMapping(_writer, _targetPart, fspa, true, _ctx));
                         _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
                     }
                 }
@@ -631,7 +649,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
         #region HelpFunctions
 
-       
+
 
         /// <summary>
         /// Checks if the PAPX is old

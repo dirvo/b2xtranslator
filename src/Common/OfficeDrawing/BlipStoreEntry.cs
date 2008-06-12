@@ -162,7 +162,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             this.unused2 = this.Reader.ReadByte();
             this.unused3 = this.Reader.ReadByte();
 
-            this.Blip = Record.readRecord(this.Reader);
+            if (this.BodySize > 0x24)
+            {
+                this.Blip = Record.readRecord(this.Reader);
+            }
         }
     }
 }

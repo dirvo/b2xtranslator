@@ -29,14 +29,20 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 {
     [OfficeRecordAttribute(0xF00D)]
-    public class ClientTextbox : RegularContainer
+    public class ClientTextbox : Record
     {
+        public byte[] Bytes;
+
         public ClientTextbox(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
-            : base(_reader, size, typeCode, version, instance) { }
+            : base(_reader, size, typeCode, version, instance) 
+        {
+            this.Bytes = this.Reader.ReadBytes((int)this.BodySize);
+        }
     }
 
 }

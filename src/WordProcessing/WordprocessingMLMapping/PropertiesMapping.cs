@@ -163,7 +163,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 border.Attributes.Append(val);
 
                 XmlAttribute color = _nodeFactory.CreateAttribute("w", "color", OpenXmlNamespaces.WordprocessingML);
-                color.Value = new RGBColor(brc.cv, RGBColor.ByteOrder.RedFirst).ThreeDigitHexCode;
+                color.Value = new RGBColor(brc.cv, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
                 border.Attributes.Append(color);
 
                 XmlAttribute space = _nodeFactory.CreateAttribute("w", "space", OpenXmlNamespaces.WordprocessingML);
@@ -183,7 +183,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //fill color
             XmlAttribute fill = _nodeFactory.CreateAttribute("w", "fill", OpenXmlNamespaces.WordprocessingML);
             if (desc.cvBack != 0)
-                fill.Value = new RGBColor((int)desc.cvBack, RGBColor.ByteOrder.RedLast).ThreeDigitHexCode;
+                fill.Value = new RGBColor((int)desc.cvBack, RGBColor.ByteOrder.RedLast).SixDigitHexCode;
             else
                 fill.Value = desc.icoBack.ToString();
             shd.Attributes.Append(fill);
@@ -191,7 +191,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //foreground color
             XmlAttribute color = _nodeFactory.CreateAttribute("w", "color", OpenXmlNamespaces.WordprocessingML);
             if (desc.cvFore != 0)
-                color.Value = new RGBColor((int)desc.cvFore, RGBColor.ByteOrder.RedFirst).ThreeDigitHexCode;
+                color.Value = new RGBColor((int)desc.cvFore, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
             else
                 color.Value = desc.icoFore.ToString();
             shd.Attributes.Append(color);

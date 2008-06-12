@@ -142,5 +142,20 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             heavy,
             middleDot
         }
+
+        public enum DashStyle
+        {
+            solid,
+            shortdash,
+            shortdot,
+            shortdashdot,
+            shortdashdotdot,
+            dot,
+            dash,
+            longdash,
+            dashdot,
+            longdashdot,
+            longdashdotdot
+        }
 	}
 }
