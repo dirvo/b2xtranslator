@@ -30,7 +30,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             else if(type == OfficeDrawingTableType.Header)
             {
                 startFc = doc.FIB.fcPlcspaHdr;
-                n = (int)Math.Floor((double)doc.FIB.fcPlcspaHdr / 30);
+                n = (int)Math.Floor((double)doc.FIB.lcbPlcspaHdr / 30);
             }
             
             //there are n+1 FCs ...
@@ -44,7 +44,15 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             //followed by n FSPAs
             for (int i = 0; i < n; i++)
             {
-                FileShapeAddress fspa = new FileShapeAddress(reader, doc);
+                FileShapeAddress fspa = null;
+                if (type == OfficeDrawingTableType.Header)
+                {
+                    fspa = new FileShapeAddress(reader, doc.DrawingObjectTable);
+                }
+                else if (type == OfficeDrawingTableType.MainDocument)
+                {
+                    fspa = new FileShapeAddress(reader, doc.DrawingObjectTable);
+                }
                 this.Add(fcs[i], fspa);
             }
         }

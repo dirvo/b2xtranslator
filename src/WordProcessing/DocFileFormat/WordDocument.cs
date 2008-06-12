@@ -196,6 +196,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             //read the OfficeDrawing table
             this.OfficeDrawingTable = new OfficeDrawingTable(this, OfficeDrawingTable.OfficeDrawingTableType.MainDocument);
 
+            //read the OfficeDrawing table
+            this.OfficeDrawingTableHeader = new OfficeDrawingTable(this, OfficeDrawingTable.OfficeDrawingTableType.Header);
+
             //read headers and footer table
             this.HeaderAndFooterTable = new HeaderAndFooterTable(this);
 

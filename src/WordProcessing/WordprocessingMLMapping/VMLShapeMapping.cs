@@ -103,11 +103,19 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 _writer.WriteAttributeString("style", style.ToString());
             }
 
-            //convert the shapes in the group
+            //convert the shapes/groups in the group
             for (int i = 1; i < container.Children.Count; i++)
             {
-                ShapeContainer childShape = (ShapeContainer)container.Children[i];
-                childShape.Convert(new VMLShapeMapping(_writer, _targetPart, _fspa, false, _ctx));
+                if (container.Children[i].GetType() == typeof(ShapeContainer))
+                {
+                    ShapeContainer childShape = (ShapeContainer)container.Children[i];
+                    childShape.Convert(new VMLShapeMapping(_writer, _targetPart, _fspa, false, _ctx));
+                }
+                else if (container.Children[i].GetType() == typeof(GroupContainer))
+                {
+                    GroupContainer childGroup = (GroupContainer)container.Children[i];
+                    convertGroup(childGroup);
+                }
             }
 
             //write wrap
@@ -318,31 +326,31 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 _writer.WriteEndElement();
             }
 
-            //append stroke
+            //write stroke
             if (_stroke.Attributes.Count > 0)
             {
                 _stroke.WriteTo(_writer);
             }
 
-            //append fill
+            //write fill
             if (_fill.Attributes.Count > 0)
             {
                 _fill.WriteTo(_writer);
             }
 
-            //append imagedata
+            //write imagedata
             if (_imagedata.Attributes.Count > 0)
             {
                 _imagedata.WriteTo(_writer);
             }
 
             //write the textbox
-            Record recTextbox = container.FindChildRecord(typeof(ClientTextbox));
-            if (recTextbox != null)
-            {
-                ClientTextbox txbx = (ClientTextbox)recTextbox;
-                _ctx.Doc.Convert(new TextboxMapping(_ctx, txbx, _targetPart, _writer));
-            }
+            //Record recTextbox = container.FindChildRecord(typeof(ClientTextbox));
+            //if (recTextbox != null)
+            //{
+            //    ClientTextbox txbx = (ClientTextbox)recTextbox;
+            //    _ctx.Doc.Convert(new TextboxMapping(_ctx, txbx, _targetPart, _writer));
+            //}
 
             //write the shape
             _writer.WriteEndElement();
@@ -603,12 +611,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 case BlipStoreEntry.BlipType.msoblipEMF:
                 case BlipStoreEntry.BlipType.msoblipWMF:
 
-                ////it's a meta image
-                //MetafilePictBlip metaBlip = (MetafilePictBlip)bse.Blip;
+                    //it's a meta image
+                    MetafilePictBlip metaBlip = (MetafilePictBlip)Record.readRecord(reader);
 
-                ////meta images can be compressed
-                //byte[] decompressed = metaBlip.Decrompress();
-                //outStream.Write(decompressed, 0, decompressed.Length);
+                    //meta images can be compressed
+                    byte[] decompressed = metaBlip.Decrompress();
+                    outStream.Write(decompressed, 0, decompressed.Length);
 
                     break;
                 case BlipStoreEntry.BlipType.msoblipJPEG:

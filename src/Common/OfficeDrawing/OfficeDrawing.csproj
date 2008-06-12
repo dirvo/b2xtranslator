@@ -51,6 +51,7 @@
     <Compile Include="MetafilePictBlip.cs" />
     <Compile Include="OfficeRecordAttribute.cs" />
     <Compile Include="OfficeShapeTypeAttribute.cs" />
+    <Compile Include="Shapetypes\NotPrimitiveType.cs" />
     <Compile Include="Shapetypes\PictureFrameType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Record.cs" />

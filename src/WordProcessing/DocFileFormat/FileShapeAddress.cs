@@ -120,7 +120,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// 
         /// </summary>
         /// <param name="reader"></param>
-        public FileShapeAddress(VirtualStreamReader reader, WordDocument parentDoc)
+        public FileShapeAddress(VirtualStreamReader reader, DrawingObjectTable drawingTable)
         {
             this.spid = reader.ReadInt32();
             this.xaLeft = reader.ReadInt32();
@@ -140,7 +140,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             this.cTxbx = reader.ReadInt32();
 
-            this.ShapeContainer = parentDoc.DrawingObjectTable.GetShapeContainer(this.spid);
+            this.ShapeContainer = drawingTable.GetShapeContainer(this.spid);
         }
     }
 }

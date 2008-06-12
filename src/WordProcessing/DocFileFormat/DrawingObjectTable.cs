@@ -9,20 +9,26 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
     public class DrawingObjectTable
     {
         public DrawingGroup drawingGroup;
-        public DrawingContainer drawing;
+        public List<DrawingContainer> drawings;
 
         public DrawingObjectTable(FileInformationBlock fib, VirtualStream tableStream)
         {
             VirtualStreamReader reader = new VirtualStreamReader(tableStream);
             tableStream.Seek(fib.fcDggInfo, System.IO.SeekOrigin.Begin);
 
+            int max = (int)(fib.fcDggInfo + fib.lcbDggInfo);
+
             this.drawingGroup = (DrawingGroup)Record.readRecord(reader);
+            this.drawings = new List<DrawingContainer>();
 
-            //word writes an empty byte between the two record ...
-            //I don't know why ...
-            reader.ReadByte(); 
+            while (reader.BaseStream.Position < max)
+            {
+                //word writes an empty byte between the two record ...
+                //I don't know why ...
+                reader.ReadByte();
+                this.drawings.Add((DrawingContainer)Record.readRecord(reader));
+            }
 
-            this.drawing = (DrawingContainer)Record.readRecord(reader);
         }
 
         /// <summary>
@@ -34,33 +40,52 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         {
             ShapeContainer ret = null;
 
-            //get the shape from the DrawingObjectTable
-            GroupContainer group = (GroupContainer)this.drawing.Children[1];
-            for(int i=1; i<group.Children.Count; i++)
+            foreach (DrawingContainer drawing in this.drawings)
             {
-                Record groupChild = group.Children[i];
-                if(groupChild.TypeCode == 0xF003)
-                {
-                    //It's a group of shapes
-                    GroupContainer subgroup = (GroupContainer)groupChild;
+                //get the shape from the DrawingObjectTable
+                //GroupContainer group = (GroupContainer)drawing.Children[1];
+                GroupContainer group = (GroupContainer)drawing.FindChildRecord(typeof(DrawingContainer));
 
-                    //the referenced shape must be the first shape in the group
-                    ShapeContainer container = (ShapeContainer)subgroup.Children[0];
-                    Shape shape = (Shape)container.Children[1];
-                    if (shape.spid == spid)
+                if (group != null)
+                {
+                    for (int i = 1; i < group.Children.Count; i++)
                     {
-                        ret = container;
+                        Record groupChild = group.Children[i];
+                        if (groupChild.TypeCode == 0xF003)
+                        {
+                            //It's a group of shapes
+                            GroupContainer subgroup = (GroupContainer)groupChild;
+
+                            //the referenced shape must be the first shape in the group
+                            ShapeContainer container = (ShapeContainer)subgroup.Children[0];
+                            Shape shape = (Shape)container.Children[1];
+                            if (shape.spid == spid)
+                            {
+                                ret = container;
+                                break;
+                            }
+                        }
+                        else if (groupChild.TypeCode == 0xF004)
+                        {
+                            //It's a singe shape
+                            ShapeContainer container = (ShapeContainer)groupChild;
+                            Shape shape = (Shape)container.Children[0];
+                            if (shape.spid == spid)
+                            {
+                                ret = container;
+                                break;
+                            }
+                        }
                     }
                 }
-                else if (groupChild.TypeCode == 0xF004)
+                else
                 {
-                    //It's a singe shape
-                    ShapeContainer container = (ShapeContainer)groupChild;
-                    Shape shape = (Shape)container.Children[0];
-                    if (shape.spid == spid)
-                    {
-                        ret = container;
-                    }
+                    continue;
+                }
+
+                if (ret != null)
+                {
+                    break;
                 }
             }
 

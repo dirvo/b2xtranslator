@@ -591,14 +591,31 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 }
                 else if (c == TextMark.DrawnObject && fSpec)
                 {
-                    FileShapeAddress fspa = _doc.OfficeDrawingTable[cp];
-                    if (fspa.ShapeContainer != null)
+                    FileShapeAddress fspa = null;
+                    if(GetType() == typeof(MainDocumentMapping) && _doc.OfficeDrawingTable.ContainsKey(cp))
+                    {
+                         fspa = _doc.OfficeDrawingTable[cp];
+                    }
+                    else if(GetType() == typeof(HeaderMapping))
+                    {
+                        int headerCp = cp - _doc.FIB.ccpText - _doc.FIB.ccpFtn;
+                        if (_doc.OfficeDrawingTableHeader.ContainsKey(headerCp))
+                        {
+                            fspa = _doc.OfficeDrawingTableHeader[headerCp];
+                        }
+                    }
+                    if (fspa != null && fspa.ShapeContainer != null)
                     {
                         //close previous w:t ...
                         _writer.WriteEndElement();
                         fspa.ShapeContainer.Convert(new VMLShapeMapping(_writer, _targetPart, fspa, true, _ctx));
                         _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
                     }
+                    //else if (fspa != null)
+                    //{
+                    //    //temporary placeholder for unimplemented shapes
+                    //    _writer.WriteString("[Drawing]");
+                    //}
                 }
                 else if (c == TextMark.Picture && fSpec)
                 {
