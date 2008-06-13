@@ -101,7 +101,15 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public OfficeDrawingTable OfficeDrawingTable;
 
-        public TextboxLinkTable TextboxLinkTable;
+        /// <summary>
+        /// Describes the breaks inside the textbox subdocument
+        /// </summary>
+        public TextboxBreakTable TextboxBreakTable;
+
+        /// <summary>
+        /// Describes the breaks inside the header textbox subdocument
+        /// </summary>
+        public TextboxBreakTable TextboxBreakTableHeader;
 
         /// <summary>
         /// 
@@ -202,7 +210,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             //read headers and footer table
             this.HeaderAndFooterTable = new HeaderAndFooterTable(this);
 
-            this.TextboxLinkTable = new TextboxLinkTable(this.FIB, this.TableStream);
+            this.TextboxBreakTable = new TextboxBreakTable(this.FIB, this.TableStream, TextboxBreakTable.TextboxBreakTableType.MainDocument);
+
+            this.TextboxBreakTableHeader = new TextboxBreakTable(this.FIB, this.TableStream, TextboxBreakTable.TextboxBreakTableType.Header);
 
             //parse the piece table and construct a list that contains all chars
             this.PieceTable = new PieceTable(this.FIB, this.TableStream);

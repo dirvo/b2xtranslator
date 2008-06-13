@@ -62,6 +62,7 @@
     <Compile Include="ShapeOptions.cs" />
     <Compile Include="Shapetypes\ShapeType.cs" />
     <Compile Include="Shapetypes\StraightConnectorType.cs" />
+    <Compile Include="Shapetypes\TextboxType.cs" />
     <Compile Include="UnknownRecord.cs" />
   </ItemGroup>
   <ItemGroup>

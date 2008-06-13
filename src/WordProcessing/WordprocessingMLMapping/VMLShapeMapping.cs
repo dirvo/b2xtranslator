@@ -345,12 +345,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
 
             //write the textbox
-            //Record recTextbox = container.FindChildRecord(typeof(ClientTextbox));
-            //if (recTextbox != null)
-            //{
-            //    ClientTextbox txbx = (ClientTextbox)recTextbox;
-            //    _ctx.Doc.Convert(new TextboxMapping(_ctx, txbx, _targetPart, _writer));
-            //}
+            Record recTextbox = container.FindChildRecord(typeof(ClientTextbox));
+            if (recTextbox != null)
+            {
+                ClientTextbox txbx = (ClientTextbox)recTextbox;
+                _ctx.Doc.Convert(new TextboxMapping(_ctx, txbx, _targetPart, _writer));
+            }
 
             //write the shape
             _writer.WriteEndElement();

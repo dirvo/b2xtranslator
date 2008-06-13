@@ -611,11 +611,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         fspa.ShapeContainer.Convert(new VMLShapeMapping(_writer, _targetPart, fspa, true, _ctx));
                         _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
                     }
-                    //else if (fspa != null)
-                    //{
-                    //    //temporary placeholder for unimplemented shapes
-                    //    _writer.WriteString("[Drawing]");
-                    //}
                 }
                 else if (c == TextMark.Picture && fSpec)
                 {
