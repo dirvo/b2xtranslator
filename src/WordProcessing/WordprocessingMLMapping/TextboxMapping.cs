@@ -28,9 +28,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             Int16 index = System.BitConverter.ToInt16(_textbox.Bytes, 2);
             index--;
-            
-            //convert the textbox text
-            _lastValidPapx = _doc.AllPapxFkps[0].grppapx[0];
 
             Int32 cp = 0;
             Int32 cpEnd = 0;
@@ -46,10 +43,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             if(_targetPart.GetType() == typeof(HeaderPart))
             {
                 txtbxSubdocStart += doc.FIB.ccpTxbx;
-                cp = txtbxSubdocStart + doc.TextboxBreakTable.CharacterPositions[index];
-                cpEnd = txtbxSubdocStart + doc.TextboxBreakTable.CharacterPositions[index + 1];
-                bkd = doc.TextboxBreakTable.Breaks[index];
+                cp = txtbxSubdocStart + doc.TextboxBreakTableHeader.CharacterPositions[index];
+                cpEnd = txtbxSubdocStart + doc.TextboxBreakTableHeader.CharacterPositions[index + 1];
+                bkd = doc.TextboxBreakTableHeader.Breaks[index];
             }
+
+            //convert the textbox text
+            _lastValidPapx = _doc.AllPapxFkps[0].grppapx[0];
 
             while (cp < cpEnd)
             {

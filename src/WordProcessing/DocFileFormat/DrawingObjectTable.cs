@@ -16,19 +16,22 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             VirtualStreamReader reader = new VirtualStreamReader(tableStream);
             tableStream.Seek(fib.fcDggInfo, System.IO.SeekOrigin.Begin);
 
-            int max = (int)(fib.fcDggInfo + fib.lcbDggInfo);
-
-            this.drawingGroup = (DrawingGroup)Record.readRecord(reader);
-            this.drawings = new List<DrawingContainer>();
-
-            while (reader.BaseStream.Position < max)
+            if (fib.lcbDggInfo > 0)
             {
-                //word writes an empty byte between the two record ...
-                //I don't know why ...
-                reader.ReadByte();
-                this.drawings.Add((DrawingContainer)Record.readRecord(reader));
-            }
+                int maxPosition = (int)(fib.fcDggInfo + fib.lcbDggInfo);
 
+                Record dggRec = Record.readRecord(reader);
+                this.drawingGroup = (DrawingGroup)dggRec;
+                this.drawings = new List<DrawingContainer>();
+
+                while (reader.BaseStream.Position < maxPosition)
+                {
+                    //word writes an empty byte between the two record ...
+                    //I don't know why ...
+                    reader.ReadByte();
+                    this.drawings.Add((DrawingContainer)Record.readRecord(reader));
+                }
+            }
         }
 
         /// <summary>

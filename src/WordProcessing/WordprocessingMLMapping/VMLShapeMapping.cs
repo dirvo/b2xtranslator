@@ -459,13 +459,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 case 0:
                 case 2:
-                case 4:
-                case 5:
-                    return "tight";
+                    return "square";
                 case 1:
                     return "none";
                 case 3:
                     return "through";
+                case 4:
+                case 5:
+                    return "tight";
+
 		        default:
                     return "none";
 	        }

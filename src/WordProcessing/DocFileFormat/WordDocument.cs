@@ -201,17 +201,15 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             //read the DO table
             this.DrawingObjectTable = new DrawingObjectTable(this.FIB, this.TableStream);
 
-            //read the OfficeDrawing table
+            //read the OfficeDrawing tables
             this.OfficeDrawingTable = new OfficeDrawingTable(this, OfficeDrawingTable.OfficeDrawingTableType.MainDocument);
-
-            //read the OfficeDrawing table
             this.OfficeDrawingTableHeader = new OfficeDrawingTable(this, OfficeDrawingTable.OfficeDrawingTableType.Header);
 
             //read headers and footer table
             this.HeaderAndFooterTable = new HeaderAndFooterTable(this);
 
+            //textbox break tables
             this.TextboxBreakTable = new TextboxBreakTable(this.FIB, this.TableStream, TextboxBreakTable.TextboxBreakTableType.MainDocument);
-
             this.TextboxBreakTableHeader = new TextboxBreakTable(this.FIB, this.TableStream, TextboxBreakTable.TextboxBreakTableType.Header);
 
             //parse the piece table and construct a list that contains all chars
