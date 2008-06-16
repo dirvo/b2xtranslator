@@ -383,7 +383,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             List<Int32> chpxFcs = _doc.GetFileCharacterPositions(fc, fcEnd);
             chpxFcs.Add(fcEnd);
 
-            //the last of these CHPX formast the paragraph end mark
+            //the last of these CHPX formats the paragraph end mark
             CharacterPropertyExceptions paraEndChpx = chpxs[chpxs.Count-1];
 
             //start paragraph
@@ -486,6 +486,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 _writer.WriteAttributeString("w", "rsidRPr", OpenXmlNamespaces.WordprocessingML, rsidProp);
                 _ctx.AddRsid(rsidProp);
             }
+
+            //convert properties
+            chpx.Convert(new CharacterPropertiesMapping(_writer, _doc, rev, _lastValidPapx, false));
 
             if(rev.Type == RevisionData.RevisionType.Deleted)
                 cp = writeText(chars, cp, chpx, true);

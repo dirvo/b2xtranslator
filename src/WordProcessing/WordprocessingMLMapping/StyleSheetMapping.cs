@@ -127,7 +127,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     {
                         RevisionData rev = new RevisionData();
                         rev.Type = RevisionData.RevisionType.NoRevision;
-                        style.chpx.Convert(new CharacterPropertiesMapping(_writer, _ctx.Doc, rev));
+                        style.chpx.Convert(new CharacterPropertiesMapping(_writer, _ctx.Doc, rev, style.papx, true));
                     }
 
                     //write table properties

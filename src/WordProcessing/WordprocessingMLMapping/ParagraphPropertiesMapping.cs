@@ -91,7 +91,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 XmlElement rPr = _nodeFactory.CreateElement("w", "rPr", OpenXmlNamespaces.WordprocessingML);
                 
                 //append properties
-                _paraEndChpx.Convert(new CharacterPropertiesMapping(rPr, _ctx.Doc, new RevisionData(_paraEndChpx)));
+                _paraEndChpx.Convert(new CharacterPropertiesMapping(rPr, _ctx.Doc, new RevisionData(_paraEndChpx), papx, false));
 
                 RevisionData rev = new RevisionData(_paraEndChpx);
                 //append delete infos

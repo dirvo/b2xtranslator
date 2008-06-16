@@ -42,6 +42,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private XmlElement _rPr;
         private UInt16 _currentIstd;
         private RevisionData _revisionData;
+        private bool _styleChpx;
+        private ParagraphPropertyExceptions _currentPapx;
+        List<CharacterPropertyExceptions> _hierarchy;
 
         private enum SuperscriptIndex
         {
@@ -50,21 +53,25 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             subscript
         }
 
-        public CharacterPropertiesMapping(XmlWriter writer, WordDocument doc, RevisionData rev)
+        public CharacterPropertiesMapping(XmlWriter writer, WordDocument doc, RevisionData rev, ParagraphPropertyExceptions currentPapx, bool styleChpx)
             : base(writer)
         {
             _doc = doc;
             _rPr = _nodeFactory.CreateElement("w", "rPr", OpenXmlNamespaces.WordprocessingML);
             _revisionData = rev;
+            _currentPapx = currentPapx;
+            _styleChpx = styleChpx;
         }
 
-        public CharacterPropertiesMapping(XmlElement rPr, WordDocument doc, RevisionData rev)
+        public CharacterPropertiesMapping(XmlElement rPr, WordDocument doc, RevisionData rev, ParagraphPropertyExceptions currentPapx, bool styleChpx)
             : base(null)
         {
             _doc = doc;
             _nodeFactory = rPr.OwnerDocument;
             _rPr = rPr;
             _revisionData = rev;
+            _currentPapx = currentPapx;
+            _styleChpx = styleChpx;
         }
 
         public void Apply(CharacterPropertyExceptions chpx)
@@ -313,64 +320,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         protected override void appendFlagElement(XmlElement node, SinglePropertyModifier sprm, string elementName, bool unique)
         {
             byte flag = sprm.Arguments[0];
-
             if(flag != 128)
             {
                 XmlElement ele = _nodeFactory.CreateElement("w", elementName, OpenXmlNamespaces.WordprocessingML);
                 XmlAttribute val = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
-
-                if (flag == 0)
-                {
-                    val.Value = "false";
-                    ele.Attributes.Append(val);
-                }
-                else if (flag == 1)
-                {
-                    //dont append attribute val
-                    //no val attribute means "true"
-                }
-                else if(flag == 129)
-                {
-                    //_writer.WriteComment("The flag " + elementName + " had value 129 (style " + _currentIstd + ")");
-
-                    //means that the value is the negation of the style's value
-                    if (_currentIstd == UInt16.MaxValue)
-                    {
-                        //there is NonSerializedAttribute style
-                        //supposed the value is false, set it to true
-                        //dont append attribute val
-                        //no val attribute means "true"
-                    }
-                    else
-                    {
-                        StyleSheetDescription std = _doc.Styles.Styles[_currentIstd];
-                        foreach (SinglePropertyModifier styleSprm in std.chpx.grpprl)
-                        {
-                            //find the value in the style
-                            if (styleSprm.OpCode == sprm.OpCode)
-                            {
-                                //negate it
-                                byte styleFlag = styleSprm.Arguments[0];
-                                switch (styleFlag)
-	                            {
-                                    case 1:
-                                        val.Value = "false";
-                                        ele.Attributes.Append(val);
-                                        break;
-                                    case 0:
-                                        //dont append attribute val
-                                        //no val attribute means "true"
-                                        break;
-                                    default:
-                                        val.Value = styleFlag.ToString();
-                                        ele.Attributes.Append(val);
-                                        break;
-                                }
-                            }
-                        }
-                    }
-                }
-
 
                 if (unique)
                 {
@@ -382,10 +335,129 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                             break;
                         }
                     }
+
                 }
-                node.AppendChild(ele);
+
+                if (flag == 0)
+                {
+                    val.Value = "false";
+                    ele.Attributes.Append(val);
+                    node.AppendChild(ele);
+                }
+                else if (flag == 1)
+                {
+                    //dont append attribute val
+                    //no attribute means true
+                    node.AppendChild(ele);
+                }
+                else if(flag == 129)
+                {
+                    //Invert the value of the style
+
+                    //determine the style id of the current style
+                    UInt16 styleId = 0;
+                    if (_currentIstd != UInt16.MaxValue)
+                    {
+                        styleId = _currentIstd;
+                    }
+                    else
+                    {
+                        styleId = _currentPapx.istd;
+                    }
+                    //this chpx is the chpx of a style, 
+                    //don't use the id of the chpx or the papx, use the baseOn style
+                    if (_styleChpx)
+                    {
+
+                        StyleSheetDescription thisStyle = _doc.Styles.Styles[styleId];
+                        styleId = (UInt16)thisStyle.istdBase;
+                    }
+
+                    //build the style hierarchy
+                    if (_hierarchy == null)
+                    {
+                        _hierarchy = buildHierarchy(_doc.Styles, styleId);
+                    }
+
+                    //apply the toggle values to get the real value of the style
+                    bool stylesVal = applyToggleHierachy(sprm); 
+
+                    //invert it
+                    if (stylesVal)
+                    {
+                        val.Value = "0";
+                        ele.Attributes.Append(val);
+                    }
+                    node.AppendChild(ele);
+                }
             }
         }
+
+        private List<CharacterPropertyExceptions> buildHierarchy(StyleSheet styleSheet, UInt16 istdStart)
+        {
+            List<CharacterPropertyExceptions> hierarchy = new List<CharacterPropertyExceptions>();
+            int istd = (int)istdStart;
+            bool goOn = true;
+            while (goOn)
+            {
+                try
+                {
+                    CharacterPropertyExceptions baseChpx = styleSheet.Styles[istd].chpx;
+                    if (baseChpx != null)
+                    {
+                        hierarchy.Add(baseChpx);
+                        istd = (int)styleSheet.Styles[istd].istdBase;
+                    }
+                    else
+                    {
+                        goOn = false;
+                    }
+                }
+                catch (Exception)
+                {
+                    goOn = false;
+                }
+            }
+            return hierarchy;
+        }
+
+
+        private bool applyToggleHierachy(SinglePropertyModifier sprm)
+        {
+            bool ret = false;
+            foreach (CharacterPropertyExceptions ancientChpx in _hierarchy)
+            {
+                foreach (SinglePropertyModifier ancientSprm in ancientChpx.grpprl)
+                {
+                    if (ancientSprm.OpCode == sprm.OpCode)
+                    {
+                        byte ancient = ancientSprm.Arguments[0];
+                        ret = toogleValue(ret, ancient);
+                        break;
+                    }
+                }
+            }
+            return ret;
+        }
+
+
+        private bool toogleValue(bool currentValue, byte toggle)
+        {
+            if (toggle == 1)
+                return true;
+            else if (toggle == 129)
+                //invert the current value
+                if (currentValue)
+                    return false;
+                else
+                    return true;
+            else if (toggle == 128)
+                //use the current value
+                return currentValue;
+            else
+                return false;
+        }
+
 
         private string lowerFirstChar(string s)
         {
