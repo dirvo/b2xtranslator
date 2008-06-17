@@ -4,7 +4,7 @@ using System.Text;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using System.Reflection;
 
-namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
+namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
 {
     public class ShapeType : IVisitable
     {
