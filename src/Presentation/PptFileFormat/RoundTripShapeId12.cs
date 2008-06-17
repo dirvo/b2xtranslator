@@ -29,21 +29,27 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using DIaLOGIKa.b2xtranslator.OfficeDrawing;
+using DIaLOGIKa.b2xtranslator.Tools;
 
-namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
+namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
-    [OfficeRecordAttribute(0xF011)]
-    public class ClientData : Record
+    [OfficeRecordAttribute(1055)]
+    public class RoundTripShapeId12 : Record
     {
-        /// <summary>
-        /// The bytes containing the client data
-        /// </summary>
-        public byte[] bytes;
+        public UInt32 ShapeId;
 
-        public ClientData(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
-            : base(_reader, size, typeCode, version, instance) 
+        public RoundTripShapeId12(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance)
         {
-            this.bytes = this.Reader.ReadBytes((int)this.BodySize);
+            this.ShapeId = this.Reader.ReadUInt32();
+        }
+
+        override public string ToString(uint depth)
+        {
+            return String.Format("{0}\n{1}ShapeId = {2}",
+                base.ToString(depth), IndentationForDepth(depth + 1),
+                this.ShapeId);
         }
     }
 

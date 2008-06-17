@@ -34,30 +34,25 @@ using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
-    [OfficeRecordAttribute(1007)]
-    public class SlideAtom : Record
+    [OfficeRecordAttribute(4026)]
+    public class CStringAtom : Record
     {
-        public SSlideLayoutAtom Layout;
-        public UInt32 MasterId;
-        public Int32 NotesId;
-        public UInt16 Flags;
+        public static Encoding ENCODING = Encoding.Unicode;
+        public string Text;
 
-        public SlideAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+        public CStringAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {
-            this.Layout = new SSlideLayoutAtom(this.Reader);
-            this.MasterId = this.Reader.ReadUInt32();
-            this.NotesId = this.Reader.ReadInt32();
-            this.Flags = this.Reader.ReadUInt16();
-            this.Reader.ReadUInt16(); // Throw away undocumented data
+            byte[] bytes = new byte[size];
+            this.Reader.Read(bytes, 0, (int)size);
+
+            this.Text = new String(ENCODING.GetChars(bytes));
         }
 
-        override public string ToString(uint depth)
+        public override string ToString(uint depth)
         {
-            return String.Format("{0}\n{1}Layout = {2}\n{1}MasterId = {3}, NotesId = {4}, Flags = {5})",
-                base.ToString(depth), IndentationForDepth(depth + 1),
-                this.Layout, this.MasterId, this.NotesId, this.Flags);
+            return String.Format("{0}\n{1}Text = {2}",
+                base.ToString(depth), IndentationForDepth(depth + 1), Utils.StringInspect(this.Text));
         }
     }
-
 }

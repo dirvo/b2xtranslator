@@ -35,7 +35,7 @@ using System.Reflection;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
-    public class PowerpointDocument : IVisitable, IEnumerable<Record>
+    public class PowerpointDocument : BinaryDocument, IEnumerable<Record>
     {
         static PowerpointDocument() {
             Record.UpdateTypeToRecordClassMapping(Assembly.GetExecutingAssembly(), typeof(PowerpointDocument).Namespace);
@@ -73,11 +73,27 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             return result.ToString();
         }
 
+        public List<T> AllRootRecordsWithType<T>() where T : Record
+        {
+            return (List<T>)this.RootRecords.FindAll(
+                delegate(Record r) { return r is T; }
+            ).ConvertAll<T>(
+                delegate(Record r) { return (T)r; }
+            );
+        }
+
+        public T FirstRootRecordWithType<T>() where T : Record
+        {
+            return (T) this.RootRecords.Find(
+                delegate(Record r) { return r is T; }
+            );
+        }
+
         #region IVisitable Members
 
-        public void Convert<T>(T mapping)
+        override public void Convert<T>(T mapping)
         {
-            throw new Exception("The method or operation is not implemented.");
+            ((IMapping<PowerpointDocument>)mapping).Apply(this);
         }
 
         #endregion

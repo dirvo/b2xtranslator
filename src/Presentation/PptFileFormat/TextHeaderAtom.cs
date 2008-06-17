@@ -33,15 +33,28 @@ using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
+    public enum TextType
+    {
+        Title = 0,
+        Body,
+        Notes,
+        Outline,
+        Other,
+        CenterBody,
+        CenterTitle,
+        HalfBody,
+        QuarterBody
+    };
+
     [OfficeRecordAttribute(3999)]
     public class TextHeaderAtom : Record
     {
-        public UInt32 TextType;
+        public TextType TextType;
 
         public TextHeaderAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {
-            this.TextType = this.Reader.ReadUInt32();
+            this.TextType = (TextType) this.Reader.ReadUInt32();
         }
     }
 

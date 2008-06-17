@@ -34,7 +34,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _stroke = _nodeFactory.CreateElement("v", "stroke", OpenXmlNamespaces.VectorML);
             _shadow = _nodeFactory.CreateElement("v", "shadow", OpenXmlNamespaces.VectorML);
 
-            Record recBs = _ctx.Doc.DrawingObjectTable.drawingGroup.FindChildRecord(typeof(BlipStoreContainer));
+            Record recBs = _ctx.Doc.DrawingObjectTable.drawingGroup.FirstChildWithType<BlipStoreContainer>();
             if (recBs != null)
                 _blipStore = (BlipStoreContainer)recBs;
         }
@@ -161,7 +161,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             else
             {
                 //use the anchor to build the style
-                Record recAnchor = container.FindChildRecord(typeof(ChildAnchor));
+                Record recAnchor = container.FirstChildWithType<ChildAnchor>();
                 if (recAnchor != null)
                 {
                     ChildAnchor anchor = (ChildAnchor)recAnchor;
@@ -345,7 +345,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
 
             //write the textbox
-            Record recTextbox = container.FindChildRecord(typeof(ClientTextbox));
+            Record recTextbox = container.FirstChildWithType<ClientTextbox>();
             if (recTextbox != null)
             {
                 ClientTextbox txbx = (ClientTextbox)recTextbox;

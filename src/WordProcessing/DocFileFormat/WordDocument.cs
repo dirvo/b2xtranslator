@@ -30,11 +30,17 @@ using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
+using DIaLOGIKa.b2xtranslator.OfficeDrawing;
+using System.Reflection;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
     public class WordDocument : IVisitable
     {
+        static WordDocument() {
+            Record.UpdateTypeToRecordClassMapping(Assembly.GetExecutingAssembly(), typeof(WordDocument).Namespace);
+        }
+
         /// <summary>
         /// 
         /// </summary>

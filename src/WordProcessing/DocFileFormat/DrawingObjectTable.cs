@@ -47,7 +47,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             {
                 //get the shape from the DrawingObjectTable
                 //GroupContainer group = (GroupContainer)drawing.Children[1];
-                GroupContainer group = (GroupContainer)drawing.FindChildRecord(typeof(GroupContainer));
+                GroupContainer group = (GroupContainer)drawing.FirstChildWithType<GroupContainer>();
 
                 if (group != null)
                 {

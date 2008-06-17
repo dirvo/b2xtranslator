@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML
 {
-    public class SlidePart : OpenXmlPart
+    public class SlidePart : ContentPart
     {
         public SlidePart(OpenXmlPartContainer parent, int partIndex)
             : base(parent, partIndex)

@@ -97,9 +97,15 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             this.fHaveAnchor = Utils.BitmaskToBool(flag, 0x200);
             this.fBackground = Utils.BitmaskToBool(flag, 0x400);
             this.fHaveSpt = Utils.BitmaskToBool(flag, 0x800);
-
             this.ShapeType = ShapeType.GetShapeType(this.Instance);
         }
 
+        override public string ToString(uint depth)
+        {
+            return String.Format("{0}\n{1}Id = {2}, isGroup = {3}, isChild = {4}, isPatriarch = {5}",
+                base.ToString(depth), IndentationForDepth(depth + 1),
+                this.spid,
+                this.fGroup, this.fChild, this.fPatriarch);
+        }
     }
 }

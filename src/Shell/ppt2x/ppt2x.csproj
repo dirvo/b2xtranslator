@@ -10,6 +10,7 @@
     <RootNamespace>ppt2x</RootNamespace>
     <AssemblyName>ppt2x</AssemblyName>
     <ApplicationIcon>ppt2x.ico</ApplicationIcon>
+    <StartupObject>DIaLOGIKa.b2xtranslator.ppt2x.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -46,6 +47,10 @@
       <Project>{AA46A3F1-919F-48FB-970C-753F58A857F6}</Project>
       <Name>OfficeDrawing</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Common\OpenXmlLib\OpenXmlLib.csproj">
+      <Project>{4C10271C-CD9B-49F5-9479-3C6EB7404E75}</Project>
+      <Name>OpenXmlLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Common\StructuredStorageReader\StructuredStorageReader.csproj">
       <Project>{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}</Project>
       <Name>StructuredStorageReader</Name>
@@ -53,6 +58,14 @@
     <ProjectReference Include="..\..\Common\Tools\Tools.csproj">
       <Project>{B44FAEE0-B32E-4682-AA42-618C893F14C6}</Project>
       <Name>Tools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\ZipUtils\ZipUtils.csproj">
+      <Project>{05A5C68E-B901-4AD0-87F1-5E43DDC759CE}</Project>
+      <Name>ZipUtils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\PresentationMLMapping\PresentationMLMapping.csproj">
+      <Project>{1D168A80-B748-4321-AED6-E03D557B5864}</Project>
+      <Name>PresentationMLMapping</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Presentation\PptFileFormat\PptFileFormat.csproj">
       <Project>{6EAD0A6A-8DF0-4CA3-8D5E-3C871E7FCB62}</Project>

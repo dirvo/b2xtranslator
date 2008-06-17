@@ -58,26 +58,6 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             }
         }
 
-        /// <summary>
-        /// Finds the first child of the given type.
-        /// </summary>
-        /// <param name="typeofRecord">The child record</param>
-        /// <returns>The child or null</returns>
-        public Record FindChildRecord(Type typeofRecord)
-        {
-            Record ret = null;
-            foreach (Record child in this.Children)
-            {
-                if (child.GetType() == typeofRecord)
-                {
-                    ret = child;
-                    break;
-                }
-            }
-            return ret;
-        }
-
-
         override public string ToString(uint depth)
         {
             StringBuilder result = new StringBuilder(base.ToString(depth));
@@ -98,6 +78,32 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             }
 
             return result.ToString();
+        }
+
+        /// <summary>
+        /// Finds all children of the given type.
+        /// </summary>
+        /// <typeparam name="T">Type of child to search for</typeparam>
+        /// <returns>List of children with appropriate type or null if none were found</returns>
+        public List<T> AllChildrenWithType<T>() where T : Record
+        {
+            return (List<T>)this.Children.FindAll(
+                delegate(Record r) { return r is T; }
+            ).ConvertAll<T>(
+                delegate(Record r) { return (T)r; }
+            );
+        }
+
+        /// <summary>
+        /// Finds the first child of the given type.
+        /// </summary>
+        /// <typeparam name="T">Type of child to search for</typeparam>
+        /// <returns>First child with appropriate type or null if none was found</returns>
+        public T FirstChildWithType<T>() where T : Record
+        {
+            return (T)this.Children.Find(
+                delegate(Record r) { return r is T; }
+            );
         }
 
         #region IEnumerable<Record> Members

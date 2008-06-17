@@ -31,10 +31,11 @@ using System.Text;
 using System.IO;
 using System.Collections;
 using System.Reflection;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 {
-    public class Record : IEnumerable<Record>
+    public class Record : IEnumerable<Record>, IVisitable
     {
         public const uint HEADER_SIZE_IN_BYTES = (16 + 16 + 32) / 8;
 
@@ -144,6 +145,15 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             }
         }
 
+        #region IVisitable Members
+
+        void IVisitable.Convert<T>(T mapping)
+        {
+            ((IMapping<Record>)mapping).Apply(this);
+        }
+
+        #endregion
+
         #region IEnumerable<Record> Members
 
         public virtual IEnumerator<Record> GetEnumerator()
@@ -165,7 +175,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 
         #region Static attributes and methods
 
-        protected static string IndentationForDepth(uint depth)
+        public static string IndentationForDepth(uint depth)
         {
             StringBuilder result = new StringBuilder();
 
@@ -275,5 +285,4 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 
         #endregion
     }
-
 }

@@ -29,19 +29,35 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
-using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
+using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 
-namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
+namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
-    [OfficeRecordAttribute(0xF00D)]
-    public class ClientTextbox : Record
+    [OfficeRecordAttribute(1058)]
+    public class RoundTripContentMasterId12 : Record
     {
-        public byte[] Bytes;
+        /// <summary>
+        /// Round-trip id of the main master
+        /// </summary>
+        public UInt32 MainMasterId;
 
-        public ClientTextbox(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
-            : base(_reader, size, typeCode, version, instance) 
+        /// <summary>
+        /// Instance id of the content master (unique for main master)
+        /// </summary>
+        public UInt32 ContentMasterInstanceId;
+
+        public RoundTripContentMasterId12(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance)
         {
-            this.Bytes = this.Reader.ReadBytes((int)this.BodySize);
+            this.MainMasterId = this.Reader.ReadUInt32();
+            this.ContentMasterInstanceId = this.Reader.ReadUInt32();
+        }
+
+        override public string ToString(uint depth)
+        {
+            return String.Format("{0}\n{1}MainMasterId = {2}, ContentMasterInstanceId = {3}",
+                base.ToString(depth), IndentationForDepth(depth + 1),
+                this.MainMasterId, this.ContentMasterInstanceId);
         }
     }
 

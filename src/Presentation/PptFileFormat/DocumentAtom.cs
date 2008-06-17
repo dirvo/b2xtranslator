@@ -34,6 +34,17 @@ using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
+    public enum SlideSizeType : short
+    {
+        OnScreen,
+        LetterSizedPaper,
+        A4Paper,
+        Size35mm,
+        Overhead,
+        Banner,
+        Custom
+    }
+
     [OfficeRecordAttribute(1001)]
     public class DocumentAtom : Record
     {
@@ -44,7 +55,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         public UInt32 NotesMasterPersist;
         public UInt32 HandoutMasterPersist;
         public UInt16 FirstSlideNum;
-        public Int16 SlideSizeType;
+        public SlideSizeType SlideSizeType;
 
         public bool SaveWithFonts;
         public bool OmitTitlePlace;
@@ -61,7 +72,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             this.NotesMasterPersist = this.Reader.ReadUInt32();
             this.HandoutMasterPersist = this.Reader.ReadUInt32();
             this.FirstSlideNum = this.Reader.ReadUInt16();
-            this.SlideSizeType = this.Reader.ReadInt16();
+            this.SlideSizeType = (SlideSizeType) this.Reader.ReadInt16();
 
             this.SaveWithFonts = this.Reader.ReadByte() != 0;
             this.OmitTitlePlace = this.Reader.ReadByte() != 0;

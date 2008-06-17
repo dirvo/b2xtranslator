@@ -4,9 +4,9 @@ using System.Text;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML
 {
-    public class PresentationPart : OpenXmlPart
+    public class PresentationPart : ContentPart
     {
-        protected int _slideLayoutCounter = 0;
+        public List<SlideMasterPart> SlideMasterParts = new List<SlideMasterPart>();
         protected int _slideMasterCounter = 0;
         protected int _slideCounter = 0;
         
@@ -28,14 +28,11 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML
         public override string TargetName { get { return "presentation"; } }
         public override string TargetDirectory { get { return "ppt"; } }
 
-        public SlideLayoutPart AddSlideLayoutPart()
-        {
-            return this.AddPart(new SlideLayoutPart(this, ++_slideLayoutCounter));
-        }
-
         public SlideMasterPart AddSlideMasterPart()
         {
-            return this.AddPart(new SlideMasterPart(this, ++_slideMasterCounter));
+            SlideMasterPart part = new SlideMasterPart(this, ++_slideMasterCounter);
+            this.SlideMasterParts.Add(part);
+            return this.AddPart(part);
         }
 
         public SlidePart AddSlidePart()

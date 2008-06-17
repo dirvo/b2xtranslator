@@ -145,6 +145,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeDrawing", "Common\Off
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationMLMapping", "PresentationMLMapping\PresentationMLMapping.csproj", "{1D168A80-B748-4321-AED6-E03D557B5864}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -223,6 +229,10 @@ Global
 		{AA46A3F1-919F-48FB-970C-753F58A857F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA46A3F1-919F-48FB-970C-753F58A857F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA46A3F1-919F-48FB-970C-753F58A857F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D168A80-B748-4321-AED6-E03D557B5864}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D168A80-B748-4321-AED6-E03D557B5864}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D168A80-B748-4321-AED6-E03D557B5864}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D168A80-B748-4321-AED6-E03D557B5864}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -242,6 +252,7 @@ Global
 		{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7} = {D8DB984C-ED04-4525-9923-798363B513FC}
 		{AA46A3F1-919F-48FB-970C-753F58A857F6} = {D8DB984C-ED04-4525-9923-798363B513FC}
 		{6EAD0A6A-8DF0-4CA3-8D5E-3C871E7FCB62} = {D30AEB63-809F-4791-8DEF-78FB718A0716}
+		{1D168A80-B748-4321-AED6-E03D557B5864} = {D30AEB63-809F-4791-8DEF-78FB718A0716}
 		{2427A407-3161-401A-A7C4-545A7AC90E36} = {B01712A7-034B-48C4-9997-8E3613908080}
 		{90C862C6-C6CB-4C72-8E58-FA3F8625E93B} = {B01712A7-034B-48C4-9997-8E3613908080}
 		{2C664677-C680-446F-805A-593B387D1D08} = {C7DD1BC2-02FA-40EB-810F-43B97D0B29C3}

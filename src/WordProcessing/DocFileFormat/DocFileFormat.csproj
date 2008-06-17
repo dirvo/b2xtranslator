@@ -102,6 +102,8 @@
     <Compile Include="AuthorTable.cs" />
     <Compile Include="BreakDescriptor.cs" />
     <Compile Include="CharacterProperties.cs" />
+    <Compile Include="ClientData.cs" />
+    <Compile Include="ClientTextbox.cs" />
     <Compile Include="DrawingObjectTable.cs" />
     <Compile Include="FileShapeAddress.cs" />
     <Compile Include="FontFamilyName.cs" />

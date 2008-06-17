@@ -97,7 +97,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string RelationsshipsPackage = "http://schemas.openxmlformats.org/package/2006/relationships";
         public const string Relationships = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
 
-        //Drawing ML
+        // Drawing ML namespaces
         public const string DrawingML = "http://schemas.openxmlformats.org/drawingml/2006/main";
         public const string DrawingMLPicture = "http://schemas.openxmlformats.org/drawingml/2006/picture";
 
@@ -105,6 +105,9 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string WordprocessingML = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
         public const string WordprocessingDrawingML = "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing";
         public const string VectorML = "urn:schemas-microsoft-com:vml";
+
+        // PresentationML namespaces
+        public const string PresentationML = "http://schemas.openxmlformats.org/presentationml/2006/main";
 
         // SpreadsheetML Namespaces
         public const string SharedStringML = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";

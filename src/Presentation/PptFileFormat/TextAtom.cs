@@ -44,7 +44,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             byte[] bytes = new byte[size];
             this.Reader.Read(bytes, 0, (int)size);
 
-            this.Text = new String(encoding.GetChars(bytes)) + "\n";
+            this.Text = new String(encoding.GetChars(bytes));
         }
 
         public override string ToString(uint depth)

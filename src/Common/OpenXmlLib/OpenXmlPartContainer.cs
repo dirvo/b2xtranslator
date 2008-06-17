@@ -41,6 +41,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         protected const string REL_EXTENSION = ".rels";
 
         protected List<OpenXmlPart> _parts = new List<OpenXmlPart>();
+        protected List<OpenXmlPart> _referencedParts = new List<OpenXmlPart>();
         protected int _nextRelId = 1;
 
         protected OpenXmlPartContainer _parent = null;
@@ -106,8 +107,16 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
                 return _parts;
             }
         }
-        
-        protected virtual T AddPart<T>(T part) where T : OpenXmlPart
+
+        protected IEnumerable<OpenXmlPart> ReferencedParts
+        {
+            get
+            {
+                return _referencedParts;
+            }
+        }
+
+        public virtual T AddPart<T>(T part) where T : OpenXmlPart
         {
             // generate a relId for the part 
             part.RelId = _nextRelId++;
@@ -125,25 +134,50 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
             return part;
         }
 
+        /// <summary>
+        /// Add a part reference without actually managing the part.
+        /// </summary>
+        public virtual T ReferencePart<T>(T part) where T : OpenXmlPart
+        {
+            // generate a relId for the part 
+            part.RelId = _nextRelId++;
+            _referencedParts.Add(part);
+
+            if (part.HasDefaultContentType)
+            {
+                part.Package.AddContentTypeDefault(part.TargetExt.Replace(".", ""), part.ContentType);
+            }
+            else
+            {
+                part.Package.AddContentTypeOverride("/" + part.TargetFullName.Replace('\\', '/'), part.ContentType);
+            }
+
+            return part;
+        }
+
         protected virtual void WriteRelationshipPart(OpenXmlWriter writer)
         {
+            List<OpenXmlPart> allParts = new List<OpenXmlPart>();
+            allParts.AddRange(this.Parts);
+            allParts.AddRange(this.ReferencedParts);
+
             // write part relationships
-            if (_parts.Count > 0)
+            if (allParts.Count > 0)
             {
                 string relFullName = Path.Combine(Path.Combine(this.TargetDirectoryAbsolute, REL_FOLDER), TargetName + TargetExt + REL_EXTENSION);
                 writer.AddPart(relFullName);
 
                 writer.WriteStartDocument();
                 writer.WriteStartElement("Relationships", OpenXmlNamespaces.RelationsshipsPackage);
-                foreach (OpenXmlPart part in this.Parts)
+
+                foreach (OpenXmlPart part in allParts)
                 {
                     writer.WriteStartElement("Relationship", OpenXmlNamespaces.RelationsshipsPackage);
                     writer.WriteAttributeString("Id", part.RelIdToString);
                     writer.WriteAttributeString("Type", part.RelationshipType);
 
                     // write the target relative to the current part
-                    string target = Path.Combine(part.TargetDirectory, part.TargetName) + part.TargetExt;
-                    writer.WriteAttributeString("Target", target.Replace('\\', '/'));
+                    writer.WriteAttributeString("Target", "/" + part.TargetFullName.Replace('\\', '/'));
                     writer.WriteEndElement();
                 }
                 writer.WriteEndElement();

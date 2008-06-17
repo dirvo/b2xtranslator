@@ -39,8 +39,6 @@
     <Compile Include="BlipStoreEntry.cs" />
     <Compile Include="ChildAnchor.cs" />
     <Compile Include="ClientAnchor.cs" />
-    <Compile Include="ClientData.cs" />
-    <Compile Include="ClientTextbox.cs" />
     <Compile Include="DrawingContainer.cs" />
     <Compile Include="DrawingGroup.cs" />
     <Compile Include="DrawingGroupRecord.cs" />
@@ -57,6 +55,7 @@
     <Compile Include="Record.cs" />
     <Compile Include="Shapetypes\RectangleType.cs" />
     <Compile Include="RegularContainer.cs" />
+    <Compile Include="XmlContainer.cs" />
     <Compile Include="Shape.cs" />
     <Compile Include="ShapeContainer.cs" />
     <Compile Include="ShapeOptions.cs" />
@@ -73,6 +72,10 @@
     <ProjectReference Include="..\Tools\Tools.csproj">
       <Project>{B44FAEE0-B32E-4682-AA42-618C893F14C6}</Project>
       <Name>Tools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ZipUtils\ZipUtils.csproj">
+      <Project>{05A5C68E-B901-4AD0-87F1-5E43DDC759CE}</Project>
+      <Name>ZipUtils</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
