@@ -29,8 +29,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 
-namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
+namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
     [OfficeRecordAttribute(0xF011)]
     public class ClientData : RegularContainer

@@ -29,27 +29,22 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 
-namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
+namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
     [OfficeRecordAttribute(0xF011)]
-    public class ClientData : RegularContainer //Record
+    public class ClientData : Record
     {
-/*        /// <summary>
+        /// <summary>
         /// The bytes containing the client data
         /// </summary>
         public byte[] bytes;
 
         public ClientData(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
-            : base(_reader, size, typeCode, version, instance) 
+            : base(_reader, size, typeCode, version, instance)
         {
             this.bytes = this.Reader.ReadBytes((int)this.BodySize);
         }
- */
-
-
-        public ClientData(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
-            : base(_reader, size, typeCode, version, instance) { }
     }
-
 }
