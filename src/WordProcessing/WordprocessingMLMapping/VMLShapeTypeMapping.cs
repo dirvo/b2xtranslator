@@ -86,10 +86,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 {
                     _writer.WriteStartElement("v", "h", OpenXmlNamespaces.VectorML);
 
-                    if(handle.Position != null)
-                        _writer.WriteAttributeString("position", handle.Position);
-                    if (handle.XRange != null)
-                        _writer.WriteAttributeString("xrange", handle.XRange);
+                    if(handle.position != null)
+                        _writer.WriteAttributeString("position", handle.position);
+                    if (handle.xrange != null)
+                        _writer.WriteAttributeString("xrange", handle.xrange);
 
                     _writer.WriteEndElement();
                 }

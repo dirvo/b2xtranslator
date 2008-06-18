@@ -26,7 +26,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
             this.TextboxRectangle = "0,10800,10800,18000;5400,10800,16200,18000;10800,10800,21600,18000;0,7200,7200,21600;7200,7200,14400,21600;14400,7200,21600,21600";
 
             this.Handles = new List<Handle>();
-            this.Handles.Add(new Handle("#0,topLeft", "0,21600"));
+            Handle HandleOne = new Handle();
+            HandleOne.position = "#0,topLeft";
+            HandleOne.xrange="0,21600";
+            this.Handles.Add(HandleOne);
         }
     }
 }

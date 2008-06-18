@@ -33,7 +33,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
             this.TextboxRectangle = "1800,1800,19800,19800;4500,4500,17100,17100;7200,7200,14400,14400";
 
             this.Handles = new List<Handle>();
-            this.Handles.Add(new Handle("#0,bottomRight", "0,10800"));
+            Handle HandleOne = new Handle();
+            HandleOne.position = "#0,bottomRight";
+            HandleOne.xrange = "0,10800";
+            this.Handles.Add(HandleOne);
 
         }
 

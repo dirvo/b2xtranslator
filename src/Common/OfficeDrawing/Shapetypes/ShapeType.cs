@@ -14,16 +14,27 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
             round,
             bevel
         }
-
-        public struct Handle
+        //inner Class
+        public class Handle
         {
+
+            public Handle()
+            { }
+
+            
+            [Obsolete("Use default constuctor")]
             public Handle(string pos, string xRange) 
             {
-                this.Position = pos;
-                this.XRange = xRange;
+                this.position = pos;
+                this.xrange = xRange;
             }
-            public string Position;
-            public string XRange;
+  
+            
+            public string position = null;
+            public string xrange = null;
+            public bool switchHandle = false;
+            public string yrange = null;
+
         }
 
         /// <summary>
@@ -88,6 +99,16 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
         /// </summary>
         public JoinStyle Joins;
 
+        /// <summary>
+        /// Specifies the (x,y) coordinates of the limo stretch point.<br/>
+        /// Some shapes that have portions that should be constrained to a fixed aspect ratio, are designed with limo-stretch to keep those portions at the fixed aspect ratio.<br/>
+        /// </summary>
+        public String Limo;
+     
+        /// <summary>
+        /// Associated with each connection site, there is a direction which specifies at what angle elbow and curved connectors should attach to it<br/>
+        /// </summary>
+        public String ConnectorAngles;
 
         public UInt32 TypeCode
         {
