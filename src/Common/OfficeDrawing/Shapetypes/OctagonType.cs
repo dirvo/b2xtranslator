@@ -9,6 +9,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
     {
         public OctagonType()
         {
+            this.ShapeConcentricFill = true;
+
+            this.Joins = JoinStyle.miter;
+
             this.Path = "m@0,l0@0,0@2@0,21600@1,21600,21600@2,21600@0@1,xe";
 
             this.Formulas = new List<string>();

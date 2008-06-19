@@ -9,6 +9,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
     {
         public TrapezoidType()
         {
+            this.ShapeConcentricFill = true;
+
+            this.Joins = JoinStyle.miter;
+
             this.Path = "m,l@0,21600@1,21600,21600,xe";
 
             this.Formulas = new List<string>();

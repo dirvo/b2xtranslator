@@ -10,6 +10,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
         public IsoscelesTriangleType()
         {
             this.ShapeConcentricFill = true;
+
+            this.Joins = JoinStyle.miter;
+
+            this.ShapeConcentricFill = true;
             this.Joins = JoinStyle.miter;
 
             this.Path = "m@0,l,21600r21600,xe";

@@ -47,6 +47,7 @@
     <Compile Include="GroupShapeRecord.cs" />
     <Compile Include="Shapetypes\BevelType.cs" />
     <Compile Include="Shapetypes\CanType.cs" />
+    <Compile Include="Shapetypes\CloudCalloutType.cs" />
     <Compile Include="Shapetypes\CubeType.cs" />
     <Compile Include="Shapetypes\DownArrowType.cs" />
     <Compile Include="Shapetypes\FlowChartAlternateProcessType.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="RegularContainer.cs" />
     <Compile Include="Shapetypes\RightArrowType.cs" />
     <Compile Include="Shapetypes\RightTriangleType.cs" />
+    <Compile Include="Shapetypes\RoundedRectangleType.cs" />
     <Compile Include="Shapetypes\SmileyFaceType.cs" />
     <Compile Include="Shapetypes\TrapezoidType.cs" />
     <Compile Include="Shapetypes\UpArrowType.cs" />

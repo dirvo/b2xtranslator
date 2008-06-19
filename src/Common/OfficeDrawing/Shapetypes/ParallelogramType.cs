@@ -9,6 +9,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
     {
         public ParallelogramType()
         {
+            this.ShapeConcentricFill = true;
+
+            this.Joins = JoinStyle.miter;
+
             this.Path = "m@0,l,21600@1,21600,21600,xe";
 
             this.Formulas = new List<string>();

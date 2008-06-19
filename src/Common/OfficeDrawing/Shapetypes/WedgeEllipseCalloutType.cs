@@ -9,6 +9,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
     {
         public WedgeEllipseCalloutType()
         {
+            this.ShapeConcentricFill = false;
+
+            this.Joins = JoinStyle.miter;
+
             this.Path = "wr,,21600,21600@15@16@17@18l@21@22xe";
 
             this.Formulas = new List<string>();

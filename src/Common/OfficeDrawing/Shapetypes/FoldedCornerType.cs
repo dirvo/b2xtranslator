@@ -9,6 +9,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
     {
         public FoldedCornerType()
         {
+            this.ShapeConcentricFill = false;
+
+            this.Joins = JoinStyle.miter;
+
             this.Path = "m,l,21600@0,21600,21600@0,21600,xem@0,21600nfl@3@5c@7@9@11@13,21600@0e";
 
             this.Formulas = new List<string>();

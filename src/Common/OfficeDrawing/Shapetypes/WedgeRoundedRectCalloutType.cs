@@ -9,6 +9,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
     {
         public WedgeRoundedRectCalloutType()
         {
+            this.ShapeConcentricFill = false;
+
+            this.Joins = JoinStyle.miter;
+
             this.Path = "m3600,qx,3600l0@8@12@24,0@9,,18000qy3600,21600l@6,21600@15@27@7,21600,18000,21600qx21600,18000l21600@9@18@30,21600@8,21600,3600qy18000,l@7,0@21@33@6,xe";
 
             this.Formulas = new List<string>();

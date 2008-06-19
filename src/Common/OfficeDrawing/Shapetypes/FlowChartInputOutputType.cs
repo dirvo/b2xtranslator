@@ -9,6 +9,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
     {
         public FlowChartInputOutputType()
         {
+            this.ShapeConcentricFill = true;
+
+            this.Joins = JoinStyle.miter;
+
             this.Path = "m4321,l21600,,17204,21600,,21600xe";
 
             this.ConnectorLocations = "2961,0;10800,0;2161,10800;8602,21600;10800,21600;19402,10800";

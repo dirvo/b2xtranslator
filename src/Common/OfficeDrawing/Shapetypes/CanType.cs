@@ -9,6 +9,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
     {
         public CanType()
         {
+            this.ShapeConcentricFill = true;
+
+            this.Joins = JoinStyle.round;
+
             this.Path = "m10800,qx0@1l0@2qy10800,21600,21600@2l21600@1qy10800,xem0@1qy10800@0,21600@1nfe";
 
             this.Formulas = new List<string>();
