@@ -1,0 +1,21 @@
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
+{
+    [OfficeShapeTypeAttribute(112)]
+    public class FlowChartPredefinedProcessType :ShapeType
+    {
+        public FlowChartPredefinedProcessType()
+        {
+            this.Path = "m,l,21600r21600,l21600,xem2610,nfl2610,21600em18990,nfl18990,21600e";
+
+            this.ConnectorLocations = "Rectangle";
+
+            this.TextboxRectangle = "2610,0,18990,21600";
+
+        }
+    }
+}
