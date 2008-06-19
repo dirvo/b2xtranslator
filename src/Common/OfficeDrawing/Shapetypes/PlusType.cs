@@ -32,7 +32,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
             this.Handles = new List<Handle>();
             Handle HandleOne = new Handle();
             HandleOne.position = "#0,topLeft";
-            HandleOne.switchHandle = true;
+            HandleOne.switchHandle = "true";
             HandleOne.xrange = "0,10800";
             this.Handles.Add(HandleOne);
 

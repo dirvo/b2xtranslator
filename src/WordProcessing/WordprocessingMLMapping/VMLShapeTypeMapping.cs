@@ -65,6 +65,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 _writer.WriteAttributeString("gradientshapeok", "t");
             }
+            if (shapeType.Limo != null)
+            {
+                _writer.WriteAttributeString("limo", shapeType.Limo);
+            }
             if (shapeType.ConnectorLocations != null)
             {
                 _writer.WriteAttributeString("o", "connecttype", OpenXmlNamespaces.Office, "custom");
@@ -88,9 +92,17 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     if(handle.position != null)
                         _writer.WriteAttributeString("position", handle.position);
+                    
+                    if (handle.switchHandle != null)
+                        _writer.WriteAttributeString("switch", handle.switchHandle);
+                    
                     if (handle.xrange != null)
                         _writer.WriteAttributeString("xrange", handle.xrange);
 
+                    if (handle.yrange != null)
+                        _writer.WriteAttributeString("yrange", handle.yrange);
+
+                    
                     _writer.WriteEndElement();
                 }
 

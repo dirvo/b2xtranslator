@@ -31,8 +31,9 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
             this.Handles = new List<Handle>();
             Handle HandleOne = new Handle();
             HandleOne.position="topLeft,#0";
-            HandleOne.switchHandle = true;
+            HandleOne.switchHandle = "true";
             HandleOne.yrange = "0,21600";
+            this.Handles.Add(HandleOne);
 
             this.Limo = "10800,10800";
         }

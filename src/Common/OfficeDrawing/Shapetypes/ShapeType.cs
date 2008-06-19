@@ -32,7 +32,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
             
             public string position = null;
             public string xrange = null;
-            public bool switchHandle = false;
+            public string switchHandle = null;
             public string yrange = null;
 
         }
