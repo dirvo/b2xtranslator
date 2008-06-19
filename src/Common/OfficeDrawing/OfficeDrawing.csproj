@@ -46,6 +46,8 @@
     <Compile Include="GroupContainer.cs" />
     <Compile Include="GroupShapeRecord.cs" />
     <Compile Include="Shapetypes\BevelType.cs" />
+    <Compile Include="Shapetypes\BracePairType.cs" />
+    <Compile Include="Shapetypes\BracketPairType.cs" />
     <Compile Include="Shapetypes\CanType.cs" />
     <Compile Include="Shapetypes\CloudCalloutType.cs" />
     <Compile Include="Shapetypes\CubeType.cs" />
@@ -64,7 +66,11 @@
     <Compile Include="Shapetypes\FlowChartProcessType.cs" />
     <Compile Include="Shapetypes\FlowChartTerminatorType.cs" />
     <Compile Include="Shapetypes\FoldedCornerType.cs" />
+    <Compile Include="Shapetypes\IrregularSealOneType.cs" />
+    <Compile Include="Shapetypes\IrregularSealTwo.cs" />
     <Compile Include="Shapetypes\LeftArrowType.cs" />
+    <Compile Include="Shapetypes\LeftBraceType.cs" />
+    <Compile Include="Shapetypes\LeftBracketType.cs" />
     <Compile Include="Shapetypes\LeftRightArrowType.cs" />
     <Compile Include="Shapetypes\PentagonType.cs" />
     <Compile Include="Shapetypes\PlusType.cs" />
@@ -82,10 +88,15 @@
     <Compile Include="Record.cs" />
     <Compile Include="Shapetypes\RectangleType.cs" />
     <Compile Include="RegularContainer.cs" />
+    <Compile Include="Shapetypes\RibbonDownType.cs" />
+    <Compile Include="Shapetypes\RibbonUpType.cs" />
     <Compile Include="Shapetypes\RightArrowType.cs" />
+    <Compile Include="Shapetypes\RightBracetype.cs" />
+    <Compile Include="Shapetypes\RightBracketType.cs" />
     <Compile Include="Shapetypes\RightTriangleType.cs" />
     <Compile Include="Shapetypes\RoundedRectangleType.cs" />
     <Compile Include="Shapetypes\SmileyFaceType.cs" />
+    <Compile Include="Shapetypes\Startype.cs" />
     <Compile Include="Shapetypes\TrapezoidType.cs" />
     <Compile Include="Shapetypes\UpArrowType.cs" />
     <Compile Include="Shapetypes\UpDownArrowType.cs" />
