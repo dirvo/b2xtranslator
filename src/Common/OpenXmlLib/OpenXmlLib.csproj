@@ -63,11 +63,13 @@
     <Compile Include="OpenXmlWriter.cs" />
     <Compile Include="PresentationML\PresentationDocument.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SpreadsheetML\SpreadsheetDocument.cs" />
     <Compile Include="WordprocessingML\NumberingDefinitionsPart.cs" />
     <Compile Include="WordprocessingML\SettingsPart.cs" />
     <Compile Include="WordprocessingML\StyleDefinitionsPart.cs" />
     <Compile Include="ThemePart.cs" />
     <Compile Include="WordprocessingML\WordprocessingDocument.cs" />
+    <Compile Include="SpreadsheetML\WorkbookPart.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagramOpenXmlLib.cd" />

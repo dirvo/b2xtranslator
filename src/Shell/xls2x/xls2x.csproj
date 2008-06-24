@@ -62,7 +62,7 @@
       <Project>{05A5C68E-B901-4AD0-87F1-5E43DDC759CE}</Project>
       <Name>ZipUtils</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Spreadsheet\ExcelprocessingMLMapping\SpreadsheetMLMapping.csproj">
+    <ProjectReference Include="..\..\Spreadsheet\SpreadsheetMLMapping\SpreadsheetMLMapping.csproj">
       <Project>{7085D1EB-E797-4841-A564-68EF63688A24}</Project>
       <Name>SpreadsheetMLMapping</Name>
     </ProjectReference>
@@ -77,10 +77,6 @@
     <ProjectReference Include="..\..\Test\OpenXmlLibTest\OpenXmlLibTest.csproj">
       <Project>{1855519D-6C8C-44B2-B197-DB40DD648FB6}</Project>
       <Name>OpenXmlLibTest</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Test\XlsFileFormatTest\XlsFileFormatTest.csproj">
-      <Project>{82DEFD59-6B96-4372-B66C-15069A4BAB4B}</Project>
-      <Name>XlsFileFormatTest</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
