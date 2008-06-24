@@ -160,9 +160,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 Int16 val = System.BitConverter.ToInt16(bytes, 6);
                 this.dptSpace = val & 0x001F;
 
-                //possibly wrong:
-                this.fShadow = Utils.BitmaskToBool(val, 0x00200000);
-                this.fFrame = Utils.BitmaskToBool(val, 0x00400000);
+                //not sure if this is correct, the values from the spec are definitly wrong:
+                this.fShadow = Utils.BitmaskToBool(val, 0x20);
+                this.fFrame = Utils.BitmaskToBool(val, 0x40);
             }
             else if (bytes.Length == 4)
             {

@@ -173,6 +173,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 XmlAttribute sz = _nodeFactory.CreateAttribute("w", "sz", OpenXmlNamespaces.WordprocessingML);
                 sz.Value = brc.dptLineWidth.ToString();
                 border.Attributes.Append(sz);
+
+                if (brc.fShadow)
+                {
+                    XmlAttribute shadow = _nodeFactory.CreateAttribute("w", "shadow", OpenXmlNamespaces.WordprocessingML);
+                    shadow.Value = "1";
+                    border.Attributes.Append(shadow);
+                }
             }
         }
 
