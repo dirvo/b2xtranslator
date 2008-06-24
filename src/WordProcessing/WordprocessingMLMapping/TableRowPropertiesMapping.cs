@@ -5,6 +5,7 @@ using DIaLOGIKa.b2xtranslator.DocFileFormat;
 using System.Xml;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
@@ -34,10 +35,20 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             foreach (SinglePropertyModifier sprm in tapx.grpprl)
             {
-                switch ((int)sprm.OpCode)  
+                switch (sprm.OpCode)  
                 {
+                    //header row
+                    case SinglePropertyModifier.OperationCode.sprmTTableHeader:
+                        bool fHeader = Utils.ByteToBool(sprm.Arguments[0]);
+                        if(fHeader)
+                        {
+                            XmlElement header = _nodeFactory.CreateElement("w", "tblHeader", OpenXmlNamespaces.WordprocessingML);
+                            _trPr.AppendChild(header);
+                        }
+                        break;
+
                     //width after
-                    case 0xF618:
+                    case SinglePropertyModifier.OperationCode.sprmTWidthAfter:
                         XmlElement wAfter = _nodeFactory.CreateElement("w", "wAfter", OpenXmlNamespaces.WordprocessingML);
                         XmlAttribute wAfterValue = _nodeFactory.CreateAttribute("w", "w", OpenXmlNamespaces.WordprocessingML);
                         wAfterValue.Value = System.BitConverter.ToInt16(sprm.Arguments, 1).ToString();
@@ -49,7 +60,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         break;
 
                     //width before
-                    case 0xF617:
+                    case SinglePropertyModifier.OperationCode.sprmTWidthBefore:
                         Int16 before = System.BitConverter.ToInt16(sprm.Arguments, 1);
                         if (before != 0)
                         {
@@ -64,11 +75,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         }
                         break;
 
-                    case 0x9602:
-                        break;
-
                     //row height
-                    case 0x9407:
+                    case SinglePropertyModifier.OperationCode.sprmTDyaRowHeight:
                         XmlElement rowHeight = _nodeFactory.CreateElement("w", "trHeight", OpenXmlNamespaces.WordprocessingML);
                         XmlAttribute rowHeightVal = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
                         XmlAttribute rowHeightRule = _nodeFactory.CreateAttribute("w", "hRule", OpenXmlNamespaces.WordprocessingML);
@@ -89,17 +97,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         break;
 
                     //can't split
-                    case 0x3403:
+                    case SinglePropertyModifier.OperationCode.sprmTFCantSplit:
+                    case SinglePropertyModifier.OperationCode.sprmTFCantSplit90:
                         appendFlagElement(_trPr, sprm, "cantSplit", true);
                         break;
 
-                    //conditional formatting
-                    case 0xD66A:
-                        ;
-                        break;
-
                     //div id
-                    case 0x7469:
+                    case SinglePropertyModifier.OperationCode.sprmTIpgp:
                         appendValueElement(_trPr, "divId", System.BitConverter.ToInt32(sprm.Arguments, 0).ToString(), true);
                         break;
                 }
