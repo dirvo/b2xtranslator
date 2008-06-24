@@ -67,6 +67,10 @@
       <Project>{6EAD0A6A-8DF0-4CA3-8D5E-3C871E7FCB62}</Project>
       <Name>PptFileFormat</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Presentation\PresentationMLMapping\PresentationMLMapping.csproj">
+      <Project>{1D168A80-B748-4321-AED6-E03D557B5864}</Project>
+      <Name>PresentationMLMapping</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="ppt2x.ico" />
