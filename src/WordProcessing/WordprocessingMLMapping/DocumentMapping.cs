@@ -148,7 +148,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             //convert the properties
             Int32 fcRowEnd = findRowEndFc(cp);
-            TablePropertyExceptions tapx = new TablePropertyExceptions(findValidPapx(fcRowEnd), _doc.DataStream);
+            ParagraphPropertyExceptions rowEndPapx = findValidPapx(fcRowEnd);
+            TablePropertyExceptions tapx = new TablePropertyExceptions(rowEndPapx, _doc.DataStream);
             List<CharacterPropertyExceptions> chpxs = _doc.GetCharacterPropertyExceptions(fcRowEnd, fcRowEnd + 1);
 
             tapx.Convert(new TableRowPropertiesMapping(_writer, chpxs[0]));

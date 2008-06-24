@@ -124,7 +124,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //style id 
                     case 0x4A30:
                         _currentIstd = System.BitConverter.ToUInt16(sprm.Arguments, 0);
-                        appendValueElement(parent, "rStyle", StyleSheetMapping.MakeStyleId(_doc.Styles.Styles[_currentIstd].xstzName), true);
+                        appendValueElement(parent, "rStyle", StyleSheetMapping.MakeStyleId(_doc.Styles.Styles[_currentIstd]), true);
                         break;
                     
                     //Element flags

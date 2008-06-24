@@ -67,18 +67,25 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     _writer.WriteStartElement("w", "style", OpenXmlNamespaces.WordprocessingML);
 
                     _writer.WriteAttributeString("w", "type", OpenXmlNamespaces.WordprocessingML, style.stk.ToString());
-                    _writer.WriteAttributeString("w", "styleId", OpenXmlNamespaces.WordprocessingML, MakeStyleId(style.xstzName));
+
+                    if (style.sti != StyleSheetDescription.StyleIdentifier.Null && style.sti != StyleSheetDescription.StyleIdentifier.User)
+                    {
+                        //it's a default style
+                        _writer.WriteAttributeString("w", "default", OpenXmlNamespaces.WordprocessingML, "1");
+                    }
+
+                    _writer.WriteAttributeString("w", "styleId", OpenXmlNamespaces.WordprocessingML, MakeStyleId(style));
                     
                     // <w:name val="" />
                     _writer.WriteStartElement("w", "name", OpenXmlNamespaces.WordprocessingML);
-                    _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, style.xstzName);
+                    _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, getStyleName(style));
                     _writer.WriteEndElement();
 
                     // <w:basedOn val="" />
                     if (style.istdBase != 4095 && style.istdBase < sheet.Styles.Count)
                     {
                         _writer.WriteStartElement("w", "basedOn", OpenXmlNamespaces.WordprocessingML);
-                        _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, MakeStyleId(sheet.Styles[(int)style.istdBase].xstzName));
+                        _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, MakeStyleId(sheet.Styles[(int)style.istdBase]));
                         _writer.WriteEndElement();
                     }
 
@@ -86,7 +93,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     if (style.istdNext < sheet.Styles.Count)
                     {
                         _writer.WriteStartElement("w", "next", OpenXmlNamespaces.WordprocessingML);
-                        _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, MakeStyleId(sheet.Styles[(int)style.istdNext].xstzName));
+                        _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, MakeStyleId(sheet.Styles[(int)style.istdNext]));
                         _writer.WriteEndElement();
                     }
 
@@ -94,7 +101,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     if (style.istdLink < sheet.Styles.Count)
                     {
                         _writer.WriteStartElement("w", "link", OpenXmlNamespaces.WordprocessingML);
-                        _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, MakeStyleId(sheet.Styles[(int)style.istdLink].xstzName));
+                        _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, MakeStyleId(sheet.Styles[(int)style.istdLink]));
                         _writer.WriteEndElement();
                     }
 
@@ -174,19 +181,50 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         }
 
         /// <summary>
-        /// Generates a style id
+        /// Generates a style id for custom style names or returns the build-in identifier for build-in styles.
         /// </summary>
-        /// <param name="stylename">the name of the style</param>
+        /// <param name="std">The StyleSheetDescription</param>
         /// <returns></returns>
-        public static string MakeStyleId(string stylename)
+        public static string MakeStyleId(StyleSheetDescription std)
         {
-            string ret = stylename;
-            ret = ret.Replace(" ", "");
-            ret = ret.Replace("(", "");
-            ret = ret.Replace(")", "");
-            ret = ret.Replace("'", "");
-            ret = ret.Replace("\"", "");
-            return ret;
+            if (std.sti != StyleSheetDescription.StyleIdentifier.User &&
+                std.sti != StyleSheetDescription.StyleIdentifier.Null)
+            {
+                //use the identifier
+                return std.sti.ToString();
+            }
+            else
+            {
+                //if no identifier is set, use the name
+                string ret = std.xstzName;
+                ret = ret.Replace(" ", "");
+                ret = ret.Replace("(", "");
+                ret = ret.Replace(")", "");
+                ret = ret.Replace("'", "");
+                ret = ret.Replace("\"", "");
+                return ret;
+            }
+        }
+
+        /// <summary>
+        /// Chooses the correct style name.
+        /// Word 2007 needs the identifier instead of the stylename for translating it into the UI language.
+        /// </summary>
+        /// <param name="std">The StyleSheetDescription</param>
+        /// <returns></returns>
+        private string getStyleName(StyleSheetDescription std)
+        {
+            if (std.sti != StyleSheetDescription.StyleIdentifier.User &&
+                std.sti != StyleSheetDescription.StyleIdentifier.Null)
+            {
+                //use the identifier
+                return std.sti.ToString();
+            }
+            else
+            {
+                //if no identifier is set, use the name
+                return std.xstzName;
+            }
         }
     }
 }

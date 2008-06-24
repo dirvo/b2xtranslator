@@ -115,7 +115,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     if(styleIndex != ListData.ISTD_NIL)
                     {
                         _writer.WriteStartElement("w", "pStyle", OpenXmlNamespaces.WordprocessingML);
-                        _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, StyleSheetMapping.MakeStyleId(_ctx.Doc.Styles.Styles[styleIndex].xstzName));
+                        _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, StyleSheetMapping.MakeStyleId(_ctx.Doc.Styles.Styles[styleIndex]));
                         _writer.WriteEndElement();
                     }
 
