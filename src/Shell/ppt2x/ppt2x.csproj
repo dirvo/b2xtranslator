@@ -63,10 +63,6 @@
       <Project>{05A5C68E-B901-4AD0-87F1-5E43DDC759CE}</Project>
       <Name>ZipUtils</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\PresentationMLMapping\PresentationMLMapping.csproj">
-      <Project>{1D168A80-B748-4321-AED6-E03D557B5864}</Project>
-      <Name>PresentationMLMapping</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Presentation\PptFileFormat\PptFileFormat.csproj">
       <Project>{6EAD0A6A-8DF0-4CA3-8D5E-3C871E7FCB62}</Project>
       <Name>PptFileFormat</Name>

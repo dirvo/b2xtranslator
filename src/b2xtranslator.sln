@@ -145,7 +145,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeDrawing", "Common\Off
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationMLMapping", "PresentationMLMapping\PresentationMLMapping.csproj", "{1D168A80-B748-4321-AED6-E03D557B5864}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationMLMapping", "Presentation\PresentationMLMapping\PresentationMLMapping.csproj", "{1D168A80-B748-4321-AED6-E03D557B5864}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
