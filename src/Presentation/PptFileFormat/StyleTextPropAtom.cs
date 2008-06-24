@@ -37,14 +37,14 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
     [OfficeRecordAttribute(4001)]
     public class StyleTextPropAtom : Record
     {
-        public List<ParagraphRun> pruns;
-        public List<CharacterRun> cruns;
+        public List<ParagraphRun> PRuns;
+        public List<CharacterRun> CRuns;
 
         public StyleTextPropAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {
-            this.pruns = new List<ParagraphRun>();
-            this.cruns = new List<CharacterRun>();
+            this.PRuns = new List<ParagraphRun>();
+            this.CRuns = new List<CharacterRun>();
         }
 
         override public void AfterParentSet()
@@ -72,7 +72,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
                 ParagraphRun run = new ParagraphRun(this.Reader, false);
                 run.Length = length;
-                this.pruns.Add(run);
+                this.PRuns.Add(run);
 
                 seenLength += length;
             }
@@ -84,7 +84,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
                 CharacterRun run = new CharacterRun(this.Reader);
                 run.Length = length;
-                this.cruns.Add(run);
+                this.CRuns.Add(run);
 
                 seenLength += length;
             }
@@ -99,11 +99,11 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             string indent = IndentationForDepth(depth);
 
             sb.AppendFormat("\n{0}Paragraph Runs:", indent);
-            foreach (ParagraphRun pr in this.pruns)
+            foreach (ParagraphRun pr in this.PRuns)
                 sb.AppendFormat("\n{0}", pr.ToString(depth + 1));
 
             sb.AppendFormat("\n{0}Character Runs:", indent);
-            foreach (CharacterRun cr in this.cruns)
+            foreach (CharacterRun cr in this.CRuns)
                 sb.AppendFormat("\n{0}", cr.ToString(depth + 1));
 
             return sb.ToString();

@@ -36,6 +36,13 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
     [OfficeRecordAttribute(4080)]
     public class SlideListWithText : RegularContainer
     {
+        public enum Instances
+        {
+            CollectionOfSlides = 0,
+            CollectionOfMasterSlides = 1,
+            CollectionOfNotesSlides = 2
+        };
+
         public SlideListWithText(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance) { }
     }

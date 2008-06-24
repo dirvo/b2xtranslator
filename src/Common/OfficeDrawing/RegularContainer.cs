@@ -44,10 +44,11 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             : base(_reader, size, typeCode, version, instance)
         {
             uint readSize = 0;
+            uint idx = 0;
 
             while (readSize < this.BodySize)
             {
-                Record child = Record.readRecord(this.Reader);
+                Record child = Record.ReadRecord(this.Reader, idx);
 
                 this.Children.Add(child);
                 child.ParentRecord = this;
@@ -55,6 +56,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
                 child.VerifyReadToEnd();
 
                 readSize += child.TotalSize;
+                idx++;
             }
         }
 

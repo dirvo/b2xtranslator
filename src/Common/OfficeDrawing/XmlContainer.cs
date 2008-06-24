@@ -36,13 +36,10 @@ using System.Xml;
 namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 {
     /// <summary>
-    /// Regular containers are containers with Record children.<br/>
-    /// (There also is containers that only have a zipped XML payload.
+    /// XML containers are containers with a zipped XML payload.
     /// </summary>
-    public class XmlContainer : Record
+    public class XmlContainer : XmlRecord
     {
-        public XmlElement XmlDocumentElement;
-
         public XmlContainer(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {
@@ -69,23 +66,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
                 }
 
                 ZipReader zipReader = ZipFactory.OpenArchive(tempPath);
-                Stream relStream = zipReader.GetEntry("_rels/.rels");
-
-                XmlDocument relDocument = new XmlDocument();
-                relDocument.Load(relStream);
-
-                XmlNodeList rels = relDocument["Relationships"].GetElementsByTagName("Relationship");
-
-                if (rels.Count != 1)
-                    throw new Exception("Expected actly one Relationship in XmlContainer OOXML doc");
-
-                string partPath = rels[0].Attributes["Target"].Value;
-                Stream partStream = zipReader.GetEntry(partPath);
-
-                XmlDocument partDoc = new XmlDocument();
-                partDoc.Load(partStream);
-
-                this.XmlDocumentElement = partDoc.DocumentElement;
+                this.XmlDocumentElement = ExtractDocumentElement(zipReader, GetRelations(zipReader, ""));
             }
             finally
             {
@@ -95,6 +76,70 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
                 }
                 catch (IOException) { /* OK */ }
             }
+        }
+
+        /// <summary>
+        /// Get the relations for the specified part.
+        /// </summary>
+        /// <param name="zipReader">ZipReader for reading from the OOXML package</param>
+        /// <param name="forPartPath">Part for which to get relations</param>
+        /// <returns>List of Relationship nodes belonging to forFile</returns>
+        protected static XmlNodeList GetRelations(ZipReader zipReader, String forPartPath)
+        {
+            string relPath = GetRelationPath(forPartPath);
+            Stream relStream = zipReader.GetEntry(relPath);
+
+            XmlDocument relDocument = new XmlDocument();
+            relDocument.Load(relStream);
+
+            XmlNodeList rels = relDocument["Relationships"].GetElementsByTagName("Relationship");
+            return rels;
+        }
+
+        /// <summary>
+        /// Get the relation path for the specified part.
+        /// </summary>
+        /// <param name="forPartPath">Part for which to get relations</param>
+        /// <returns>Relation path</returns>
+        protected static string GetRelationPath(String forPartPath)
+        {
+            String directoryPath = "";
+            String filePath = "";
+
+            if (forPartPath.Length > 0)
+            {
+                directoryPath = Path.GetDirectoryName(forPartPath).Replace("\\", "/") + "/";
+                filePath = Path.GetFileName(forPartPath);
+            }
+
+            string relPath = String.Format("{0}_rels/{1}.rels", directoryPath, filePath);
+            return relPath;
+        }
+
+        /// <summary>
+        /// Method that extracts the actual XmlElement that will be used as this XmlContainer's
+        /// XmlDocumentElement based on the relations and a ZipReader for the OOXML package.
+        /// 
+        /// The default implementation simply returns the root of the first referenced part if
+        /// there is only one part.
+        /// 
+        /// Override this in subclasses to implement behaviour for more complex cases.
+        /// </summary>
+        /// <param name="zipReader">ZipReader for reading from the OOXML package</param>
+        /// <param name="rels">List of Relationship nodes belonging to root part</param>
+        /// <returns>The XmlElement that will become this record's XmlDocumentElement</returns>
+        protected virtual XmlElement ExtractDocumentElement(ZipReader zipReader, XmlNodeList rels)
+        {
+            if (rels.Count != 1)
+                throw new Exception("Expected actly one Relationship in XmlContainer OOXML doc");
+
+            string partPath = rels[0].Attributes["Target"].Value;
+            Stream partStream = zipReader.GetEntry(partPath);
+
+            XmlDocument partDoc = new XmlDocument();
+            partDoc.Load(partStream);
+
+            return partDoc.DocumentElement;
         }
     }
 }

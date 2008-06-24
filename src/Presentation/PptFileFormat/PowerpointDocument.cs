@@ -52,9 +52,12 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         {
             this.PowerpointDocumentStream = file.GetStream("PowerPoint Document");
 
+            uint idx = 0;
+
             while (this.PowerpointDocumentStream.Position != this.PowerpointDocumentStream.Length)
             {
-                this.RootRecords.Add(Record.readRecord(this.PowerpointDocumentStream));
+                this.RootRecords.Add(Record.ReadRecord(this.PowerpointDocumentStream, idx));
+                idx++;
             }
         }
 

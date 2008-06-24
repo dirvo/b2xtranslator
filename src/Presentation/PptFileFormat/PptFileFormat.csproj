@@ -58,6 +58,7 @@
     <Compile Include="CharacterRun.cs" />
     <Compile Include="ClientData.cs" />
     <Compile Include="ClientTextbox.cs" />
+    <Compile Include="ColorMappingAtom.cs" />
     <Compile Include="CStringAtom.cs" />
     <Compile Include="DocumentAtom.cs" />
     <Compile Include="EndDocument.cs" />
@@ -84,12 +85,14 @@
     <Compile Include="Slide.cs" />
     <Compile Include="SlideAtom.cs" />
     <Compile Include="SlideListWithText.cs" />
+    <Compile Include="SlidePersistAtom.cs" />
     <Compile Include="SSlideLayoutAtom.cs" />
     <Compile Include="StyleTextPropAtom.cs" />
     <Compile Include="TextAtom.cs" />
     <Compile Include="TextBytesAtom.cs" />
     <Compile Include="TextCharsAtom.cs" />
     <Compile Include="TextHeaderAtom.cs" />
+    <Compile Include="Theme.cs" />
     <Compile Include="TxMasterStyleAtom.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -112,6 +115,10 @@
     <ProjectReference Include="..\..\Common\Tools\Tools.csproj">
       <Project>{B44FAEE0-B32E-4682-AA42-618C893F14C6}</Project>
       <Name>Tools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\ZipUtils\ZipUtils.csproj">
+      <Project>{05A5C68E-B901-4AD0-87F1-5E43DDC759CE}</Project>
+      <Name>ZipUtils</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

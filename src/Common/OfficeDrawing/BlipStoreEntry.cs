@@ -164,7 +164,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 
             if (this.BodySize > 0x24)
             {
-                this.Blip = Record.readRecord(this.Reader);
+                this.Blip = Record.ReadRecord(this.Reader, 0);
             }
         }
     }

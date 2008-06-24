@@ -66,6 +66,11 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 
         protected BinaryReader Reader;
 
+        /// <summary>
+        /// Index of sibling, 0 for first child in container, 1 for second child and so on...
+        /// </summary>
+        public uint SiblingIdx;
+
         public uint TypeCode;
         public uint Version;
         public uint Instance;
@@ -231,12 +236,12 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             }
         }
 
-        public static Record readRecord(Stream stream)
+        public static Record ReadRecord(Stream stream, uint siblingIdx)
         {
-            return readRecord(new BinaryReader(stream));
+            return ReadRecord(new BinaryReader(stream), siblingIdx);
         }
 
-        public static Record readRecord(BinaryReader reader)
+        public static Record ReadRecord(BinaryReader reader, uint siblingIdx)
         {
             UInt16 verAndInstance = reader.ReadUInt16();
             uint version = verAndInstance & 0x000FU;         // first 4 bit of field verAndInstance
@@ -279,6 +284,8 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             {
                 result = new UnknownRecord(reader, size, typeCode, version, instance);
             }
+
+            result.SiblingIdx = siblingIdx;
 
             return result;
         }

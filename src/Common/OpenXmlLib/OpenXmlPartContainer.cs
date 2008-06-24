@@ -42,7 +42,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 
         protected List<OpenXmlPart> _parts = new List<OpenXmlPart>();
         protected List<OpenXmlPart> _referencedParts = new List<OpenXmlPart>();
-        protected int _nextRelId = 1;
+        protected static int _nextRelId = 1;
 
         protected OpenXmlPartContainer _parent = null;
 
@@ -135,7 +135,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         }
 
         /// <summary>
-        /// Add a part reference without actually managing the part.
+        /// Add m a part reference without actually managing the part.
         /// </summary>
         public virtual T ReferencePart<T>(T part) where T : OpenXmlPart
         {

@@ -20,7 +20,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             {
                 int maxPosition = (int)(fib.fcDggInfo + fib.lcbDggInfo);
 
-                Record dggRec = Record.readRecord(reader);
+                Record dggRec = Record.ReadRecord(reader, 0);
                 this.drawingGroup = (DrawingGroup)dggRec;
                 this.drawings = new List<DrawingContainer>();
 
@@ -29,7 +29,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     //word writes an empty byte between the two record ...
                     //I don't know why ...
                     reader.ReadByte();
-                    this.drawings.Add((DrawingContainer)Record.readRecord(reader));
+                    this.drawings.Add((DrawingContainer)Record.ReadRecord(reader, 0));
                 }
             }
         }

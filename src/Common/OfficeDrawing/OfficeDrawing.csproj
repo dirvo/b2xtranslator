@@ -88,6 +88,21 @@
     <Compile Include="Record.cs" />
     <Compile Include="Shapetypes\RectangleType.cs" />
     <Compile Include="RegularContainer.cs" />
+    <Compile Include="XmlStringAtom.cs" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <Compile Include="Shapetypes\RibbonDownType.cs" />
     <Compile Include="Shapetypes\RibbonUpType.cs" />
     <Compile Include="Shapetypes\RightArrowType.cs" />
@@ -111,6 +126,7 @@
     <Compile Include="Shapetypes\StraightConnectorType.cs" />
     <Compile Include="Shapetypes\TextboxType.cs" />
     <Compile Include="UnknownRecord.cs" />
+    <Compile Include="XmlRecord.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CommonTranslatorLib\CommonTranslatorLib.csproj">

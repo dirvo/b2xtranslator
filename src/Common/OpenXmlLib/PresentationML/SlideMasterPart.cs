@@ -33,5 +33,10 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML
             this.SlideLayoutParts.Add(part);
             return this.AddPart(part);
         }
+
+        public ThemePart AddThemePart()
+        {
+            return this.AddPart(new ThemePart(this));
+        }
     }
 }

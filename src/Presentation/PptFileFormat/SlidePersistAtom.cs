@@ -30,65 +30,51 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
-    [OfficeRecordAttribute(1000)]
-    public class PptDocumentRecord : RegularContainer
+    [OfficeRecordAttribute(1011)]
+    public class SlidePersistAtom : Record
     {
         /// <summary>
-        /// Collection of SlidePersistAtoms for master slides.
+        /// logical reference to the slide persist object
         /// </summary>
-        private List<SlidePersistAtom> MasterPersistList = new List<SlidePersistAtom>();
+        public UInt32 PsrReference;
 
         /// <summary>
-        /// Collection of SlidePersistAtoms for notes slides.
+        /// Bit 1: Slide outline view is collapsed
+        /// Bit 2: Slide contains shapes other than placeholders
         /// </summary>
-        private List<SlidePersistAtom> NotesPersistList = new List<SlidePersistAtom>();
+        public UInt32 Flags;
 
         /// <summary>
-        /// Collection of SlidePersistAtoms for regular slides.
+        /// number of placeholder texts stored with the persist object.
+        /// Allows to display outline view without loading the slide persist objects
         /// </summary>
-        private List<SlidePersistAtom> SlidePersistList = new List<SlidePersistAtom>();
+        public Int32 NumberText;
 
-        public PptDocumentRecord(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+        /// <summary>
+        /// Unique slide identifier, used for OLE link monikers for example
+        /// </summary>
+        public Int32 SlideId;
+
+        public SlidePersistAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {
-            foreach (SlideListWithText collection in this.AllChildrenWithType<SlideListWithText>())
-            {
-                List<SlidePersistAtom> target = null;
-
-                switch ((SlideListWithText.Instances)collection.Instance)
-                {
-                    case SlideListWithText.Instances.CollectionOfMasterSlides:
-                        target = this.MasterPersistList;
-                        break;
-
-                    case SlideListWithText.Instances.CollectionOfNotesSlides:
-                        target = this.NotesPersistList;
-                        break;
-
-                    case SlideListWithText.Instances.CollectionOfSlides:
-                        target = this.SlidePersistList;
-                        break;
-                }
-
-                if (target != null)
-                {
-                    foreach (SlidePersistAtom atom in collection.AllChildrenWithType<SlidePersistAtom>())
-                        target.Add(atom);
-                }
-            }
+            this.PsrReference = this.Reader.ReadUInt32();
+            this.Flags = this.Reader.ReadUInt32();
+            this.NumberText = this.Reader.ReadInt32();
+            this.SlideId = this.Reader.ReadInt32();
+            this.Reader.ReadUInt32(); // Throw away reserved field
         }
 
-        public SlidePersistAtom SlidePersistAtomForSlideWithIdx(uint idx)
+        override public string ToString(uint depth)
         {
-            foreach (SlidePersistAtom atom in this.SlidePersistList)
-                // idx is zero-based, psr-reference is one-based
-                if (atom.PsrReference == idx + 1)
-                    return atom;
 
-            return null;
+            return String.Format("{0}\n{1}PsrRef = {2}\n{1}Flags = {3}, NumberText = {4}, SlideId = {5})",
+                base.ToString(depth), IndentationForDepth(depth + 1),
+                this.PsrReference, this.Flags, this.NumberText, this.SlideId);
         }
     }
 }
