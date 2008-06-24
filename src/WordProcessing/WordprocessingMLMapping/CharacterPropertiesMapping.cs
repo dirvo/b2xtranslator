@@ -61,6 +61,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _revisionData = rev;
             _currentPapx = currentPapx;
             _styleChpx = styleChpx;
+            _currentIstd = UInt16.MaxValue;
         }
 
         public CharacterPropertiesMapping(XmlElement rPr, WordDocument doc, RevisionData rev, ParagraphPropertyExceptions currentPapx, bool styleChpx)
@@ -72,11 +73,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _revisionData = rev;
             _currentPapx = currentPapx;
             _styleChpx = styleChpx;
+            _currentIstd = UInt16.MaxValue;
         }
 
         public void Apply(CharacterPropertyExceptions chpx)
         {
-
             //convert the normal SPRMS
             convertSprms(chpx.grpprl, _rPr);
 
@@ -116,9 +117,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             foreach (SinglePropertyModifier sprm in sprms)
             {
-                //no style is set at the moment
-                _currentIstd = UInt16.MaxValue;
-
                 switch ((int)sprm.OpCode)
                 {
                     //style id 
