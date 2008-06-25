@@ -95,7 +95,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// </summary>
         /// <param name="cp">The cp at where the table begins</param>
         /// <returns>The character pointer to the first character after this table</returns>
-        protected Int32 writeTable(Int32 initialCp)
+        protected Int32 writeTable(Int32 initialCp, UInt32 nestingLevel)
         {
             Int32 cp = initialCp;
             Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
@@ -103,10 +103,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             TableInfo tai = new TableInfo(papx);
 
             //build the table grid
-            List<Int16> grid = buildTableGrid(cp);
+            List<Int16> grid = buildTableGrid(cp, nestingLevel);
 
             //find first row end
-            Int32 fcRowEnd = findRowEndFc(cp);
+            Int32 fcRowEnd = findRowEndFc(cp, nestingLevel);
             TablePropertyExceptions row1Tapx = new TablePropertyExceptions(findValidPapx(fcRowEnd), _doc.DataStream);
 
             //start table
@@ -116,15 +116,31 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             row1Tapx.Convert(new TablePropertiesMapping(_writer, _doc.Styles, grid));
 
             //convert all rows
-            while (tai.fInTable)
+            if (nestingLevel > 1)
             {
-                cp = writeTableRow(cp, grid);
-
-                fc = _doc.PieceTable.FileCharacterPositions[cp];
-                papx = findValidPapx(fc);
-                tai = new TableInfo(papx);
+                //It's an inner table
+                //only convert the cells with the given nesting level
+                while (tai.iTap == nestingLevel)
+                {
+                    cp = writeTableRow(cp, grid, nestingLevel);
+                    fc = _doc.PieceTable.FileCharacterPositions[cp];
+                    papx = findValidPapx(fc);
+                    tai = new TableInfo(papx);
+                }
             }
-
+            else
+            {
+                //It's a outer table (nesting level 1)
+                //convert until the end of table is reached
+                while (tai.fInTable)
+                {
+                    cp = writeTableRow(cp, grid, nestingLevel);
+                    fc = _doc.PieceTable.FileCharacterPositions[cp];
+                    papx = findValidPapx(fc);
+                    tai = new TableInfo(papx);
+                }
+            }
+           
             //close w:tbl
             _writer.WriteEndElement();
 
@@ -136,36 +152,61 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// </summary>
         /// <param name="initialCp">The cp at where the row begins</param>
         /// <returns>The character pointer to the first character after this row</returns>
-        protected Int32 writeTableRow(Int32 initialCp, List<Int16> grid)
+        protected Int32 writeTableRow(Int32 initialCp, List<Int16> grid, UInt32 nestingLevel)
         {
             Int32 cp = initialCp;
             Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
             ParagraphPropertyExceptions papx = findValidPapx(fc);
-            TableInfo  tai = new TableInfo(papx);
+            TableInfo tai = new TableInfo(papx);
 
             //start w:tr
             _writer.WriteStartElement("w", "tr", OpenXmlNamespaces.WordprocessingML);
 
             //convert the properties
-            Int32 fcRowEnd = findRowEndFc(cp);
+            Int32 fcRowEnd = findRowEndFc(cp, nestingLevel);
             ParagraphPropertyExceptions rowEndPapx = findValidPapx(fcRowEnd);
             TablePropertyExceptions tapx = new TablePropertyExceptions(rowEndPapx, _doc.DataStream);
             List<CharacterPropertyExceptions> chpxs = _doc.GetCharacterPropertyExceptions(fcRowEnd, fcRowEnd + 1);
 
-            tapx.Convert(new TableRowPropertiesMapping(_writer, chpxs[0]));
+            if (tapx != null)
+            {
+                tapx.Convert(new TableRowPropertiesMapping(_writer, chpxs[0]));
+            }
 
             int gridIndex = 0;
             int cellIndex = 0;
-            while (!(_doc.Text[cp] == TextMark.CellOrRowMark && tai.fTtp) && tai.fInTable)
-            {
-                cp = writeTableCell(cp, tapx, grid, ref gridIndex, cellIndex);
-                cellIndex++;
 
-                //each cell has it's own PAPX
-                fc = _doc.PieceTable.FileCharacterPositions[cp];
-                papx = findValidPapx(fc);
-                tai = new TableInfo(papx);
+            if (nestingLevel > 1)
+            {
+                //It's an inner table.
+                //Write until the first "inner trailer paragraph" is reached
+                while (!(_doc.Text[cp] == TextMark.ParagraphEnd && tai.fInnerTtp) && tai.fInTable)
+                {
+                    cp = writeTableCell(cp, tapx, grid, ref gridIndex, cellIndex, nestingLevel);
+                    cellIndex++;
+
+                    //each cell has it's own PAPX
+                    fc = _doc.PieceTable.FileCharacterPositions[cp];
+                    papx = findValidPapx(fc);
+                    tai = new TableInfo(papx);
+                }
             }
+            else
+            {
+                //It's a outer table
+                //Write until the first "row end trailer paragraph" is reached
+                while (!(_doc.Text[cp] == TextMark.CellOrRowMark && tai.fTtp) && tai.fInTable)
+                {
+                    cp = writeTableCell(cp, tapx, grid, ref gridIndex, cellIndex, nestingLevel);
+                    cellIndex++;
+
+                    //each cell has it's own PAPX
+                    fc = _doc.PieceTable.FileCharacterPositions[cp];
+                    papx = findValidPapx(fc);
+                    tai = new TableInfo(papx);
+                }
+            }
+            
 
             //end w:tr
             _writer.WriteEndElement();
@@ -176,12 +217,77 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             return cp;
         }
 
+
+        /// <summary>
+        /// Writes the table cell that starts at the given cp value and ends at the next cell end mark
+        /// </summary>
+        /// <param name="initialCp">The cp at where the cell begins</param>
+        /// <param name="tapx">The TAPX that formats the row to which the cell belongs</param>
+        /// <param name="gridIndex">The index of this cell in the grid</param>
+        /// <param name="gridIndex">The grid</param>
+        /// <returns>The character pointer to the first character after this cell</returns>
+        protected Int32 writeTableCell(Int32 initialCp, TablePropertyExceptions tapx, List<Int16> grid, ref int gridIndex, int cellIndex, UInt32 nestingLevel)
+        {
+            Int32 cp = initialCp;
+
+            //start w:tc
+            _writer.WriteStartElement("w", "tc", OpenXmlNamespaces.WordprocessingML);
+
+            //find cell end
+            Int32 cpCellEnd = findCellEndCp(initialCp, nestingLevel);
+            
+            //convert the properties
+            TableCellPropertiesMapping mapping = new TableCellPropertiesMapping(_writer, grid, gridIndex, cellIndex);
+            if (tapx != null)
+            {
+                tapx.Convert(mapping);
+            }
+            gridIndex = gridIndex + mapping.GridSpan;
+            
+
+            //write the paragraphs of the cell
+            while (cp < cpCellEnd)
+            {
+                //cp = writeParagraph(cp);
+                Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
+                ParagraphPropertyExceptions papx = findValidPapx(fc);
+                TableInfo tai = new TableInfo(papx);
+
+                //cp = writeParagraph(cp);
+
+                if (tai.iTap > nestingLevel)
+                {
+                    //write the inner table if this is not a inner table (endless loop)
+                    cp = writeTable(cp, tai.iTap);
+
+                    //after a inner table must be at least one paragraph
+                    //if (cp >= cpCellEnd)
+                    //{
+                    //    _writer.WriteStartElement("w", "p", OpenXmlNamespaces.WordprocessingML);
+                    //    _writer.WriteEndElement();
+                    //}
+                }
+                else
+                {
+                    //this PAPX is for a normal paragraph
+                    cp = writeParagraph(cp);
+                }
+            }
+            
+
+            //end w:tc
+            _writer.WriteEndElement();
+
+            return cp;
+        }
+
+
         /// <summary>
         /// Builds a list that contains the width of the several columns of the table.
         /// </summary>
         /// <param name="initialCp"></param>
         /// <returns></returns>
-        protected List<Int16> buildTableGrid(int initialCp)
+        protected List<Int16> buildTableGrid(int initialCp, UInt32 nestingLevel)
         {
             ParagraphPropertyExceptions backup = _lastValidPapx;
 
@@ -192,7 +298,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             ParagraphPropertyExceptions papx = findValidPapx(fc);
             TableInfo tai = new TableInfo(papx);
 
-            Int32 fcRowEnd = findRowEndFc(cp, out cp);
+            Int32 fcRowEnd = findRowEndFc(cp, out cp, nestingLevel);
 
             while (tai.fInTable)
             {
@@ -219,14 +325,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 //get the next papx
                 papx = findValidPapx(fcRowEnd);
                 tai = new TableInfo(papx);
-                fcRowEnd = findRowEndFc(cp, out cp);
+                fcRowEnd = findRowEndFc(cp, out cp, nestingLevel);
             }
 
             //build the grid based on the boundaries
             boundaries.Sort();
-            for (int i = 0; i < boundaries.Count -1; i++)
+            for (int i = 0; i < boundaries.Count - 1; i++)
             {
-                grid.Add( (Int16)(boundaries[i+1] - boundaries[i]) );
+                grid.Add((Int16)(boundaries[i + 1] - boundaries[i]));
             }
 
             _lastValidPapx = backup;
@@ -239,24 +345,47 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// <param name="initialCp">Some CP before the row end</param>
         /// <param name="rowEndCp">The CP of the next row end mark</param>
         /// <returns>The FC of the next row end mark</returns>
-        protected Int32 findRowEndFc(int initialCp, out int rowEndCp)
+        protected Int32 findRowEndFc(int initialCp, out int rowEndCp, UInt32 nestingLevel)
         {
             int cp = initialCp;
             Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
             ParagraphPropertyExceptions papx = findValidPapx(fc);
             TableInfo tai = new TableInfo(papx);
 
-            while (tai.fTtp==false && tai.fInTable==true)
+            if (nestingLevel > 1)
             {
-                while (_doc.Text[cp] != TextMark.CellOrRowMark)
+                //Its an inner table.
+                //Search the "inner table trailer paragraph"
+                while (tai.fInnerTtp == false && tai.fInTable == true)
                 {
+                    while (_doc.Text[cp] != TextMark.ParagraphEnd)
+                    {
+                        cp++;
+                    }
+                    fc = _doc.PieceTable.FileCharacterPositions[cp];
+                    papx = findValidPapx(fc);
+                    tai = new TableInfo(papx);
                     cp++;
                 }
-                fc = _doc.PieceTable.FileCharacterPositions[cp];
-                papx = findValidPapx(fc);
-                tai = new TableInfo(papx);
-                cp++;
             }
+            else 
+            {
+                //Its an outer table.
+                //Search the "table trailer paragraph"
+                while (tai.fTtp == false && tai.fInTable == true)
+                {
+                    while (_doc.Text[cp] != TextMark.CellOrRowMark)
+                    {
+                        cp++;
+                    }
+                    fc = _doc.PieceTable.FileCharacterPositions[cp];
+                    papx = findValidPapx(fc);
+                    tai = new TableInfo(papx);
+                    cp++;
+                }
+            }
+
+            
 
             rowEndCp = cp;
             return fc;
@@ -267,67 +396,82 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// </summary>
         /// <param name="cp"></param>
         /// <returns></returns>
-        protected Int32 findRowEndFc(int initialCp)
+        protected Int32 findRowEndFc(int initialCp, UInt32 nestingLevel)
         {
             int cp = initialCp;
             Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
             ParagraphPropertyExceptions papx = findValidPapx(fc);
             TableInfo tai = new TableInfo(papx);
 
-            while (tai.fTtp == false && tai.fInTable == true)
+            if (nestingLevel > 1)
             {
-                while (_doc.Text[cp] != TextMark.CellOrRowMark)
+                //Its an inner table.
+                //Search the "inner table trailer paragraph"
+                while (tai.fInnerTtp == false && tai.fInTable == true)
                 {
+                    while (_doc.Text[cp] != TextMark.ParagraphEnd)
+                    {
+                        cp++;
+                    }
+                    fc = _doc.PieceTable.FileCharacterPositions[cp];
+                    papx = findValidPapx(fc);
+                    tai = new TableInfo(papx);
                     cp++;
                 }
-                fc = _doc.PieceTable.FileCharacterPositions[cp];
-                papx = findValidPapx(fc);
-                tai = new TableInfo(papx);
-                cp++;
+            }
+            else
+            {
+                //Its an outer table.
+                //Search the "table trailer paragraph"
+                while (tai.fTtp == false && tai.fInTable == true)
+                {
+                    while (_doc.Text[cp] != TextMark.CellOrRowMark)
+                    {
+                        cp++;
+                    }
+                    fc = _doc.PieceTable.FileCharacterPositions[cp];
+                    papx = findValidPapx(fc);
+                    tai = new TableInfo(papx);
+                    cp++;
+                }
             }
 
             return fc;
         }
 
-        /// <summary>
-        /// Writes the table cell that starts at the given cp value and ends at the next cell end mark
-        /// </summary>
-        /// <param name="initialCp">The cp at where the cell begins</param>
-        /// <param name="tapx">The TAPX that formats the row to which the cell belongs</param>
-        /// <param name="gridIndex">The index of this cell in the grid</param>
-        /// <param name="gridIndex">The grid</param>
-        /// <returns>The character pointer to the first character after this cell</returns>
-        protected Int32 writeTableCell(Int32 initialCp, TablePropertyExceptions tapx, List<Int16> grid, ref int gridIndex, int cellIndex)
+
+        protected Int32 findCellEndCp(int initialCp, UInt32 nestingLevel)
         {
-            Int32 cp = initialCp;
+            int cpCellEnd = initialCp;
 
-            //start w:tc
-            _writer.WriteStartElement("w", "tc", OpenXmlNamespaces.WordprocessingML);
-
-            //find cell end
-            Int32 cpCellEnd = initialCp;
-            while (_doc.Text[cpCellEnd] != TextMark.CellOrRowMark)
+            if (nestingLevel > 1)
             {
+                Int32 fc = _doc.PieceTable.FileCharacterPositions[initialCp];
+                ParagraphPropertyExceptions papx = findValidPapx(fc);
+                TableInfo tai = new TableInfo(papx);
+
+                while (!tai.fInnerTableCell)
+                {
+                    cpCellEnd++;
+
+                    fc = _doc.PieceTable.FileCharacterPositions[cpCellEnd];
+                    papx = findValidPapx(fc);
+                    tai = new TableInfo(papx);
+                }
                 cpCellEnd++;
             }
-            cpCellEnd++;
-
-            //convert the properties
-            TableCellPropertiesMapping mapping = new TableCellPropertiesMapping(_writer, grid, gridIndex, cellIndex);
-            tapx.Convert(mapping);
-            gridIndex = gridIndex + mapping.GridSpan;
-
-            //write the paragraphs of the cell
-            while (cp < cpCellEnd)
+            else 
             {
-                cp = writeParagraph(cp);
+                while (_doc.Text[cpCellEnd] != TextMark.CellOrRowMark)
+                {
+                    cpCellEnd++;
+                }
+                cpCellEnd++;
             }
 
-            //end w:tc
-            _writer.WriteEndElement();
-
-            return cp;
+            return cpCellEnd;
         }
+
 
         #endregion
 

@@ -43,7 +43,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 if (tai.fInTable)
                 {
                     //this PAPX is for a table
-                    cp = writeTable(cp);
+                    cp = writeTable(cp, tai.iTap);
                 }
                 else
                 {
