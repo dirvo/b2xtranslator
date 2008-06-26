@@ -7,7 +7,21 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 {
     public class VirtualStreamReader : BinaryReader, IStreamReader
     {
+        /// <summary>
+        /// Ctor 
+        /// 
+        /// </summary>
+        /// <param name="stream"></param>
         public VirtualStreamReader(VirtualStream stream)
+            : base(stream)
+        {
+        }
+
+        /// <summary>
+        /// Second constructor to create a StreamReader with a MemoryStream. 
+        /// </summary>
+        /// <param name="stream"></param>
+        public VirtualStreamReader(MemoryStream stream)
             : base(stream)
         {
         }

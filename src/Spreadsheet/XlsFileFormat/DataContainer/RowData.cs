@@ -89,7 +89,25 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         /// <param name="cell">Cellobject</param>
         public void addCell(AbstractCellData cell)
         {
-            this.cells.Add(cell); 
+            if (!this.checkCellExists(cell))
+                this.cells.Add(cell); 
+        }
+
+        /// <summary>
+        /// method checks if a cell exists or not 
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <returns>true if the cell exists and false if not</returns>
+        public bool checkCellExists(AbstractCellData cell)
+        {
+            foreach (AbstractCellData var in this.cells)
+            {
+                if (var.Col == cell.Col)
+                {
+                    return true; 
+                }
+            }
+            return false; 
         }
     }
 }

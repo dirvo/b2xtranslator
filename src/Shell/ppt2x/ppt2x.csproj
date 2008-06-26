@@ -39,6 +39,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ppt2x.ico" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\Common\CommonTranslatorLib\CommonTranslatorLib.csproj">
       <Project>{0F0F6BAF-BC5D-4DC6-AE53-8257305EE5CA}</Project>
       <Name>CommonTranslatorLib</Name>
@@ -71,9 +74,6 @@
       <Project>{1D168A80-B748-4321-AED6-E03D557B5864}</Project>
       <Name>PresentationMLMapping</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ppt2x.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

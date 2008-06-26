@@ -37,7 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         IStreamReader _reader;
         
         RecordNumber _id;
-        UInt16 _length;
+        UInt32 _length;
         long _offset;
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// <param name="reader">Streamreader</param>
         /// <param name="id">Record ID - Recordtype</param>
         /// <param name="length">The recordlegth</param>
-        public BiffRecord(IStreamReader reader, RecordNumber id, UInt16 length)
+        public BiffRecord(IStreamReader reader, RecordNumber id, UInt32 length)
         {
             _reader = reader;
             _offset = _reader.BaseStream.Position;
@@ -60,7 +60,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             get { return _id; }
         }
         
-        public UInt16 Length
+        public UInt32 Length
         {
             get { return _length; }
         }

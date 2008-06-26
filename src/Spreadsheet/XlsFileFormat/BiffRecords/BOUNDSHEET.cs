@@ -78,7 +78,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         /// <summary>
         /// The sheet type value
         /// </summary>
-        public int sheetType; 
+        public sheetTypes sheetType; 
 
         /// <summary>
         /// extracts the boundsheetdata from the biffrecord  
@@ -112,7 +112,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
             this.hiddenState = Utils.BitmaskToInt(this.grbit, 0x0003); 
 
             // Setting the sheet type value 
-            this.sheetType = Utils.BitmaskToInt(this.grbit, 0xFF00);
+            this.sheetType = (sheetTypes)Utils.BitmaskToInt(this.grbit, 0xFF00);
             
             // assert that the correct number of bytes has been read from the stream
             // Debug.trace(this.Offset + this.Length == this.Reader.BaseStream.Position); 

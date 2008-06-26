@@ -42,7 +42,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
     /// <summary>
     /// Abstract class which stores some data
     /// </summary>
-    public abstract class AbstractCellData
+    public abstract class AbstractCellData: IComparable
     {
         /// Attributes ///
         
@@ -119,8 +119,23 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         /// Sets the value 
         /// </summary>
         /// <param name="obj"></param>
-        public abstract void setValue(Object obj); 
- 
+        public abstract void setValue(Object obj);
+
+        /// <summary>
+        /// Implements the compareble interface 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        int IComparable.CompareTo(object obj)
+        {
+            AbstractCellData cell = (AbstractCellData)obj;
+            if (this.col > cell.col)
+                return (1);
+            if (this.col < cell.col)
+                return (-1);
+            else
+                return (0);
+        }
         
     }
 }

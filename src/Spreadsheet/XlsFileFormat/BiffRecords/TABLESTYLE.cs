@@ -113,7 +113,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
             fIsBuiltIn = Utils.BitmaskToBool(grbitTS, 0x0001);
             fIsPivot = Utils.BitmaskToBool(grbitTS, 0x0002);
             fIsTable = Utils.BitmaskToBool(grbitTS, 0x0004);
-            fReserved0 = Utils.BitmaskToUInt16(grbitTS, 0xFFF8);
+            fReserved0 = (ushort)Utils.BitmaskToInt(grbitTS, 0xFFF8);
             
             ctse = reader.ReadUInt32();
             cchName = reader.ReadUInt16();

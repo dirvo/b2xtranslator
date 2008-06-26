@@ -39,41 +39,52 @@ using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 using DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
+
 
 namespace xls2x
 {
     class Program
     {
         // Some static variables to store input data 
-        private static string[] inputFileString;
-        private static string outputDir; 
+        private static string inputFile;
+        private static string outputFile;
 
         static void Main(string[] args)
         {
             Program.parseArgs(args);
 
-            if (Directory.Exists(Program.outputDir))
-                Directory.Delete(Program.outputDir);
+            // let the Console listen to the Trace messages
+            Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
 
-            // Directory.CreateDirectory(Program.outputDir);
-            Console.Out.WriteLine("Files will be created into Directory {0}", Program.outputDir);
-
-            foreach (string file in inputFileString)
-            {
-                
-           
             try
             {
                 //copy processing file
-                // ProcessingFile procFile = new ProcessingFile(inputFileString);
+                ProcessingFile procFile = new ProcessingFile(inputFile);
 
-                //open the reader
-                using (StructuredStorageFile reader = new StructuredStorageFile(file))
+                //make output file name
+                if (outputFile == null)
                 {
+                    if (inputFile.Contains("."))
+                    {
+                        outputFile = inputFile.Remove(inputFile.LastIndexOf(".")) + ".xlsx";
+                    }
+                    else
+                    {
+                        outputFile = inputFile + ".xlsx";
+                    }
+                }
 
-                    //parse the document
+               TraceLogger.Info("Converting file {0} into {1}", inputFile, outputFile);
+
+                //start time
+                DateTime start = DateTime.Now;
+
+                //parse the document
+                using (StructuredStorageFile reader = new StructuredStorageFile(procFile.File.FullName))
+                {
                     XlsDocument xlsDoc = new XlsDocument(reader);
-                    using (SpreadsheetDocument spreadx = SpreadsheetDocument.Create(file + ".xlsx"))
+                    using (SpreadsheetDocument spreadx = SpreadsheetDocument.Create(Program.inputFile + ".xlsx"))
                     {
 
                         //Setup the writer
@@ -82,43 +93,146 @@ namespace xls2x
                         xws.CloseOutput = true;
                         xws.Encoding = Encoding.UTF8;
                         xws.ConformanceLevel = ConformanceLevel.Document;
-                        
+
 
                         ExcelContext xlsContext = new ExcelContext(xlsDoc, xws);
-                        xlsContext.SpreadDoc = spreadx; 
-                        
+                        xlsContext.SpreadDoc = spreadx;
+
                         // Converts the sst data !!!
                         xlsDoc.workBookData.SstData.Convert(new SSTMapping(xlsContext));
                         foreach (BoundSheetData var in xlsDoc.workBookData.boundSheetDataList)
                         {
-                            var.Convert(new WorksheetMapping(xlsContext)); 
+                            if (var.boundsheetRecord.sheetType == BOUNDSHEET.sheetTypes.worksheet)
+                            {
+                                var.Convert(new WorksheetMapping(xlsContext));
+                            }
                         }
-                        xlsDoc.workBookData.Convert(new WorkbookMapping(xlsContext)); 
-                        
-                    }
-                    reader.Close(); 
-                }
+                        xlsDoc.workBookData.Convert(new WorkbookMapping(xlsContext));
 
+                    }
+                    reader.Close();
+                }
+            }
+            catch (DirectoryNotFoundException ex)
+            {
+                TraceLogger.Error(ex.Message);
+                TraceLogger.Debug(ex.ToString());
+            }
+            catch (FileNotFoundException ex)
+            {
+                TraceLogger.Error(ex.Message);
+                TraceLogger.Debug(ex.ToString());
+            }
+            catch (ReadBytesAmountMismatchException ex)
+            {
+                TraceLogger.Error("Input file {0} is not a valid Microsoft Word 97-2003 file.", inputFile);
+                TraceLogger.Debug(ex.ToString());
+            }
+            catch (MagicNumberException ex)
+            {
+                TraceLogger.Error("Input file {0} is not a valid Microsoft Word 97-2003 file.", inputFile);
+                TraceLogger.Debug(ex.ToString());
+            }
+            catch (ZipCreationException ex)
+            {
+                TraceLogger.Error("Could not create output file {0}.", outputFile);
+                //TraceLogger.Error("Perhaps the specified outputfile was a directory or contained invalid characters.");
+                TraceLogger.Debug(ex.ToString());
             }
             catch (Exception ex)
             {
-                Console.Out.WriteLine("Following exception occured \n {0} \n\n Stacktrace: \n\n {1}", ex.Message, ex.StackTrace); 
+                TraceLogger.Error("Conversion of file {0} failed.", inputFile);
+                TraceLogger.Debug(ex.ToString());
             }
 
-        }
+
+        
 
         }
 
 
         /// <summary>
-        /// Parses the arguments 
+        /// Parses the arguments of the tool
         /// </summary>
-        /// <param name="args"></param>
-        static void parseArgs(String[] args)
+        /// <param name="args">The args array</param>
+        private static void parseArgs(string[] args)
         {
-            Program.inputFileString = args; 
-            
+            try
+            {
+                if (args[0] == "-?")
+                {
+                    printUsage();
+                    Environment.Exit(0);
+                }
+                else
+                {
+                    inputFile = args[0];
+                }
+
+                for (int i = 1; i < args.Length; i++)
+                {
+                    if (args[i].ToLower() == "-v")
+                    {
+                        //parse verbose level
+                        string verbose = args[i + 1].ToLower();
+                        int vLvl;
+                        if (Int32.TryParse(verbose, out vLvl))
+                        {
+                            TraceLogger.LogLevel = (TraceLogger.LoggingLevel)vLvl;
+                        }
+                        else if (verbose == "error")
+                        {
+                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.Error;
+                        }
+                        else if (verbose == "warning")
+                        {
+                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.Warning;
+                        }
+                        else if (verbose == "info")
+                        {
+                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.Info;
+                        }
+                        else if (verbose == "debug")
+                        {
+                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.Debug;
+                        }
+                        else if (verbose == "none")
+                        {
+                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.None;
+                        }
+                    }
+                    else if (args[i].ToLower() == "-o")
+                    {
+                        //parse output file name
+                        outputFile = args[i + 1];
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                TraceLogger.Error("At least one of the required arguments was not correctly set.\n");
+                printUsage();
+                Environment.Exit(1);
+            }
         }
 
+
+        /// <summary>
+        /// Prints the usage of the tool
+        /// </summary>
+        private static void printUsage()
+        {
+            StringBuilder usage = new StringBuilder();
+            usage.AppendLine("Usage: doc2x filename [-o filename] [-v level] [-?]");
+            usage.AppendLine("-o <filename>  change output filename");
+            usage.AppendLine("-v <level>     set trace level, where <level> is one of the following:");
+            usage.AppendLine("                  none (0)    print nothing");
+            usage.AppendLine("                  error (1)   print all errors");
+            usage.AppendLine("                  warning (2) print all errors and warnings");
+            usage.AppendLine("                  info (3)    print all errors, warnings and infos (default)");
+            usage.AppendLine("                  debug (4)   print all errors, warnings, infos and debug messages");
+            usage.AppendLine("-?             print this help");
+            Console.WriteLine(usage.ToString());
+        }
     }
 }

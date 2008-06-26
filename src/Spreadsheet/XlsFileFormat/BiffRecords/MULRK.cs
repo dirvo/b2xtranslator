@@ -78,7 +78,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
             this.rknumber = new List<double>(); 
 
             // count records - 6 standard non variable values !!! 
-            int count = (this.Length - 6) / 6 ;
+            int count = (int)(this.Length - 6) / 6 ;
             this.rw = reader.ReadUInt16();
             this.colFirst = reader.ReadUInt16();
             for (int i = 0; i < count; i++)

@@ -33,6 +33,7 @@ using System.IO;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
@@ -41,7 +42,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
     /// </summary>
     public class FileInformationExtractor
     {
-        public VirtualStream SummaryStream;         // Summary stream 
+        public VirtualStream summaryStream;         // Summary stream 
+        public VirtualStreamReader SummaryStream;         // Summary stream 
 
         public string Title;
 
@@ -64,7 +66,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             {
                 throw new ExtractorException(ExtractorException.NULLPOINTEREXCEPTION); 
             }
-            this.SummaryStream = sum;
+            this.summaryStream = sum; 
+            this.SummaryStream = new VirtualStreamReader(sum);
             this.extractData(); 
 
 
@@ -80,7 +83,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             sw = new StreamWriter(Console.OpenStandardOutput());
             try
             {
-                while (this.SummaryStream.Position < this.SummaryStream.Length)
+                while (this.SummaryStream.BaseStream.Position < this.SummaryStream.BaseStream.Length)
                 {
                     bh.id = (RecordNumber)this.SummaryStream.ReadUInt16();
                     bh.length = this.SummaryStream.ReadUInt16();
@@ -105,7 +108,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                TraceLogger.Error(ex.Message);
+                TraceLogger.Debug(ex.ToString());
             }
             this.buffer = sw.ToString();
          }

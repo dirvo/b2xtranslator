@@ -36,6 +36,9 @@ using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
+    /// <summary>
+    /// Class is / was used to extract different binary file internal files 
+    /// </summary>
     public class StreamExtractor
     {
         StructuredStorageFile storageReader; 
@@ -136,7 +139,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             return returnValue;
         }
 
-
+        /// <summary>
+        /// Method is used to close the storage reader!
+        /// </summary>
         public void closeFile()
         {
 

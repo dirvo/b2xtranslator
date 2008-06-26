@@ -102,9 +102,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             fWinAny = Utils.BitmaskToBool(bfh, 0x00000008);
             fMacAny = Utils.BitmaskToBool(bfh, 0x00000010);
             fBetaAny = Utils.BitmaskToBool(bfh, 0x00000020);
-            reserved0 = Utils.BitmaskToUInt32(bfh, 0x000000C0);
+            reserved0 = (uint)Utils.BitmaskToInt((int)bfh, 0x000000C0);
             fRiscAny = Utils.BitmaskToBool(bfh, 0x00000100);
-            reserved1 = Utils.BitmaskToUInt32(bfh, 0xFFFFFE00);
+            // reserved1 = (uint)Utils.BitmaskToInt((int)bfh, 0xFFFFFE00);
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

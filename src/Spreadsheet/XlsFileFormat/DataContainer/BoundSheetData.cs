@@ -54,6 +54,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public List<RK> SINGLERKList;
         public List<BLANK> BLANKList;
         public List<MULBLANK> MULBLANKList;
+        public BOUNDSHEET boundsheetRecord; 
 
 
         public String worksheetName;
@@ -75,6 +76,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             this.MULBLANKList = new List<MULBLANK>();
             this.BLANKList = new List<BLANK>();
             this.rowDataTable = new SortedList<int, RowData>();
+            boundsheetRecord = null; 
 
         }
 

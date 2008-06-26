@@ -77,10 +77,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
             fHasEnvelope = Utils.BitmaskToBool(grbit, 0x0004); 	  
             fEnvelopeVisible = Utils.BitmaskToBool(grbit, 0x0008); 
             fEnvelopeInitDone = Utils.BitmaskToBool(grbit, 0x0010);
-            grbitUpdateLinks = Utils.BitmaskToUInt32(grbit, 0x0060); 
+            grbitUpdateLinks = (uint)Utils.BitmaskToInt(grbit, 0x0060); 
             reserved1 = Utils.BitmaskToBool(grbit, 0x0080);	      
             fHideBorderUnsels = Utils.BitmaskToBool(grbit, 0x0100);
-            reserved2 = Utils.BitmaskToUInt32(grbit, 0xFE00);	  
+            reserved2 = (uint)Utils.BitmaskToInt(grbit, 0xFE00);	  
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
