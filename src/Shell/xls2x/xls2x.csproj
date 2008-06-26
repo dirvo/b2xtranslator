@@ -7,7 +7,7 @@
     <ProjectGuid>{B9CF0222-E113-4D87-95EB-FF1097A53E7C}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>xls2x</RootNamespace>
+    <RootNamespace>DIaLOGIKa.b2xtranslator.xls2x</RootNamespace>
     <AssemblyName>xls2x</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -79,6 +79,10 @@
       <Name>OpenXmlLibTest</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="preBuild.vbs" />
+    <EmbeddedResource Include="revision.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -87,4 +91,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <PreBuildEvent>cscript "$(ProjectDir)preBuild.vbs"</PreBuildEvent>
+  </PropertyGroup>
 </Project>

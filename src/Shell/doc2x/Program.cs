@@ -246,22 +246,7 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
             }
         }
 
-        /// <summary>
-        /// Prints the heading row of the tool
-        /// </summary>
-        private static void printWelcome()
-        {
-            bool backup = TraceLogger.EnableTimeStamp;
-            TraceLogger.EnableTimeStamp = false;
-            StringBuilder welcome = new StringBuilder();
-            welcome.Append("Welcome to doc2x.exe (r");
-            welcome.Append(getRevision());
-            welcome.Append(")\n");
-            welcome.Append("Copyright (c) 2008, DIaLOGIKa. All rights reserved.");
-            welcome.Append("\n");
-            TraceLogger.Simple(welcome.ToString());
-            TraceLogger.EnableTimeStamp = backup;
-        }
+
 
         /// <summary>
         /// Prints the usage of the tool
@@ -279,6 +264,24 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
             usage.AppendLine("               debug (4)   print all errors, warnings, infos and debug messages");
             usage.AppendLine("-?             print this help");
             Console.WriteLine(usage.ToString());
+        }
+
+
+        /// <summary>
+        /// Prints the heading row of the tool
+        /// </summary>
+        private static void printWelcome()
+        {
+            bool backup = TraceLogger.EnableTimeStamp;
+            TraceLogger.EnableTimeStamp = false;
+            StringBuilder welcome = new StringBuilder();
+            welcome.Append("Welcome to doc2x.exe (r");
+            welcome.Append(getRevision());
+            welcome.Append(")\n");
+            welcome.Append("Copyright (c) 2008, DIaLOGIKa. All rights reserved.");
+            welcome.Append("\n");
+            TraceLogger.Simple(welcome.ToString());
+            TraceLogger.EnableTimeStamp = backup;
         }
 
 

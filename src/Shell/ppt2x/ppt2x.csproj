@@ -7,7 +7,7 @@
     <ProjectGuid>{90C862C6-C6CB-4C72-8E58-FA3F8625E93B}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ppt2x</RootNamespace>
+    <RootNamespace>DIaLOGIKa.b2xtranslator.ppt2x</RootNamespace>
     <AssemblyName>ppt2x</AssemblyName>
     <ApplicationIcon>ppt2x.ico</ApplicationIcon>
     <StartupObject>DIaLOGIKa.b2xtranslator.ppt2x.Program</StartupObject>
@@ -40,6 +40,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ppt2x.ico" />
+    <Content Include="preBuild.vbs" />
+    <EmbeddedResource Include="revision.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\CommonTranslatorLib\CommonTranslatorLib.csproj">
@@ -83,4 +85,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <PreBuildEvent>cscript "$(ProjectDir)preBuild.vbs"</PreBuildEvent>
+  </PropertyGroup>
 </Project>

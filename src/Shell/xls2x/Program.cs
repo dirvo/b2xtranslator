@@ -40,6 +40,7 @@ using DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
+using System.Reflection;
 
 
 namespace xls2x
@@ -56,6 +57,9 @@ namespace xls2x
 
             // let the Console listen to the Trace messages
             Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
+
+            //welcome message
+            printWelcome();
 
             try
             {
@@ -223,16 +227,57 @@ namespace xls2x
         private static void printUsage()
         {
             StringBuilder usage = new StringBuilder();
-            usage.AppendLine("Usage: doc2x filename [-o filename] [-v level] [-?]");
+            usage.AppendLine("Usage: xls2x filename [-o filename] [-v level] [-?]");
             usage.AppendLine("-o <filename>  change output filename");
             usage.AppendLine("-v <level>     set trace level, where <level> is one of the following:");
-            usage.AppendLine("                  none (0)    print nothing");
-            usage.AppendLine("                  error (1)   print all errors");
-            usage.AppendLine("                  warning (2) print all errors and warnings");
-            usage.AppendLine("                  info (3)    print all errors, warnings and infos (default)");
-            usage.AppendLine("                  debug (4)   print all errors, warnings, infos and debug messages");
+            usage.AppendLine("               none (0)    print nothing");
+            usage.AppendLine("               error (1)   print all errors");
+            usage.AppendLine("               warning (2) print all errors and warnings");
+            usage.AppendLine("               info (3)    print all errors, warnings and infos (default)");
+            usage.AppendLine("               debug (4)   print all errors, warnings, infos and debug messages");
             usage.AppendLine("-?             print this help");
             Console.WriteLine(usage.ToString());
+        }
+
+
+        /// <summary>
+        /// Prints the heading row of the tool
+        /// </summary>
+        private static void printWelcome()
+        {
+            bool backup = TraceLogger.EnableTimeStamp;
+            TraceLogger.EnableTimeStamp = false;
+            StringBuilder welcome = new StringBuilder();
+            welcome.Append("Welcome to xls2x.exe (r");
+            welcome.Append(getRevision());
+            welcome.Append(")\n");
+            welcome.Append("Copyright (c) 2008, DIaLOGIKa. All rights reserved.");
+            welcome.Append("\n");
+            TraceLogger.Simple(welcome.ToString());
+            TraceLogger.EnableTimeStamp = backup;
+        }
+
+
+        /// <summary>
+        /// Returns the revision that is stored in the embedded resource "revision.txt".
+        /// Returns -1 if something goes wrong
+        /// </summary>
+        /// <returns></returns>
+        private static int getRevision()
+        {
+            int rev = -1;
+
+            try
+            {
+                Assembly a = Assembly.GetExecutingAssembly();
+                Stream s = a.GetManifestResourceStream("DIaLOGIKa.b2xtranslator.xls2x.revision.txt");
+                StreamReader reader = new StreamReader(s);
+                rev = Int32.Parse(reader.ReadLine());
+                s.Close();
+            }
+            catch (Exception) { }
+
+            return rev;
         }
     }
 }

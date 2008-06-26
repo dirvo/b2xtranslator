@@ -37,6 +37,7 @@ using System.Globalization;
 using DIaLOGIKa.b2xtranslator.PptFileFormat;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML;
 using DIaLOGIKa.b2xtranslator.PresentationMLMapping;
+using System.Reflection;
 
 namespace DIaLOGIKa.b2xtranslator.ppt2x
 {
@@ -49,6 +50,9 @@ namespace DIaLOGIKa.b2xtranslator.ppt2x
         {
             inputFile = args[0];
             outputFile = args.Length > 1 ? args[1] : null;
+
+            //welcome message
+            printWelcome();
 
             //copy processing file
             ProcessingFile procFile = new ProcessingFile(inputFile);
@@ -98,6 +102,47 @@ namespace DIaLOGIKa.b2xtranslator.ppt2x
                 TimeSpan diff = end.Subtract(start);
                 TraceLogger.Info("Conversion of file {0} finished in {1} seconds", inputFile, diff.TotalSeconds.ToString(CultureInfo.InvariantCulture));
             }
+        }
+
+
+        /// <summary>
+        /// Prints the heading row of the tool
+        /// </summary>
+        private static void printWelcome()
+        {
+            bool backup = TraceLogger.EnableTimeStamp;
+            TraceLogger.EnableTimeStamp = false;
+            StringBuilder welcome = new StringBuilder();
+            welcome.Append("Welcome to ppt2x.exe (r");
+            welcome.Append(getRevision());
+            welcome.Append(")\n");
+            welcome.Append("Copyright (c) 2008, DIaLOGIKa. All rights reserved.");
+            welcome.Append("\n");
+            TraceLogger.Simple(welcome.ToString());
+            TraceLogger.EnableTimeStamp = backup;
+        }
+
+
+        /// <summary>
+        /// Returns the revision that is stored in the embedded resource "revision.txt".
+        /// Returns -1 if something goes wrong
+        /// </summary>
+        /// <returns></returns>
+        private static int getRevision()
+        {
+            int rev = -1;
+
+            try
+            {
+                Assembly a = Assembly.GetExecutingAssembly();
+                Stream s = a.GetManifestResourceStream("DIaLOGIKa.b2xtranslator.ppt2x.revision.txt");
+                StreamReader reader = new StreamReader(s);
+                rev = Int32.Parse(reader.ReadLine());
+                s.Close();
+            }
+            catch (Exception) { }
+
+            return rev;
         }
     }
 }
