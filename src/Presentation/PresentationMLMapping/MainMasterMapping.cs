@@ -23,18 +23,34 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteStartDocument();
             _writer.WriteStartElement("p", "sldMaster", OpenXmlNamespaces.PresentationML);
             // Force declaration of these namespaces at document start
+            _writer.WriteAttributeString("xmlns", "a", null, OpenXmlNamespaces.DrawingML);
             _writer.WriteAttributeString("xmlns", "r", null, OpenXmlNamespaces.Relationships);
 
-            // TODO: Write slide data of master slide
             _writer.WriteStartElement("p", "cSld", OpenXmlNamespaces.PresentationML);
             _writer.WriteStartElement("p", "spTree", OpenXmlNamespaces.PresentationML);
-            //new ShapeTreeMapping(_ctx, _writer).Apply(master.FirstChildWithType<PPDrawing>());
+            new ShapeTreeMapping(_ctx, _writer).Apply(master.FirstChildWithType<PPDrawing>());
             _writer.WriteEndElement();
             _writer.WriteEndElement();
 
-            // TODO: Write clrMap
+            // Write clrMap
+            ColorMappingAtom clrMap = master.FirstChildWithType<ColorMappingAtom>();
+            if (clrMap != null)
+            {
+                // clrMap from ColorMappingAtom wrongly uses namespace DrawingML
+                _writer.WriteStartElement("p", "clrMap", OpenXmlNamespaces.PresentationML);
 
-            // TODO: Write sldLayoutIdLst
+                foreach (XmlAttribute attr in clrMap.XmlDocumentElement.Attributes)
+                    if (attr.Prefix != "xmlns")
+                        _writer.WriteAttributeString(attr.LocalName, attr.Value);
+
+                _writer.WriteEndElement();
+            }
+            else
+            {
+                // TODO: Write default clrMap in case of absence? (pre PP2007)
+                throw new NotImplementedException("Write clrMap in case of PPT without ColorMappingAtom");
+            }
+
 
             // Write slide layouts
             _writer.WriteStartElement("p", "sldLayoutIdLst", OpenXmlNamespaces.PresentationML);
@@ -58,15 +74,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     layoutPart.XmlWriter.Flush();
 
                     _writer.WriteStartElement("p", "sldLayoutId", OpenXmlNamespaces.PresentationML);
-                    _writer.WriteAttributeString("id", layoutPart.RelIdToString);
                     _writer.WriteAttributeString("r", "id", OpenXmlNamespaces.Relationships, layoutPart.RelIdToString);
                     _writer.WriteEndElement();
                 }
             }
             else
             {
-                // TODO
-                throw new NotImplementedException("Write slide Layouts in case of PPT without roundTripContentMasterInfo");
+                // TODO (pre PP2007)
+                //throw new NotImplementedException("Write slide Layouts in case of PPT without roundTripContentMasterInfo");
             }
 
             _writer.WriteEndElement();
@@ -80,7 +95,26 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
             else
             {
-                throw new NotImplementedException("Write txStyles in case of PPT without roundTripTxStyles"); // TODO
+                throw new NotImplementedException("Write txStyles in case of PPT without roundTripTxStyles"); // TODO (pre PP2007)
+            }
+
+
+            // Write theme
+            Theme theme = master.FirstChildWithType<Theme>();
+            if (theme != null)
+            {
+                SlideMasterPart masterPart = (SlideMasterPart)this.targetPart;
+                ThemePart themePart = masterPart.AddThemePart();
+
+                theme.XmlDocumentElement.WriteTo(themePart.XmlWriter);
+                themePart.XmlWriter.Flush();
+
+                PresentationPart presentationPart = _ctx.Pptx.PresentationPart;
+                presentationPart.ReferencePart(themePart);
+            }
+            else
+            {
+                throw new NotImplementedException("Write default theme in case of PPT without Theme"); // TODO (pre PP2007)
             }
             
             // End the document

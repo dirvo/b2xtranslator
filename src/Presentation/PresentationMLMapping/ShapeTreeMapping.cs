@@ -105,9 +105,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         {
             _writer.WriteStartElement("p", "txBody", OpenXmlNamespaces.PresentationML);
 
-            TextAtom text = textbox.FirstChildWithType<TextAtom>();
-            StyleTextPropAtom style = textbox.FirstChildWithType<StyleTextPropAtom>();
-
             _writer.WriteStartElement("a", "bodyPr", OpenXmlNamespaces.DrawingML);
             // TODO...
             _writer.WriteEndElement();
@@ -116,23 +113,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             // TODO...
             _writer.WriteEndElement();
 
-            //if (style == null)
-            {
-                _writer.WriteStartElement("a", "p", OpenXmlNamespaces.DrawingML);
-                _writer.WriteStartElement("a", "r", OpenXmlNamespaces.DrawingML);
-                _writer.WriteStartElement("a", "t", OpenXmlNamespaces.DrawingML);
-
-                _writer.WriteValue(text.Text);
-
-                _writer.WriteEndElement();
-                _writer.WriteEndElement();
-
-                _writer.WriteStartElement("a", "endParaRPr", OpenXmlNamespaces.DrawingML);
-                // TODO...
-                _writer.WriteEndElement();
-
-                _writer.WriteEndElement();
-            }
+            new TextMapping(_ctx, _writer).Apply(textbox);
 
             _writer.WriteEndElement();
         }
@@ -140,7 +121,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         public void Apply(RegularContainer container)
         {
-            // Descend into unsupported records
+            // Descend into container records by default
             foreach (Record record in container.Children)
             {
                 DynamicApply(record);

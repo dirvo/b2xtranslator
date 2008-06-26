@@ -64,6 +64,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 case PlaceholderId.MasterDate:
                     return "dt";
 
+                case PlaceholderId.MasterSlideNumber:
+                    return "sldNum";
+
                 case PlaceholderId.MasterFooter:
                     return "ftr";
 
@@ -77,10 +80,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     return "subTitle";
 
                 default:
-                    Console.WriteLine(String.Format("Unimplemented placeholder mapping for {0}", pid));
-                    return "";
-                    /*throw new NotImplementedException(
-                        String.Format("Unimplemented placeholder mapping for {0}", pid));*/
+                    throw new NotImplementedException(
+                        String.Format("Unimplemented placeholder mapping for {0}", pid));
             }
         }
     }

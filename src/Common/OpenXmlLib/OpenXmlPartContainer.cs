@@ -139,8 +139,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         /// </summary>
         public virtual T ReferencePart<T>(T part) where T : OpenXmlPart
         {
-            // generate a relId for the part 
-            part.RelId = _nextRelId++;
+            // We'll use the existing ID here.
             _referencedParts.Add(part);
 
             if (part.HasDefaultContentType)

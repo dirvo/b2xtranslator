@@ -31,7 +31,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
             else
             {
-                // TODO...
+                // TODO... ContentMaster mapping (pre PP2007)
             }
 
             // Start the document

@@ -40,6 +40,7 @@
     <Compile Include="PresentationPartMapping.cs" />
     <Compile Include="ShapeTreeMapping.cs" />
     <Compile Include="SlideMapping.cs" />
+    <Compile Include="TextMapping.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -55,6 +56,10 @@
     <ProjectReference Include="..\..\Common\OpenXmlLib\OpenXmlLib.csproj">
       <Project>{4C10271C-CD9B-49F5-9479-3C6EB7404E75}</Project>
       <Name>OpenXmlLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\Tools\Tools.csproj">
+      <Project>{B44FAEE0-B32E-4682-AA42-618C893F14C6}</Project>
+      <Name>Tools</Name>
     </ProjectReference>
     <ProjectReference Include="..\PptFileFormat\PptFileFormat.csproj">
       <Project>{6EAD0A6A-8DF0-4CA3-8D5E-3C871E7FCB62}</Project>
