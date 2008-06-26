@@ -385,8 +385,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 }
             }
 
-            
-
             rowEndCp = cp;
             return fc;
         }

@@ -34,6 +34,8 @@ namespace DIaLOGIKa.b2xtranslator.Tools
 {
     public static class TraceLogger
     {
+        public static bool EnableTimeStamp = true;
+
         public enum LoggingLevel
         {
             None = 0,
@@ -53,8 +55,27 @@ namespace DIaLOGIKa.b2xtranslator.Tools
 
         private static void WriteLine(string msg, LoggingLevel level)
         {
-            if (_logLevel >= level)
+            if (_logLevel >= level && EnableTimeStamp)
+            {
                 System.Diagnostics.Trace.WriteLine(string.Format("{0} " + msg, System.DateTime.Now));
+            }
+            else if (_logLevel >= level)
+            {
+                System.Diagnostics.Trace.WriteLine(msg);
+            }
+        }
+
+        /// <summary>
+        /// Write a line on error level (is written if level != none)
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="objs"></param>
+        public static void Simple(string msg, params object[] objs)
+        {
+            if (msg == null || msg == "")
+                return;
+
+            WriteLine(string.Format(msg, objs), LoggingLevel.Error);
         }
 
 

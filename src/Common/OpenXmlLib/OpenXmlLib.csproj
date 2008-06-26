@@ -44,7 +44,6 @@
     <Compile Include="PresentationML\SlideLayoutPart.cs" />
     <Compile Include="PresentationML\SlideMasterPart.cs" />
     <Compile Include="PresentationML\SlidePart.cs" />
-    <Compile Include="Relation.cs" />
     <Compile Include="SpreadsheetML\SharedStringPart.cs" />
     <Compile Include="SpreadsheetML\WorksheetPart.cs" />
     <Compile Include="WordprocessingML\CommentsPart.cs" />
