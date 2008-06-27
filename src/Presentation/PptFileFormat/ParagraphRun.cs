@@ -47,9 +47,19 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             get { return (this.Mask & ParagraphMask.BulletSizePresent) != 0; }
         }
 
+        public bool HasCustomBulletSize
+        {
+            get { return (this.Mask & ParagraphMask.HasCustomBulletSize) != 0; }
+        }
+
         public bool BulletColorPresent
         {
             get { return (this.Mask & ParagraphMask.BulletColorPresent) != 0; }
+        }
+
+        public bool HasCustomBulletColor
+        {
+            get { return (this.Mask & ParagraphMask.HasCustomBulletColor) != 0; }
         }
 
         public bool AlignmentPresent
@@ -124,9 +134,9 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         public UInt16? LineBreakFlags;
         public UInt16? TextDirection;
 
-        public ParagraphRun(BinaryReader reader, bool noIdentField)
+        public ParagraphRun(BinaryReader reader, bool noIndentField)
         {
-            this.IndentLevel = noIdentField ? (ushort)0 : reader.ReadUInt16();
+            this.IndentLevel = noIndentField ? (ushort)0 : reader.ReadUInt16();
             this.Mask = (ParagraphMask)reader.ReadUInt32();
 
             // Note: These appear in Mask as well -- there they are true
@@ -142,10 +152,10 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             if (this.BulletTypefacePresent)
                 this.BulletTypefaceIdx = reader.ReadUInt16();
 
-            if (this.BulletSizePresent)
+            if ((this.HasCustomBulletSize && (this.BulletFlags & (1 << 3)) != 0))
                 this.BulletSize = reader.ReadInt16();
 
-            if (this.BulletColorPresent)
+            if ((this.HasCustomBulletColor && (this.BulletFlags & (1 << 2)) != 0))
                 this.BulletColor = new GrColorAtom(reader);
 
             if (this.AlignmentPresent)
@@ -181,6 +191,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             if (this.TabStopsPresent)
             {
                 UInt16 tabStopsCount = reader.ReadUInt16();
+                Console.WriteLine("tabStopsCount = {0}", tabStopsCount);
                 this.TabStops = new TabStop[tabStopsCount];
 
                 for (int i = 0; i < tabStopsCount; i++)
@@ -206,49 +217,49 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             result.AppendFormat("\n{0}IndentLevel = {1}", indent, this.IndentLevel);
             result.AppendFormat("\n{0}Mask = {1}", indent, this.Mask);
 
-            if (this.BulletFlagsFieldPresent)
+            if (this.BulletFlags != null)
                 result.AppendFormat("\n{0}BulletFlags = {1}", indent, this.BulletFlags);
 
-            if (this.BulletCharPresent)
+            if (this.BulletChar != null)
                 result.AppendFormat("\n{0}BulletChar = {1}", indent, this.BulletChar);
 
-            if (this.BulletTypefacePresent)
+            if (this.BulletTypefaceIdx != null)
                 result.AppendFormat("\n{0}BulletTypefaceIdx = {1}", indent, this.BulletTypefaceIdx);
 
-            if (this.BulletSizePresent)
+            if (this.BulletSize != null)
                 result.AppendFormat("\n{0}BulletSize = {1}", indent, this.BulletSize);
 
-            if (this.BulletColorPresent)
+            if (this.BulletColor != null)
                 result.AppendFormat("\n{0}BulletColor = {1}", indent, this.BulletColor);
 
-            if (this.AlignmentPresent)
+            if (this.Alignment != null)
                 result.AppendFormat("\n{0}Alignment = {1}", indent, this.Alignment);
 
-            if (this.LineSpacingPresent)
+            if (this.LineSpacing != null)
                 result.AppendFormat("\n{0}LineSpacing = {1}", indent, this.LineSpacing);
 
-            if (this.SpaceBeforePresent)
+            if (this.SpaceBefore != null)
                 result.AppendFormat("\n{0}SpaceBefore = {1}", indent, this.SpaceBefore);
 
-            if (this.SpaceAfterPresent)
+            if (this.SpaceAfter != null)
                 result.AppendFormat("\n{0}SpaceAfter = {1}", indent, this.SpaceAfter);
 
-            if (this.LeftMarginPresent)
+            if (this.LeftMargin != null)
                 result.AppendFormat("\n{0}LeftMargin = {1}", indent, this.LeftMargin);
 
-            if (this.IndentPresent)
+            if (this.Indent != null)
                 result.AppendFormat("\n{0}Indent = {1}", indent, this.Indent);
 
-            if (this.DefaultTabSizePresent)
+            if (this.DefaultTabSize != null)
                 result.AppendFormat("\n{0}DefaultTabSize = {1}", indent, this.DefaultTabSize);
 
-            if (this.BaseLinePresent)
+            if (this.BaseLine != null)
                 result.AppendFormat("\n{0}BaseLine = {1}", indent, this.BaseLine);
 
-            if (this.LineBreakFlagsFieldPresent)
+            if (this.LineBreakFlags != null)
                 result.AppendFormat("\n{0}LineBreakFlags = {1}", indent, this.LineBreakFlags);
 
-            if (this.TextDirectionPresent)
+            if (this.TextDirection != null)
                 result.AppendFormat("\n{0}TextDirection = {1}", indent, this.TextDirection);
 
             return result.ToString();

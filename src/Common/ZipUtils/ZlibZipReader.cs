@@ -54,7 +54,7 @@ namespace DIaLOGIKa.b2xtranslator.ZipUtils
             Dispose(false);
         }
 
-        public void Dispose() {
+        public override void Dispose() {
             Dispose(true);
             GC.SuppressFinalize(this);
         }

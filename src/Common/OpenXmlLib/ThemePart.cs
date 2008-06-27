@@ -32,8 +32,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 {
     public class ThemePart : OpenXmlPart
     {
-        public ThemePart(OpenXmlPartContainer parent)
-            : base(parent, 0)
+        public ThemePart(OpenXmlPartContainer parent, int partIndex)
+            : base(parent, partIndex)
         {
         }
 
@@ -49,7 +49,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 
         public override string TargetName
         {
-            get { return "theme"; }
+            get { return "theme" + this.PartIndex; }
         }
 
         public override string TargetDirectory

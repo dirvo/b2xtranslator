@@ -107,9 +107,9 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             while (r != null)
             {
                 if (!isFirst)
-                    result.Insert(0, "-");
+                    result.Insert(0, " - ");
 
-                result.Insert(0, String.Format("{0}i{1}", r.FormatType(), r.Instance));
+                result.Insert(0, String.Format("{2}.{0}i{1}p", r.FormatType(), r.Instance, r.SiblingIdx));
 
                 r = r.ParentRecord;
                 isFirst = false;

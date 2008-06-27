@@ -57,16 +57,27 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 
             try
             {
-                using (BinaryWriter tempStream = new BinaryWriter(new FileStream(tempPath, FileMode.Create)))
+                using (FileStream fs = new FileStream(tempPath, FileMode.Create))
                 {
-                    int count = (int)this.Reader.BaseStream.Length;
-                    byte[] bytes = this.Reader.ReadBytes(count);
+                    using (BinaryWriter tempStream = new BinaryWriter(fs))
+                    {
+                        int count = (int)this.Reader.BaseStream.Length;
+                        byte[] bytes = this.Reader.ReadBytes(count);
 
-                    tempStream.Write(bytes);
+                        tempStream.Write(bytes);
+
+                        tempStream.Flush();
+                        fs.Flush();
+
+                        tempStream.Close();
+                        fs.Close();
+                    }
                 }
 
-                ZipReader zipReader = ZipFactory.OpenArchive(tempPath);
-                this.XmlDocumentElement = ExtractDocumentElement(zipReader, GetRelations(zipReader, ""));
+                using (ZipReader zipReader = ZipFactory.OpenArchive(tempPath))
+                {
+                    this.XmlDocumentElement = ExtractDocumentElement(zipReader, GetRelations(zipReader, ""));
+                }
             }
             finally
             {

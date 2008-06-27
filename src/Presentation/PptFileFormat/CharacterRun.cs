@@ -105,28 +105,28 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             result.AppendFormat("\n{0}Length = {1}", indent, this.Length);
             result.AppendFormat("\n{0}Mask = {1}", indent, this.Mask);
 
-            if (this.StyleFlagsFieldPresent)
+            if (this.Style != null)
                 result.AppendFormat("\n{0}Style = {1}", indent, this.Style);
 
-            if (this.TypefacePresent)
+            if (this.TypefaceIdx != null)
                 result.AppendFormat("\n{0}TypefaceIdx = {1}", indent, this.TypefaceIdx);
 
-            if (this.FEOldTypefacePresent)
+            if (this.FEOldTypefaceIdx != null)
                 result.AppendFormat("\n{0}FEOldTypefaceIdx = {1}", indent, this.FEOldTypefaceIdx);
 
-            if (this.ANSITypefacePresent)
+            if (this.ANSITypefaceIdx != null)
                 result.AppendFormat("\n{0}ANSITypefaceIdx = {1}", indent, this.ANSITypefaceIdx);
 
-            if (this.SymbolTypefacePresent)
+            if (this.SymbolTypefaceIdx != null)
                 result.AppendFormat("\n{0}SymbolTypefaceIdx = {1}", indent, this.SymbolTypefaceIdx);
 
-            if (this.SizePresent)
+            if (this.Size != null)
                 result.AppendFormat("\n{0}Size = {1}", indent, this.Size);
 
-            if (this.PositionPresent)
+            if (this.Position != null)
                 result.AppendFormat("\n{0}Position = {1}", indent, this.Position);
 
-            if (this.ColorPresent)
+            if (this.Color != null)
                 result.AppendFormat("\n{0}Color = {1}", indent, this.Color);
 
             return result.ToString();

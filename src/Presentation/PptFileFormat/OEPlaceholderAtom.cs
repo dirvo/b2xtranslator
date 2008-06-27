@@ -100,6 +100,11 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
                 base.ToString(depth), IndentationForDepth(depth + 1),
                 this.PlacementId, this.PlaceholderId, this.PlaceholderSize);
         }
+
+        public bool IsObjectPlaceholder()
+        {
+            return this.PlaceholderId == PlaceholderId.Object;
+        }
     }
 
 }

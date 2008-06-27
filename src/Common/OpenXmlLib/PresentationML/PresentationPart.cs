@@ -7,8 +7,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML
     public class PresentationPart : ContentPart
     {
         public List<SlideMasterPart> SlideMasterParts = new List<SlideMasterPart>();
-        protected int _slideMasterCounter = 0;
-        protected int _slideCounter = 0;
+        protected static int _slideMasterCounter = 0;
+        protected static int _slideCounter = 0;
         
         public PresentationPart(OpenXmlPartContainer parent)
             : base(parent, 0)

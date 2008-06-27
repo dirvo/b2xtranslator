@@ -32,7 +32,15 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             Console.WriteLine(method);
 
-            method.Invoke(this, new Object[] { record });
+            try
+            {
+                method.Invoke(this, new Object[] { record });
+            }
+            catch (TargetInvocationException e)
+            {
+                Console.WriteLine(e.InnerException);
+                throw e.InnerException;
+            }
         }
 
         public void Apply(PPDrawing drawing)
@@ -72,12 +80,20 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                 if (placeholder != null)
                 {
-                    string typeValue = Utils.PlaceholderIdToXMLValue(placeholder.PlaceholderId);
+                    if (placeholder.IsObjectPlaceholder())
+                    {
+                        // TODO
+                    }
+                    else
+                    {
+                        string typeValue = Utils.PlaceholderIdToXMLValue(placeholder.PlaceholderId);
 
-                    _writer.WriteStartElement("p", "ph", OpenXmlNamespaces.PresentationML);
-                    _writer.WriteAttributeString("type", typeValue);
-                    _writer.WriteAttributeString("idx", _placeholderCnt.ToString());
-                    _writer.WriteEndElement();
+
+                        _writer.WriteStartElement("p", "ph", OpenXmlNamespaces.PresentationML);
+                        _writer.WriteAttributeString("type", typeValue);
+                        _writer.WriteAttributeString("idx", _placeholderCnt.ToString());
+                        _writer.WriteEndElement();
+                    }
 
                     _placeholderCnt++;
                 }

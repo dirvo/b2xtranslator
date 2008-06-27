@@ -103,7 +103,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     // Remaining text length
                     uint tlen = (uint)(text.Length - idx);
 
-                    // Length of extracted subtext can't go beyond character run,
+                    // Length of extracted runText can't go beyond character run,
                     // remaining paragraph run and remaining text length so limit it.
                     uint slen = rlen;
                     if (slen > tlen)
@@ -111,22 +111,40 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     if (slen > plen)
                         slen = plen;
 
-                    String subtext = text.Substring((int)idx, (int)slen).Trim(new char[] {'\r', '\n', '\v'});
+                    String runText = text.Substring((int)idx, (int)slen).Trim(new char[] {'\r', '\n', '\v'});
 
                     Console.WriteLine("Character run from {0} to {1} ({3}): {2}",
-                        idx, idx + rlen, Tools.Utils.StringInspect(subtext), slen);
+                        idx, idx + rlen, Tools.Utils.StringInspect(runText), slen);
 
-                    if (subtext.Length > 0)
+                    String[] lines = runText.Split('\v');
+
+                    bool isFirstLine = true;
+                    int lineIdx = 0;
+
+                    foreach (String line in lines)
                     {
-                        _writer.WriteStartElement("a", "r", OpenXmlNamespaces.DrawingML);
-                        /*if (r != null)
-                            new CharacterRunPropsMapping(_ctx, _writer).Apply(r);*/
+                        if (!isFirstLine)
+                        {
+                            _writer.WriteStartElement("a", "br", OpenXmlNamespaces.DrawingML);
+                            // TODO: Write rPr
+                            _writer.WriteEndElement();
+                        }
 
-                        _writer.WriteStartElement("a", "t", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteValue(subtext);
-                        _writer.WriteEndElement();
+                        if (line.Length > 0)
+                        {
+                            _writer.WriteStartElement("a", "r", OpenXmlNamespaces.DrawingML);
+                            /*if (r != null)
+                                new CharacterRunPropsMapping(_ctx, _writer).Apply(r);*/
 
-                        _writer.WriteEndElement();
+                            _writer.WriteStartElement("a", "t", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteValue(line);
+                            _writer.WriteEndElement();
+
+                            _writer.WriteEndElement();
+                        }
+
+                        lineIdx += line.Length + 1;
+                        isFirstLine = false;
                     }
 
                     idx += rlen;

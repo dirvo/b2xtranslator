@@ -7,7 +7,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML
     public class SlideMasterPart : ContentPart
     {
         public List<SlideLayoutPart> SlideLayoutParts = new List<SlideLayoutPart>();
-        protected int _slideLayoutCounter;
+        protected static int _slideLayoutCounter;
+        protected static int _themeCounter;
 
         public SlideMasterPart(OpenXmlPartContainer parent, int partIndex)
             : base(parent, partIndex)
@@ -36,7 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML
 
         public ThemePart AddThemePart()
         {
-            return this.AddPart(new ThemePart(this));
+            return this.AddPart(new ThemePart(this, ++_themeCounter));
         }
     }
 }

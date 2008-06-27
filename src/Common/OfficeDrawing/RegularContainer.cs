@@ -48,19 +48,38 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 
             while (readSize < this.BodySize)
             {
-                Record child = Record.ReadRecord(this.Reader, idx);
+                Record child = null;
 
-                this.Children.Add(child);
-                child.ParentRecord = this;
+                try
+                {
+                    child = Record.ReadRecord(this.Reader, idx);
 
-                child.VerifyReadToEnd();
+                    this.Children.Add(child);
+                    child.ParentRecord = this;
 
-                readSize += child.TotalSize;
-                idx++;
+                    child.VerifyReadToEnd();
+
+                    readSize += child.TotalSize;
+                    idx++;
+                }
+                catch (Exception e)
+                {
+                    if (child != null)
+                    {
+                        string filename = String.Format(@"{0}\{1}.record", "dumps", child.GetIdentifier());
+
+                        using (FileStream fs = new FileStream(filename, FileMode.Create))
+                        {
+                            child.DumpToStream(fs);
+                        }
+                    }
+
+                    throw e;
+                }
             }
         }
 
-        override public string ToString(uint depth)
+        public override string ToString(uint depth)
         {
             StringBuilder result = new StringBuilder(base.ToString(depth));
 

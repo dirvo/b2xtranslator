@@ -56,7 +56,9 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
             while (this.PowerpointDocumentStream.Position != this.PowerpointDocumentStream.Length)
             {
-                this.RootRecords.Add(Record.ReadRecord(this.PowerpointDocumentStream, idx));
+                Record record = Record.ReadRecord(this.PowerpointDocumentStream, idx);
+                record.ParentRecord = null;
+                this.RootRecords.Add(record);
                 idx++;
             }
         }

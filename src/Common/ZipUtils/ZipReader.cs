@@ -34,7 +34,7 @@ namespace DIaLOGIKa.b2xtranslator.ZipUtils
 	/// <summary>
 	/// ZipReader defines an abstract class to read entries from a ZIP file.
 	/// </summary>
-	public abstract class ZipReader
+	public abstract class ZipReader : IDisposable
 	{
 	    /// <summary>
 	    /// Get an entry from a ZIP file.
@@ -48,5 +48,14 @@ namespace DIaLOGIKa.b2xtranslator.ZipUtils
         /// Close the ZIP file.
         /// </summary>
         public abstract void Close();
-	}
+
+        #region IDisposable Members
+
+        public virtual void Dispose()
+        {
+            this.Close();
+        }
+
+        #endregion
+    }
 }
