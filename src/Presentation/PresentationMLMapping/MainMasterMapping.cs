@@ -6,6 +6,8 @@ using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML;
 using DIaLOGIKa.b2xtranslator.Tools;
+using System.Reflection;
+using System.IO;
 
 namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 {
@@ -48,8 +50,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
             else
             {
-                // TODO: Write default clrMap in case of absence? (pre PP2007)
-                throw new NotImplementedException("Write clrMap in case of PPT without ColorMappingAtom");
+                // In absence of ColorMappingAtom write default clrMap
+                Utils.GetDefaultDocument("clrMap").WriteTo(_writer);
             }
 
 
@@ -96,7 +98,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
             else
             {
-                throw new NotImplementedException("Write txStyles in case of PPT without roundTripTxStyles"); // TODO (pre PP2007)
+                //throw new NotImplementedException("Write txStyles in case of PPT without roundTripTxStyles"); // TODO (pre PP2007)
             }
 
 
@@ -115,7 +117,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
             else
             {
-                throw new NotImplementedException("Write default theme in case of PPT without Theme"); // TODO (pre PP2007)
+                //throw new NotImplementedException("Write default theme in case of PPT without Theme"); // TODO (pre PP2007)
             }
             
             // End the document

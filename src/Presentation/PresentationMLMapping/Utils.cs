@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.PptFileFormat;
+using System.IO;
+using System.Xml;
+using System.Reflection;
 
 namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 {
@@ -17,6 +20,17 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         public static Int32 EMUToMasterCoord(Int32 emu)
         {
             return (Int32) (emu / MC_PER_EMU);
+        }
+
+        public static XmlDocument GetDefaultDocument(string filename)
+        {
+            Assembly a = Assembly.GetExecutingAssembly();
+            Stream s = a.GetManifestResourceStream(String.Format("{0}.Defaults.{1}.xml",
+                typeof(Utils).Namespace, filename));
+
+            XmlDocument doc = new XmlDocument();
+            doc.Load(s);
+            return doc;
         }
 
         public static string SlideSizeTypeToXMLValue(SlideSizeType sst)
@@ -73,6 +87,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 case PlaceholderId.Title:
                     return "title";
 
+                case PlaceholderId.Body:
+                    return "body";
+
                 case PlaceholderId.CenteredTitle:
                     return "ctrTitle";
 
@@ -80,8 +97,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     return "subTitle";
 
                 default:
-                    throw new NotImplementedException(
-                        String.Format("Unimplemented placeholder mapping for {0}", pid));
+                    return null;
             }
         }
     }
