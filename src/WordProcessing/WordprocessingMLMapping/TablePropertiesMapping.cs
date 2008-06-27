@@ -82,15 +82,28 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             XmlElement tblLayout = _nodeFactory.CreateElement("w", "tblLayout", OpenXmlNamespaces.WordprocessingML);
             XmlElement tblpPr = _nodeFactory.CreateElement("w", "tblpPr", OpenXmlNamespaces.WordprocessingML);
             XmlAttribute layoutType = _nodeFactory.CreateAttribute("w", "type", OpenXmlNamespaces.WordprocessingML);
-
             layoutType.Value = "fixed";
+            Int16 tblIndent = 0;
 
             foreach (SinglePropertyModifier sprm in tapx.grpprl)
             {
-                switch ((int)sprm.OpCode)
+                switch (sprm.OpCode)
                 {
+                    //table definition
+                    case SinglePropertyModifier.OperationCode.sprmTDefTable:
+                        //Workaround for retrieving the indent of the table:
+                        //In some files there is a indent but no sprmTWidthIndent is set.
+                        //For this cases we can calculate the indent of the table by getting the 
+                        //first boundary of the TDef and adding the padding of the cells
+                        tblIndent = System.BitConverter.ToInt16(sprm.Arguments, 1);
+                        //add the padding (default = 108)
+                        //ToDO: resolve the padding from the style hierachy.
+                        tblIndent += 108;
+                        //If there follows a real sprmTWidthIndent, this value will be overwritten
+                        break;
+
                     //preferred table width
-                    case 0xF614:
+                    case SinglePropertyModifier.OperationCode.sprmTTableWidth:
                         WidthType fts = (WidthType)sprm.Arguments[0];
                         Int16 width = System.BitConverter.ToInt16(sprm.Arguments, 1);
                         XmlElement tblW = _nodeFactory.CreateElement("w", "tblW", OpenXmlNamespaces.WordprocessingML);
@@ -104,55 +117,45 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         break;
 
                     //justification
-                    case 0x5400:
-                    case 0x548A:
+                    case SinglePropertyModifier.OperationCode.sprmTJc:
+                    case  SinglePropertyModifier.OperationCode.sprmTJcRow:
                         appendValueElement(_tblPr, "jc", ((Global.JustificationCode)sprm.Arguments[0]).ToString(), true);
                         break;
 
                     //indent
-                    case 0xF661:
-                        Int16 indValue = System.BitConverter.ToInt16(sprm.Arguments, 1);
-                        if (indValue != 0)
-                        {
-                            XmlElement tblInd = _nodeFactory.CreateElement("w", "tblInd", OpenXmlNamespaces.WordprocessingML);
-                            XmlAttribute tblIndW = _nodeFactory.CreateAttribute("w", "w", OpenXmlNamespaces.WordprocessingML);
-                            tblIndW.Value = System.BitConverter.ToInt16(sprm.Arguments, 1).ToString();
-                            tblInd.Attributes.Append(tblIndW);
-                            XmlAttribute tblIndType = _nodeFactory.CreateAttribute("w", "type", OpenXmlNamespaces.WordprocessingML);
-                            tblIndType.Value = "dxa";
-                            tblInd.Attributes.Append(tblIndType);
-                            _tblPr.AppendChild(tblInd);
-                        }
+                    case SinglePropertyModifier.OperationCode.sprmTWidthIndent:
+                        tblIndent = System.BitConverter.ToInt16(sprm.Arguments, 1);
                         break;
 
                     //style
-                    case 0x563a:
-                    case 0xd63d:
+                    case SinglePropertyModifier.OperationCode.sprmTIstd:
+                    case SinglePropertyModifier.OperationCode.sprmTIstdPermute:
                         string id = StyleSheetMapping.MakeStyleId(_styles.Styles[System.BitConverter.ToInt16(sprm.Arguments, 0)]);
                         if(id != "TableNormal")
                             appendValueElement(_tblPr, "tblStyle", id, true);
                         break;
 
                     //bidi
-                    case 0x560B:
+                    case SinglePropertyModifier.OperationCode.sprmTFBiDi:
+                    case SinglePropertyModifier.OperationCode.sprmTFBiDi90:
                         appendValueElement(_tblPr, "bidiVisual", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString(), true);
                         break;
 
                     //table look
-                    case 0x740A:
+                    case SinglePropertyModifier.OperationCode.sprmTTlp:
                         appendValueElement(_tblPr, "tblLook", String.Format("{0:x4}", System.BitConverter.ToInt16(sprm.Arguments, 2)), true);
                         break;
 
                     //autofit
-                    case 0x3615:
+                    case SinglePropertyModifier.OperationCode.sprmTFAutofit:
                         if (sprm.Arguments[0] == 1)
                             layoutType.Value = "auto";
                         break;
 
                     //default cell padding (margin)
-                    case 0xD632:
-                    case 0xD634:
-                    case 0xD638:
+                    case SinglePropertyModifier.OperationCode.sprmTCellPadding:
+                    case SinglePropertyModifier.OperationCode.sprmTCellPaddingDefault:
+                    case SinglePropertyModifier.OperationCode.sprmTCellPaddingOuter:
                         byte grfbrc = sprm.Arguments[2];
                         Int16 wMar = System.BitConverter.ToInt16(sprm.Arguments, 4);
                         if (Utils.BitmaskToBool((int)grfbrc, 0x01))
@@ -164,25 +167,19 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         if (Utils.BitmaskToBool((int)grfbrc, 0x08))
                             appendDxaElement(tblCellMar, "right", wMar.ToString(), true);
                         break;
-                    
-                    //default cell spacing
-                    case 0xD631:
-                    case 0xD633:
-                    case 0xD637:
-                        break;
 
                     //row count
-                    case 0x3488:
+                    case SinglePropertyModifier.OperationCode.sprmTCHorzBands:
                         appendValueElement(_tblPr, "tblStyleRowBandSize", sprm.Arguments[0].ToString(), true);
                         break;
 
                     //col count
-                    case 0x3489:
+                    case SinglePropertyModifier.OperationCode.sprmTCVertBands:
                         appendValueElement(_tblPr, "tblStyleColBandSize", sprm.Arguments[0].ToString(), true);
                         break;
 
                     //overlap
-                    case 0x3465:
+                    case SinglePropertyModifier.OperationCode.sprmTFNoAllowOverlap:
                         bool noOverlap = Utils.ByteToBool(sprm.Arguments[0]);
                         string tblOverlapVal = "overlap";
                         if (noOverlap)
@@ -191,13 +188,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         break;
 
                     //shading
-                    case 0xD660:
+                    case SinglePropertyModifier.OperationCode.sprmTSetShdTable:
                         ShadingDescriptor desc = new ShadingDescriptor(sprm.Arguments);
                         appendShading(_tblPr, desc);
                         break;
 
                     //borders
-                    case 0xD613:
+                    case SinglePropertyModifier.OperationCode.sprmTTableBorders:
                         byte[] brc = new byte[8];
                         //top border
                         Array.Copy(sprm.Arguments, 0, brc, 0, 8);
@@ -230,64 +227,77 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         appendBorderAttributes(new BorderCode(brc), insideVBorder1);
                         addOrSetBorder(tblBorders, insideVBorder1);
                         break;
-                    case 0xD47F:
+                    case SinglePropertyModifier.OperationCode.sprmTCellBrcTopStyle:
                         XmlNode topBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "top", OpenXmlNamespaces.WordprocessingML);
                         appendBorderAttributes(new BorderCode(sprm.Arguments), topBorder);
                         addOrSetBorder(tblBorders, topBorder);
                         break;
-                    case 0xD680:
+                    case SinglePropertyModifier.OperationCode.sprmTCellBrcBottomStyle:
                         XmlNode bottomBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "bottom", OpenXmlNamespaces.WordprocessingML);
                         appendBorderAttributes(new BorderCode(sprm.Arguments), bottomBorder);
                         addOrSetBorder(tblBorders, bottomBorder);
                         break;
-                    case 0xD681:
+                    case SinglePropertyModifier.OperationCode.sprmTCellBrcLeftStyle:
                         XmlNode leftBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "left", OpenXmlNamespaces.WordprocessingML);
                         appendBorderAttributes(new BorderCode(sprm.Arguments), leftBorder);
                         addOrSetBorder(tblBorders, leftBorder);
                         break;
-                    case 0xD682:
+                    case SinglePropertyModifier.OperationCode.sprmTCellBrcRightStyle:
                         XmlNode rightBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "right", OpenXmlNamespaces.WordprocessingML);
                         appendBorderAttributes(new BorderCode(sprm.Arguments), rightBorder);
                         addOrSetBorder(tblBorders, rightBorder);
                         break;
-                    case 0xD683:
+                    case SinglePropertyModifier.OperationCode.sprmTCellBrcInsideHStyle:
                         XmlNode insideHBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "insideH", OpenXmlNamespaces.WordprocessingML);
                         appendBorderAttributes(new BorderCode(sprm.Arguments), insideHBorder);
                         addOrSetBorder(tblBorders, insideHBorder);
                         break;
-                    case 0xD684:
+                    case SinglePropertyModifier.OperationCode.sprmTCellBrcInsideVStyle:
                         XmlNode insideVBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "insideV", OpenXmlNamespaces.WordprocessingML);
                         appendBorderAttributes(new BorderCode(sprm.Arguments), insideVBorder);
                         addOrSetBorder(tblBorders, insideVBorder);
                         break;
 
                     //floating table properties
-                    case 0x360D:
+                    case SinglePropertyModifier.OperationCode.sprmTPc:
                         byte flag = sprm.Arguments[0];
                         VerticalPositionCode pcVert = (VerticalPositionCode)((flag & 0x30) >> 4);
                         HorizontalPositionCode pcHorz = (HorizontalPositionCode)((flag & 0xC0) >> 6);
                         appendValueAttribute(tblpPr, "horzAnchor", pcHorz.ToString());
                         appendValueAttribute(tblpPr, "vertAnchor", pcVert.ToString());
                         break;
-                    case 0x9410:
+                    case SinglePropertyModifier.OperationCode.sprmTDxaFromText:
                         appendValueAttribute(tblpPr, "leftFromText", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
-                    case 0x941e:
+                    case SinglePropertyModifier.OperationCode.sprmTDxaFromTextRight:
                         appendValueAttribute(tblpPr, "rightFromText", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
-                    case 0x9411:
+                    case SinglePropertyModifier.OperationCode.sprmTDyaFromText:
                         appendValueAttribute(tblpPr, "topFromText", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
-                    case 0x941f:
+                    case SinglePropertyModifier.OperationCode.sprmTDyaFromTextBottom:
                         appendValueAttribute(tblpPr, "bottomFromText", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
-                    case 0x940e:
+                    case SinglePropertyModifier.OperationCode.sprmTDxaAbs:
                         appendValueAttribute(tblpPr, "tblpX", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
-                    case 0x940f:
+                    case SinglePropertyModifier.OperationCode.sprmTDyaAbs:
                         appendValueAttribute(tblpPr, "tblpY", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
                 }
+            }
+
+            //indent
+            if (tblIndent != 0)
+            {
+                XmlElement tblInd = _nodeFactory.CreateElement("w", "tblInd", OpenXmlNamespaces.WordprocessingML);
+                XmlAttribute tblIndW = _nodeFactory.CreateAttribute("w", "w", OpenXmlNamespaces.WordprocessingML);
+                tblIndW.Value = tblIndent.ToString();
+                tblInd.Attributes.Append(tblIndW);
+                XmlAttribute tblIndType = _nodeFactory.CreateAttribute("w", "type", OpenXmlNamespaces.WordprocessingML);
+                tblIndType.Value = "dxa";
+                tblInd.Attributes.Append(tblIndType);
+                _tblPr.AppendChild(tblInd);
             }
 
             //append floating props

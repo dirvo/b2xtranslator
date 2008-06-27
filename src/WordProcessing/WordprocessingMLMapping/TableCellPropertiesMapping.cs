@@ -89,14 +89,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             foreach (SinglePropertyModifier sprm in tapx.grpprl)
             {
-                switch ((int)sprm.OpCode)
+                switch (sprm.OpCode)
 	            {
                     //The TDef SPRM contains an array with the boundaries of the cells, 
                     //followed by a block of cell information for each cell.
                     //The first part of this block is a 16 bit integer containing flags.
                     //The second part is the width of the cell (as 16 bit integer).
                     //The third part contains 4 BRCs for the borders of the cell.
-                    case 0xD608:
+                    case  SinglePropertyModifier.OperationCode.sprmTDefTable:
                         byte itcMac = sprm.Arguments[0];
 
                         //get the boundaries of this cell
@@ -188,7 +188,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         break;
 
                     //margins
-                    case 0xd632:
+                    case SinglePropertyModifier.OperationCode.sprmTCellPadding:
                         byte first = sprm.Arguments[0];
                         byte lim = sprm.Arguments[1];
                         byte ftsMargin = sprm.Arguments[3];
@@ -208,21 +208,21 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         break;
 
                     //shading
-                    case 0xD612:
+                    case SinglePropertyModifier.OperationCode.sprmTDefTableShd:
                         //cell shading for cells 0-20
                         apppendCellShading(sprm.Arguments, _cellIndex);
                         break;
-                    case 0xD616:
+                    case SinglePropertyModifier.OperationCode.sprmTDefTableShd2nd:
                         //cell shading for cells 21-42
                         apppendCellShading(sprm.Arguments, _cellIndex - 21);
                         break;
-                    case 0xD60C:
+                    case SinglePropertyModifier.OperationCode.sprmTDefTableShd3rd:
                         //cell shading for cells 43-62
                         apppendCellShading(sprm.Arguments, _cellIndex - 43);
                         break;
 
                     //width
-                    case 0xD635:
+                    case SinglePropertyModifier.OperationCode.sprmTCellWidth:
                         first = sprm.Arguments[0];
                         lim = sprm.Arguments[1];
                         ftsWidth = sprm.Arguments[2];
@@ -232,7 +232,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         break;
 
                     //vertical alignment
-                    case 0xD62C:
+                    case SinglePropertyModifier.OperationCode.sprmTVertAlign:
                         first = sprm.Arguments[0];
                         lim = sprm.Arguments[1];
                         if (_cellIndex >= first && _cellIndex < lim)
@@ -240,7 +240,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         break;
 
                     //Autofit
-                    case 0xF636:
+                    case SinglePropertyModifier.OperationCode.sprmTFitText:
                         first = sprm.Arguments[0];
                         lim = sprm.Arguments[1];
                         if (_cellIndex >= first && _cellIndex < lim)
@@ -248,7 +248,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         break;
 
                     //no wrap
-                    case 0xD639:
+                    case SinglePropertyModifier.OperationCode.sprmTFCellNoWrap:
                         first = sprm.Arguments[0];
                         lim = sprm.Arguments[1];
                         if (_cellIndex >= first && _cellIndex < lim)
@@ -259,30 +259,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         }
                             
                         break;
-
-                    #region unusedSPRMS
-                    ////borders
-                    //case 0xD620:
-                    //case 0xD62F:
-                    //    first = sprm.Arguments[0];
-                    //    lim = sprm.Arguments[1];
-                    //    if (_cellIndex >= first && _cellIndex < lim)
-                    //    {
-                    //        BitArray borderBits = new BitArray(new byte[] { sprm.Arguments[2] });
-                    //        byte[] brc = new byte[sprm.Arguments.Length - 3];
-                    //        Array.Copy(sprm.Arguments, 3, brc, 0, brc.Length);
-
-                    //        if(borderBits[0])
-                    //            _brcTop = new BorderCode(brc);
-                    //        if (borderBits[1])
-                    //            _brcLeft = new BorderCode(brc);
-                    //        if (borderBits[2])
-                    //            _brcBottom = new BorderCode(brc);
-                    //        if (borderBits[3])
-                    //            _brcRight = new BorderCode(brc);
-                    //    }
-                    //    break;
-                    #endregion
                 }
             }
 
