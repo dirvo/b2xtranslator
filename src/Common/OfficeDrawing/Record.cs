@@ -145,9 +145,8 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 
             if (streamPos != streamLen)
             {
-                throw new Exception(String.Format(
-                    "Record {3} didn't read to end: (stream position: {1} of {2})\n{0}",
-                    this, streamPos, streamLen, this.GetIdentifier()));
+                TraceLogger.DebugInternal("Record {3} didn't read to end: (stream position: {1} of {2})\n{0}",
+                    this, streamPos, streamLen, this.GetIdentifier());
             }
         }
 
