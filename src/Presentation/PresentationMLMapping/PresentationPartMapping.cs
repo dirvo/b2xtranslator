@@ -82,11 +82,16 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         {
             _writer.WriteStartElement("p", "sldIdLst", OpenXmlNamespaces.PresentationML);
 
+            int i = 0;
+
             foreach (Slide slide in ppt.AllRootRecordsWithType<Slide>())
             {
-                SlidePersistAtom slidePersist = documentRecord.SlidePersistAtomForSlideWithIdx(slide.SiblingIdx);
+                // TODO: Doesn't work correctly...
+                //SlidePersistAtom slidePersist = documentRecord.SlidePersistAtomForSlideWithIdx(i);
 
-                WriteSlide(slide, slidePersist.SlideId);
+                WriteSlide(slide, i);
+
+                i++;
             }
 
             _writer.WriteEndElement();

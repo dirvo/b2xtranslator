@@ -22,6 +22,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         {
             TraceLogger.DebugInternal("MainMasterMapping.Apply");
 
+            SlideMasterPart masterPart = (SlideMasterPart)this.targetPart;
+
             // Start the document
             _writer.WriteStartDocument();
             _writer.WriteStartElement("p", "sldMaster", OpenXmlNamespaces.PresentationML);
@@ -68,7 +70,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             {
                 foreach (RoundTripContentMasterInfo12 slideLayout in slideLayouts)
                 {
-                    SlideMasterPart masterPart = (SlideMasterPart)this.targetPart;
                     SlideLayoutPart layoutPart = masterPart.AddSlideLayoutPart();
 
                     layoutPart.ReferencePart<SlideMasterPart>(masterPart);
@@ -103,22 +104,24 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
 
             // Write theme
+            ThemePart themePart = masterPart.AddThemePart();
+
             Theme theme = master.FirstChildWithType<Theme>();
             if (theme != null)
             {
-                SlideMasterPart masterPart = (SlideMasterPart)this.targetPart;
-                ThemePart themePart = masterPart.AddThemePart();
-
                 theme.XmlDocumentElement.WriteTo(themePart.XmlWriter);
-                themePart.XmlWriter.Flush();
-
-                PresentationPart presentationPart = _ctx.Pptx.PresentationPart;
-                presentationPart.ReferencePart(themePart);
             }
             else
             {
-                //throw new NotImplementedException("Write default theme in case of PPT without Theme"); // TODO (pre PP2007)
+                // In absence of Theme record write default clrMap
+                Utils.GetDefaultDocument("theme").WriteTo(themePart.XmlWriter);
             }
+
+            themePart.XmlWriter.Flush();
+
+            PresentationPart presentationPart = _ctx.Pptx.PresentationPart;
+            presentationPart.ReferencePart(themePart);
+
             
             // End the document
             _writer.WriteEndElement();

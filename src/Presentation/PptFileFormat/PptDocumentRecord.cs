@@ -79,16 +79,40 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
                         target.Add(atom);
                 }
             }
+
+            this.MasterPersistList.Sort(delegate(SlidePersistAtom a, SlidePersistAtom b) {
+                return a.PsrReference.CompareTo(b.PsrReference);
+            });
+
+            this.NotesPersistList.Sort(delegate(SlidePersistAtom a, SlidePersistAtom b) {
+                return a.PsrReference.CompareTo(b.PsrReference);
+            });
+
+            this.SlidePersistList.Sort(delegate(SlidePersistAtom a, SlidePersistAtom b) {
+                return a.PsrReference.CompareTo(b.PsrReference);
+            });
+
         }
 
         public SlidePersistAtom SlidePersistAtomForSlideWithIdx(uint idx)
         {
+            try
+            {
+                return this.SlidePersistList[(int)idx];
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return null;
+            }
+
+            /*
+
             foreach (SlidePersistAtom atom in this.SlidePersistList)
                 // idx is zero-based, psr-reference is one-based
                 if (atom.PsrReference == idx + 1)
                     return atom;
 
-            return null;
+            return null;*/
         }
     }
 }

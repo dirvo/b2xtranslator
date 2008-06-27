@@ -55,9 +55,6 @@ namespace DIaLOGIKa.b2xtranslator.ppt2x
             // let the Console listen to the Trace messages
             Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
 
-            inputFile = args[0];
-            outputFile = args.Length > 1 ? args[1] : null;
-
             try
             {
                 // welcome message
