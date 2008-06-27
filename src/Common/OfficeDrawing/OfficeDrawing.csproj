@@ -38,7 +38,6 @@
     <Compile Include="BlipStoreContainer.cs" />
     <Compile Include="BlipStoreEntry.cs" />
     <Compile Include="ChildAnchor.cs" />
-    <Compile Include="ClientAnchor.cs" />
     <Compile Include="DrawingContainer.cs" />
     <Compile Include="DrawingGroup.cs" />
     <Compile Include="DrawingGroupRecord.cs" />
@@ -89,20 +88,6 @@
     <Compile Include="Shapetypes\RectangleType.cs" />
     <Compile Include="RegularContainer.cs" />
     <Compile Include="XmlStringAtom.cs" />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     <Compile Include="Shapetypes\RibbonDownType.cs" />
     <Compile Include="Shapetypes\RibbonUpType.cs" />
     <Compile Include="Shapetypes\RightArrowType.cs" />

@@ -13,6 +13,8 @@ namespace DIaLOGIKa.b2xtranslator.PptDump
     {
         static void Main(string[] args)
         {
+            TraceLogger.LogLevel = TraceLogger.LoggingLevel.DebugInternal;
+
             const string outputDir = "dumps";
 
             if (Directory.Exists(outputDir))
