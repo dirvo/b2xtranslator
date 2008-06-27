@@ -51,7 +51,10 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         {
             ClientTextbox textbox = this.ParentRecord as ClientTextbox;
             if (textbox == null)
-                throw new Exception("Record of type StyleTextPropAtom doesn't have parent of type ClientTextbox");
+            {
+                TraceLogger.DebugInternal("Record of type StyleTextPropAtom doesn't have parent of type ClientTextbox: {0}", this);
+                return;
+            }
 
             // TODO: FindSiblingByType?
             TextAtom textAtom = textbox.FirstChildWithType<TextAtom>();

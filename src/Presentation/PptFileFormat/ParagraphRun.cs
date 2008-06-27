@@ -43,6 +43,11 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             get { return (this.Mask & ParagraphMask.BulletTypefacePresent) != 0; }
         }
 
+        public bool HasCustomBulletTypeface
+        {
+            get { return (this.Mask & ParagraphMask.HasCustomBulletTypeface) != 0; }
+        }
+
         public bool BulletSizePresent
         {
             get { return (this.Mask & ParagraphMask.BulletSizePresent) != 0; }
@@ -150,13 +155,13 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             if (this.BulletCharPresent)
                 this.BulletChar = (char)reader.ReadUInt16();
 
-            if (this.BulletTypefacePresent)
+            if (this.HasCustomBulletTypeface && (this.BulletFlags & (1 << 1)) != 0)
                 this.BulletTypefaceIdx = reader.ReadUInt16();
 
-            if ((this.HasCustomBulletSize && (this.BulletFlags & (1 << 3)) != 0))
+            if (this.HasCustomBulletSize && (this.BulletFlags & (1 << 3)) != 0)
                 this.BulletSize = reader.ReadInt16();
 
-            if ((this.HasCustomBulletColor && (this.BulletFlags & (1 << 2)) != 0))
+            if (this.HasCustomBulletColor && (this.BulletFlags & (1 << 2)) != 0)
                 this.BulletColor = new GrColorAtom(reader);
 
             if (this.AlignmentPresent)

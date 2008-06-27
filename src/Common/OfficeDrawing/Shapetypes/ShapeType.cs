@@ -167,7 +167,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
                 }
                 catch (TargetInvocationException e)
                 {
-                    TraceLogger.Debug(e.InnerException.ToString());
+                    TraceLogger.DebugInternal(e.InnerException.ToString());
                     throw e.InnerException;
                 }
             }
