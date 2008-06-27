@@ -88,7 +88,7 @@ namespace xls2x
                 using (StructuredStorageFile reader = new StructuredStorageFile(procFile.File.FullName))
                 {
                     XlsDocument xlsDoc = new XlsDocument(reader);
-                    using (SpreadsheetDocument spreadx = SpreadsheetDocument.Create(Program.inputFile + ".xlsx"))
+                    using (SpreadsheetDocument spreadx = SpreadsheetDocument.Create(outputFile))
                     {
 
                         //Setup the writer
@@ -115,6 +115,10 @@ namespace xls2x
 
                     }
                     reader.Close();
+                    DateTime end = DateTime.Now;
+                    TimeSpan diff = end.Subtract(start);
+                    TraceLogger.Info("Conversion of file {0} finished in {1} seconds", inputFile, diff.TotalSeconds.ToString(CultureInfo.InvariantCulture));
+  
                 }
             }
             catch (DirectoryNotFoundException ex)
@@ -125,16 +129,6 @@ namespace xls2x
             catch (FileNotFoundException ex)
             {
                 TraceLogger.Error(ex.Message);
-                TraceLogger.Debug(ex.ToString());
-            }
-            catch (ReadBytesAmountMismatchException ex)
-            {
-                TraceLogger.Error("Input file {0} is not a valid Microsoft Word 97-2003 file.", inputFile);
-                TraceLogger.Debug(ex.ToString());
-            }
-            catch (MagicNumberException ex)
-            {
-                TraceLogger.Error("Input file {0} is not a valid Microsoft Word 97-2003 file.", inputFile);
                 TraceLogger.Debug(ex.ToString());
             }
             catch (ZipCreationException ex)

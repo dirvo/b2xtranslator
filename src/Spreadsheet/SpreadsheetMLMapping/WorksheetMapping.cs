@@ -75,6 +75,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 // Row 
                 _writer.WriteStartElement("row");
                 _writer.WriteAttributeString("r", (row.Row +1).ToString());
+                row.Cells.Sort(); 
                 foreach (AbstractCellData cell in row.Cells)
                 {
                     // Col 

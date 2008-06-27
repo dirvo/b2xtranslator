@@ -39,7 +39,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// </summary>
         public override void extractData()
         {
-            BiffHeader bh;
+            BiffHeader bh, latestbiff;
+            BOF firstBOF = null;
+            
+
             try
             {
                 while (this.StreamReader.BaseStream.Position < this.StreamReader.BaseStream.Length)
@@ -48,10 +51,22 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                     bh.length = this.StreamReader.ReadUInt16();
 
                     // TraceLogger.Debug("BIFF {0}\t{1}\t", bh.id, bh.length);
-
+                    
                     if (bh.id == RecordNumber.EOF)
                     {
-                        this.StreamReader.BaseStream.Seek(0, SeekOrigin.End); 
+                        this.StreamReader.BaseStream.Seek(0, SeekOrigin.End);
+                        
+                    } else if (bh.id == RecordNumber.BOF)
+                    {
+                        BOF bof = new BOF(this.StreamReader, bh.id, bh.length);
+                        if (firstBOF == null)
+                        {
+                            firstBOF = bof;
+                        }
+                        else
+                        {
+                            this.readUnkownFile(); 
+                        }
                     }
                     else if (bh.id == RecordNumber.LABELSST)
                     {
@@ -94,7 +109,31 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                         byte[] buffer = new byte[bh.length];
                         buffer = this.StreamReader.ReadBytes(bh.length);               
                     }
+                    latestbiff = bh; 
                 }
+            }
+            catch (Exception ex)
+            {
+                TraceLogger.Error(ex.Message);
+                TraceLogger.Debug(ex.ToString());
+            }
+        }
+
+        /// <summary>
+        /// This method should read over every record which is inside a file in the worksheet file 
+        /// For example this could be the diagram "file" 
+        /// A diagram begins with the BOF Biffrecord and ends with the EOF record. 
+        /// </summary>
+        public void readUnkownFile(){
+            BiffHeader bh;
+            try
+            {
+                do
+                {
+                    bh.id = (RecordNumber)this.StreamReader.ReadUInt16();
+                    bh.length = this.StreamReader.ReadUInt16();
+                    this.StreamReader.ReadBytes(bh.length);
+                } while (bh.id != RecordNumber.EOF); 
             }
             catch (Exception ex)
             {

@@ -101,7 +101,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                         bsd.boundsheetRecord = bs; 
                         BoundSheetExtractor se = new BoundSheetExtractor(this.StreamReader, bsd);
                         this.StreamReader.BaseStream.Seek(oldOffset, SeekOrigin.Begin);
-                        TraceLogger.Debug(bs.ToString());
+                        // TraceLogger.Debug(bs.ToString());
                     }
                     else if (bh.id == RecordNumber.SST)
                     {
