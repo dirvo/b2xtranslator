@@ -50,7 +50,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                     bh.id = (RecordNumber)this.StreamReader.ReadUInt16();
                     bh.length = this.StreamReader.ReadUInt16();
 
-                    // TraceLogger.Debug("BIFF {0}\t{1}\t", bh.id, bh.length);
+                    TraceLogger.DebugInternal("BIFF {0}\t{1}\t", bh.id, bh.length);
                     
                     if (bh.id == RecordNumber.EOF)
                     {

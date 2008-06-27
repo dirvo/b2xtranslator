@@ -84,7 +84,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                     bh.id = (RecordNumber)this.StreamReader.ReadUInt16();
                     bh.length = this.StreamReader.ReadUInt16();
                     // Debugging output 
-                    // TraceLogger.Debug("BIFF {0}\t{1}\t", bh.id, bh.length);
+                    TraceLogger.DebugInternal("BIFF {0}\t{1}\t", bh.id, bh.length);
 
                     if (bh.id == RecordNumber.BOUNDSHEET)
                     {
@@ -101,7 +101,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                         bsd.boundsheetRecord = bs; 
                         BoundSheetExtractor se = new BoundSheetExtractor(this.StreamReader, bsd);
                         this.StreamReader.BaseStream.Seek(oldOffset, SeekOrigin.Begin);
-                        // TraceLogger.Debug(bs.ToString());
+                        TraceLogger.DebugInternal(bs.ToString());
                     }
                     else if (bh.id == RecordNumber.SST)
                     {

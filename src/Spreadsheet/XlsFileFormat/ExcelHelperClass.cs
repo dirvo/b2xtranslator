@@ -54,14 +54,14 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                 {
                     num *= -1;
                 }
+                if (type == 1)
+                {
+                    num /= 100;
 
+                }
             }
             // if type is 1 then it is an IEEE number * 100 
-            else if (type == 1)
-            {
-                num *= 100;
 
-            }
             // if type is 2 or 3 it is an integer value
             else if (type == 2 || type == 3)
             {
@@ -71,12 +71,13 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                 // shifting the value by two 
                 unumber = unumber >> 2;
                 num = (double)unumber;
+                if (type == 3)
+                {
+                    num /= 100;
+                }
             }
             // if type is 3, it has to be multiplicated with 100
-            else if (type == 3)
-            {
-                num *= 100;
-            }
+
             return num;
         }
 

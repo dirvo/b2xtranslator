@@ -98,7 +98,6 @@ namespace xls2x
                         xws.Encoding = Encoding.UTF8;
                         xws.ConformanceLevel = ConformanceLevel.Document;
 
-
                         ExcelContext xlsContext = new ExcelContext(xlsDoc, xws);
                         xlsContext.SpreadDoc = spreadx;
 
@@ -112,13 +111,11 @@ namespace xls2x
                             }
                         }
                         xlsDoc.workBookData.Convert(new WorkbookMapping(xlsContext));
-
                     }
                     reader.Close();
                     DateTime end = DateTime.Now;
                     TimeSpan diff = end.Subtract(start);
                     TraceLogger.Info("Conversion of file {0} finished in {1} seconds", inputFile, diff.TotalSeconds.ToString(CultureInfo.InvariantCulture));
-  
                 }
             }
             catch (DirectoryNotFoundException ex)
@@ -134,7 +131,6 @@ namespace xls2x
             catch (ZipCreationException ex)
             {
                 TraceLogger.Error("Could not create output file {0}.", outputFile);
-                //TraceLogger.Error("Perhaps the specified outputfile was a directory or contained invalid characters.");
                 TraceLogger.Debug(ex.ToString());
             }
             catch (Exception ex)
@@ -194,6 +190,10 @@ namespace xls2x
                         {
                             TraceLogger.LogLevel = TraceLogger.LoggingLevel.Debug;
                         }
+                        else if (verbose == "debuginternal")
+                        {
+                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.DebugInternal;
+                        } 
                         else if (verbose == "none")
                         {
                             TraceLogger.LogLevel = TraceLogger.LoggingLevel.None;
@@ -260,7 +260,6 @@ namespace xls2x
         private static int getRevision()
         {
             int rev = -1;
-
             try
             {
                 Assembly a = Assembly.GetExecutingAssembly();
@@ -270,7 +269,6 @@ namespace xls2x
                 s.Close();
             }
             catch (Exception) { }
-
             return rev;
         }
     }
