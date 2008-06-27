@@ -86,10 +86,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             foreach (Slide slide in ppt.AllRootRecordsWithType<Slide>())
             {
-                // TODO: Doesn't work correctly...
-                //SlidePersistAtom slidePersist = documentRecord.SlidePersistAtomForSlideWithIdx(i);
+                // TODO: Doesn't always work correctly...
+                SlidePersistAtom slidePersist = documentRecord.SlidePersistAtomForSlideWithIdx(slide.SiblingIdx);
 
-                WriteSlide(slide, i);
+                WriteSlide(slide, slidePersist != null ? slidePersist.SlideId : i);
 
                 i++;
             }

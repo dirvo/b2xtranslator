@@ -96,23 +96,12 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
         public SlidePersistAtom SlidePersistAtomForSlideWithIdx(uint idx)
         {
-            try
-            {
-                return this.SlidePersistList[(int)idx];
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                return null;
-            }
-
-            /*
-
             foreach (SlidePersistAtom atom in this.SlidePersistList)
                 // idx is zero-based, psr-reference is one-based
                 if (atom.PsrReference == idx + 1)
                     return atom;
 
-            return null;*/
+            return null;
         }
     }
 }
