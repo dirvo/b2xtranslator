@@ -5,6 +5,7 @@ using DIaLOGIKa.b2xtranslator.PptFileFormat;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 {
@@ -17,7 +18,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         override public void Apply(MainMaster master)
         {
-            Console.WriteLine("MainMasterMapping.Apply");
+            TraceLogger.DebugInternal("MainMasterMapping.Apply");
 
             // Start the document
             _writer.WriteStartDocument();

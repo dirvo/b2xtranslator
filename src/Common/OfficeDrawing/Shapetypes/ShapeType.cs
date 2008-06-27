@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using System.Reflection;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
 {
@@ -166,7 +167,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
                 }
                 catch (TargetInvocationException e)
                 {
-                    Console.WriteLine(e.InnerException);
+                    TraceLogger.Debug(e.InnerException.ToString());
                     throw e.InnerException;
                 }
             }

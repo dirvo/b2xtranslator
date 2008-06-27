@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 using System.IO;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
@@ -28,14 +29,14 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
                 this.pruns[i] = new ParagraphRun(this.Reader, true);
 
-                Console.WriteLine("Read paragraph run. Before pos = {0}, after pos = {1} of {2}: {3}",
+                TraceLogger.DebugInternal("Read paragraph run. Before pos = {0}, after pos = {1} of {2}: {3}",
                     pos, this.Reader.BaseStream.Position, this.Reader.BaseStream.Length,
                     pruns[i]);
 
                 pos = this.Reader.BaseStream.Position;
                 this.cruns[i] = new CharacterRun(this.Reader);
 
-                Console.WriteLine("Read character run. Before pos = {0}, after pos = {1} of {2}: {3}",
+                TraceLogger.DebugInternal("Read character run. Before pos = {0}, after pos = {1} of {2}: {3}",
                     pos, this.Reader.BaseStream.Position, this.Reader.BaseStream.Length,
                     cruns[i]);
             }

@@ -5,6 +5,7 @@ using DIaLOGIKa.b2xtranslator.PptFileFormat;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 {
@@ -17,7 +18,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         override public void Apply(Slide slide)
         {
-            Console.WriteLine("SlideMapping.Apply");
+            TraceLogger.DebugInternal("SlideMapping.Apply");
 
             RoundTripContentMasterId12 masterInfo = slide.FirstChildWithType<RoundTripContentMasterId12>();
             if (masterInfo != null)

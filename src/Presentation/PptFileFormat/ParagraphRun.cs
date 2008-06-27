@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
@@ -191,7 +192,6 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             if (this.TabStopsPresent)
             {
                 UInt16 tabStopsCount = reader.ReadUInt16();
-                Console.WriteLine("tabStopsCount = {0}", tabStopsCount);
                 this.TabStops = new TabStop[tabStopsCount];
 
                 for (int i = 0; i < tabStopsCount; i++)

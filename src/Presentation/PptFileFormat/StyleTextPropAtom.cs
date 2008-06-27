@@ -65,7 +65,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
             // TODO: Length in bytes? UTF-16 characters? Full width unicode characters?
 
-            //Console.WriteLine("New text style for text: {0}", Utils.StringInspect(textAtom.Text));
+            //TraceLogger.DebugInternal("New text style for text: {0}", Utils.StringInspect(textAtom.Text));
 
             uint seenLength = 0;
             while (seenLength < textAtom.Text.Length + 1)
@@ -77,14 +77,14 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
                 run.Length = length;
                 this.PRuns.Add(run);
 
-                /*Console.WriteLine("Read paragraph run. Before pos = {0}, after pos = {1} of {2}: {3}",
+                /*TraceLogger.DebugInternal("Read paragraph run. Before pos = {0}, after pos = {1} of {2}: {3}",
                     pos, this.Reader.BaseStream.Position, this.Reader.BaseStream.Length,
                     run);*/
 
                 seenLength += length;
             }
 
-            Console.WriteLine();
+            //TraceLogger.DebugInternal();
 
             seenLength = 0;
             while (seenLength < textAtom.Text.Length + 1)

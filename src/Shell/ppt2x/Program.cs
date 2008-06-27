@@ -37,6 +37,7 @@ using System.Globalization;
 using DIaLOGIKa.b2xtranslator.PptFileFormat;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML;
 using DIaLOGIKa.b2xtranslator.PresentationMLMapping;
+using DIaLOGIKa.b2xtranslator.ZipUtils;
 using System.Reflection;
 
 namespace DIaLOGIKa.b2xtranslator.ppt2x
@@ -48,62 +49,168 @@ namespace DIaLOGIKa.b2xtranslator.ppt2x
 
         public static void Main(string[] args)
         {
+            // parse arguments
+            parseArgs(args);
+
+            // let the Console listen to the Trace messages
+            Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
+
             inputFile = args[0];
             outputFile = args.Length > 1 ? args[1] : null;
 
-            //welcome message
-            printWelcome();
-
-            //copy processing file
-            ProcessingFile procFile = new ProcessingFile(inputFile);
-
-            //make output file name
-            if (outputFile == null)
+            try
             {
-                if (inputFile.Contains("."))
+                // welcome message
+                printWelcome();
+
+                // copy processing file
+                ProcessingFile procFile = new ProcessingFile(inputFile);
+
+                //make output file name
+                if (outputFile == null)
                 {
-                    outputFile = inputFile.Remove(inputFile.LastIndexOf(".")) + ".pptx";
+                    if (inputFile.Contains("."))
+                    {
+                        outputFile = inputFile.Remove(inputFile.LastIndexOf(".")) + ".pptx";
+                    }
+                    else
+                    {
+                        outputFile = inputFile + ".pptx";
+                    }
                 }
-                else
+
+                //start time
+                DateTime start = DateTime.Now;
+
+                //open the reader
+                using (StructuredStorageFile reader = new StructuredStorageFile(procFile.File.FullName))
                 {
-                    outputFile = inputFile + ".pptx";
+
+                    //parse the document
+                    PowerpointDocument ppt = new PowerpointDocument(reader);
+
+                    using (PresentationDocument pptx = PresentationDocument.Create(outputFile))
+                    {
+                        // Setup the writer
+                        XmlWriterSettings xws = new XmlWriterSettings();
+                        xws.OmitXmlDeclaration = false;
+                        xws.CloseOutput = true;
+                        xws.Encoding = Encoding.UTF8;
+                        xws.ConformanceLevel = ConformanceLevel.Document;
+
+                        // Setup the context
+                        ConversionContext context = new ConversionContext(ppt);
+                        context.WriterSettings = xws;
+                        context.Pptx = pptx;
+
+                        // Write presentation.xml
+                        ppt.Convert(new PresentationPartMapping(context));
+                    }
+
+                    DateTime end = DateTime.Now;
+                    TimeSpan diff = end.Subtract(start);
+                    TraceLogger.Info("Conversion of file {0} finished in {1} seconds", inputFile, diff.TotalSeconds.ToString(CultureInfo.InvariantCulture));
                 }
             }
-
-            //start time
-            DateTime start = DateTime.Now;
-
-            //open the reader
-            using (StructuredStorageFile reader = new StructuredStorageFile(procFile.File.FullName))
+            catch (ZipCreationException ex)
             {
-
-                //parse the document
-                PowerpointDocument ppt = new PowerpointDocument(reader);
-
-                using (PresentationDocument pptx = PresentationDocument.Create(outputFile))
-                {
-                    // Setup the writer
-                    XmlWriterSettings xws = new XmlWriterSettings();
-                    xws.OmitXmlDeclaration = false;
-                    xws.CloseOutput = true;
-                    xws.Encoding = Encoding.UTF8;
-                    xws.ConformanceLevel = ConformanceLevel.Document;
-
-                    // Setup the context
-                    ConversionContext context = new ConversionContext(ppt);
-                    context.WriterSettings = xws;
-                    context.Pptx = pptx;
-
-                    // Write presentation.xml
-                    ppt.Convert(new PresentationPartMapping(context));
-                }
-
-                DateTime end = DateTime.Now;
-                TimeSpan diff = end.Subtract(start);
-                TraceLogger.Info("Conversion of file {0} finished in {1} seconds", inputFile, diff.TotalSeconds.ToString(CultureInfo.InvariantCulture));
+                TraceLogger.Error("Could not create output file {0}.", outputFile);
+                //TraceLogger.Error("Perhaps the specified outputfile was a directory or contained invalid characters.");
+                TraceLogger.Debug(ex.ToString());
+            }
+            catch (Exception ex)
+            {
+                TraceLogger.Error("Conversion of file {0} failed.", inputFile);
+                TraceLogger.Debug(ex.ToString());
             }
         }
 
+        /// <summary>
+        /// Parses the arguments of the tool
+        /// </summary>
+        /// <param name="args">The args array</param>
+        private static void parseArgs(string[] args)
+        {
+            try
+            {
+                if (args[0] == "-?")
+                {
+                    printUsage();
+                    System.Environment.Exit(0);
+                }
+                else
+                {
+                    inputFile = args[0];
+                }
+
+                for (int i = 1; i < args.Length; i++)
+                {
+                    if (args[i].ToLower() == "-v")
+                    {
+                        //parse verbose level
+                        string verbose = args[i + 1].ToLower();
+                        int vLvl;
+                        if (Int32.TryParse(verbose, out vLvl))
+                        {
+                            TraceLogger.LogLevel = (TraceLogger.LoggingLevel)vLvl;
+                        }
+                        else if (verbose == "error")
+                        {
+                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.Error;
+                        }
+                        else if (verbose == "warning")
+                        {
+                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.Warning;
+                        }
+                        else if (verbose == "info")
+                        {
+                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.Info;
+                        }
+                        else if (verbose == "debug")
+                        {
+                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.Debug;
+                        }
+                        else if (verbose == "debuginternal")
+                        {
+                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.DebugInternal;
+                        }
+                        else if (verbose == "none")
+                        {
+                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.None;
+                        }
+                    }
+                    else if (args[i].ToLower() == "-o")
+                    {
+                        //parse output file name
+                        outputFile = args[i + 1];
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                TraceLogger.Error("At least one of the required arguments was not correctly set.\n");
+                printUsage();
+                System.Environment.Exit(1);
+            }
+        }
+
+        /// <summary>
+        /// Prints the usage of the tool
+        /// </summary>
+        private static void printUsage()
+        {
+            StringBuilder usage = new StringBuilder();
+            usage.AppendLine("Usage: ppt2x filename [-o filename] [-v level] [-?]");
+            usage.AppendLine("-o <filename>  change output filename");
+            usage.AppendLine("-v <level>     set trace level, where <level> is one of the following:");
+            usage.AppendLine("                  none (0)    print nothing");
+            usage.AppendLine("                  error (1)   print all errors");
+            usage.AppendLine("                  warning (2) print all errors and warnings");
+            usage.AppendLine("                  info (3)    print all errors, warnings and infos (default)");
+            usage.AppendLine("                  debug (4)   print all errors, warnings, infos and debug messages");
+            usage.AppendLine("-?             print this help");
+            Console.WriteLine(usage.ToString());
+        }
 
         /// <summary>
         /// Prints the heading row of the tool
@@ -121,7 +228,6 @@ namespace DIaLOGIKa.b2xtranslator.ppt2x
             TraceLogger.Simple(welcome.ToString());
             TraceLogger.EnableTimeStamp = backup;
         }
-
 
         /// <summary>
         /// Returns the revision that is stored in the embedded resource "revision.txt".

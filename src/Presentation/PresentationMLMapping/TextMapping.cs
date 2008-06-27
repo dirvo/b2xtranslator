@@ -6,6 +6,7 @@ using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 {
@@ -76,7 +77,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             StyleTextPropAtom style = textbox.FirstChildWithType<StyleTextPropAtom>();
 
-            Console.WriteLine("TextMapping: text = {0}", Tools.Utils.StringInspect(text));
+            TraceLogger.DebugInternal("TextMapping: text = {0}", Tools.Utils.StringInspect(text));
 
             uint idx = 0;
 
@@ -87,7 +88,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                 uint pEndIdx = (p != null) ? (uint)Math.Min(idx + p.Length, text.Length) : (uint)text.Length;
 
-                Console.WriteLine("Paragraph run from {0} to {1}", idx, pEndIdx);
+                TraceLogger.DebugInternal("Paragraph run from {0} to {1}", idx, pEndIdx);
 
                 _writer.WriteStartElement("a", "p", OpenXmlNamespaces.DrawingML);
 
@@ -113,7 +114,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                     String runText = text.Substring((int)idx, (int)slen).Trim(new char[] {'\r', '\n', '\v'});
 
-                    Console.WriteLine("Character run from {0} to {1} ({3}): {2}",
+                    TraceLogger.DebugInternal("Character run from {0} to {1} ({3}): {2}",
                         idx, idx + rlen, Tools.Utils.StringInspect(runText), slen);
 
                     String[] lines = runText.Split('\v');

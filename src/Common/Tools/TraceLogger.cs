@@ -42,7 +42,8 @@ namespace DIaLOGIKa.b2xtranslator.Tools
             Error,
             Warning,
             Info,
-            Debug
+            Debug,
+            DebugInternal
         }
 
         static LoggingLevel _logLevel = LoggingLevel.Info;
@@ -78,6 +79,13 @@ namespace DIaLOGIKa.b2xtranslator.Tools
             WriteLine(string.Format(msg, objs), LoggingLevel.Error);
         }
 
+        public static void DebugInternal(string msg, params object[] objs)
+        {
+            if (msg == null || msg == "")
+                return;
+
+            WriteLine("[D] " + string.Format(msg, objs), LoggingLevel.DebugInternal);
+        }
 
         public static void Debug(string msg, params object[] objs)
         {

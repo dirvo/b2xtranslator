@@ -8,6 +8,7 @@ using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 using System.Reflection;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using System.Drawing;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 {
@@ -30,7 +31,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             // Call Apply(record) with dynamic dispatch (selection based on run-time type of record)
             MethodInfo method = this.GetType().GetMethod("Apply", new Type[] { record.GetType() });
 
-            Console.WriteLine(method);
+            TraceLogger.DebugInternal(method.ToString());
 
             try
             {
@@ -38,7 +39,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
             catch (TargetInvocationException e)
             {
-                Console.WriteLine(e.InnerException);
+                TraceLogger.Debug(e.InnerException.ToString());
                 throw e.InnerException;
             }
         }
@@ -146,7 +147,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         public void Apply(Record record)
         {
-            Console.WriteLine("Unsupported record: {0}", record);
+            TraceLogger.DebugInternal("Unsupported record: {0}", record);
             // Ignore unsupported records
         }
 
