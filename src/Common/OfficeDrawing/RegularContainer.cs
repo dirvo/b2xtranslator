@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
     /// </summary>
     public class RegularContainer : Record
     {
+        private const bool WRITE_DEBUG_DUMPS = false;
         public List<Record> Children = new List<Record>();
 
         public RegularContainer(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
@@ -64,13 +65,16 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
                 }
                 catch (Exception e)
                 {
-                    if (child != null)
+                    if (WRITE_DEBUG_DUMPS)
                     {
-                        string filename = String.Format(@"{0}\{1}.record", "dumps", child.GetIdentifier());
-
-                        using (FileStream fs = new FileStream(filename, FileMode.Create))
+                        if (child != null)
                         {
-                            child.DumpToStream(fs);
+                            string filename = String.Format(@"{0}\{1}.record", "dumps", child.GetIdentifier());
+
+                            using (FileStream fs = new FileStream(filename, FileMode.Create))
+                            {
+                                child.DumpToStream(fs);
+                            }
                         }
                     }
 
