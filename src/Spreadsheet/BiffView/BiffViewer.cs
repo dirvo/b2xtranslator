@@ -222,7 +222,16 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
 
                     sw.WriteLine("<tr>");
                     sw.WriteLine("<td>");
-                    sw.WriteLine("BIFF <a href=\"{0}\\xlsspec\\{1}.html\">{1}</a> ({2:X02}h)", baseUrl, bh.id, (int)bh.id);
+
+                    string url = string.Format("{0}/xlsspec/{1}.html", baseUrl, bh.id);
+                    Uri uri = new Uri(url);
+                    if (!File.Exists(uri.LocalPath))
+                    {
+                        // unspecified record id
+                        url = string.Format("{0}/xlsspec/404.html", baseUrl);
+                    }
+
+                    sw.WriteLine("BIFF <a href=\"{0}\">{1}</a> ({2:X02}h)", url, bh.id, (int)bh.id);
                     sw.WriteLine("</td><td>");
                     sw.WriteLine("{0}", bh.length);
 
