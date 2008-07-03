@@ -100,7 +100,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// The drawing object table ....
         /// </summary>
-        public DrawingObjectTable DrawingObjectTable;
+        public OfficeArtContent OfficeArtContent;
 
         /// <summary>
         /// 
@@ -204,8 +204,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             //read section table
             this.SectionTable = new SectionTable(this.FIB, this.TableStream, this.WordDocumentStream);
 
-            //read the DO table
-            this.DrawingObjectTable = new DrawingObjectTable(this.FIB, this.TableStream);
+            //read the Drawing Content
+            this.OfficeArtContent = new OfficeArtContent(this.FIB, this.TableStream);
 
             //read the OfficeDrawing tables
             this.OfficeDrawingTable = new OfficeDrawingTable(this, OfficeDrawingTable.OfficeDrawingTableType.MainDocument);

@@ -34,7 +34,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _stroke = _nodeFactory.CreateElement("v", "stroke", OpenXmlNamespaces.VectorML);
             _shadow = _nodeFactory.CreateElement("v", "shadow", OpenXmlNamespaces.VectorML);
 
-            Record recBs = _ctx.Doc.DrawingObjectTable.drawingGroup.FirstChildWithType<BlipStoreContainer>();
+            Record recBs = _ctx.Doc.OfficeArtContent.DrawingGroupData.FirstChildWithType<BlipStoreContainer>();
             if (recBs != null)
                 _blipStore = (BlipStoreContainer)recBs;
         }

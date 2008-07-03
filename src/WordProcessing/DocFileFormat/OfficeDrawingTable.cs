@@ -47,11 +47,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 FileShapeAddress fspa = null;
                 if (type == OfficeDrawingTableType.Header)
                 {
-                    fspa = new FileShapeAddress(reader, doc.DrawingObjectTable);
+                    fspa = new FileShapeAddress(reader, doc.OfficeArtContent);
                 }
                 else if (type == OfficeDrawingTableType.MainDocument)
                 {
-                    fspa = new FileShapeAddress(reader, doc.DrawingObjectTable);
+                    fspa = new FileShapeAddress(reader, doc.OfficeArtContent);
                 }
                 this.Add(fcs[i], fspa);
             }

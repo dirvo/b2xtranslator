@@ -301,6 +301,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         _colWidth = new Int16[colNum];
                         break;
                     case 0x900c:
+                        //evenly spaced columns
                         appendValueAttribute(cols, "space", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
                     case 0xf203:
@@ -310,7 +311,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         _colWidth[index] = w;
                         break;
                     case 0xf204:
-                        //col space
+                        //not evenly spaced columns
                         _colSpace[sprm.Arguments[0]] = System.BitConverter.ToInt16(sprm.Arguments, 1);
                         break;
 

@@ -358,15 +358,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     {
                         styleId = _currentIstd;
                     }
-                    else
+                    else if(_currentPapx != null)
                     {
                         styleId = _currentPapx.istd;
                     }
+
                     //this chpx is the chpx of a style, 
                     //don't use the id of the chpx or the papx, use the baseOn style
                     if (_styleChpx)
                     {
-
                         StyleSheetDescription thisStyle = _doc.Styles.Styles[styleId];
                         styleId = (UInt16)thisStyle.istdBase;
                     }

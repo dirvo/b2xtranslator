@@ -120,7 +120,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// 
         /// </summary>
         /// <param name="reader"></param>
-        public FileShapeAddress(VirtualStreamReader reader, DrawingObjectTable drawingTable)
+        public FileShapeAddress(VirtualStreamReader reader, OfficeArtContent drawingTable)
         {
             this.spid = reader.ReadInt32();
             this.xaLeft = reader.ReadInt32();
