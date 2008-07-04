@@ -118,34 +118,45 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                         // save the old offset from this record begin 
                         this.oldOffset = this.StreamReader.BaseStream.Position;
                         // create a list of bytearrays to store the following continue records 
-                        List<byte[]> byteArrayList = new List<byte[]>();
+                        // List<byte[]> byteArrayList = new List<byte[]>();
                         byte[] buffer = new byte[length];
+                        LinkedList<VirtualStreamReader> vsrList = new LinkedList<VirtualStreamReader>(); 
                         buffer = this.StreamReader.ReadBytes((int)length);
-                        byteArrayList.Add(buffer);
-                        // this.StreamReader.BaseStream.Seek(8224, SeekOrigin.Current);
+                        // byteArrayList.Add(buffer);
+                       
+                        // create a new memory stream and a new virtualstreamreader 
+                        MemoryStream bufferstream = new MemoryStream(buffer); 
+                        VirtualStreamReader binreader = new VirtualStreamReader(bufferstream);
                         BiffHeader bh2;
                         bh2.id = (RecordNumber)this.StreamReader.ReadUInt16();
 
                         while (bh2.id == RecordNumber.CONTINUE)
                         {
-                            bh2.length = (UInt16)(this.StreamReader.ReadUInt16() - 1);
-                            // this.StreamReader.BaseStream.Seek(bh2.length, SeekOrigin.Current);
-                            byte grbit = this.StreamReader.ReadByte();
+                            bh2.length = (UInt16)(this.StreamReader.ReadUInt16());
+                            //byte grbit = this.StreamReader.ReadByte();
                             // if grbit is greater then 1, it must be a part of the string 
                             // the binary continue biffrecord description is not correct enought 
-                            if (grbit > 1)
-                            {
-                                length++;
-                                buffer = new byte[1];
-                                buffer[0] = grbit;
-                                byteArrayList.Add(buffer);
-                            }
+                            //if (grbit > 1)
+                            //{
+                            //    length++;
+                            //    buffer = new byte[1];
+                            //    buffer[0] = grbit;
+                            //    byteArrayList.Add(buffer);
+                            //}
                             buffer = new byte[bh2.length];
-                            length += bh2.length;
+                            //length += bh2.length;
                             // create a buffer with the bytes from the records and put that array into the 
                             // list 
                             buffer = this.StreamReader.ReadBytes((int)bh2.length);
-                            byteArrayList.Add(buffer);
+                            // byteArrayList.Add(buffer);
+
+                            // create for each continue record a new streamreader !! 
+                            MemoryStream contbufferstream = new MemoryStream(buffer);
+                            VirtualStreamReader contreader = new VirtualStreamReader(contbufferstream);
+                            vsrList.AddLast(contreader); 
+
+
+                            // take next Biffrecord ID 
                             bh2.id = (RecordNumber)this.StreamReader.ReadUInt16();
                         }
                         // set the old position of the stream 
@@ -155,19 +166,16 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                          * Following lines are used to create an big array of bytes and convert that into 
                          * a memory stream, after that a VirtualStreamReader will be created. This stream reader 
                          * is used by the SST parsing class
-                         * */
-                        int nextIndex = 0;
-                        buffer = new byte[length];
-                        foreach (byte[] bufferpart in byteArrayList)
-                        {
-                            Array.Copy(bufferpart, 0, buffer, nextIndex, bufferpart.Length);
-                            nextIndex += bufferpart.Length;
-                        }
-                        MemoryStream bufferstream = new MemoryStream(buffer);
+                        // * */
+                        //int nextIndex = 0;
+                        //buffer = new byte[length];
+                        //foreach (byte[] bufferpart in byteArrayList)
+                        //{
+                        //    Array.Copy(bufferpart, 0, buffer, nextIndex, bufferpart.Length);
+                        //    nextIndex += bufferpart.Length;
+                        //}
 
-                        BinaryReader bin = new BinaryReader(bufferstream);
-                        VirtualStreamReader binreader = new VirtualStreamReader(bufferstream);
-                        sst = new SST(binreader, bh.id, length);
+                        sst = new SST(binreader, bh.id, length, vsrList);
                         this.workBookData.SstData = new SSTData(sst);
                         
                     }

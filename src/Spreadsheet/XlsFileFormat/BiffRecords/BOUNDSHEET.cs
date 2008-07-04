@@ -91,22 +91,22 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         {
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
-
-            byte[] buffer = new byte[length];
-            buffer = reader.ReadBytes(length);
             
-
-            this.lbPlyPos = System.BitConverter.ToUInt32(buffer, 0);
-            this.grbit = System.BitConverter.ToUInt16(buffer, 4); 
-              //   (int)System.BitConverter.ToInt16(buffer, 4);
-            this.cch = (byte)buffer.GetValue(6); 
+            this.lbPlyPos = this.Reader.ReadUInt32(); 
+            this.grbit = this.Reader.ReadUInt16();
+           
+            this.cch = this.Reader.ReadByte(); 
 
             this.rgch = new byte[this.cch];
+            
+            byte fHighByte = this.Reader.ReadByte();
+            int isCompressed = fHighByte & 0x0001;
             for (int i = 0; i < this.cch; i++)
             {
-                this.rgch[i] = buffer[i + 8]; 
+                this.rgch[i] = this.Reader.ReadByte(); 
             }
-
+            
+            
             // Setting the hidden state value 
             // Bitmask is 0003h -> first two bits 
             this.hiddenState = Utils.BitmaskToInt(this.grbit, 0x0003); 

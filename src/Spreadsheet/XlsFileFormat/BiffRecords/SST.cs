@@ -43,7 +43,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// </summary>
     public class SST : BiffRecord
     {
-
+        public LinkedList<VirtualStreamReader> contStreamlist; 
         /// <summary>
         /// the own record data id 
         /// </summary>
@@ -64,19 +64,19 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         /// <param name="reader">Reader to parse the document </param>
         /// <param name="id">BiffRecord ID</param>
         /// <param name="length">The lengt of the biffrecord </param>
-        public SST(IStreamReader binreader, RecordNumber id, UInt32 length)
+        public SST(IStreamReader binreader, RecordNumber id, UInt32 length, LinkedList<VirtualStreamReader> contstreamlist)
             : base(binreader, id, length)
         {
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
+            this.contStreamlist = contstreamlist; 
             this.StringList = new List<string>();
             this.FormatList = new List<StringFormatAssignment>();
             byte[] buffer = new byte[length];
             int counti = 0;
-
-            this.cstTotal = (UInt32)binreader.ReadUInt32();
-            this.cstUnique = binreader.ReadUInt32();
-
+            this.cstTotal = (UInt32)this.Reader.ReadUInt32();
+            this.cstUnique = this.Reader.ReadUInt32();
+            
             try
             {
                 // run over the different strings 
@@ -84,10 +84,15 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
                 for (int i = 0; i < this.cstUnique; i++)
                 {
                     counti++;
+                    if (this.Reader.BaseStream.Position == this.Reader.BaseStream.Length )
+                    {
+                        Console.WriteLine("Test");
+                        this.switchStream(); 
+                    }
                     // first get the char count of this string 
-                    UInt16 cch = binreader.ReadUInt16();
+                    UInt16 cch = this.Reader.ReadUInt16();
                     // get the grbit mask 
-                    Byte grbit = binreader.ReadByte();
+                    Byte grbit = this.Reader.ReadByte();
                     bool isCompressedString = false;
                     bool isExtString = false;
                     bool isRichString = false;
@@ -101,37 +106,96 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
                     {
                         // Two versions, first is extended string and no rich string 
                         // second is extended and rich string 
-
                         // first 
                         if (!isRichString)
                         {
-                            Int32 cchExtRst = binreader.ReadInt32();
+                            Int32 cchExtRst = this.Reader.ReadInt32();
                             String stringbuffer = "";
+                            while (this.Reader.BaseStream.Length < this.Reader.BaseStream.Position + cch * 2)
+                            {
+                                ushort currentLength = (ushort)(this.Reader.BaseStream.Length - this.Reader.BaseStream.Position);
+                                cch -= (ushort)(currentLength / 2);
+                                for (int j = 0; j < currentLength / 2; j++)
+                                {
+                                    stringbuffer += System.BitConverter.ToChar(this.Reader.ReadBytes(2), 0);
+                                }
+                                // switch to next stream !! 
+                                this.switchStream();
+                                // read compressed/uncompressed byte value 
+                                this.Reader.ReadByte(); 
+                            }
                             for (int j = 0; j < cch; j++)
                             {
-                                stringbuffer += System.BitConverter.ToChar(binreader.ReadBytes(2), 0);
-
+                                stringbuffer += System.BitConverter.ToChar(this.Reader.ReadBytes(2), 0);
                             }
                             this.StringList.Add(stringbuffer);
-
+                            byte[] ExtRst; 
                             // read undocumented data structure ExtRst 
-                            byte[] ExtRst = binreader.ReadBytes(cchExtRst);
+                            while (this.Reader.BaseStream.Length < this.Reader.BaseStream.Position + cchExtRst)
+                            {
+                                ushort currentLength = (ushort)(this.Reader.BaseStream.Length - this.Reader.BaseStream.Position);
+                                cchExtRst -= (currentLength);
+                                ExtRst = this.Reader.ReadBytes(currentLength); 
+                                // switch to next stream !! 
+                                this.switchStream();
+                                // read compressed/uncompressed byte value 
+                                this.Reader.ReadByte();
+                            }
+                            ExtRst = this.Reader.ReadBytes(cchExtRst);
                         } //second 
                         else
                         {
-
-                            UInt16 countFormatingRuns = binreader.ReadUInt16();
-
-                            Int32 cchExtRst = binreader.ReadInt32();
                             String stringbuffer = "";
+                            UInt16 countFormatingRuns = this.Reader.ReadUInt16();
+                            Int32 cchExtRst = this.Reader.ReadInt32();
+                            // read chars !!! 
+                            while (this.Reader.BaseStream.Length < this.Reader.BaseStream.Position + cch * 2)
+                            {
+                                ushort currentLength = (ushort)(this.Reader.BaseStream.Length - this.Reader.BaseStream.Position);
+                                cch -= (ushort)(currentLength / 2);
+                                for (int j = 0; j < currentLength / 2; j++)
+                                {
+                                    stringbuffer += System.BitConverter.ToChar(this.Reader.ReadBytes(2), 0);
+                                }
+                                // switch to next stream !! 
+                                this.switchStream();
+                                // read compressed/uncompressed byte value 
+                                this.Reader.ReadByte();
+                            }
+                           
                             for (int j = 0; j < cch; j++)
                             {
-                                stringbuffer += System.BitConverter.ToChar(binreader.ReadBytes(2), 0);
+                                stringbuffer += System.BitConverter.ToChar(this.Reader.ReadBytes(2), 0);
                             }
                             this.StringList.Add(stringbuffer);
+                            byte[] rgSTRUN;
+                            byte[] ExtRst; 
+                            // read rgSTRUN 
+                            while (this.Reader.BaseStream.Length < this.Reader.BaseStream.Position + countFormatingRuns * 4)
+                            {
+                                ushort currentLength = (ushort)(this.Reader.BaseStream.Length - this.Reader.BaseStream.Position);
+                                countFormatingRuns -= (ushort)(currentLength / 4);
+                                rgSTRUN = this.Reader.ReadBytes(currentLength);
+                                // switch to next stream !! 
+                                this.switchStream();
+                                // read compressed/uncompressed byte value 
+                                this.Reader.ReadByte();
+                            }
                             // read formating run structures 
-                            byte[] rgSTRUN = binreader.ReadBytes(countFormatingRuns * 4);
-                            byte[] ExtRst = binreader.ReadBytes(cchExtRst);
+                            rgSTRUN = this.Reader.ReadBytes(countFormatingRuns * 4);
+
+                            while (this.Reader.BaseStream.Length < this.Reader.BaseStream.Position + cchExtRst)
+                            {
+                                ushort currentLength = (ushort)(this.Reader.BaseStream.Length - this.Reader.BaseStream.Position);
+                                cchExtRst -= (currentLength);
+                                ExtRst = this.Reader.ReadBytes(currentLength);
+                                // switch to next stream !! 
+                                this.switchStream();
+                                // read compressed/uncompressed byte value 
+                                this.Reader.ReadByte();
+                            }
+
+                            ExtRst = this.Reader.ReadBytes(cchExtRst);
 
                         }
                     }
@@ -139,67 +203,130 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
                     else if (isRichString && !isExtString)
                     {
                         // get number of formating runs !! 
-                        UInt16 countFormatingRuns = binreader.ReadUInt16();
+                        UInt16 countFormatingRuns = this.Reader.ReadUInt16();
                         // String buffer = Encoding.Unicode.GetString(reader.ReadBytes(cch));
+
+                        int charcount = 0;
+                        if (isCompressedString)
+                            charcount = 1;
+                        else
+                            charcount = 2; 
                         String stringbuffer = "";
+                        // read chars !!! 
+                        while (this.Reader.BaseStream.Length < this.Reader.BaseStream.Position + cch * charcount)
+                        {
+                            ushort currentLength = (ushort)(this.Reader.BaseStream.Length - this.Reader.BaseStream.Position);
+                            cch -= (ushort)(currentLength / charcount);
+                            for (int j = 0; j < currentLength / charcount; j++)
+                            {
+                                if (isCompressedString)
+                                {
+                                    stringbuffer += (char)this.Reader.ReadByte();
+                                }
+                                else
+                                {
+                                    stringbuffer += System.BitConverter.ToChar(this.Reader.ReadBytes(2), 0);
+                                }
+                            }
+                            // switch to next stream !! 
+                            this.switchStream();
+                            // read compressed/uncompressed byte value 
+                            byte grbit2 = this.Reader.ReadByte();
+                            if (grbit2 > 0)
+                                isCompressedString = false;
+                            else
+                                isCompressedString = true; 
+                        }
+
                         for (int j = 0; j < cch; j++)
                         {
                             if (isCompressedString)
                             {
-                                stringbuffer += (char)binreader.ReadByte();
+                                stringbuffer += (char)this.Reader.ReadByte();
                             }
                             else
                             {
-                                stringbuffer += System.BitConverter.ToChar(binreader.ReadBytes(2), 0);
+                                stringbuffer += System.BitConverter.ToChar(this.Reader.ReadBytes(2), 0);
                             }
                             // 
                         }
                         this.StringList.Add(stringbuffer);
+
+                        while (this.Reader.BaseStream.Length < this.Reader.BaseStream.Position + countFormatingRuns * 4)
+                        {
+                            ushort currentLength = (ushort)(this.Reader.BaseStream.Length - this.Reader.BaseStream.Position);
+                            countFormatingRuns -= (ushort)(currentLength / 4);
+                            // get formating data 
+                            for (int j = 0; j < currentLength/4; j++)
+                            {
+                                StringFormatAssignment format = new StringFormatAssignment();
+                                format.StringNumber = i;
+                                format.CharNumber = this.Reader.ReadUInt16();
+                                format.FontRecord = this.Reader.ReadUInt16();
+                                this.FormatList.Add(format);
+                            }
+                            // switch to next stream !! 
+                            this.switchStream();
+                            // read compressed/uncompressed byte value 
+                            this.Reader.ReadByte();
+                        }
                         // get formating data 
                         for (int j = 0; j < countFormatingRuns; j++)
                         {
                             StringFormatAssignment format = new StringFormatAssignment();
                             format.StringNumber = i;
-                            format.CharNumber = binreader.ReadUInt16();
-                            format.FontRecord = binreader.ReadUInt16();
+                            format.CharNumber = this.Reader.ReadUInt16();
+                            format.FontRecord = this.Reader.ReadUInt16();
                             this.FormatList.Add(format);
                         }
                     }
                     else
                     {
-                        int storeJ = 0;
-                        String stringbuffer = "";
-                        // compressed strings are strings which use only one byte per character 
+                        int charcount = 0;
                         if (isCompressedString)
+                            charcount = 1;
+                        else
+                            charcount = 2;
+                        String stringbuffer = "";
+                        // read chars !!! 
+                        while (this.Reader.BaseStream.Length < this.Reader.BaseStream.Position + cch * charcount)
                         {
-                            for (int j = 0; j < cch; j++)
+                            ushort currentLength = (ushort)(this.Reader.BaseStream.Length - this.Reader.BaseStream.Position);
+                            cch -= (ushort)(currentLength / charcount);
+                            for (int j = 0; j < currentLength / charcount; j++)
                             {
-                                char value = (char)binreader.ReadByte();
-                                if (value != 00)
+                                if (isCompressedString)
                                 {
-                                    stringbuffer += value;
+                                    stringbuffer += (char)this.Reader.ReadByte();
                                 }
                                 else
                                 {
-                                    storeJ = j;
-                                    j = int.MaxValue - 1;
-                                    isCompressedString = false;
+                                    stringbuffer += System.BitConverter.ToChar(this.Reader.ReadBytes(2), 0);
                                 }
                             }
-
+                            // switch to next stream !! 
+                            this.switchStream();
+                            // read compressed/uncompressed byte value 
+                            byte grbit2 = this.Reader.ReadByte();
+                            if (grbit2 > 0)
+                                isCompressedString = false;
+                            else
+                                isCompressedString = true;                            
                         }
-                        // not compressed strings are two bytes long 
-                        if (!isCompressedString)
+                        for (int j = 0; j < cch; j++)
                         {
-                            for (int j = storeJ; j < cch; j++)
+                            if (isCompressedString)
                             {
-                                stringbuffer += System.BitConverter.ToChar(binreader.ReadBytes(2), 0);
+                                stringbuffer += (char)this.Reader.ReadByte();
                             }
-
+                            else
+                            {
+                                stringbuffer += System.BitConverter.ToChar(this.Reader.ReadBytes(2), 0);
+                            }
+                            // 
                         }
-                        this.StringList.Add(stringbuffer);
+                        this.StringList.Add(stringbuffer);                       
                     }
-
                 }
             }
             catch (Exception ex)
@@ -230,5 +357,14 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
             return back;
         }
 
+        /// <summary>
+        /// This method is used to switch a stream, if one stream is at the end 
+        /// the stream has to be changed 
+        /// </summary>
+        public void switchStream()
+        {
+            this.Reader = (VirtualStreamReader)this.contStreamlist.First.Value;
+            this.contStreamlist.RemoveFirst(); 
+        }
     }
 }

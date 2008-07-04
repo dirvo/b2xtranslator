@@ -73,6 +73,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public IStreamReader Reader
         {
             get { return _reader; }
+            set { this._reader = value; }
         }
     }
 }
