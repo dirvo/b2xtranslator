@@ -42,10 +42,6 @@
       <Project>{0F0F6BAF-BC5D-4DC6-AE53-8257305EE5CA}</Project>
       <Name>CommonTranslatorLib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Common\OfficeDrawing\OfficeDrawing.csproj">
-      <Project>{AA46A3F1-919F-48FB-970C-753F58A857F6}</Project>
-      <Name>OfficeDrawing</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Common\OpenXmlLib\OpenXmlLib.csproj">
       <Project>{4C10271C-CD9B-49F5-9479-3C6EB7404E75}</Project>
       <Name>OpenXmlLib</Name>
@@ -69,14 +65,6 @@
     <ProjectReference Include="..\..\Spreadsheet\XlsFileFormat\XlsFileFormat.csproj">
       <Project>{92295756-46BB-4D1F-B0FD-CA7DF03F6C65}</Project>
       <Name>XlsFileFormat</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Test\CompoundFileExtractTest\CompoundFileExtractTest.csproj">
-      <Project>{01308A7D-882B-4822-A78B-EBAD044044FC}</Project>
-      <Name>CompoundFileExtractTest</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Test\OpenXmlLibTest\OpenXmlLibTest.csproj">
-      <Project>{1855519D-6C8C-44B2-B197-DB40DD648FB6}</Project>
-      <Name>OpenXmlLibTest</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
