@@ -36,6 +36,7 @@ using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
+using System.Globalization;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
 {
@@ -52,7 +53,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
 
         public override string getValue()
         {
-            return this.value.ToString();
+            return Convert.ToString(value, CultureInfo.GetCultureInfo("en-US"));
         }
 
         public override void setValue(object obj)
