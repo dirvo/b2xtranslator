@@ -106,81 +106,81 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             foreach (SinglePropertyModifier sprm in papx.grpprl)
             {
-                switch ((int)sprm.OpCode)
+                switch (sprm.OpCode)
                 {
                     //rsid for paragraph property enditing (write to parent element)
-                    case 0x6467:
+                    case SinglePropertyModifier.OperationCode.sprmPRsid:
                         string rsid = String.Format("{0:x8}", System.BitConverter.ToInt32(sprm.Arguments, 0));
                         _ctx.AddRsid(rsid);
                         _writer.WriteAttributeString("w", "rsidP", OpenXmlNamespaces.WordprocessingML, rsid);
                         break;
 
                     //attributes
-                    case 0x6465:
+                    case SinglePropertyModifier.OperationCode.sprmPIpgp:
                         XmlAttribute divId = _nodeFactory.CreateAttribute("w", "divId", OpenXmlNamespaces.WordprocessingML);
                         divId.Value = System.BitConverter.ToUInt32(sprm.Arguments, 0).ToString();
                         _pPr.Attributes.Append(divId);
                         break;
-                    case 0x2437:
+                    case SinglePropertyModifier.OperationCode.sprmPFAutoSpaceDE:
                         appendFlagAttribute(_pPr, sprm, "autoSpaceDE");
                         break;
-                    case 0x2438:
+                    case SinglePropertyModifier.OperationCode.sprmPFAutoSpaceDN:
                         appendFlagAttribute(_pPr, sprm, "autoSpaceDN");
                         break;
-                    case 0x2441:
+                    case SinglePropertyModifier.OperationCode.sprmPFBiDi:
                         appendFlagAttribute(_pPr, sprm, "bidi");
                         break;
-                    case 0x246D:
+                    case SinglePropertyModifier.OperationCode.sprmPFContextualSpacing:
                         appendFlagAttribute(_pPr, sprm, "contextualSpacing");
                         break;
                     
                     //element flags
-                    case 0x2405:
+                    case SinglePropertyModifier.OperationCode.sprmPFKeep:
                         appendFlagElement(_pPr, sprm, "keepLines", true);
                         break;
-                    case 0x2406:
+                    case SinglePropertyModifier.OperationCode.sprmPFKeepFollow:
                         appendFlagElement(_pPr, sprm, "keepNext", true);
                         break;
-                    case 0x2433:
+                    case SinglePropertyModifier.OperationCode.sprmPFKinsoku:
                         appendFlagElement(_pPr, sprm, "kinsoku", true);
                         break;
-                    case 0x2435:
+                    case SinglePropertyModifier.OperationCode.sprmPFOverflowPunct:
                         appendFlagElement(_pPr, sprm, "overflowPunct", true);
                         break;
-                    case 0x2407:
+                    case SinglePropertyModifier.OperationCode.sprmPFPageBreakBefore:
                         appendFlagElement(_pPr, sprm, "pageBreakBefore", true);
                         break;
-                    case 0x242A:
+                    case SinglePropertyModifier.OperationCode.sprmPFNoAutoHyph:
                         appendFlagElement(_pPr, sprm, "su_pPressAutoHyphens", true);
                         break;
-                    case 0x240C:
+                    case SinglePropertyModifier.OperationCode.sprmPFNoLineNumb:
                         appendFlagElement(_pPr, sprm, "su_pPressLineNumbers", true);
                         break;
-                    case 0x2462:
+                    case SinglePropertyModifier.OperationCode.sprmPFNoAllowOverlap:
                         appendFlagElement(_pPr, sprm, "su_pPressOverlap", true);
                         break;
-                    case 0x2436:
+                    case SinglePropertyModifier.OperationCode.sprmPFTopLinePunct:
                         appendFlagElement(_pPr, sprm, "topLinePunct", true);
                         break;
-                    case 0x2431:
+                    case SinglePropertyModifier.OperationCode.sprmPFWidowControl:
                         appendFlagElement(_pPr, sprm, "widowControl", true);
-                        break;    
-                    case 0x2434:
+                        break;
+                    case SinglePropertyModifier.OperationCode.sprmPFWordWrap:
                         appendFlagElement(_pPr, sprm, "wordWrap", true);
                         break;
 
                     //indentation
-                    case 0x845e:
-                    case 0x840F:
-                    case 0x465F:
-                    case 0x4610:
+                    case SinglePropertyModifier.OperationCode.sprmPDxaLeft:
+                    case SinglePropertyModifier.OperationCode.sprmPDxaLeft80:
+                    case SinglePropertyModifier.OperationCode.sprmPNest:
+                    case SinglePropertyModifier.OperationCode.sprmPNest80:
                         appendValueAttribute(ind, "left", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
-                    case 0x4456:
+                    case SinglePropertyModifier.OperationCode.sprmPDxcLeft:
                         appendValueAttribute(ind, "leftChars", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
-                    case 0x8460:
-                    case 0x8411:
+                    case SinglePropertyModifier.OperationCode.sprmPDxaLeft1:
+                    case SinglePropertyModifier.OperationCode.sprmPDxaLeft180:
                         Int16 flValue = System.BitConverter.ToInt16(sprm.Arguments, 0);
                         string flName;
                         if (flValue >= 0)
@@ -194,39 +194,39 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         }
                         appendValueAttribute(ind, flName, flValue.ToString());
                         break;
-                    case 0x4457:
+                    case SinglePropertyModifier.OperationCode.sprmPDxcLeft1:
                         appendValueAttribute(ind, "firstLineChars", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
-                    case 0x845D:
-                    case 0x840E:
+                    case SinglePropertyModifier.OperationCode.sprmPDxaRight:
+                    case SinglePropertyModifier.OperationCode.sprmPDxaRight80:
                         appendValueAttribute(ind, "right", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
-                    case 0x4455:
+                    case SinglePropertyModifier.OperationCode.sprmPDxcRight:
                         appendValueAttribute(ind, "rightChars", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
 
                     //spacing
-                    case 0xA413:
+                    case SinglePropertyModifier.OperationCode.sprmPDyaBefore:
                         XmlAttribute before = _nodeFactory.CreateAttribute("w", "before", OpenXmlNamespaces.WordprocessingML);
                         before.Value = System.BitConverter.ToUInt16(sprm.Arguments, 0).ToString();
                         spacing.Attributes.Append(before);
                         break;
-                    case 0xA414:
+                    case SinglePropertyModifier.OperationCode.sprmPDyaAfter:
                         XmlAttribute after = _nodeFactory.CreateAttribute("w", "after", OpenXmlNamespaces.WordprocessingML);
                         after.Value = System.BitConverter.ToUInt16(sprm.Arguments, 0).ToString();
                         spacing.Attributes.Append(after);
                         break;
-                    case 0x245C:
+                    case SinglePropertyModifier.OperationCode.sprmPFDyaAfterAuto:
                         XmlAttribute afterAutospacing = _nodeFactory.CreateAttribute("w", "afterAutospacing", OpenXmlNamespaces.WordprocessingML);
                         afterAutospacing.Value = sprm.Arguments[0].ToString();
                         spacing.Attributes.Append(afterAutospacing);
                         break;
-                    case 0x245B:
+                    case SinglePropertyModifier.OperationCode.sprmPFDyaBeforeAuto:
                         XmlAttribute beforeAutospacing = _nodeFactory.CreateAttribute("w", "beforeAutospacing", OpenXmlNamespaces.WordprocessingML);
                         beforeAutospacing.Value = sprm.Arguments[0].ToString();
                         spacing.Attributes.Append(beforeAutospacing);
                         break;
-                    case 0x6412:
+                    case SinglePropertyModifier.OperationCode.sprmPDyaLine:
                         LineSpacingDescriptor lspd = new LineSpacingDescriptor(sprm.Arguments);
                         XmlAttribute line = _nodeFactory.CreateAttribute("w", "line", OpenXmlNamespaces.WordprocessingML);
                         line.Value = Math.Abs(lspd.dyaLine).ToString();
@@ -241,8 +241,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         break;
 
                     //justification code
-                    case 0x2461:
-                    case 0x2403:
+                    case SinglePropertyModifier.OperationCode.sprmPJc:
+                    case SinglePropertyModifier.OperationCode.sprmPJc80:
                         jc = _nodeFactory.CreateElement("w", "jc", OpenXmlNamespaces.WordprocessingML);
                         XmlAttribute jcVal = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
                         jcVal.Value = ((Global.JustificationCode)sprm.Arguments[0]).ToString();
@@ -250,73 +250,90 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         break;
 
                     //borders
-                    case 0x461C:
-                    case 0xC64E:
-                    case 0x4424:
-                    case 0x6424:
+                    //case 0x461C:
+                    case SinglePropertyModifier.OperationCode.sprmPBrcTop:
+                    //case 0x4424:
+                    case SinglePropertyModifier.OperationCode.sprmPBrcTop80:
                         XmlNode topBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "top", OpenXmlNamespaces.WordprocessingML);
                         appendBorderAttributes(new BorderCode(sprm.Arguments), topBorder);
                         addOrSetBorder(pBdr, topBorder);
                         break;
-                    case 0x461D:
-                    case 0xC64F:
-                    case 0x4425:
-                    case 0x6425:
+                    //case 0x461D:
+                    case SinglePropertyModifier.OperationCode.sprmPBrcLeft:
+                    //case 0x4425:
+                    case SinglePropertyModifier.OperationCode.sprmPBrcLeft80:
                         XmlNode leftBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "left", OpenXmlNamespaces.WordprocessingML);
                         appendBorderAttributes(new BorderCode(sprm.Arguments), leftBorder);
                         addOrSetBorder(pBdr, leftBorder);
                         break;
-                    case 0x461E:
-                    case 0xC650:
-                    case 0x4426:
-                    case 0x6426:
+                    //case 0x461E:
+                    case SinglePropertyModifier.OperationCode.sprmPBrcBottom:
+                    //case 0x4426:
+                    case SinglePropertyModifier.OperationCode.sprmPBrcBottom80:
                         XmlNode bottomBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "bottom", OpenXmlNamespaces.WordprocessingML);
                         appendBorderAttributes(new BorderCode(sprm.Arguments), bottomBorder);
                         addOrSetBorder(pBdr, bottomBorder);
                         break;
-                    case 0x461F:
-                    case 0xC651:
-                    case 0x4427:
-                    case 0x6427:
+                    //case 0x461F:
+                    case SinglePropertyModifier.OperationCode.sprmPBrcRight:
+                    //case 0x4427:
+                    case SinglePropertyModifier.OperationCode.sprmPBrcRight80:
                         XmlNode rightBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "right", OpenXmlNamespaces.WordprocessingML);
                         appendBorderAttributes(new BorderCode(sprm.Arguments), rightBorder);
                         addOrSetBorder(pBdr, rightBorder);
                         break;
-                    case 0x4620:
-                    case 0xC652:
-                    case 0x4428:
-                    case 0x6428:
+                    //case 0x4620:
+                    case SinglePropertyModifier.OperationCode.sprmPBrcBetween:
+                    //case 0x4428:
+                    case SinglePropertyModifier.OperationCode.sprmPBrcBetween80:
                         XmlNode betweenBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "between", OpenXmlNamespaces.WordprocessingML);
                         appendBorderAttributes(new BorderCode(sprm.Arguments), betweenBorder);
                         addOrSetBorder(pBdr, betweenBorder);
                         break;
-                    case 0x4621:
-                    case 0xC653:
-                    case 0x4629:
-                    case 0x6629:
+                    //case 0x4621:
+                    case SinglePropertyModifier.OperationCode.sprmPBrcBar:
+                    //case 0x4629:
+                    case SinglePropertyModifier.OperationCode.sprmPBrcBar80:
                         XmlNode barBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "bar", OpenXmlNamespaces.WordprocessingML);
                         appendBorderAttributes(new BorderCode(sprm.Arguments), barBorder);
                         addOrSetBorder(pBdr, barBorder);
                         break;
                     
                     //shading
-                    case 0x442D:
-                    case 0xc64d:
+                    case SinglePropertyModifier.OperationCode.sprmPShd80:
+                    case SinglePropertyModifier.OperationCode.sprmPShd:
                         ShadingDescriptor desc = new ShadingDescriptor(sprm.Arguments);
                         appendShading(_pPr, desc);
                         break;
                     
                     //numbering
-                    case 0x260A:
+                    case SinglePropertyModifier.OperationCode.sprmPIlvl:
                         appendValueElement(numPr, "ilvl", sprm.Arguments[0].ToString(), true);
                         break;
-                    case 0x460B:
-                        appendValueElement(numPr, "numId", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString(), true);
+                    case SinglePropertyModifier.OperationCode.sprmPIlfo:
+                        Int16 val  = System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        if(val >= 0x0001 && val <= 0x07FE)
+                            appendValueElement(numPr, "numId", val.ToString(), true);
+                        else if (val >= 0xF802 && val <= 0xFFFF)
+                            appendValueElement(numPr, "numId", (val*-1).ToString(), true);
+
+                        ////check if there is a ilvl reference, if not, check the count of LVLs.
+                        ////if only one LVL exists in the referenced list, create a hard reference to that LVL
+                        //if (containsLvlReference(papx.grpprl) == false)
+                        //{
+                        //    ListFormatOverride lfo = _ctx.Doc.ListFormatOverrideTable[val];
+                        //    int index = NumberingMapping.FindIndexbyId(_ctx.Doc.ListTable, lfo.lsid);
+                        //    ListData lst = _ctx.Doc.ListTable[index];
+                        //    if (lst.rglvl.Length == 1)
+                        //    {
+                        //        appendValueElement(numPr, "ilvl", "0", true);
+                        //    }
+                        //}
                         break;
 
                     //tabs
-                    case 0xc60D:
-                    case 0xC615:
+                    case SinglePropertyModifier.OperationCode.sprmPChgTabsPapx:
+                    case SinglePropertyModifier.OperationCode.sprmPChgTabs:
                         XmlElement tabs = _nodeFactory.CreateElement("w", "tabs", OpenXmlNamespaces.WordprocessingML);
                         int pos = 0;
                         //read the removed tabs
@@ -403,6 +420,20 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 _pPr.WriteTo(_writer);
             }
+        }
+
+        private bool containsLvlReference(List<SinglePropertyModifier> sprms)
+        {
+            bool ret = false;
+            foreach (SinglePropertyModifier sprm in sprms)
+            {
+                if (sprm.OpCode == SinglePropertyModifier.OperationCode.sprmPIlvl)
+                {
+                    ret = true;
+                    break;
+                }
+            }
+            return ret;
         }
     }
 }

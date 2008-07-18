@@ -124,6 +124,7 @@
     <Compile Include="PictureDescriptor.cs" />
     <Compile Include="SectionPropertyExceptions.cs" />
     <Compile Include="SectionTable.cs" />
+    <Compile Include="SprmTDefTable.cs" />
     <Compile Include="TextboxBreakTable.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

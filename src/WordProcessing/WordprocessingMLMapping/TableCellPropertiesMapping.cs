@@ -45,10 +45,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private XmlElement _tcPr;
         private XmlElement _tcMar;
         private XmlElement _tcBorders;
+        private XmlElement _tcW;
         private List<Int16> _grid;
+        private Int16[] _tGrid;
 
         private Int16 _width;
-        private BorderCode _brcTop, _brcLeft, _brcBottom, _brcRight;
+        private Global.CellWidthType _ftsWidth;
+        private TC80 _tcDef;
 
         /// <summary>
         /// The grind span of this cell
@@ -66,13 +69,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             bottom
         }
 
-        private enum CellWidthType
-        {
-            nil,
-            auto,
-            pct,
-            dxa
-        }
+        
 
         public TableCellPropertiesMapping(XmlWriter writer, List<Int16> tableGrid, int gridIndex, int cellIndex)
             : base(writer)
@@ -91,99 +88,31 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 switch (sprm.OpCode)
 	            {
-                    //The TDef SPRM contains an array with the boundaries of the cells, 
-                    //followed by a block of cell information for each cell.
-                    //The first part of this block is a 16 bit integer containing flags.
-                    //The second part is the width of the cell (as 16 bit integer).
-                    //The third part contains 4 BRCs for the borders of the cell.
+                    //Table definition SPRM
                     case  SinglePropertyModifier.OperationCode.sprmTDefTable:
-                        byte itcMac = sprm.Arguments[0];
 
-                        //get the boundaries of this cell
-                        Int16 boundary1 = System.BitConverter.ToInt16(sprm.Arguments, 1 + (_cellIndex * 2));
-                        Int16 boundary2 = System.BitConverter.ToInt16(sprm.Arguments, 1 + ((_cellIndex + 1) * 2));
-                        _width = (Int16)(boundary2 - boundary1);
+                        SprmTDefTable tdef = new SprmTDefTable(sprm.Arguments);
+                        _tGrid = tdef.rgdxaCenter;
+                        _tcDef = tdef.rgTc80[_cellIndex];
 
-                        int cellPos = 1 + (2 * (itcMac + 1)) + (_cellIndex * 20);
+                        appendValueElement(_tcPr, "textDirection", _tcDef.textFlow.ToString(), false);
 
-                        //read the flag int of this cell
-                        byte[] flagBytes = new byte[2];
-                        Array.Copy(sprm.Arguments, cellPos, flagBytes, 0, 2);
-                        Int16 flags = System.BitConverter.ToInt16(flagBytes, 0);
-
-                        //extract the text rotation out of the flag
-                        bool fVertical = Utils.BitmaskToBool((int)flags, 0x0004);
-                        bool fBackward = Utils.BitmaskToBool((int)flags, 0x0008);
-                        bool fRotateFont = Utils.BitmaskToBool((int)flags, 0x0010);
-                        if (fVertical && !fBackward)
-                        {
-                            appendValueElement(_tcPr, "textDirection", "tbRl", false);
-                        }
-                        else if (fVertical && fBackward)
-                        {
-                            appendValueElement(_tcPr, "textDirection", "btLr", false);
-                        }
-
-                        //extract the vertical merge out of the flag
-                        bool fVertMerge = Utils.BitmaskToBool((int)flags, 0x0020);
-                        bool fVertRestart = Utils.BitmaskToBool((int)flags, 0x0040);
-                        if (fVertRestart)
-                            appendValueElement(_tcPr, "vMerge", "restart", false);
-                        else if (fVertMerge)
+                        if (_tcDef.vertMerge == Global.VerticalMergeFlag.fvmMerge)
                             appendValueElement(_tcPr, "vMerge", "continue", false);
+                        else if (_tcDef.vertMerge == Global.VerticalMergeFlag.fvmRestart)
+                            appendValueElement(_tcPr, "vMerge", "restart", false);
 
-                        //extract the vertical alignment out of the flag
-                        VerticalCellAlignment vertAlign = (VerticalCellAlignment)((flags << 7) >> 30);
+                        appendValueElement(_tcPr, "vAlign", _tcDef.vertAlign.ToString(), false);
 
-                        if (vertAlign != VerticalCellAlignment.top)
-                            appendValueElement(_tcPr, "vAlign", vertAlign.ToString(), false);
-
-                        //extract the autofit out of the flag
-                        bool fFitText = Utils.BitmaskToBool((int)flags, 0x1000);
-                        if (fFitText)
+                        if (_tcDef.fFitText)
                             appendValueElement(_tcPr, "tcFitText", "", false);
 
-                        //extract the wrap out of the flag
-                        bool fNoWrap = Utils.BitmaskToBool((int)flags, 0x2000);
-                        if (fNoWrap)
+                        if (_tcDef.fNoWrap)
                             appendValueElement(_tcPr, "noWrap", "", true);
 
-                        //read the width of this cell
-                        XmlElement tcW = _nodeFactory.CreateElement("w", "tcW", OpenXmlNamespaces.WordprocessingML);
-                        XmlAttribute tcWtype = _nodeFactory.CreateAttribute("w", "type", OpenXmlNamespaces.WordprocessingML);
-
-                        int ftsWidth = Utils.BitmaskToInt(flags, 0x0e00);
-                        tcWtype.Value = ((CellWidthType)ftsWidth).ToString();
-
-                        tcW.Attributes.Append(tcWtype);
-                        XmlAttribute tcWval = _nodeFactory.CreateAttribute("w", "w", OpenXmlNamespaces.WordprocessingML);
-                        tcWval.Value = System.BitConverter.ToInt16(sprm.Arguments, cellPos + 2).ToString();
-                        tcW.Attributes.Append(tcWval);
-                        _tcPr.AppendChild(tcW);
-
-                        //border top
-                        byte[] brcTopBytes = new byte[4];
-                        Array.Copy(sprm.Arguments, cellPos + 4, brcTopBytes, 0, 4);
-                        if (Utils.ArraySum(brcTopBytes) != 0 )
-                            _brcTop = new BorderCode(brcTopBytes);
-
-                        //border left
-                        byte[] brcLeftBytes = new byte[4];
-                        Array.Copy(sprm.Arguments, cellPos + 8, brcLeftBytes, 0, 4);
-                        if (Utils.ArraySum(brcLeftBytes) != 0)
-                            _brcLeft = new BorderCode(brcLeftBytes);
-
-                        //border bottom
-                        byte[] brcBottomBytes = new byte[4];
-                        Array.Copy(sprm.Arguments, cellPos + 12, brcBottomBytes, 0, 4);
-                        if (Utils.ArraySum(brcBottomBytes) != 0)
-                            _brcBottom = new BorderCode(brcBottomBytes);
-                        
-                        //border top
-                        byte[] brcRightBytes = new byte[4];
-                        Array.Copy(sprm.Arguments, cellPos + 16, brcRightBytes, 0, 4);
-                        if (Utils.ArraySum(brcRightBytes) != 0)
-                            _brcRight = new BorderCode(brcRightBytes);
+                        //_width = _tcDef.wWidth;
+                        _width = (Int16)(tdef.rgdxaCenter[_cellIndex + 1] - tdef.rgdxaCenter[_cellIndex]);
+                        _ftsWidth = _tcDef.ftsWidth;
 
                         break;
 
@@ -225,10 +154,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case SinglePropertyModifier.OperationCode.sprmTCellWidth:
                         first = sprm.Arguments[0];
                         lim = sprm.Arguments[1];
-                        ftsWidth = sprm.Arguments[2];
-                        _width = System.BitConverter.ToInt16(sprm.Arguments, 3);
                         if (_cellIndex >= first && _cellIndex < lim)
-                            appendDxaElement(_tcPr, "tcW", _width.ToString(), true);
+                        {
+                            _ftsWidth = (Global.CellWidthType)sprm.Arguments[2];
+                            _width = System.BitConverter.ToInt16(sprm.Arguments, 3);
+                        }
                         break;
 
                     //vertical alignment
@@ -247,20 +177,19 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                             appendValueElement(_tcPr, "tcFitText", sprm.Arguments[2].ToString(), true);
                         break;
 
-                    //no wrap
-                    case SinglePropertyModifier.OperationCode.sprmTFCellNoWrap:
-                        first = sprm.Arguments[0];
-                        lim = sprm.Arguments[1];
-                        if (_cellIndex >= first && _cellIndex < lim)
-                        {
-                            fNoWrap = Utils.ByteToBool(sprm.Arguments[2]);
-                            if(fNoWrap)
-                                appendValueElement(_tcPr, "noWrap", "", true);
-                        }
-                            
-                        break;
+
                 }
             }
+
+            //width
+            XmlElement tcW = _nodeFactory.CreateElement("w", "tcW", OpenXmlNamespaces.WordprocessingML);
+            XmlAttribute tcWType = _nodeFactory.CreateAttribute("w", "type", OpenXmlNamespaces.WordprocessingML);
+            XmlAttribute tcWVal = _nodeFactory.CreateAttribute("w", "w", OpenXmlNamespaces.WordprocessingML);
+            tcWType.Value = _ftsWidth.ToString();
+            tcWVal.Value = _width.ToString();
+            tcW.Attributes.Append(tcWType);
+            tcW.Attributes.Append(tcWVal);
+            _tcPr.AppendChild(tcW);
 
             //grid span
             _gridSpan = 1;
@@ -286,28 +215,28 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
 
             //append borders
-            if (_brcTop != null)
+            if (_tcDef.brcTop != null)
             {
                 XmlNode topBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "top", OpenXmlNamespaces.WordprocessingML);
-                appendBorderAttributes(_brcTop, topBorder);
+                appendBorderAttributes(_tcDef.brcTop, topBorder);
                 addOrSetBorder(_tcBorders, topBorder);
             }
-            if (_brcLeft != null)
+            if (_tcDef.brcLeft != null)
             {
                 XmlNode leftBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "left", OpenXmlNamespaces.WordprocessingML);
-                appendBorderAttributes(_brcLeft, leftBorder);
+                appendBorderAttributes(_tcDef.brcLeft, leftBorder);
                 addOrSetBorder(_tcBorders, leftBorder);
             }
-            if (_brcBottom != null)
+            if (_tcDef.brcBottom != null)
             {
                 XmlNode bottomBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "bottom", OpenXmlNamespaces.WordprocessingML);
-                appendBorderAttributes(_brcBottom, bottomBorder);
+                appendBorderAttributes(_tcDef.brcBottom, bottomBorder);
                 addOrSetBorder(_tcBorders, bottomBorder);
             }
-            if (_brcRight != null)
+            if (_tcDef.brcRight != null)
             {
                 XmlNode rightBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "right", OpenXmlNamespaces.WordprocessingML);
-                appendBorderAttributes(_brcRight, rightBorder);
+                appendBorderAttributes(_tcDef.brcRight, rightBorder);
                 addOrSetBorder(_tcBorders, rightBorder);
             }
             if (_tcBorders.ChildNodes.Count > 0)

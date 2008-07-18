@@ -91,6 +91,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 {
                     //table definition
                     case SinglePropertyModifier.OperationCode.sprmTDefTable:
+
+                        SprmTDefTable tDef = new SprmTDefTable(sprm.Arguments);
+
                         //Workaround for retrieving the indent of the table:
                         //In some files there is a indent but no sprmTWidthIndent is set.
                         //For this cases we can calculate the indent of the table by getting the 

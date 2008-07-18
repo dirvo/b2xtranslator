@@ -157,5 +157,36 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             longdashdot,
             longdashdotdot
         }
+
+        public enum TextFlow
+        {
+            lrTb = 0,
+            tbRl = 1,
+            btLr = 3,
+            lrTbV = 4,
+            tbRlV = 5,
+        }
+
+        public enum VerticalMergeFlag
+        {
+            fvmClear,
+            fvmMerge,
+            fvmRestart
+        }
+
+        public enum VerticalAlign
+        { 
+            top,
+            center,
+            bottom
+        }
+
+        public enum CellWidthType
+        {
+            nil,
+            auto,
+            pct,
+            dxa
+        }
 	}
 }
