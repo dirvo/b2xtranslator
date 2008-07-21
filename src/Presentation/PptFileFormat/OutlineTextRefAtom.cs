@@ -30,56 +30,40 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
-    public enum TextType
+    /// <summary>
+    /// An atom record that specifies a reference to text contained in the SlideListWithTextContainer record. 
+    /// 
+    /// Let the corresponding slide persist be specified by the SlidePersistAtom record contained in the 
+    /// SlideListWithTextContainer record whose persistIdRef field refers to the SlideContainer record that 
+    /// contains this OutlineTextRefAtom record. 
+    /// </summary>
+    [OfficeRecordAttribute(3998)]
+    public class OutlineTextRefAtom : Record
     {
-        Title = 0,
-        Body,
-        Notes,
-        Outline,
-        Other,
-        CenterBody,
-        CenterTitle,
-        HalfBody,
-        QuarterBody
-    };
+        /// <summary>
+        /// A signed integer that specifies a zero-based index into the sequence of 
+        /// TextHeaderAtom records that follows the corresponding slide persist.
+        /// 
+        /// It MUST be greater than or equal to 0x00000000 and less than the number
+        /// of TextHeaderAtom records that follow the corresponding slide persist. 
+        /// </summary>
+        public Int32 Index;
 
-    [OfficeRecordAttribute(3999)]
-    public class TextHeaderAtom : Record
-    {
-        public TextType TextType;
-
-        public TextAtom TextAtom;
-
-        public TextStyleAtom TextStyleAtom;
-
-        public TextHeaderAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+        public OutlineTextRefAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {
-            this.TextType = (TextType) this.Reader.ReadUInt32();
+            this.Index = this.Reader.ReadInt32();
         }
 
-        public void HandleTextDataRecord(ITextDataRecord tdRecord)
+        override public string ToString(uint depth)
         {
-            tdRecord.TextHeaderAtom = this;
-
-            TextAtom textAtom = tdRecord as TextAtom;
-            TextStyleAtom tsAtom = tdRecord as TextStyleAtom;
-
-            if (textAtom != null)
-            {
-                this.TextAtom = textAtom;
-            }
-            else if (tsAtom != null)
-            {
-                this.TextStyleAtom = tsAtom;
-            }
-            else
-            {
-                throw new NotImplementedException("Unhandled text data record type " + tdRecord.GetType().ToString());
-            }
+            return String.Format("{0}\n{1}Index = {2}",
+                base.ToString(depth), IndentationForDepth(depth + 1),
+                this.Index);
         }
     }
 

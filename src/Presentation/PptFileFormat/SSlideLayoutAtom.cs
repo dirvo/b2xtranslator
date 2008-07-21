@@ -32,24 +32,119 @@ using System.IO;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
+    public enum SlideLayoutType
+    {
+        /// <summary>
+        /// The slide is a title slide
+        /// </summary>
+        TitleSlide = 0,
+
+        /// <summary>
+        /// Title and body slide
+        /// </summary>
+        TitleAndBody = 1,
+
+        /// <summary>
+        /// Title master slide
+        /// </summary>
+        TitleMaster = 2,
+        
+        // 3 is unused
+
+        /// <summary>
+        /// Master notes layout
+        /// </summary>
+        MasterNotes = 4,
+
+        /// <summary>
+        /// Notes title/body layout
+        /// </summary>
+        NotesTitleAndBody = 5,
+
+        /// <summary>
+        /// Handout layout, therefore it doesn't have placeholders except header, footer, and date
+        /// </summary>
+        Handout = 6,
+
+        /// <summary>
+        /// Only title placeholder
+        /// </summary>
+        TitleOnly = 7,
+
+        /// <summary>
+        /// Body of the slide has 2 columns and a title
+        /// </summary>
+        TwoColumnsAndTitle = 8,
+
+        /// <summary>
+        /// Slide?s body has 2 rows and a title
+        /// </summary>
+        TwoRowsAndTitle = 9,
+
+        /// <summary>
+        /// Body contains 2 columns, right column has 2 rows
+        /// </summary>
+        TwoColumnsRightTwoRows = 10,
+
+        /// <summary>
+        /// Body contains 2 columns, left column has 2 rows
+        /// </summary>
+        TwoColumnsLeftTwoRows = 11,
+
+        /// <summary>
+        /// Body contains 2 rows, bottom row has 2 columns
+        /// </summary>
+        TwoRowsBottomTwoColumns = 12,
+
+        /// <summary>
+        /// Body contains 2 rows, top row has 2 columns
+        /// </summary>
+        TwoRowsTopTwoColumns = 13,
+
+        /// <summary>
+        /// 4 objects
+        /// </summary>
+        FourObjects = 14,
+
+        /// <summary>
+        /// Big object
+        /// </summary>
+        BigObject = 15,
+
+        /// <summary>
+        /// Blank slide
+        /// </summary>
+        Blank = 16,
+
+        /// <summary>
+        /// Vertical title on the right, body on the left
+        /// </summary>
+        VerticalTitleRightBodyLeft = 17,
+
+        /// <summary>
+        /// Vertical title on the right, body on the left split into 2 rows
+        /// </summary>
+        VerticalTitleRightBodyLeftTwoRows = 18
+    }
+
     public class SSlideLayoutAtom
     {
-        public Int32 Geom;
-        public byte[] PlaceholderIds = new byte[8];
+        public SlideLayoutType Geom;
+        public PlaceholderEnum[] PlaceholderIds = new PlaceholderEnum[8];
 
         public SSlideLayoutAtom(BinaryReader reader)
         {
-            this.Geom = reader.ReadInt32();
+            this.Geom = (SlideLayoutType)reader.ReadInt32();
 
             for (int i = 0; i < 8; i++)
-                this.PlaceholderIds[i] = reader.ReadByte();
+                this.PlaceholderIds[i] = (PlaceholderEnum)reader.ReadByte();
         }
 
         public override string ToString()
         {
             string s = String.Join(", ",
-                Array.ConvertAll<byte, string>(this.PlaceholderIds,
-                delegate(byte b) { return b.ToString(); }));
+                Array.ConvertAll<PlaceholderEnum, string>(this.PlaceholderIds,
+                delegate(PlaceholderEnum pid) { return pid.ToString(); }));
 
             return String.Format("SSlideLayoutAtom(Geom = {0}, PlaceholderIds = [{1}])",
                 this.Geom, s);

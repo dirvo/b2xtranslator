@@ -34,24 +34,26 @@ using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
     [OfficeRecordAttribute(1000)]
-    public class PptDocumentRecord : RegularContainer
+    public class DocumentContainer : RegularContainer
     {
         /// <summary>
         /// Collection of SlidePersistAtoms for master slides.
         /// </summary>
-        private List<SlidePersistAtom> MasterPersistList = new List<SlidePersistAtom>();
+        public List<SlidePersistAtom> MasterPersistList = new List<SlidePersistAtom>();
 
         /// <summary>
         /// Collection of SlidePersistAtoms for notes slides.
         /// </summary>
-        private List<SlidePersistAtom> NotesPersistList = new List<SlidePersistAtom>();
+        public List<SlidePersistAtom> NotesPersistList = new List<SlidePersistAtom>();
 
         /// <summary>
         /// Collection of SlidePersistAtoms for regular slides.
         /// </summary>
-        private List<SlidePersistAtom> SlidePersistList = new List<SlidePersistAtom>();
+        public List<SlidePersistAtom> SlidePersistList = new List<SlidePersistAtom>();
 
-        public PptDocumentRecord(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+        public SlideListWithText RegularSlideListWithText;
+
+        public DocumentContainer(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {
             foreach (SlideListWithText collection in this.AllChildrenWithType<SlideListWithText>())
@@ -69,6 +71,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
                         break;
 
                     case SlideListWithText.Instances.CollectionOfSlides:
+                        this.RegularSlideListWithText = collection;
                         target = this.SlidePersistList;
                         break;
                 }
@@ -81,15 +84,15 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             }
 
             this.MasterPersistList.Sort(delegate(SlidePersistAtom a, SlidePersistAtom b) {
-                return a.PsrReference.CompareTo(b.PsrReference);
+                return a.PersistIdRef.CompareTo(b.PersistIdRef);
             });
 
             this.NotesPersistList.Sort(delegate(SlidePersistAtom a, SlidePersistAtom b) {
-                return a.PsrReference.CompareTo(b.PsrReference);
+                return a.PersistIdRef.CompareTo(b.PersistIdRef);
             });
 
             this.SlidePersistList.Sort(delegate(SlidePersistAtom a, SlidePersistAtom b) {
-                return a.PsrReference.CompareTo(b.PsrReference);
+                return a.PersistIdRef.CompareTo(b.PersistIdRef);
             });
 
         }
@@ -98,7 +101,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         {
             foreach (SlidePersistAtom atom in this.SlidePersistList)
                 // idx is zero-based, psr-reference is one-based
-                if (atom.PsrReference == idx + 1)
+                if (atom.PersistIdRef == idx + 1)
                     return atom;
 
             return null;

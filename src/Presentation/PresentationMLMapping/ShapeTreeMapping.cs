@@ -17,7 +17,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         IMapping<PPDrawing>
     {
         protected int _idCnt;
-        protected int _placeholderCnt;
         protected ConversionContext _ctx;
 
         public ShapeTreeMapping(ConversionContext ctx, XmlWriter writer)
@@ -31,7 +30,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             // Call Apply(record) with dynamic dispatch (selection based on run-time type of record)
             MethodInfo method = this.GetType().GetMethod("Apply", new Type[] { record.GetType() });
 
-            TraceLogger.DebugInternal(method.ToString());
+            //TraceLogger.DebugInternal(method.ToString());
 
             try
             {
@@ -87,15 +86,16 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     }
                     else
                     {
-                        string typeValue = Utils.PlaceholderIdToXMLValue(placeholder.PlaceholderId);
+                        string typeValue = Utils.PlaceholderIdToXMLValue(placeholder.PlacementId);
 
                         _writer.WriteStartElement("p", "ph", OpenXmlNamespaces.PresentationML);
                         _writer.WriteAttributeString("type", typeValue);
-                        _writer.WriteAttributeString("idx", _placeholderCnt.ToString());
+    
+                        if (placeholder.Position != -1)
+                            _writer.WriteAttributeString("idx", placeholder.Position.ToString());
+
                         _writer.WriteEndElement();
                     }
-
-                    _placeholderCnt++;
                 }
             }
 
@@ -109,7 +109,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             ClientAnchor anchor = container.FirstChildWithType<ClientAnchor>();
 
-            if (anchor != null)
+            if (anchor != null && anchor.Right >= anchor.Left && anchor.Bottom >= anchor.Top)
             {
                 _writer.WriteStartElement("a", "xfrm", OpenXmlNamespaces.DrawingML);
 
@@ -166,8 +166,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         public void Apply(Record record)
         {
-            TraceLogger.DebugInternal("Unsupported record: {0}", record);
             // Ignore unsupported records
+            //TraceLogger.DebugInternal("Unsupported record: {0}", record);
         }
 
         private void WriteGroupShapeProperties(ShapeContainer header)
@@ -188,7 +188,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             // Write visible Group Shape properties
             _writer.WriteStartElement("p", "grpSpPr", OpenXmlNamespaces.PresentationML);
-            WriteXFrm(_writer, groupShape.rcgBounds);
+            WriteXFrm(_writer, new Rectangle()); // groupShape.rcgBounds
             _writer.WriteEndElement();
         }
 

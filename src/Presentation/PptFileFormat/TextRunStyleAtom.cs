@@ -28,59 +28,70 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.IO;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
+using System.IO;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
-    public enum TextType
+    [OfficeRecordAttribute(4001)]
+    public class TextRunStyleAtom : TextStyleAtom
     {
-        Title = 0,
-        Body,
-        Notes,
-        Outline,
-        Other,
-        CenterBody,
-        CenterTitle,
-        HalfBody,
-        QuarterBody
-    };
-
-    [OfficeRecordAttribute(3999)]
-    public class TextHeaderAtom : Record
-    {
-        public TextType TextType;
-
-        public TextAtom TextAtom;
-
-        public TextStyleAtom TextStyleAtom;
-
-        public TextHeaderAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+        public TextRunStyleAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
+        { }
+
+        /// <summary>
+        /// Can only read data after text header has been set. So automatic verification doesn't work.
+        /// </summary>
+        override public bool DoAutomaticVerifyReadToEnd
         {
-            this.TextType = (TextType) this.Reader.ReadUInt32();
+            get { return false; }
         }
 
-        public void HandleTextDataRecord(ITextDataRecord tdRecord)
+        override public void AfterTextHeaderSet()
         {
-            tdRecord.TextHeaderAtom = this;
+            TextAtom textAtom = this.TextHeaderAtom.TextAtom;
 
-            TextAtom textAtom = tdRecord as TextAtom;
-            TextStyleAtom tsAtom = tdRecord as TextStyleAtom;
+            /* This can legitimately happen... */
+            if (textAtom == null)
+            {
+                this.Reader.BaseStream.Position = this.Reader.BaseStream.Length;
+                return;
+            }
 
-            if (textAtom != null)
+            uint seenLength = 0;
+            while (seenLength < textAtom.Text.Length + 1)
             {
-                this.TextAtom = textAtom;
+                long pos = this.Reader.BaseStream.Position;
+                uint length = this.Reader.ReadUInt32();
+
+                ParagraphRun run = new ParagraphRun(this.Reader, false);
+                run.Length = length;
+                this.PRuns.Add(run);
+
+                /*TraceLogger.DebugInternal("Read paragraph run. Before pos = {0}, after pos = {1} of {2}: {3}",
+                    pos, this.Reader.BaseStream.Position, this.Reader.BaseStream.Length,
+                    run);*/
+
+                seenLength += length;
             }
-            else if (tsAtom != null)
+
+            //TraceLogger.DebugInternal();
+
+            seenLength = 0;
+            while (seenLength < textAtom.Text.Length + 1)
             {
-                this.TextStyleAtom = tsAtom;
+                uint length = this.Reader.ReadUInt32();
+
+                CharacterRun run = new CharacterRun(this.Reader);
+                run.Length = length;
+                this.CRuns.Add(run);
+
+                seenLength += length;
             }
-            else
-            {
-                throw new NotImplementedException("Unhandled text data record type " + tdRecord.GetType().ToString());
-            }
+
+            this.VerifyReadToEnd();
         }
     }
-
 }

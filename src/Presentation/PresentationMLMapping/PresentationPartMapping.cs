@@ -4,11 +4,14 @@ using System.Text;
 using DIaLOGIKa.b2xtranslator.PptFileFormat;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML;
 
 namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 {
     public class PresentationPartMapping : PresentationMapping<PowerpointDocument>
     {
+        private List<SlideMapping> SlideMappings = new List<SlideMapping>();
+
         public PresentationPartMapping(ConversionContext ctx)
             : base(ctx, ctx.Pptx.PresentationPart)
         {
@@ -16,7 +19,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         public override void Apply(PowerpointDocument ppt)
         {
-            PptDocumentRecord documentRecord = ppt.FirstRootRecordWithType<PptDocumentRecord>();
+            DocumentContainer documentRecord = ppt.DocumentRecord;
 
             // Start the document
             _writer.WriteStartDocument();
@@ -25,7 +28,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             // Force declaration of these namespaces at document start
             _writer.WriteAttributeString("xmlns", "r", null, OpenXmlNamespaces.Relationships);
 
-            WriteSlideMasters(ppt);
+            CreateMainMasters(ppt);
+            CreateSlides(ppt, documentRecord);
+
+            WriteMainMasters(ppt);
             WriteSlides(ppt, documentRecord);
 
             // sldSz and notesSz
@@ -38,7 +44,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.Flush();
         }
 
-        private void WriteSizeInfo(PowerpointDocument ppt, PptDocumentRecord documentRecord)
+        private void WriteSizeInfo(PowerpointDocument ppt, DocumentContainer documentRecord)
         {
             DocumentAtom doc = documentRecord.FirstChildWithType<DocumentAtom>();
 
@@ -78,58 +84,74 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         }
 
-        private void WriteSlides(PowerpointDocument ppt, PptDocumentRecord documentRecord)
+        private void CreateSlides(PowerpointDocument ppt, DocumentContainer documentRecord)
+        {
+            foreach (Slide slide in ppt.SlideRecords)
+            {
+                SlideMapping sMapping = new SlideMapping(_ctx);
+                sMapping.Apply(slide);
+                this.SlideMappings.Add(sMapping);
+            }
+        }
+
+        private void WriteSlides(PowerpointDocument ppt, DocumentContainer documentRecord)
         {
             _writer.WriteStartElement("p", "sldIdLst", OpenXmlNamespaces.PresentationML);
 
-            int i = 0;
-
-            foreach (Slide slide in ppt.AllRootRecordsWithType<Slide>())
+            foreach (SlideMapping sMapping in this.SlideMappings)
             {
-                // TODO: Doesn't always work correctly...
-                SlidePersistAtom slidePersist = documentRecord.SlidePersistAtomForSlideWithIdx(slide.SiblingIdx);
-
-                WriteSlide(slide, slidePersist != null ? slidePersist.SlideId : i);
-
-                i++;
+                WriteSlide(sMapping);
             }
 
             _writer.WriteEndElement();
         }
 
-        private void WriteSlide(Slide slide, Int32 slideId)
+        private void WriteSlide(SlideMapping sMapping)
         {
+            Slide slide = sMapping.Slide;
+
             _writer.WriteStartElement("p", "sldId", OpenXmlNamespaces.PresentationML);
 
-            SlideMapping mapping = new SlideMapping(_ctx);
-            mapping.Apply(slide);
+            SlideAtom slideAtom = slide.FirstChildWithType<SlideAtom>();
 
-            string relString = mapping.targetPart.RelIdToString;
-
-            _writer.WriteAttributeString("id", slideId.ToString());
-            _writer.WriteAttributeString("r", "id", OpenXmlNamespaces.Relationships, relString);
+            _writer.WriteAttributeString("id", slide.PersistAtom.SlideId.ToString());
+            _writer.WriteAttributeString("r", "id", OpenXmlNamespaces.Relationships, sMapping.targetPart.RelIdToString);
 
             _writer.WriteEndElement();
         }
 
-        private void WriteSlideMasters(PowerpointDocument ppt)
+        private void CreateMainMasters(PowerpointDocument ppt)
+        {
+            foreach (Slide m in ppt.MainMasterRecords)
+            {
+                _ctx.GetOrCreateMasterMappingByMasterId(m.PersistAtom.SlideId).Apply(m);
+            }
+        }
+
+        private void WriteMainMasters(PowerpointDocument ppt)
         {
             _writer.WriteStartElement("p", "sldMasterIdLst", OpenXmlNamespaces.PresentationML);
 
-            foreach (MainMaster mm in ppt.AllRootRecordsWithType<MainMaster>())
+            foreach (MainMaster m in ppt.MainMasterRecords)
             {
-                WriteSlideMaster(mm);
+                this.WriteMainMaster(ppt, m);
             }
 
             _writer.WriteEndElement();
         }
 
-        private void WriteSlideMaster(MainMaster mm)
+        /// <summary>
+        /// Writes a slide master.
+        /// 
+        /// A slide master can either be a main master (type MainMaster) or title master (type Slide).
+        /// <param name="ppt">PowerpointDocument record</param>
+        /// <param name="m">Main master record</param>
+        private void WriteMainMaster(PowerpointDocument ppt, MainMaster m)
         {
             _writer.WriteStartElement("p", "sldMasterId", OpenXmlNamespaces.PresentationML);
 
-            MainMasterMapping mapping = new MainMasterMapping(_ctx);
-            mapping.Apply(mm);
+            MasterMapping mapping = _ctx.GetOrCreateMasterMappingByMasterId(m.PersistAtom.SlideId);
+            mapping.Write();
 
             string relString = mapping.targetPart.RelIdToString;
 

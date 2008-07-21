@@ -32,10 +32,11 @@ using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 using System.Reflection;
+using System.IO;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
-    public class PowerpointDocument : BinaryDocument, IEnumerable<Record>
+    public class PowerpointDocument : BinaryDocument, IVisitable, IEnumerable<Record>
     {
         static PowerpointDocument() {
             Record.UpdateTypeToRecordClassMapping(Assembly.GetExecutingAssembly(), typeof(PowerpointDocument).Namespace);
@@ -46,52 +47,232 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         /// </summary>
         public VirtualStream PowerpointDocumentStream;
 
-        public List<Record> RootRecords = new List<Record>();
+        /// <summary>
+        /// The stream "Current User"
+        /// </summary>
+        public VirtualStream CurrentUserStream;
+
+        /// <summary>
+        /// Atom containing information about the last user to edit this document and a reference to that last edit.
+        /// </summary>
+        public CurrentUserAtom CurrentUserAtom;
+
+        /// <summary>
+        /// The last edit done to this document.
+        /// </summary>
+        public UserEditAtom LastUserEdit;
+
+        /// <summary>
+        /// The persist object directory is used for mapping persist object identifiers to document stream offsets.
+        /// </summary>
+        public Dictionary<UInt32, UInt32> PersistObjectDirectory = new Dictionary<uint,uint>();
+
+        /// <summary>
+        /// The DocumentContainer record for this document.
+        /// </summary>
+        public DocumentContainer DocumentRecord;
+
+        /// <summary>
+        /// List of all main (regular) master records for this document.
+        /// </summary>
+        public List<MainMaster> MainMasterRecords = new List<MainMaster>();
+
+        /// <summary>
+        /// List of title master records for this document.
+        /// </summary>
+        public List<Slide> TitleMasterRecords = new List<Slide>();
+
+        /// <summary>
+        /// Dictionary used for finding MasterRecords (title / main masters) by master id.
+        /// </summary>
+        private Dictionary<UInt32, Slide> MasterRecordsById =
+            new Dictionary<UInt32, Slide>();
+
+        /// <summary>
+        /// List of all slide records for this document.
+        /// </summary>
+        public List<Slide> SlideRecords = new List<Slide>();
 
         public PowerpointDocument(StructuredStorageFile file)
         {
+            this.CurrentUserStream = file.GetStream("Current User");
+            this.CurrentUserAtom = (CurrentUserAtom)Record.ReadRecord(this.CurrentUserStream, 0);
+
             this.PowerpointDocumentStream = file.GetStream("PowerPoint Document");
+            this.PowerpointDocumentStream.Seek(this.CurrentUserAtom.OffsetToCurrentEdit, SeekOrigin.Begin);
 
-            uint idx = 0;
+            this.LastUserEdit = (UserEditAtom)Record.ReadRecord(this.PowerpointDocumentStream, 0);
 
-            while (this.PowerpointDocumentStream.Position != this.PowerpointDocumentStream.Length)
+            this.ConstructPersistObjectDirectory();
+
+            this.IdentifyDocumentPersistObject();
+            this.IdentifyMasterPersistObjects();
+            this.IdentifySlidePersistObjects();
+
+            // TODO: notes / handout masters and slides
+        }
+
+        /// <summary>
+        /// Returns the slide or main master with the specified masterId or null if none exists.
+        /// </summary>
+        /// <param name="masterId">id of master to find</param>
+        /// <returns>Slide or main master with the specified masterId or null if none exists</returns>
+        public Slide FindMasterRecordById(UInt32 masterId)
+        {
+            return this.MasterRecordsById[masterId];
+        }
+
+        /// <summary>
+        /// Tries to find a record with the supplied persistId and type in the PersistObjectDirectory, reads it and returns it.
+        /// </summary>
+        /// <typeparam name="T">Type of record</typeparam>
+        /// <param name="persistId">persist id of record to look up</param>
+        /// <returns>Matching record of given type or null</returns>
+        public T GetPersistObject<T>(uint persistId) where T : Record
+        {
+            if (!this.PersistObjectDirectory.ContainsKey(persistId))
+                return null;
+
+            UInt32 offset = this.PersistObjectDirectory[persistId];
+            this.PowerpointDocumentStream.Seek(offset, SeekOrigin.Begin);
+            return (T)Record.ReadRecord(this.PowerpointDocumentStream, 0);
+        }
+
+        /// <summary>
+        /// Find the root DocumentContainer record for this presentation.
+        /// 
+        /// This is done by looking up the document persist id reference of the last user edit in the persist object directory.
+        /// </summary>
+        private void IdentifyDocumentPersistObject()
+        {
+            this.DocumentRecord = this.GetPersistObject<DocumentContainer>(this.LastUserEdit.DocPersistIdRef);
+        }
+
+        /// <summary>
+        /// Find all master records for this presentation.
+        /// 
+        /// This is done by looking up all persist id references of all SlidePersistAtoms of the DocumentRecord's MasterPersistList
+        /// in the persist object directory.
+        /// </summary>
+        private void IdentifyMasterPersistObjects()
+        {
+            foreach (SlidePersistAtom masterPersistAtom in this.DocumentRecord.MasterPersistList)
             {
-                Record record = Record.ReadRecord(this.PowerpointDocumentStream, idx);
-                record.ParentRecord = null;
-                this.RootRecords.Add(record);
-                idx++;
+                Slide master = this.GetPersistObject<Slide>(masterPersistAtom.PersistIdRef);
+                master.PersistAtom = masterPersistAtom;
+
+                if (master is MainMaster)
+                    this.MainMasterRecords.Add((MainMaster)master);
+                else
+                    this.TitleMasterRecords.Add(master);
+
+                this.MasterRecordsById.Add(master.PersistAtom.SlideId, master);
             }
+        }
+
+        /// <summary>
+        /// Find all Slide records for this presentation.
+        /// 
+        /// This is done by looking up all persist id references of all SlidePersistAtoms of the DocumentRecord's MasterPersistList
+        /// in the persist object directory.
+        /// </summary>
+        private void IdentifySlidePersistObjects()
+        {
+            foreach (SlidePersistAtom slidePersistAtom in this.DocumentRecord.SlidePersistList)
+            {
+                Slide slide = this.GetPersistObject<Slide>(slidePersistAtom.PersistIdRef);
+                slide.PersistAtom = slidePersistAtom;
+                this.SlideRecords.Add(slide);
+            }
+        }
+
+        /// <summary>
+        /// Construct the complete persist object directory by traversing all PersistDirectoryAtoms
+        /// from all UserEditAtoms from the last edit to the first one and adding all entries of
+        /// all encountered persist directories to the resulting persist object directory.
+        /// 
+        /// When the same persist id occurs multiple times with different offsets the one from the
+        /// last user edit will end up in the persist object directory, overwriting earlier edits.
+        /// </summary>
+        private void ConstructPersistObjectDirectory()
+        {
+            List<PersistDirectoryAtom> pdAtoms = FindLivePersistDirectoryAtoms();
+
+            foreach (PersistDirectoryAtom pdAtom in pdAtoms)
+            {
+                foreach (PersistDirectoryEntry pdEntry in pdAtom.PersistDirEntries)
+                {
+                    uint pid = pdEntry.StartPersistId;
+
+                    foreach (UInt32 poff in pdEntry.PersistOffsetEntries)
+                    {
+                        this.PersistObjectDirectory[pid] = poff;
+                        pid++;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Find all live PersistDirectoryAtoms by traversing all UserEditAtoms starting from CurrentUserAtom.
+        /// </summary>
+        /// <returns>List of PersistDirectoryAtoms. The oldest PersitDirectoryAtom will be the first element of the list.</returns>
+        private List<PersistDirectoryAtom> FindLivePersistDirectoryAtoms()
+        {
+            List<PersistDirectoryAtom> result = new List<PersistDirectoryAtom>();
+
+            UserEditAtom userEditAtom = this.LastUserEdit;
+
+            while (userEditAtom != null)
+            {
+                this.PowerpointDocumentStream.Seek(userEditAtom.OffsetPersistDirectory, SeekOrigin.Begin);
+                PersistDirectoryAtom pdAtom = (PersistDirectoryAtom)Record.ReadRecord(this.PowerpointDocumentStream, 0);
+                result.Insert(0, pdAtom);
+
+                this.PowerpointDocumentStream.Seek(userEditAtom.OffsetLastEdit, SeekOrigin.Begin);
+
+                if (userEditAtom.OffsetLastEdit != 0)
+                    userEditAtom = (UserEditAtom)Record.ReadRecord(this.PowerpointDocumentStream, 0);
+                else
+                    userEditAtom = null;
+            }
+
+            return result;
         }
 
         override public string ToString()
         {
             StringBuilder result = new StringBuilder(base.ToString());
 
-            foreach (Record record in this.RootRecords)
+            result.Append("CurrentUserAtom: ");
+            result.AppendLine(this.CurrentUserAtom.ToString());
+            result.AppendLine();
+
+            result.Append("DocumentRecord: ");
+            result.AppendLine(this.DocumentRecord.ToString());
+
+            foreach (Record r in this.MainMasterRecords)
             {
                 result.AppendLine();
+                result.Append("MainMasterRecord: ");
+                result.AppendLine(r.ToString());
+            }
+
+            foreach (Record r in this.TitleMasterRecords)
+            {
                 result.AppendLine();
-                result.Append("Root Record: ");
-                result.Append(record.ToString());
+                result.Append("TitleMasterRecord: ");
+                result.AppendLine(r.ToString());
+            }
+
+            foreach (Record r in this.SlideRecords)
+            {
+                result.AppendLine();
+                result.Append("SlideRecord: ");
+                result.AppendLine(r.ToString());
             }
 
             return result.ToString();
-        }
-
-        public List<T> AllRootRecordsWithType<T>() where T : Record
-        {
-            return (List<T>)this.RootRecords.FindAll(
-                delegate(Record r) { return r is T; }
-            ).ConvertAll<T>(
-                delegate(Record r) { return (T)r; }
-            );
-        }
-
-        public T FirstRootRecordWithType<T>() where T : Record
-        {
-            return (T) this.RootRecords.Find(
-                delegate(Record r) { return r is T; }
-            );
         }
 
         #region IVisitable Members
@@ -103,23 +284,24 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
         #endregion
 
-        #region IEnumerable<Record> Members
+        #region IEnumerable<Record> Member
 
         public IEnumerator<Record> GetEnumerator()
         {
-            foreach (Record rootRecord in this.RootRecords)
-                foreach (Record record in rootRecord)
-                    yield return record;
+            foreach (UInt32 persistId in this.PersistObjectDirectory.Keys)
+            {
+                yield return this.GetPersistObject<Record>(persistId);
+            }
         }
 
         #endregion
 
-        #region IEnumerable Members
+        #region IEnumerable Member
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            foreach (Record record in this)
-                yield return record;
+            IEnumerator<Record> e = this.GetEnumerator();
+            return (System.Collections.IEnumerator)e;
         }
 
         #endregion

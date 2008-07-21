@@ -8,37 +8,31 @@ using DIaLOGIKa.b2xtranslator.Tools;
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
     //[OfficeRecordAttribute(4003)]
-    class TxMasterStyleAtom : Record
+    class TextMasterStyleAtom : TextStyleAtom
     {
         public UInt16 IndentLevelCount;
 
-        private ParagraphRun[] pruns;
-        private CharacterRun[] cruns;
-
-        public TxMasterStyleAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+        public TextMasterStyleAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {
             this.IndentLevelCount = this.Reader.ReadUInt16();
-
-            this.pruns = new ParagraphRun[this.IndentLevelCount];
-            this.cruns = new CharacterRun[this.IndentLevelCount];
 
             for (int i = 0; i < this.IndentLevelCount; i++)
             {
                 long pos = this.Reader.BaseStream.Position;
 
-                this.pruns[i] = new ParagraphRun(this.Reader, true);
+                this.PRuns[i] = new ParagraphRun(this.Reader, true);
 
                 TraceLogger.DebugInternal("Read paragraph run. Before pos = {0}, after pos = {1} of {2}: {3}",
                     pos, this.Reader.BaseStream.Position, this.Reader.BaseStream.Length,
-                    pruns[i]);
+                    this.PRuns[i]);
 
                 pos = this.Reader.BaseStream.Position;
-                this.cruns[i] = new CharacterRun(this.Reader);
+                this.CRuns[i] = new CharacterRun(this.Reader);
 
                 TraceLogger.DebugInternal("Read character run. Before pos = {0}, after pos = {1} of {2}: {3}",
                     pos, this.Reader.BaseStream.Position, this.Reader.BaseStream.Length,
-                    cruns[i]);
+                    this.CRuns[i]);
             }
 
             // XXX: I'm not sure why but in some cases there is trailing garbage -- flgr
@@ -47,31 +41,12 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
         public ParagraphRun ParagraphRunForIndentLevel(int level)
         {
-            return this.pruns[level];
+            return this.PRuns[level];
         }
 
         public CharacterRun CharacterRunForIndentLevel(int level)
         {
-            return this.cruns[level];
-        }
-
-        public override string ToString(uint depth)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append(base.ToString(depth));
-
-            depth++;
-            string indent = IndentationForDepth(depth);
-
-            sb.AppendFormat("\n{0}Paragraph Runs:", indent);
-            foreach (ParagraphRun pr in this.pruns)
-                sb.AppendFormat("\n{0}", pr.ToString(depth + 1));
-
-            sb.AppendFormat("\n{0}Character Runs:", indent);
-            foreach (CharacterRun cr in this.cruns)
-                sb.AppendFormat("\n{0}", cr.ToString(depth + 1));
-
-            return sb.ToString();
+            return this.CRuns[level];
         }
     }
 }

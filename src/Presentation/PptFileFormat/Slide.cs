@@ -38,6 +38,8 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
     {
         public Slide(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance) { }
+
+        public SlidePersistAtom PersistAtom;
     }
 
 }

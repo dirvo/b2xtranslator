@@ -7,7 +7,7 @@ using System.IO;
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
     [OfficeRecordAttribute(1016)]
-    public class MainMaster : RegularContainer
+    public class MainMaster : Slide
     {
         public MainMaster(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance) { }

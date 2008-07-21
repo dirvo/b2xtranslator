@@ -30,56 +30,43 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
-    public enum TextType
+    [OfficeRecordAttribute(6002)]
+    public class PersistDirectoryAtom : Record
     {
-        Title = 0,
-        Body,
-        Notes,
-        Outline,
-        Other,
-        CenterBody,
-        CenterTitle,
-        HalfBody,
-        QuarterBody
-    };
+        /// <summary>
+        /// An array of PersistDirectoryEntry structures that specifies persist 
+        /// object identifiers and stream offsets to persist objects.
+        /// 
+        /// The size, in bytes, of the array is specified by rh.recLen.  
+        /// </summary>
+        public List<PersistDirectoryEntry> PersistDirEntries = new List<PersistDirectoryEntry>();
 
-    [OfficeRecordAttribute(3999)]
-    public class TextHeaderAtom : Record
-    {
-        public TextType TextType;
-
-        public TextAtom TextAtom;
-
-        public TextStyleAtom TextStyleAtom;
-
-        public TextHeaderAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+        public PersistDirectoryAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {
-            this.TextType = (TextType) this.Reader.ReadUInt32();
+            while (this.Reader.BaseStream.Position != this.Reader.BaseStream.Length)
+            {
+                this.PersistDirEntries.Add(new PersistDirectoryEntry(this.Reader));
+            }
         }
 
-        public void HandleTextDataRecord(ITextDataRecord tdRecord)
+        override public string ToString(uint depth)
         {
-            tdRecord.TextHeaderAtom = this;
+            StringBuilder sb = new StringBuilder();
 
-            TextAtom textAtom = tdRecord as TextAtom;
-            TextStyleAtom tsAtom = tdRecord as TextStyleAtom;
+            sb.Append(base.ToString(depth));
 
-            if (textAtom != null)
+            foreach (PersistDirectoryEntry entry in this.PersistDirEntries)
             {
-                this.TextAtom = textAtom;
+                sb.AppendLine();
+                sb.Append(entry.ToString(depth + 1));
             }
-            else if (tsAtom != null)
-            {
-                this.TextStyleAtom = tsAtom;
-            }
-            else
-            {
-                throw new NotImplementedException("Unhandled text data record type " + tdRecord.GetType().ToString());
-            }
+
+            return sb.ToString();
         }
     }
 

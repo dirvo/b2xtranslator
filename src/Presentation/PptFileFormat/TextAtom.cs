@@ -34,7 +34,7 @@ using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
-    public class TextAtom : Record
+    public class TextAtom : Record, ITextDataRecord
     {
         public string Text;
 
@@ -52,6 +52,24 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             return String.Format("{0}\n{1}Text = {2}",
                 base.ToString(depth), IndentationForDepth(depth + 1), Utils.StringInspect(this.Text));
         }
+
+        #region ITextDataRecord Member
+
+        private TextHeaderAtom _TextHeaderAtom;
+
+        public TextHeaderAtom TextHeaderAtom
+        {
+            get
+            {
+                return this._TextHeaderAtom;
+            }
+            set
+            {
+                this._TextHeaderAtom = value;
+            }
+        }
+
+        #endregion
     }
 
 }

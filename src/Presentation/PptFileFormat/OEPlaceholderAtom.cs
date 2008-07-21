@@ -34,7 +34,7 @@ using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
-    public enum PlaceholderId
+    public enum PlaceholderEnum
     {
         None = 0,
         MasterTitle = 1,
@@ -67,28 +67,27 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
     public class OEPlaceHolderAtom : Record
     {
         /// <summary>
-        /// The placement Id is a number assigned to the placeholder. It goes from -1 to the number of placeholders. See note below.
+        /// A signed integer that specifies an ID for the placeholder shape.
+        /// It SHOULD be unique among all PlaceholderAtom records contained in the corresponding slide.
+        /// The value 0xFFFFFFFF specifies that the corresponding shape is not a placeholder shape.
         /// </summary>
-        public Int32 PlacementId; 
+        public Int32 Position;
 
         /// <summary>
-        /// Type of placeholder. See the Placeholder ID Values table below for valid values.
+        /// A PlaceholderEnum enumeration that specifies the type of the placeholder shape.
         /// </summary>
-        public PlaceholderId PlaceholderId;
+        public PlaceholderEnum PlacementId;
 
         /// <summary>
-        /// Size of the placeholder, which can be:
-        ///     0 - full size
-        ///     1 - half size
-        ///     2 - quart of the slide
+        /// A PlaceholderSize enumeration that specifies the preferred size of the placeholder shape.
         /// </summary>
         public byte PlaceholderSize;
 
         public OEPlaceHolderAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {
-            this.PlacementId = this.Reader.ReadInt32();
-            this.PlaceholderId = (PlaceholderId) this.Reader.ReadByte();
+            this.Position = this.Reader.ReadInt32();
+            this.PlacementId = (PlaceholderEnum) this.Reader.ReadByte();
             this.PlaceholderSize = this.Reader.ReadByte();
             // Throw away additional junk
             this.Reader.ReadUInt16();
@@ -96,14 +95,14 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
         override public string ToString(uint depth)
         {
-            return String.Format("{0}\n{1}PlacementId = {2}\n{1}PlaceholderId = {3}, PlaceholderSize = {4})",
+            return String.Format("{0}\n{1}Position = {2}, PlacementId = {3}, PlaceholderSize = {4}",
                 base.ToString(depth), IndentationForDepth(depth + 1),
-                this.PlacementId, this.PlaceholderId, this.PlaceholderSize);
+                this.Position, this.PlacementId, this.PlaceholderSize);
         }
 
         public bool IsObjectPlaceholder()
         {
-            return this.PlaceholderId == PlaceholderId.Object;
+            return this.PlacementId == PlaceholderEnum.Object;
         }
     }
 

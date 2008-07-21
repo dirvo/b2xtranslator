@@ -155,7 +155,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             if (this.BulletCharPresent)
                 this.BulletChar = (char)reader.ReadUInt16();
 
-            if (this.HasCustomBulletTypeface && (this.BulletFlags & (1 << 1)) != 0)
+            if (this.BulletTypefacePresent /*&& (this.BulletFlags & (1 << 1)) != 0*/)
                 this.BulletTypefaceIdx = reader.ReadUInt16();
 
             if (this.HasCustomBulletSize && (this.BulletFlags & (1 << 3)) != 0)

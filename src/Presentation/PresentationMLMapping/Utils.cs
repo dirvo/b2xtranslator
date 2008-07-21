@@ -65,39 +65,65 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
         }
 
-        public static string PlaceholderIdToXMLValue(PlaceholderId pid)
+        public static string PlaceholderIdToXMLValue(PlaceholderEnum pid)
         {
             switch (pid)
             {
-                case PlaceholderId.MasterTitle:
+                case PlaceholderEnum.MasterTitle:
                     return "title";
 
-                case PlaceholderId.MasterBody:
+                case PlaceholderEnum.MasterBody:
                     return "body";
 
-                case PlaceholderId.MasterDate:
+                case PlaceholderEnum.MasterDate:
                     return "dt";
 
-                case PlaceholderId.MasterSlideNumber:
+                case PlaceholderEnum.MasterSlideNumber:
                     return "sldNum";
 
-                case PlaceholderId.MasterFooter:
+                case PlaceholderEnum.MasterFooter:
                     return "ftr";
 
-                case PlaceholderId.Title:
+                case PlaceholderEnum.Title:
                     return "title";
 
-                case PlaceholderId.Body:
+                case PlaceholderEnum.Body:
                     return "body";
 
-                case PlaceholderId.CenteredTitle:
+                case PlaceholderEnum.MasterCenteredTitle:
+                case PlaceholderEnum.CenteredTitle:
                     return "ctrTitle";
 
-                case PlaceholderId.Subtitle:
+                case PlaceholderEnum.MasterSubtitle:
+                case PlaceholderEnum.Subtitle:
                     return "subTitle";
 
                 default:
-                    return null;
+                    throw new NotImplementedException("Don't know how to map placeholder id " + pid);
+            }
+        }
+
+        public static string SlideLayoutTypeToFilename(SlideLayoutType type)
+        {
+            switch (type)
+            {
+                case SlideLayoutType.BigObject:
+                    return "obj";
+
+                case SlideLayoutType.Blank:
+                    return "blank";
+
+                case SlideLayoutType.TitleOnly:
+                    return "titleOnly";
+
+                case SlideLayoutType.TitleSlide:
+                    return "title";
+
+                case SlideLayoutType.TwoColumnsAndTitle:
+                    return "twoObj";
+
+                default:
+                    throw new NotImplementedException("Don't know how to map slide layout type " + type); 
             }
         }
     }

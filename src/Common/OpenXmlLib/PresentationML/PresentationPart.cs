@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML
 {
@@ -9,6 +10,9 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML
         public List<SlideMasterPart> SlideMasterParts = new List<SlideMasterPart>();
         protected static int _slideMasterCounter = 0;
         protected static int _slideCounter = 0;
+        protected static int _themeCounter = 0;
+
+        protected ThemePart DefaultThemePart;
         
         public PresentationPart(OpenXmlPartContainer parent)
             : base(parent, 0)
@@ -38,6 +42,23 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML
         public SlidePart AddSlidePart()
         {
             return this.AddPart(new SlidePart(this, ++_slideCounter));
+        }
+
+        public ThemePart AddThemePart()
+        {
+            return this.AddPart(new ThemePart(this, ++_themeCounter));
+        }
+
+        public ThemePart GetOrCreateDefaultThemePart(XmlDocument defaultDoc)
+        {
+            if (this.DefaultThemePart == null)
+            {
+                this.DefaultThemePart = this.AddThemePart();
+                defaultDoc.WriteTo(this.DefaultThemePart.XmlWriter);
+                this.DefaultThemePart.XmlWriter.Flush();
+            }
+
+            return this.DefaultThemePart;
         }
     }
 }

@@ -28,7 +28,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         /// <param name="style">style to use</param>
         /// <param name="forIdx">index to use</param>
         /// <returns>ParagraphRun or null in case no run was found</returns>
-        protected static ParagraphRun GetParagraphRun(StyleTextPropAtom style, uint forIdx)
+        protected static ParagraphRun GetParagraphRun(TextStyleAtom style, uint forIdx)
         {
             if (style == null)
                 return null;
@@ -52,7 +52,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         /// <param name="style">style to use</param>
         /// <param name="forIdx">index to use</param>
         /// <returns>CharacterRun or null in case no run was found</returns>
-        protected static CharacterRun GetCharacterRun(StyleTextPropAtom style, uint forIdx)
+        protected static CharacterRun GetCharacterRun(TextStyleAtom style, uint forIdx)
         {
             if (style == null)
                 return null;
@@ -72,10 +72,24 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         public void Apply(ClientTextbox textbox)
         {
-            TextAtom textAtom = textbox.FirstChildWithType<TextAtom>();
+            TextHeaderAtom thAtom = textbox.FirstChildWithType<TextHeaderAtom>();
+
+            if (thAtom == null)
+            {
+                OutlineTextRefAtom otrAtom = textbox.FirstChildWithType<OutlineTextRefAtom>();
+                SlideListWithText slideListWithText = _ctx.Ppt.DocumentRecord.RegularSlideListWithText;
+                thAtom = slideListWithText.FindTextHeaderForOutlineTextRef(otrAtom);
+            }
+
+            if (thAtom == null)
+            {
+                throw new NotSupportedException("Can't find text for ClientTextbox without TextHeaderAtom and OutlineTextRefAtom");
+            }
+            
+            TextAtom textAtom = thAtom.TextAtom;
             string text = (textAtom == null) ? "" : textAtom.Text;
 
-            StyleTextPropAtom style = textbox.FirstChildWithType<StyleTextPropAtom>();
+            TextStyleAtom style = thAtom.TextStyleAtom;
 
             TraceLogger.DebugInternal("TextMapping: text = {0}", Tools.Utils.StringInspect(text));
 
@@ -112,24 +126,32 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     if (slen > plen)
                         slen = plen;
 
-                    String runText = text.Substring((int)idx, (int)slen).Trim(new char[] {'\r', '\n', '\v'});
+                    String runText = text.Substring((int)idx, (int)slen);
+                    bool isLastRunOfParagraph = idx + slen == pEndIdx;
+                    if (isLastRunOfParagraph)
+                        runText = runText.TrimEnd(new char[] { '\v', '\r', '\n' });
 
                     TraceLogger.DebugInternal("Character run from {0} to {1} ({3}): {2}",
                         idx, idx + rlen, Tools.Utils.StringInspect(runText), slen);
 
-                    String[] lines = runText.Split('\v');
+                    String[] lines = runText.Split(new char[] { '\v', '\r' });
 
                     bool isFirstLine = true;
                     int lineIdx = 0;
+
+                    TraceLogger.DebugInternal("Split runtext {0} into these lines:", Tools.Utils.StringInspect(runText));
 
                     foreach (String line in lines)
                     {
                         if (!isFirstLine)
                         {
+                            TraceLogger.DebugInternal("  <br />");
                             _writer.WriteStartElement("a", "br", OpenXmlNamespaces.DrawingML);
                             // TODO: Write rPr
                             _writer.WriteEndElement();
                         }
+
+                        TraceLogger.DebugInternal("  {0}", Tools.Utils.StringInspect(line));
 
                         if (line.Length > 0)
                         {

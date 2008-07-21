@@ -35,12 +35,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConversionContext.cs" />
-    <Compile Include="MainMasterMapping.cs" />
+    <Compile Include="MasterMapping.cs" />
     <Compile Include="PresentationMapping.cs" />
     <Compile Include="PresentationPartMapping.cs" />
     <Compile Include="ShapeTreeMapping.cs" />
     <Compile Include="SlideMapping.cs" />
     <Compile Include="TextMapping.cs" />
+    <Compile Include="TitleMasterMapping.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -71,6 +72,19 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Defaults\theme.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Defaults\slideLayouts\blank.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\obj.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\objTx.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\picTx.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\secHead.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\title.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\titleOnly.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\twoObj.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\twoTxTwoObj.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\vertTitleAndTx.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\vertTx.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

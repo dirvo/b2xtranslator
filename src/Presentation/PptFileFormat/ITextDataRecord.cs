@@ -28,59 +28,22 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.IO;
-using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
-    public enum TextType
+    /// <summary>
+    /// Marker interface used for marking Records that contain text data
+    /// that is associated with a TextHeaderAtom record.
+    /// </summary>
+    public interface ITextDataRecord
     {
-        Title = 0,
-        Body,
-        Notes,
-        Outline,
-        Other,
-        CenterBody,
-        CenterTitle,
-        HalfBody,
-        QuarterBody
-    };
-
-    [OfficeRecordAttribute(3999)]
-    public class TextHeaderAtom : Record
-    {
-        public TextType TextType;
-
-        public TextAtom TextAtom;
-
-        public TextStyleAtom TextStyleAtom;
-
-        public TextHeaderAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
-            : base(_reader, size, typeCode, version, instance)
+        /// <summary>
+        /// TextHeaderAtom corresponding to this record.
+        /// </summary>
+        TextHeaderAtom TextHeaderAtom
         {
-            this.TextType = (TextType) this.Reader.ReadUInt32();
-        }
-
-        public void HandleTextDataRecord(ITextDataRecord tdRecord)
-        {
-            tdRecord.TextHeaderAtom = this;
-
-            TextAtom textAtom = tdRecord as TextAtom;
-            TextStyleAtom tsAtom = tdRecord as TextStyleAtom;
-
-            if (textAtom != null)
-            {
-                this.TextAtom = textAtom;
-            }
-            else if (tsAtom != null)
-            {
-                this.TextStyleAtom = tsAtom;
-            }
-            else
-            {
-                throw new NotImplementedException("Unhandled text data record type " + tdRecord.GetType().ToString());
-            }
+            get;
+            set;
         }
     }
-
 }

@@ -58,7 +58,8 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
                     this.Children.Add(child);
                     child.ParentRecord = this;
 
-                    child.VerifyReadToEnd();
+                    if (child.DoAutomaticVerifyReadToEnd)
+                        child.VerifyReadToEnd();
 
                     readSize += child.TotalSize;
                     idx++;

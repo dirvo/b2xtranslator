@@ -40,6 +40,22 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         public ClientTextbox(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {
+            TextHeaderAtom curThAtom = null;
+
+            foreach (Record r in this.Children)
+            {
+                TextHeaderAtom thAtom = r as TextHeaderAtom;
+                ITextDataRecord tdRecord = r as ITextDataRecord;
+
+                if (thAtom != null)
+                {
+                    curThAtom = thAtom;
+                }
+                else if (tdRecord != null)
+                {
+                    curThAtom.HandleTextDataRecord(tdRecord);
+                }
+            }
         }
     }
 

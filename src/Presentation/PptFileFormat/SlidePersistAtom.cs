@@ -40,7 +40,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         /// <summary>
         /// logical reference to the slide persist object
         /// </summary>
-        public UInt32 PsrReference;
+        public UInt32 PersistIdRef;
 
         /// <summary>
         /// Bit 1: Slide outline view is collapsed
@@ -57,15 +57,15 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         /// <summary>
         /// Unique slide identifier, used for OLE link monikers for example
         /// </summary>
-        public Int32 SlideId;
+        public UInt32 SlideId;
 
         public SlidePersistAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {
-            this.PsrReference = this.Reader.ReadUInt32();
+            this.PersistIdRef = this.Reader.ReadUInt32();
             this.Flags = this.Reader.ReadUInt32();
             this.NumberText = this.Reader.ReadInt32();
-            this.SlideId = this.Reader.ReadInt32();
+            this.SlideId = this.Reader.ReadUInt32();
             this.Reader.ReadUInt32(); // Throw away reserved field
         }
 
@@ -74,7 +74,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
             return String.Format("{0}\n{1}PsrRef = {2}\n{1}Flags = {3}, NumberText = {4}, SlideId = {5})",
                 base.ToString(depth), IndentationForDepth(depth + 1),
-                this.PsrReference, this.Flags, this.NumberText, this.SlideId);
+                this.PersistIdRef, this.Flags, this.NumberText, this.SlideId);
         }
     }
 }

@@ -138,6 +138,11 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             return this.ToString(0);
         }
 
+        virtual public bool DoAutomaticVerifyReadToEnd
+        {
+            get { return true; }
+        }
+
         public void VerifyReadToEnd()
         {
             long streamPos = this.Reader.BaseStream.Position;
@@ -148,6 +153,26 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
                 TraceLogger.DebugInternal("Record {3} didn't read to end: (stream position: {1} of {2})\n{0}",
                     this, streamPos, streamLen, this.GetIdentifier());
             }
+        }
+
+        /// <summary>
+        /// Finds the first ancestor of the given type.
+        /// </summary>
+        /// <typeparam name="T">Type of ancestor to search for</typeparam>
+        /// <returns>First ancestor with appropriate type or null if none was found</returns>
+        public T FirstAncestorWithType<T>() where T: Record
+        {
+            Record curAncestor = this.ParentRecord;
+
+            while (curAncestor != null)
+            {
+                if (curAncestor is T)
+                    return (T)curAncestor;
+
+                curAncestor = curAncestor.ParentRecord;
+            }
+
+            return null;
         }
 
         #region IVisitable Members

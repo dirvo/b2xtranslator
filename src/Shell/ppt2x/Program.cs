@@ -39,6 +39,7 @@ using DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML;
 using DIaLOGIKa.b2xtranslator.PresentationMLMapping;
 using DIaLOGIKa.b2xtranslator.ZipUtils;
 using System.Reflection;
+using System.Threading;
 
 namespace DIaLOGIKa.b2xtranslator.ppt2x
 {
@@ -49,6 +50,8 @@ namespace DIaLOGIKa.b2xtranslator.ppt2x
 
         public static void Main(string[] args)
         {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
             // parse arguments
             parseArgs(args);
 
@@ -113,6 +116,11 @@ namespace DIaLOGIKa.b2xtranslator.ppt2x
             {
                 TraceLogger.Error("Could not create output file {0}.", outputFile);
                 //TraceLogger.Error("Perhaps the specified outputfile was a directory or contained invalid characters.");
+                TraceLogger.Debug(ex.ToString());
+            }
+            catch (FileNotFoundException ex)
+            {
+                TraceLogger.Error("Could not read input file {0}.", inputFile);
                 TraceLogger.Debug(ex.ToString());
             }
             catch (Exception ex)

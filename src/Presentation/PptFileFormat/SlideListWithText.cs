@@ -43,8 +43,65 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             CollectionOfNotesSlides = 2
         };
 
+        /// <summary>
+        /// List of all SlidePersistAtoms of this SlideListWithText.
+        /// </summary>
+        public List<SlidePersistAtom> SlidePersistAtoms = new List<SlidePersistAtom>();
+
+        /// <summary>
+        /// This dictionary manages a list of TextHeaderAtoms for each SlidePersistAtom.
+        /// 
+        /// Text of placeholders can appear in the SlideListWithText record.
+        /// This dictionary is used for associating such text records with the slide they appear on.
+        /// </summary>
+        public Dictionary<SlidePersistAtom, List<TextHeaderAtom>> SlideToPlaceholderTextHeaders =
+            new Dictionary<SlidePersistAtom,List<TextHeaderAtom>>();
+
         public SlideListWithText(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
-            : base(_reader, size, typeCode, version, instance) { }
+            : base(_reader, size, typeCode, version, instance)
+        {
+            SlidePersistAtom curSpAtom = null;
+            TextHeaderAtom curThAtom = null;
+
+            foreach (Record r in this.Children)
+            {
+                SlidePersistAtom spAtom = r as SlidePersistAtom;
+                TextHeaderAtom thAtom = r as TextHeaderAtom;
+                ITextDataRecord tdRecord = r as ITextDataRecord;
+
+                if (spAtom != null)
+                {
+                    curSpAtom = spAtom;
+                    this.SlidePersistAtoms.Add(spAtom);
+                }
+
+                else if (thAtom != null)
+                {
+                    curThAtom = thAtom;
+
+                    if (!this.SlideToPlaceholderTextHeaders.ContainsKey(curSpAtom))
+                        this.SlideToPlaceholderTextHeaders[curSpAtom] = new List<TextHeaderAtom>();
+
+                    this.SlideToPlaceholderTextHeaders[curSpAtom].Add(thAtom);
+                }
+
+                else if (tdRecord != null)
+                {
+                    curThAtom.HandleTextDataRecord(tdRecord);
+                }
+            }
+        }
+
+        public TextHeaderAtom FindTextHeaderForOutlineTextRef(OutlineTextRefAtom otrAtom)
+        {
+            Slide slide = otrAtom.FirstAncestorWithType<Slide>();
+
+            if (slide == null)
+                throw new NotSupportedException("Can't find TextHeaderAtom for OutlineTextRefAtom which has no Slide ancestor");
+
+            List<TextHeaderAtom> thAtoms = this.SlideToPlaceholderTextHeaders[slide.PersistAtom];
+            return thAtoms[otrAtom.Index];
+        }
     }
 
 }

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{6EAD0A6A-8DF0-4CA3-8D5E-3C871E7FCB62}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -61,21 +61,26 @@
     <Compile Include="ClientTextbox.cs" />
     <Compile Include="ColorMappingAtom.cs" />
     <Compile Include="CStringAtom.cs" />
+    <Compile Include="CurrentUserAtom.cs" />
     <Compile Include="DocumentAtom.cs" />
     <Compile Include="EndDocument.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="GPointAtom.cs" />
     <Compile Include="GRatioAtom.cs" />
     <Compile Include="GrColorAtom.cs" />
+    <Compile Include="ITextDataRecord.cs" />
     <Compile Include="List.cs" />
     <Compile Include="MainMaster.cs" />
     <Compile Include="OEPlaceholderAtom.cs" />
     <Compile Include="OriginalMainMasterId.cs" />
+    <Compile Include="OutlineTextRefAtom.cs" />
     <Compile Include="ParagraphRun.cs" />
+    <Compile Include="PersistDirectoryAtom.cs" />
+    <Compile Include="PersistDirectoryEntry.cs" />
     <Compile Include="PowerpointDocument.cs" />
     <Compile Include="PPDrawing.cs" />
     <Compile Include="PPDrawingGroup.cs" />
-    <Compile Include="PptDocumentRecord.cs" />
+    <Compile Include="DocumentContainer.cs" />
     <Compile Include="ProgBinaryTag.cs" />
     <Compile Include="ProgTags.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -88,13 +93,15 @@
     <Compile Include="SlideListWithText.cs" />
     <Compile Include="SlidePersistAtom.cs" />
     <Compile Include="SSlideLayoutAtom.cs" />
-    <Compile Include="StyleTextPropAtom.cs" />
+    <Compile Include="TextRunStyleAtom.cs" />
     <Compile Include="TextAtom.cs" />
     <Compile Include="TextBytesAtom.cs" />
     <Compile Include="TextCharsAtom.cs" />
     <Compile Include="TextHeaderAtom.cs" />
+    <Compile Include="TextStyleAtom.cs" />
     <Compile Include="Theme.cs" />
-    <Compile Include="TxMasterStyleAtom.cs" />
+    <Compile Include="TextMasterStyleAtom.cs" />
+    <Compile Include="UserEditAtom.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\CommonTranslatorLib\CommonTranslatorLib.csproj">
