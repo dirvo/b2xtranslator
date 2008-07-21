@@ -88,7 +88,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             // Maser must have at least one SlideLayout or RepairDialog will appear
             if (layoutParts.Count == 0)
             {
-                SlideLayoutPart layoutPart = this.LayoutManager.GetOrCreateLayoutPartByLayoutType(0);
+                SlideLayoutPart layoutPart = this.LayoutManager.GetOrCreateLayoutPartByLayoutType(0, null);
                 layoutParts.Add(layoutPart);
             }
 

@@ -129,24 +129,42 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
     public class SSlideLayoutAtom
     {
+        /// <summary>
+        /// A SlideLayoutType that specifies a hint to the user interface which
+        /// slide layout exists on the corresponding slide.
+        /// 
+        /// A slide layout specifies the type and number of placeholder shapes
+        /// on a slide. A placeholder shape is specified as an OfficeArtSpContainer
+        /// ([MS-ODRAW] section 2.2.14) that contains a PlaceholderAtom record
+        /// with a pos field not equal to 0xFFFFFFFF. The placementId field of the
+        /// PlaceholderAtom record specifies the placeholder shape type.
+        /// </summary>
         public SlideLayoutType Geom;
-        public PlaceholderEnum[] PlaceholderIds = new PlaceholderEnum[8];
+
+        /// <summary>
+        /// An array of PlaceholderEnum enumeration values that specifies
+        /// a hint to the user interface which placeholder shapes exist on
+        /// the corresponding slide.
+        /// 
+        /// The count of items in the array MUST be 8.
+        /// </summary>
+        public PlaceholderEnum[] PlaceholderTypes = new PlaceholderEnum[8];
 
         public SSlideLayoutAtom(BinaryReader reader)
         {
             this.Geom = (SlideLayoutType)reader.ReadInt32();
 
             for (int i = 0; i < 8; i++)
-                this.PlaceholderIds[i] = (PlaceholderEnum)reader.ReadByte();
+                this.PlaceholderTypes[i] = (PlaceholderEnum)reader.ReadByte();
         }
 
         public override string ToString()
         {
             string s = String.Join(", ",
-                Array.ConvertAll<PlaceholderEnum, string>(this.PlaceholderIds,
+                Array.ConvertAll<PlaceholderEnum, string>(this.PlaceholderTypes,
                 delegate(PlaceholderEnum pid) { return pid.ToString(); }));
 
-            return String.Format("SSlideLayoutAtom(Geom = {0}, PlaceholderIds = [{1}])",
+            return String.Format("SSlideLayoutAtom(Geom = {0}, PlaceholderTypes = [{1}])",
                 this.Geom, s);
         }
     }

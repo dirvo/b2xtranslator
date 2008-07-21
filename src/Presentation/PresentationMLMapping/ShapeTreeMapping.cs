@@ -80,22 +80,21 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                 if (placeholder != null)
                 {
-                    if (placeholder.IsObjectPlaceholder())
-                    {
-                        // TODO
-                    }
-                    else
+
+                    _writer.WriteStartElement("p", "ph", OpenXmlNamespaces.PresentationML);
+
+                    if (!placeholder.IsObjectPlaceholder())
                     {
                         string typeValue = Utils.PlaceholderIdToXMLValue(placeholder.PlacementId);
-
-                        _writer.WriteStartElement("p", "ph", OpenXmlNamespaces.PresentationML);
                         _writer.WriteAttributeString("type", typeValue);
-    
-                        if (placeholder.Position != -1)
-                            _writer.WriteAttributeString("idx", placeholder.Position.ToString());
-
-                        _writer.WriteEndElement();
                     }
+
+                    if (placeholder.Position != -1)
+                    {
+                        _writer.WriteAttributeString("idx", placeholder.Position.ToString());
+                    }
+
+                    _writer.WriteEndElement();
                 }
             }
 

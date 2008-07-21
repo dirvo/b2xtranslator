@@ -86,6 +86,28 @@
     <EmbeddedResource Include="Defaults\slideLayouts\vertTitleAndTx.xml" />
     <EmbeddedResource Include="Defaults\slideLayouts\vertTx.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Defaults\slideLayouts\chart.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\chartAndTx.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\clipArtAndTx.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\dgm.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\fourObj.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\mediaAndTx.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\objAndTwoObj.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\objAndTx.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\objOnly.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\objOverTx.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\tbl.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\twoObjAndObj.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\twoObjAndTx.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\twoObjOverTx.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\txAndChart.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\txAndClipArt.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\txAndMedia.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\txAndObj.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\txAndTwoObj.xml" />
+    <EmbeddedResource Include="Defaults\slideLayouts\txOverObj.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -110,10 +110,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         /// <summary>
         /// Pre-PPT2007 layouts are specified in SSlideLayoutAtom
         /// as a SlideLayoutType integer value. Each SlideLayoutType
-        /// can be mapped to a layout XML file.
+        /// can be mapped to a layout XML file together with a list of
+        /// placeholder types.
+        /// 
+        /// This dictionary is used for associating default layout
+        /// part filenames with layout parts.
         /// </summary>
-        public Dictionary<UInt32, SlideLayoutPart> LayoutTypeToLayoutPart =
-            new Dictionary<UInt32, SlideLayoutPart>();
+        public Dictionary<string, SlideLayoutPart> LayoutFilenameToLayoutPart =
+            new Dictionary<string, SlideLayoutPart>();
 
         /// <summary>
         /// Pre-PPT2007 TitleMaster slides need to be converted to
@@ -134,7 +138,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             List<SlideLayoutPart> result = new List<SlideLayoutPart>();
 
             result.AddRange(this.InstanceIdToLayoutPart.Values);
-            result.AddRange(this.LayoutTypeToLayoutPart.Values);
+            result.AddRange(this.LayoutFilenameToLayoutPart.Values);
             result.AddRange(this.TitleMasterIdToLayoutPart.Values);
 
             return result;
@@ -154,23 +158,24 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             return this.InstanceIdToLayoutPart[instanceId];
         }
 
-        public SlideLayoutPart GetOrCreateLayoutPartByLayoutType(UInt32 type)
+        public SlideLayoutPart GetOrCreateLayoutPartByLayoutType(SlideLayoutType type,
+            PlaceholderEnum[] placeholderTypes)
         {
             SlideMasterPart masterPart = _ctx.GetOrCreateMasterMappingByMasterId(this.MasterId).MasterPart;
+            string layoutFilename = Utils.SlideLayoutTypeToFilename(type, placeholderTypes);
 
-            if (!this.LayoutTypeToLayoutPart.ContainsKey(type))
+            if (!this.LayoutFilenameToLayoutPart.ContainsKey(layoutFilename))
             {
-                string layoutFile = Utils.SlideLayoutTypeToFilename((SlideLayoutType)type);
-                XmlDocument slideLayoutDoc = Utils.GetDefaultDocument("slideLayouts." + layoutFile);
+                XmlDocument slideLayoutDoc = Utils.GetDefaultDocument("slideLayouts." + layoutFilename);
 
                 SlideLayoutPart layoutPart = masterPart.AddSlideLayoutPart();
                 slideLayoutDoc.WriteTo(layoutPart.XmlWriter);
                 layoutPart.XmlWriter.Flush();
 
-                this.LayoutTypeToLayoutPart.Add(type, layoutPart);
+                this.LayoutFilenameToLayoutPart.Add(layoutFilename, layoutPart);
             }
 
-            return this.LayoutTypeToLayoutPart[type];
+            return this.LayoutFilenameToLayoutPart[layoutFilename];
         }
 
         public SlideLayoutPart GetOrCreateLayoutPartForTitleMasterId(UInt32 titleMasterId)
