@@ -42,6 +42,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 
         protected List<OpenXmlPart> _parts = new List<OpenXmlPart>();
         protected List<OpenXmlPart> _referencedParts = new List<OpenXmlPart>();
+        protected List<ExternalRelationship> _externalRelationships = new List<ExternalRelationship>();
         protected static int _nextRelId = 1;
 
         protected OpenXmlPartContainer _parent = null;
@@ -116,6 +117,14 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
             }
         }
 
+        protected IEnumerable<ExternalRelationship> ExternalRelationships
+        {
+            get
+            {
+                return _externalRelationships;
+            }
+        }
+
         public virtual T AddPart<T>(T part) where T : OpenXmlPart
         {
             // generate a relId for the part 
@@ -134,8 +143,15 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
             return part;
         }
 
+        public ExternalRelationship AddExternalRelationship(string relationshipType, Uri externalUri)
+        {
+            ExternalRelationship rel = new ExternalRelationship(REL_PREFIX + (_externalRelationships.Count + 1).ToString(), relationshipType, externalUri);
+            _externalRelationships.Add(rel);
+            return rel;
+        }
+
         /// <summary>
-        /// Add m a part reference without actually managing the part.
+        /// Add a part reference without actually managing the part.
         /// </summary>
         public virtual T ReferencePart<T>(T part) where T : OpenXmlPart
         {
@@ -177,6 +193,29 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 
                     // write the target relative to the current part
                     writer.WriteAttributeString("Target", "/" + part.TargetFullName.Replace('\\', '/'));
+                    writer.WriteEndElement();
+                }
+                writer.WriteEndElement();
+                writer.WriteEndDocument();
+            }
+
+            // write external relationship parts
+            if (_externalRelationships.Count > 0)
+            {
+                string relFullName = Path.Combine(Path.Combine(this.TargetDirectoryAbsolute, REL_FOLDER), TargetName + TargetExt + REL_EXTENSION);
+                writer.AddPart(relFullName);
+
+                writer.WriteStartDocument();
+                writer.WriteStartElement("Relationships", OpenXmlNamespaces.RelationsshipsPackage);
+
+                foreach (ExternalRelationship rel in _externalRelationships)
+                {
+                    writer.WriteStartElement("Relationship", OpenXmlNamespaces.RelationsshipsPackage);
+                    writer.WriteAttributeString("Id", rel.Id);
+                    writer.WriteAttributeString("Type", rel.RelationshipType);
+                    writer.WriteAttributeString("Target", rel.Target.AbsoluteUri);
+                    writer.WriteAttributeString("TargetMode", "External");
+
                     writer.WriteEndElement();
                 }
                 writer.WriteEndElement();
