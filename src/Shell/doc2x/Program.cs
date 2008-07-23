@@ -90,38 +90,7 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
 
                     if (!doc.FIB.fComplex)
                     {
-                        using (WordprocessingDocument docx = WordprocessingDocument.Create(outputFile, WordprocessingDocumentType.Document))
-                        {
-                            //Setup the writer
-                            XmlWriterSettings xws = new XmlWriterSettings();
-                            xws.OmitXmlDeclaration = false;
-                            xws.CloseOutput = true;
-                            xws.Encoding = Encoding.UTF8;
-                            xws.ConformanceLevel = ConformanceLevel.Document;
-
-                            //Setup the context
-                            ConversionContext context = new ConversionContext(doc);
-                            context.WriterSettings = xws;
-                            context.Docx = docx;
-
-                            //Write styles.xml
-                            doc.Styles.Convert(new StyleSheetMapping(context));
-
-                            //Write numbering.xml
-                            doc.ListTable.Convert(new NumberingMapping(context));
-
-                            //Write fontTable.xml
-                            doc.FontTable.Convert(new FontTableMapping(context));
-
-                            //write document.xml and the header and footers
-                            doc.Convert(new MainDocumentMapping(context));
-
-                            //write the footnotes
-                            doc.Convert(new FootnotesMapping(context));
-
-                            //write settings.xml at last because of the rsid list
-                            doc.DocumentProperties.Convert(new SettingsMapping(context));
-                        }
+                        Converter.Convert(doc, outputFile);
 
                         DateTime end = DateTime.Now;
                         TimeSpan diff = end.Subtract(start);
