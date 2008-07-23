@@ -37,6 +37,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 switch (sprm.OpCode)  
                 {
+                    //tdef
+                    //case SinglePropertyModifier.OperationCode.sprmTDefTable:
+                    //    SprmTDefTable tdef = new SprmTDefTable(sprm.Arguments);
+                    //    break;
+
                     //header row
                     case SinglePropertyModifier.OperationCode.sprmTTableHeader:
                         bool fHeader = Utils.ByteToBool(sprm.Arguments[0]);

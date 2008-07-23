@@ -230,36 +230,37 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         appendBorderAttributes(new BorderCode(brc), insideVBorder1);
                         addOrSetBorder(tblBorders, insideVBorder1);
                         break;
-                    case SinglePropertyModifier.OperationCode.sprmTCellBrcTopStyle:
-                        XmlNode topBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "top", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(new BorderCode(sprm.Arguments), topBorder);
-                        addOrSetBorder(tblBorders, topBorder);
-                        break;
-                    case SinglePropertyModifier.OperationCode.sprmTCellBrcBottomStyle:
-                        XmlNode bottomBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "bottom", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(new BorderCode(sprm.Arguments), bottomBorder);
-                        addOrSetBorder(tblBorders, bottomBorder);
-                        break;
-                    case SinglePropertyModifier.OperationCode.sprmTCellBrcLeftStyle:
-                        XmlNode leftBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "left", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(new BorderCode(sprm.Arguments), leftBorder);
-                        addOrSetBorder(tblBorders, leftBorder);
-                        break;
-                    case SinglePropertyModifier.OperationCode.sprmTCellBrcRightStyle:
-                        XmlNode rightBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "right", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(new BorderCode(sprm.Arguments), rightBorder);
-                        addOrSetBorder(tblBorders, rightBorder);
-                        break;
-                    case SinglePropertyModifier.OperationCode.sprmTCellBrcInsideHStyle:
-                        XmlNode insideHBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "insideH", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(new BorderCode(sprm.Arguments), insideHBorder);
-                        addOrSetBorder(tblBorders, insideHBorder);
-                        break;
-                    case SinglePropertyModifier.OperationCode.sprmTCellBrcInsideVStyle:
-                        XmlNode insideVBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "insideV", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(new BorderCode(sprm.Arguments), insideVBorder);
-                        addOrSetBorder(tblBorders, insideVBorder);
-                        break;
+
+                    //case SinglePropertyModifier.OperationCode.sprmTCellBrcTopStyle:
+                    //    XmlNode topBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "top", OpenXmlNamespaces.WordprocessingML);
+                    //    appendBorderAttributes(new BorderCode(sprm.Arguments), topBorder);
+                    //    addOrSetBorder(tblBorders, topBorder);
+                    //    break;
+                    //case SinglePropertyModifier.OperationCode.sprmTCellBrcBottomStyle:
+                    //    XmlNode bottomBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "bottom", OpenXmlNamespaces.WordprocessingML);
+                    //    appendBorderAttributes(new BorderCode(sprm.Arguments), bottomBorder);
+                    //    addOrSetBorder(tblBorders, bottomBorder);
+                    //    break;
+                    //case SinglePropertyModifier.OperationCode.sprmTCellBrcLeftStyle:
+                    //    XmlNode leftBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "left", OpenXmlNamespaces.WordprocessingML);
+                    //    appendBorderAttributes(new BorderCode(sprm.Arguments), leftBorder);
+                    //    addOrSetBorder(tblBorders, leftBorder);
+                    //    break;
+                    //case SinglePropertyModifier.OperationCode.sprmTCellBrcRightStyle:
+                    //    XmlNode rightBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "right", OpenXmlNamespaces.WordprocessingML);
+                    //    appendBorderAttributes(new BorderCode(sprm.Arguments), rightBorder);
+                    //    addOrSetBorder(tblBorders, rightBorder);
+                    //    break;
+                    //case SinglePropertyModifier.OperationCode.sprmTCellBrcInsideHStyle:
+                    //    XmlNode insideHBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "insideH", OpenXmlNamespaces.WordprocessingML);
+                    //    appendBorderAttributes(new BorderCode(sprm.Arguments), insideHBorder);
+                    //    addOrSetBorder(tblBorders, insideHBorder);
+                    //    break;
+                    //case SinglePropertyModifier.OperationCode.sprmTCellBrcInsideVStyle:
+                    //    XmlNode insideVBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "insideV", OpenXmlNamespaces.WordprocessingML);
+                    //    appendBorderAttributes(new BorderCode(sprm.Arguments), insideVBorder);
+                    //    addOrSetBorder(tblBorders, insideVBorder);
+                    //    break;
 
                     //floating table properties
                     case SinglePropertyModifier.OperationCode.sprmTPc:

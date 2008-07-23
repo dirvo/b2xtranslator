@@ -53,6 +53,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private Global.CellWidthType _ftsWidth;
         private TC80 _tcDef;
 
+        private BorderCode _brcTop, _brcLeft, _brcRight, _brcBottom;
+
         /// <summary>
         /// The grind span of this cell
         /// </summary>
@@ -113,6 +115,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         //_width = _tcDef.wWidth;
                         _width = (Int16)(tdef.rgdxaCenter[_cellIndex + 1] - tdef.rgdxaCenter[_cellIndex]);
                         _ftsWidth = _tcDef.ftsWidth;
+
+                        _brcTop = _tcDef.brcTop;
+                        _brcLeft = _tcDef.brcLeft;
+                        _brcRight = _tcDef.brcRight;
+                        _brcBottom = _tcDef.brcBottom;
 
                         break;
 
@@ -177,7 +184,35 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                             appendValueElement(_tcPr, "tcFitText", sprm.Arguments[2].ToString(), true);
                         break;
 
+                    //set BRC operands
+                    case SinglePropertyModifier.OperationCode.sprmTSetBrc:
+                        byte min = sprm.Arguments[0];
+                        byte max = sprm.Arguments[1];
+                        int bordersToApply = (int)sprm.Arguments[2] ;
 
+                        if (_cellIndex >= min && _cellIndex < max)
+                        {
+                            byte[] brcBytes = new byte[8];
+                            Array.Copy(sprm.Arguments, brcBytes, 8);
+                        
+                            if(Utils.BitmaskToBool(bordersToApply, 0x01))
+                            {
+                                _brcTop = new BorderCode(brcBytes);
+                            }
+                            if(Utils.BitmaskToBool(bordersToApply, 0x02))
+                            {
+                                _brcLeft = new BorderCode(brcBytes);
+                            }
+                            if (Utils.BitmaskToBool(bordersToApply, 0x04))
+                            {
+                                _brcBottom = new BorderCode(brcBytes);
+                            }
+                            if (Utils.BitmaskToBool(bordersToApply, 0x08))
+                            {
+                                _brcRight = new BorderCode(brcBytes);
+                            }
+                        }
+                        break;
                 }
             }
 
@@ -215,28 +250,28 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
 
             //append borders
-            if (_tcDef.brcTop != null)
+            if (_brcTop != null)
             {
                 XmlNode topBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "top", OpenXmlNamespaces.WordprocessingML);
-                appendBorderAttributes(_tcDef.brcTop, topBorder);
+                appendBorderAttributes(_brcTop, topBorder);
                 addOrSetBorder(_tcBorders, topBorder);
             }
-            if (_tcDef.brcLeft != null)
+            if (_brcLeft != null)
             {
                 XmlNode leftBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "left", OpenXmlNamespaces.WordprocessingML);
-                appendBorderAttributes(_tcDef.brcLeft, leftBorder);
+                appendBorderAttributes(_brcLeft, leftBorder);
                 addOrSetBorder(_tcBorders, leftBorder);
             }
-            if (_tcDef.brcBottom != null)
+            if (_brcBottom != null)
             {
                 XmlNode bottomBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "bottom", OpenXmlNamespaces.WordprocessingML);
-                appendBorderAttributes(_tcDef.brcBottom, bottomBorder);
+                appendBorderAttributes(_brcBottom, bottomBorder);
                 addOrSetBorder(_tcBorders, bottomBorder);
             }
-            if (_tcDef.brcRight != null)
+            if (_brcRight != null)
             {
                 XmlNode rightBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "right", OpenXmlNamespaces.WordprocessingML);
-                appendBorderAttributes(_tcDef.brcRight, rightBorder);
+                appendBorderAttributes(_brcRight, rightBorder);
                 addOrSetBorder(_tcBorders, rightBorder);
             }
             if (_tcBorders.ChildNodes.Count > 0)

@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="CharacterPropertiesMapping.cs" />
     <Compile Include="ConversionContext.cs" />
+    <Compile Include="Converter.cs" />
     <Compile Include="DateMapping.cs" />
     <Compile Include="ApplicationPropertiesMapping.cs" />
     <Compile Include="FontTableMapping.cs" />
