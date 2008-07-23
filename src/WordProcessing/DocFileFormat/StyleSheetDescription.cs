@@ -359,6 +359,14 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public TablePropertyExceptions tapx;
 
         /// <summary>
+        /// Creates an empty STD object
+        /// </summary>
+        public StyleSheetDescription()
+        { 
+        
+        }
+
+        /// <summary>
         /// Parses the bytes to retrieve a StyleSheetDescription
         /// </summary>
         /// <param name="bytes">The bytes</param>

@@ -41,7 +41,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         : AbstractOpenXmlMapping,
           IMapping<StyleSheet>
     {
-        ConversionContext _ctx;
+        private ConversionContext _ctx;
 
         public StyleSheetMapping(ConversionContext ctx)
             : base(XmlWriter.Create(ctx.Docx.MainDocumentPart.StyleDefinitionsPart.GetStream(), ctx.WriterSettings))
@@ -59,6 +59,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             writeRunDefaults(sheet);
             writeParagraphDefaults(sheet);
             _writer.WriteEndElement();
+
+            //write the default styles
+            if (sheet.Styles[11] == null)
+            {
+                //NormalTable
+                writeNormalTableStyle();
+            }
 
             foreach (StyleSheetDescription style in sheet.Styles)
             {
@@ -225,6 +232,54 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 //if no identifier is set, use the name
                 return std.xstzName;
             }
+        }
+
+        /// <summary>
+        /// Writes the "NormalTable" default style
+        /// </summary>
+        private void writeNormalTableStyle()
+        {
+            _writer.WriteStartElement("w", "style", OpenXmlNamespaces.WordprocessingML);
+            _writer.WriteAttributeString("w", "type", OpenXmlNamespaces.WordprocessingML, "table");
+            _writer.WriteAttributeString("w", "default", OpenXmlNamespaces.WordprocessingML, "1");
+            _writer.WriteAttributeString("w", "styleId", OpenXmlNamespaces.WordprocessingML, "TableNormal");
+            _writer.WriteStartElement("w", "name", OpenXmlNamespaces.WordprocessingML);
+            _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, "Normal Table");
+            _writer.WriteEndElement();
+            _writer.WriteStartElement("w", "uiPriority", OpenXmlNamespaces.WordprocessingML);
+            _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, "99");
+            _writer.WriteEndElement();
+            _writer.WriteStartElement("w", "semiHidden", OpenXmlNamespaces.WordprocessingML);
+            _writer.WriteEndElement();
+            _writer.WriteStartElement("w", "unhideWhenUsed", OpenXmlNamespaces.WordprocessingML);
+            _writer.WriteEndElement();
+            _writer.WriteStartElement("w", "qFormat", OpenXmlNamespaces.WordprocessingML);
+            _writer.WriteEndElement();
+            _writer.WriteStartElement("w", "tblPr", OpenXmlNamespaces.WordprocessingML);
+            _writer.WriteStartElement("w", "tblInd", OpenXmlNamespaces.WordprocessingML);
+            _writer.WriteAttributeString("w", "w", OpenXmlNamespaces.WordprocessingML, "0");
+            _writer.WriteAttributeString("w", "type", OpenXmlNamespaces.WordprocessingML, "dxa");
+            _writer.WriteEndElement();
+            _writer.WriteStartElement("w", "tblCellMar", OpenXmlNamespaces.WordprocessingML);
+            _writer.WriteStartElement("w", "top", OpenXmlNamespaces.WordprocessingML);
+            _writer.WriteAttributeString("w", "w", OpenXmlNamespaces.WordprocessingML, "0");
+            _writer.WriteAttributeString("w", "type", OpenXmlNamespaces.WordprocessingML, "dxa");
+            _writer.WriteEndElement();
+            _writer.WriteStartElement("w", "left", OpenXmlNamespaces.WordprocessingML);
+            _writer.WriteAttributeString("w", "w", OpenXmlNamespaces.WordprocessingML, "108");
+            _writer.WriteAttributeString("w", "type", OpenXmlNamespaces.WordprocessingML, "dxa");
+            _writer.WriteEndElement();
+            _writer.WriteStartElement("w", "bottom", OpenXmlNamespaces.WordprocessingML);
+            _writer.WriteAttributeString("w", "w", OpenXmlNamespaces.WordprocessingML, "0");
+            _writer.WriteAttributeString("w", "type", OpenXmlNamespaces.WordprocessingML, "dxa");
+            _writer.WriteEndElement();
+            _writer.WriteStartElement("w", "right", OpenXmlNamespaces.WordprocessingML);
+            _writer.WriteAttributeString("w", "w", OpenXmlNamespaces.WordprocessingML, "108");
+            _writer.WriteAttributeString("w", "type", OpenXmlNamespaces.WordprocessingML, "dxa");
+            _writer.WriteEndElement();
+            _writer.WriteEndElement();
+            _writer.WriteEndElement();
+            _writer.WriteEndElement();
         }
     }
 }

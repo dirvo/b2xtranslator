@@ -84,24 +84,28 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             XmlAttribute layoutType = _nodeFactory.CreateAttribute("w", "type", OpenXmlNamespaces.WordprocessingML);
             layoutType.Value = "fixed";
             Int16 tblIndent = 0;
+            Int16 gabHalf = 0;
+            Int16 marginLeft = 0;
+            Int16 marginRight = 0;
 
             foreach (SinglePropertyModifier sprm in tapx.grpprl)
             {
                 switch (sprm.OpCode)
                 {
+                    case SinglePropertyModifier.OperationCode.sprmTDxaGapHalf:
+                        gabHalf = System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        break;
+
                     //table definition
                     case SinglePropertyModifier.OperationCode.sprmTDefTable:
-
                         SprmTDefTable tDef = new SprmTDefTable(sprm.Arguments);
-
                         //Workaround for retrieving the indent of the table:
                         //In some files there is a indent but no sprmTWidthIndent is set.
                         //For this cases we can calculate the indent of the table by getting the 
                         //first boundary of the TDef and adding the padding of the cells
                         tblIndent = System.BitConverter.ToInt16(sprm.Arguments, 1);
-                        //add the padding (default = 108)
-                        //ToDO: resolve the padding from the style hierachy.
-                        tblIndent += 108;
+                        //add the gabHalf
+                        tblIndent += gabHalf;
                         //If there follows a real sprmTWidthIndent, this value will be overwritten
                         break;
 
@@ -164,11 +168,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         if (Utils.BitmaskToBool((int)grfbrc, 0x01))
                             appendDxaElement(tblCellMar, "top", wMar.ToString(), true);
                         if (Utils.BitmaskToBool((int)grfbrc, 0x02))
-                            appendDxaElement(tblCellMar, "left", wMar.ToString(), true);
+                            marginLeft = wMar;
                         if (Utils.BitmaskToBool((int)grfbrc, 0x04))
                             appendDxaElement(tblCellMar, "bottom", wMar.ToString(), true);
                         if (Utils.BitmaskToBool((int)grfbrc, 0x08))
-                            appendDxaElement(tblCellMar, "right", wMar.ToString(), true);
+                            marginRight = wMar;
                         break;
 
                     //row count
@@ -325,10 +329,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _tblPr.AppendChild(tblLayout);
 
             //append margins
-            if (tblCellMar.ChildNodes.Count > 0)
-            {
-                _tblPr.AppendChild(tblCellMar);
-            }
+            appendDxaElement(tblCellMar, "left", (marginLeft + gabHalf).ToString(), true);
+            appendDxaElement(tblCellMar, "right", (marginRight + gabHalf).ToString(), true);
+            _tblPr.AppendChild(tblCellMar);
 
             //write Properties
             if (_tblPr.ChildNodes.Count > 0 || _tblPr.Attributes.Count > 0)
