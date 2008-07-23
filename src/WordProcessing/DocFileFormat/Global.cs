@@ -169,9 +169,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         public enum VerticalMergeFlag
         {
-            fvmClear,
-            fvmMerge,
-            fvmRestart
+            fvmClear = 0,
+            fvmMerge = 1,
+            fvmRestart = 3
         }
 
         public enum VerticalAlign

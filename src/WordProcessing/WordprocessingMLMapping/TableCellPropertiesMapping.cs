@@ -71,8 +71,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             bottom
         }
 
-        
-
         public TableCellPropertiesMapping(XmlWriter writer, List<Int16> tableGrid, int gridIndex, int cellIndex)
             : base(writer)
         {
@@ -101,6 +99,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                         if (_tcDef.vertMerge == Global.VerticalMergeFlag.fvmMerge)
                             appendValueElement(_tcPr, "vMerge", "continue", false);
+                        else if (_tcDef.vertMerge == Global.VerticalMergeFlag.fvmRestart)
+                            appendValueElement(_tcPr, "vMerge", "restart", false);
                         else if (_tcDef.vertMerge == Global.VerticalMergeFlag.fvmRestart)
                             appendValueElement(_tcPr, "vMerge", "restart", false);
 
