@@ -61,29 +61,25 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 //border top
                 byte[] brcTopBytes = new byte[4];
                 Array.Copy(bytes, pointer, brcTopBytes, 0, 4);
-                if (Utils.ArraySum(brcTopBytes) != 0)
-                    tc.brcTop = new BorderCode(brcTopBytes);
+                tc.brcTop = new BorderCode(brcTopBytes);
                 pointer += 4;
 
                 //border left
                 byte[] brcLeftBytes = new byte[4];
                 Array.Copy(bytes, pointer, brcLeftBytes, 0, 4);
-                if (Utils.ArraySum(brcLeftBytes) != 0)
-                    tc.brcLeft = new BorderCode(brcLeftBytes);
+                tc.brcLeft = new BorderCode(brcLeftBytes);
                 pointer += 4;
 
                 //border bottom
                 byte[] brcBottomBytes = new byte[4];
                 Array.Copy(bytes, pointer, brcBottomBytes, 0, 4);
-                if (Utils.ArraySum(brcBottomBytes) != 0)
-                    tc.brcBottom = new BorderCode(brcBottomBytes);
+                tc.brcBottom = new BorderCode(brcBottomBytes);
                 pointer += 4;
 
                 //border top
                 byte[] brcRightBytes = new byte[4];
                 Array.Copy(bytes, pointer, brcRightBytes, 0, 4);
-                if (Utils.ArraySum(brcRightBytes) != 0)
-                    tc.brcRight = new BorderCode(brcRightBytes);
+                tc.brcRight = new BorderCode(brcRightBytes);
                 pointer += 4;
 
                 rgTc80[i] = tc;

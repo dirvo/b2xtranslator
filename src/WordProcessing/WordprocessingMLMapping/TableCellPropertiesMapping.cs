@@ -84,13 +84,16 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
         public void Apply(TablePropertyExceptions tapx)
         {
-            foreach (SinglePropertyModifier sprm in tapx.grpprl)
+            int lastBdr = getLastTabelBorderOccurrence(tapx.grpprl);
+
+            for (int i=0; i< tapx.grpprl.Count; i++)
             {
+                SinglePropertyModifier sprm = tapx.grpprl[i];
+
                 switch (sprm.OpCode)
 	            {
                     //Table definition SPRM
                     case  SinglePropertyModifier.OperationCode.sprmTDefTable:
-
                         SprmTDefTable tdef = new SprmTDefTable(sprm.Arguments);
                         _tGrid = tdef.rgdxaCenter;
                         _tcDef = tdef.rgTc80[_cellIndex];
@@ -116,10 +119,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         _width = (Int16)(tdef.rgdxaCenter[_cellIndex + 1] - tdef.rgdxaCenter[_cellIndex]);
                         _ftsWidth = _tcDef.ftsWidth;
 
-                        _brcTop = _tcDef.brcTop;
-                        _brcLeft = _tcDef.brcLeft;
-                        _brcRight = _tcDef.brcRight;
-                        _brcBottom = _tcDef.brcBottom;
+                        //borders
+                        // if the sprm has a higher priority than the last sprmTTableBorder sprm in the list
+                        if (i > lastBdr)
+                        {
+                            _brcTop = _tcDef.brcTop;
+                            _brcLeft = _tcDef.brcLeft;
+                            _brcRight = _tcDef.brcRight;
+                            _brcBottom = _tcDef.brcBottom;
+                        }
 
                         break;
 
@@ -129,6 +137,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         byte lim = sprm.Arguments[1];
                         byte ftsMargin = sprm.Arguments[3];
                         Int16 wMargin = System.BitConverter.ToInt16(sprm.Arguments, 4);
+
                         if (_cellIndex >= first && _cellIndex < lim)
                         {
                             BitArray borderBits = new BitArray(new byte[] { sprm.Arguments[2] });
@@ -184,32 +193,34 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                             appendValueElement(_tcPr, "tcFitText", sprm.Arguments[2].ToString(), true);
                         break;
 
-                    //set BRC operands
+                    //borders (cell definition)
                     case SinglePropertyModifier.OperationCode.sprmTSetBrc:
                         byte min = sprm.Arguments[0];
                         byte max = sprm.Arguments[1];
                         int bordersToApply = (int)sprm.Arguments[2] ;
 
-                        if (_cellIndex >= min && _cellIndex < max)
+                        // if this cell is adressed by the SPRM and the sprm has a higher 
+                        // priority than the last sprmTTableBorder sprm in the list
+                        if (_cellIndex >= min && _cellIndex < max && i > lastBdr)
                         {
                             byte[] brcBytes = new byte[8];
                             Array.Copy(sprm.Arguments, brcBytes, 8);
-                        
+                            BorderCode border = new BorderCode(brcBytes);
                             if(Utils.BitmaskToBool(bordersToApply, 0x01))
                             {
-                                _brcTop = new BorderCode(brcBytes);
+                                _brcTop = border;
                             }
                             if(Utils.BitmaskToBool(bordersToApply, 0x02))
                             {
-                                _brcLeft = new BorderCode(brcBytes);
+                                _brcLeft = border;
                             }
                             if (Utils.BitmaskToBool(bordersToApply, 0x04))
                             {
-                                _brcBottom = new BorderCode(brcBytes);
+                                _brcBottom = border;
                             }
                             if (Utils.BitmaskToBool(bordersToApply, 0x08))
                             {
-                                _brcRight = new BorderCode(brcBytes);
+                                _brcRight = border;
                             }
                         }
                         break;
@@ -307,6 +318,28 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             
             ShadingDescriptor shd = new ShadingDescriptor(shdBytes);
             appendShading(_tcPr, shd);
+        }
+
+
+        /// <summary>
+        /// Returns the index of the last occurence of an sprmTTableBorders or sprmTTableBorders80 sprm.
+        /// </summary>
+        /// <param name="grpprl">The grpprl of sprms</param>
+        /// <returns>The index or -1 if no sprm is in the list</returns>
+        private int getLastTabelBorderOccurrence(List<SinglePropertyModifier> grpprl)
+        {
+            int index = -1;
+
+            for (int i = 0; i < grpprl.Count; i++)
+            {
+                if (grpprl[i].OpCode == SinglePropertyModifier.OperationCode.sprmTTableBorders ||
+                    grpprl[i].OpCode == SinglePropertyModifier.OperationCode.sprmTTableBorders80)
+                {
+                    index = i;
+                }
+            }
+
+            return index;
         }
     }
 }

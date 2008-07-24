@@ -15,7 +15,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
     {
         private XmlElement _trPr;
         private XmlElement _tblPrEx;
-        private XmlElement _tblBorders;
+        //private XmlElement _tblBorders;
+        //private BorderCode brcLeft, brcTop, brcBottom, brcRight, brcHorz, brcVert;
         private CharacterPropertyExceptions _rowEndChpx;
 
         public TableRowPropertiesMapping(XmlWriter writer, CharacterPropertyExceptions rowEndChpx)
@@ -23,7 +24,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             _trPr = _nodeFactory.CreateElement("w", "trPr", OpenXmlNamespaces.WordprocessingML);
             _tblPrEx = _nodeFactory.CreateElement("w", "tblPrEx", OpenXmlNamespaces.WordprocessingML);
-            _tblBorders = _nodeFactory.CreateElement("w", "tblBorders", OpenXmlNamespaces.WordprocessingML);
+            //_tblBorders = _nodeFactory.CreateElement("w", "tblBorders", OpenXmlNamespaces.WordprocessingML);
             _rowEndChpx = rowEndChpx;
         }
 
@@ -41,6 +42,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 switch (sprm.OpCode)  
                 {
+                    case SinglePropertyModifier.OperationCode.sprmTDefTable:
+                        //SprmTDefTable tdef = new SprmTDefTable(sprm.Arguments);
+                        break;
+
                     //header row
                     case SinglePropertyModifier.OperationCode.sprmTTableHeader:
                         bool fHeader = Utils.ByteToBool(sprm.Arguments[0]);
@@ -111,83 +116,95 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         appendValueElement(_trPr, "divId", System.BitConverter.ToInt32(sprm.Arguments, 0).ToString(), true);
                         break;
 
-                    //borders 80 exceptions
-                    case SinglePropertyModifier.OperationCode.sprmTTableBorders80:
-                        byte[] brc80 = new byte[4];
-                        //top border
-                        Array.Copy(sprm.Arguments, 0, brc80, 0, 4);
-                        XmlNode topBorder1 = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "top", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(new BorderCode(brc80), topBorder1);
-                        addOrSetBorder(_tblBorders, topBorder1);
-                        //left
-                        Array.Copy(sprm.Arguments, 4, brc80, 0, 4);
-                        XmlNode leftBorder1 = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "left", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(new BorderCode(brc80), leftBorder1);
-                        addOrSetBorder(_tblBorders, leftBorder1);
-                        //bottom
-                        Array.Copy(sprm.Arguments, 8, brc80, 0, 4);
-                        XmlNode bottomBorder1 = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "bottom", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(new BorderCode(brc80), bottomBorder1);
-                        addOrSetBorder(_tblBorders, bottomBorder1);
-                        //right
-                        Array.Copy(sprm.Arguments, 12, brc80, 0, 4);
-                        XmlNode rightBorder1 = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "right", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(new BorderCode(brc80), rightBorder1);
-                        addOrSetBorder(_tblBorders, rightBorder1);
-                        //inside H
-                        Array.Copy(sprm.Arguments, 16, brc80, 0, 4);
-                        XmlNode insideHBorder1 = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "insideH", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(new BorderCode(brc80), insideHBorder1);
-                        addOrSetBorder(_tblBorders, insideHBorder1);
-                        //inside V
-                        Array.Copy(sprm.Arguments, 20, brc80, 0, 4);
-                        XmlNode insideVBorder1 = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "insideV", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(new BorderCode(brc80), insideVBorder1);
-                        addOrSetBorder(_tblBorders, insideVBorder1);
-                        break;
+                    ////borders 80 exceptions
+                    //case SinglePropertyModifier.OperationCode.sprmTTableBorders80:
+                    //    byte[] brc80 = new byte[4];
+                    //    //top border
+                    //    Array.Copy(sprm.Arguments, 0, brc80, 0, 4);
+                    //    brcTop = new BorderCode(brc80);
+                    //    //left
+                    //    Array.Copy(sprm.Arguments, 4, brc80, 0, 4);
+                    //    brcLeft = new BorderCode(brc80);
+                    //    //bottom
+                    //    Array.Copy(sprm.Arguments, 8, brc80, 0, 4);
+                    //    brcBottom = new BorderCode(brc80);
+                    //    //right
+                    //    Array.Copy(sprm.Arguments, 12, brc80, 0, 4);
+                    //    brcRight = new BorderCode(brc80);
+                    //    //inside H
+                    //    Array.Copy(sprm.Arguments, 16, brc80, 0, 4);
+                    //    brcHorz = new BorderCode(brc80);
+                    //    //inside V
+                    //    Array.Copy(sprm.Arguments, 20, brc80, 0, 4);
+                    //    brcVert = new BorderCode(brc80);
+                    //    break;
 
-                    //border exceptions
-                    case SinglePropertyModifier.OperationCode.sprmTTableBorders:
-                        byte[] brc = new byte[8];
-                        //top border
-                        Array.Copy(sprm.Arguments, 0, brc, 0, 8);
-                        topBorder1 = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "top", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(new BorderCode(brc), topBorder1);
-                        addOrSetBorder(_tblBorders, topBorder1);
-                        //left
-                        Array.Copy(sprm.Arguments, 8, brc, 0, 8);
-                        leftBorder1 = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "left", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(new BorderCode(brc), leftBorder1);
-                        addOrSetBorder(_tblBorders, leftBorder1);
-                        //bottom
-                        Array.Copy(sprm.Arguments, 16, brc, 0, 8);
-                        bottomBorder1 = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "bottom", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(new BorderCode(brc), bottomBorder1);
-                        addOrSetBorder(_tblBorders, bottomBorder1);
-                        //right
-                        Array.Copy(sprm.Arguments, 24, brc, 0, 8);
-                        rightBorder1 = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "right", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(new BorderCode(brc), rightBorder1);
-                        addOrSetBorder(_tblBorders, rightBorder1);
-                        //inside H
-                        Array.Copy(sprm.Arguments, 32, brc, 0, 8);
-                        insideHBorder1 = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "insideH", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(new BorderCode(brc), insideHBorder1);
-                        addOrSetBorder(_tblBorders, insideHBorder1);
-                        //inside V
-                        Array.Copy(sprm.Arguments, 40, brc, 0, 8);
-                        insideVBorder1 = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "insideV", OpenXmlNamespaces.WordprocessingML);
-                        appendBorderAttributes(new BorderCode(brc), insideVBorder1);
-                        addOrSetBorder(_tblBorders, insideVBorder1);
-                        break;
+                    ////border exceptions
+                    //case SinglePropertyModifier.OperationCode.sprmTTableBorders:
+                    //    byte[] brc = new byte[8];
+                    //    //top border
+                    //    Array.Copy(sprm.Arguments, 0, brc, 0, 8);
+                    //    brcTop = new BorderCode(brc);
+                    //    //left
+                    //    Array.Copy(sprm.Arguments, 8, brc, 0, 8);
+                    //    brcLeft = new BorderCode(brc);
+                    //    //bottom
+                    //    Array.Copy(sprm.Arguments, 16, brc, 0, 8);
+                    //    brcBottom = new BorderCode(brc);
+                    //    //right
+                    //    Array.Copy(sprm.Arguments, 24, brc, 0, 8);
+                    //    brcRight = new BorderCode(brc);
+                    //    //inside H
+                    //    Array.Copy(sprm.Arguments, 32, brc, 0, 8);
+                    //    brcHorz = new BorderCode(brc);
+                    //    //inside V
+                    //    Array.Copy(sprm.Arguments, 40, brc, 0, 8);
+                    //    brcVert = new BorderCode(brc);
+                    //    break;
                 }
             }
 
-            //set borders
-            if (_tblBorders.ChildNodes.Count > 0)
-            {
-                _tblPrEx.AppendChild(_tblBorders);
-            }
+            ////set borders
+            //if (brcTop != null)
+            //{
+            //    XmlNode topBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "top", OpenXmlNamespaces.WordprocessingML);
+            //    appendBorderAttributes(brcTop, topBorder);
+            //    addOrSetBorder(_tblBorders, topBorder);
+            //}
+            //if (brcLeft != null)
+            //{
+            //    XmlNode leftBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "left", OpenXmlNamespaces.WordprocessingML);
+            //    appendBorderAttributes(brcLeft, leftBorder);
+            //    addOrSetBorder(_tblBorders, leftBorder);
+            //}
+            //if (brcBottom != null)
+            //{
+            //    XmlNode bottomBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "bottom", OpenXmlNamespaces.WordprocessingML);
+            //    appendBorderAttributes(brcBottom, bottomBorder);
+            //    addOrSetBorder(_tblBorders, bottomBorder);
+            //}
+            //if (brcRight != null)
+            //{
+            //    XmlNode rightBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "right", OpenXmlNamespaces.WordprocessingML);
+            //    appendBorderAttributes(brcRight, rightBorder);
+            //    addOrSetBorder(_tblBorders, rightBorder);
+            //}
+            //if (brcHorz != null)
+            //{
+            //     XmlNode insideHBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "insideH", OpenXmlNamespaces.WordprocessingML);
+            //     appendBorderAttributes(brcHorz, insideHBorder);
+            //     addOrSetBorder(_tblBorders, insideHBorder);
+            //}
+            //if (brcVert != null)
+            //{
+            //    XmlNode insideVBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "insideV", OpenXmlNamespaces.WordprocessingML);
+            //    appendBorderAttributes(brcVert, insideVBorder);
+            //    addOrSetBorder(_tblBorders, insideVBorder);
+            //}
+            //if (_tblBorders.ChildNodes.Count > 0)
+            //{
+            //    _tblPrEx.AppendChild(_tblBorders);
+            //}
 
             //set exceptions
             if (_tblPrEx.ChildNodes.Count > 0)

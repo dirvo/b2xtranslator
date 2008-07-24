@@ -172,7 +172,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 tapx.Convert(new TableRowPropertiesMapping(_writer, chpxs[0]));
             }
-
             int gridIndex = 0;
             int cellIndex = 0;
 
