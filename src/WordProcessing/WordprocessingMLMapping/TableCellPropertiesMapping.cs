@@ -84,7 +84,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
         public void Apply(TablePropertyExceptions tapx)
         {
-            int lastBdr = getLastTabelBorderOccurrence(tapx.grpprl);
+            //int lastBdr = getLastTabelBorderOccurrence(tapx.grpprl);
 
             for (int i=0; i< tapx.grpprl.Count; i++)
             {
@@ -121,13 +121,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                         //borders
                         // if the sprm has a higher priority than the last sprmTTableBorder sprm in the list
-                        if (i > lastBdr)
-                        {
-                            _brcTop = _tcDef.brcTop;
-                            _brcLeft = _tcDef.brcLeft;
-                            _brcRight = _tcDef.brcRight;
-                            _brcBottom = _tcDef.brcBottom;
-                        }
+                        //if (i > lastBdr)
+                        //{
+                        //    _brcTop = _tcDef.brcTop;
+                        //    _brcLeft = _tcDef.brcLeft;
+                        //    _brcRight = _tcDef.brcRight;
+                        //    _brcBottom = _tcDef.brcBottom;
+                        //}
 
                         break;
 
@@ -199,12 +199,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         byte max = sprm.Arguments[1];
                         int bordersToApply = (int)sprm.Arguments[2] ;
 
-                        // if this cell is adressed by the SPRM and the sprm has a higher 
-                        // priority than the last sprmTTableBorder sprm in the list
-                        if (_cellIndex >= min && _cellIndex < max && i > lastBdr)
+                        if (_cellIndex >= min && _cellIndex < max)
                         {
                             byte[] brcBytes = new byte[8];
-                            Array.Copy(sprm.Arguments, brcBytes, 8);
+                            Array.Copy(sprm.Arguments, 3, brcBytes, 0, 8);
                             BorderCode border = new BorderCode(brcBytes);
                             if(Utils.BitmaskToBool(bordersToApply, 0x01))
                             {

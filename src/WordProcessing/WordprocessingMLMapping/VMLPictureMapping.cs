@@ -11,6 +11,7 @@ using System.Drawing;
 using DIaLOGIKa.b2xtranslator.Tools;
 using System.Globalization;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
+using DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
@@ -37,10 +38,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                 _writer.WriteStartElement("w", "pict", OpenXmlNamespaces.WordprocessingML);
 
+                //v:shapetype
+                PictureFrameType type = new PictureFrameType();
+                type.Convert(new VMLShapeTypeMapping(_writer));
+
                 //v:shape
                 _writer.WriteStartElement("v", "shape", OpenXmlNamespaces.VectorML);
-                _writer.WriteAttributeString("type", "rect");
-
+                _writer.WriteAttributeString("type", "#" + VMLShapeTypeMapping.GenerateTypeId(type));
+                
                 StringBuilder style = new StringBuilder();
                 double xScaling = pict.mx / 1000.0;
                 double yScaling = pict.my / 1000.0;
