@@ -213,7 +213,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
                     writer.WriteStartElement("Relationship", OpenXmlNamespaces.RelationsshipsPackage);
                     writer.WriteAttributeString("Id", rel.Id);
                     writer.WriteAttributeString("Type", rel.RelationshipType);
-                    writer.WriteAttributeString("Target", rel.Target.AbsoluteUri);
+                    writer.WriteAttributeString("Target", rel.Target.ToString());
                     writer.WriteAttributeString("TargetMode", "External");
 
                     writer.WriteEndElement();

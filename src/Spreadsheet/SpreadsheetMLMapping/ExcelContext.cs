@@ -43,6 +43,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         private SpreadsheetDocument spreadDoc;
         private XmlWriterSettings writerSettings;
         private XlsDocument xlsDoc;
+        private BoundSheetData currentSheet; 
 
         /// <summary>
         /// The settings of the XmlWriter which writes to the part
@@ -69,6 +70,15 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         {
             get { return xlsDoc; }
             set { this.xlsDoc = value; }
+        }
+
+        /// <summary>
+        /// Current working sheet !! !
+        /// </summary>
+        public BoundSheetData CurrentSheet
+        {
+            get { return this.currentSheet; }
+            set { this.currentSheet = value; }
         }
 
         /// <summary>

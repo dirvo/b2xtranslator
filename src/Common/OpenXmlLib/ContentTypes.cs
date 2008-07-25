@@ -75,6 +75,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string Worksheet = "application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml";
         public const string SharedStrings = "application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml";
         public const string Connections = "application/vnd.openxmlformats-officedocument.spreadsheetml.connections+xml";
+        public const string ExternalLink = "application/vnd.openxmlformats-officedocument.spreadsheetml.externalLink+xml"; 
     }
 
     public static class PresentationMLContentTypes
@@ -153,6 +154,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         // SpreadsheetML
 
         public const string WorkSheet = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet";
-        public const string sharedStrings = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings"; 
+        public const string sharedStrings = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings";
+        public const string externalLink = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLink";
+        public const string externalLinkPath = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLinkPath";
     }
 }

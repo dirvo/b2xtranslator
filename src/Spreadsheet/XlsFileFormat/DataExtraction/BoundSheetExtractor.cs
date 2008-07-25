@@ -103,11 +103,22 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                         MULBLANK mulblank = new MULBLANK(this.StreamReader, bh.id, bh.length);
                         this.bsd.addMULBLANK(mulblank);
                     }
-                    else 
-                    {   
+                    else if (bh.id == RecordNumber.FORMULA)
+                    {
+                        FORMULA formula = new FORMULA(this.StreamReader, bh.id, bh.length);
+                        this.bsd.addFORMULA(formula);
+                        TraceLogger.DebugInternal(formula.ToString());
+                    }
+                    else if (bh.id == RecordNumber.ARRAY)
+                    {
+                        ARRAY array = new ARRAY(this.StreamReader, bh.id, bh.length);
+                        this.bsd.addARRAY(array); 
+                    }
+                    else
+                    {
                         // this else statement is used to read BiffRecords which aren't implemented 
                         byte[] buffer = new byte[bh.length];
-                        buffer = this.StreamReader.ReadBytes(bh.length);               
+                        buffer = this.StreamReader.ReadBytes(bh.length);
                     }
                     latestbiff = bh; 
                 }

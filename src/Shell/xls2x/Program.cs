@@ -110,6 +110,17 @@ namespace xls2x
                                 var.Convert(new WorksheetMapping(xlsContext));
                             }
                         }
+                        int sbdnumber = 1; 
+                        foreach (SupBookData sbd in xlsDoc.workBookData.supBookDataList)
+                        {
+                            if (!sbd.SelfRef)
+                            {
+                                sbd.Number = sbdnumber;
+                                sbdnumber++;
+                                sbd.Convert(new ExternalLinkMapping(xlsContext));
+                            }
+                        }
+
                         xlsDoc.workBookData.Convert(new WorkbookMapping(xlsContext));
                     }
                     reader.Close();

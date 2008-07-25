@@ -37,17 +37,36 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     {
         public const RecordNumber ID = RecordNumber.EXTERNSHEET;
 
+        public UInt16 cXTI;
+
+        public UInt16[] iSUPBOOK; 
+
+        public UInt16[] itabFirst;
+
+        public UInt16[] itabLast;
+
         public EXTERNSHEET(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
 
-            // initialize class members from stream
-            // TODO: place code here
-            
+            this.cXTI = this.Reader.ReadUInt16();
+
+            this.iSUPBOOK = new UInt16[this.cXTI];
+            this.itabFirst = new UInt16[this.cXTI]; 
+            this.itabLast = new UInt16[this.cXTI]; 
+
+            for (int i = 0; i < this.cXTI; i++)
+            {                
+                this.iSUPBOOK[i] = this.Reader.ReadUInt16();
+                this.itabFirst[i] = this.Reader.ReadUInt16();
+                this.itabLast[i] = this.Reader.ReadUInt16(); 
+            }
+
+
             // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            // Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
         }
     }
 }

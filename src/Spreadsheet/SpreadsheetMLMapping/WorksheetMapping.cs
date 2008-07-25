@@ -61,6 +61,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         /// <param name="bsd">BoundSheetData</param>
         public void Apply(BoundSheetData bsd)
         {
+            xlsContext.CurrentSheet = bsd; 
             _writer.WriteStartDocument();
             _writer.WriteStartElement("worksheet", OpenXmlNamespaces.WorkBookML);
             _writer.WriteStartElement("sheetData");
@@ -84,9 +85,26 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     if (cell is StringCell)
                     {
                         _writer.WriteAttributeString("t", "s");
-                    } 
-                    // Data !!! 
-                    _writer.WriteElementString("v", cell.getValue());
+                    }
+                    if (cell is FormularCell)
+                    {
+                        FormularCell fcell = (FormularCell) cell; 
+                        // <f>1</f> 
+                        String value = FormularInfixMapping.mapFormula(fcell.PtgStack,this.xlsContext);
+                        _writer.WriteStartElement("f");
+                        
+                        if (fcell.usesArrayRecord)
+                        {
+                            _writer.WriteAttributeString("t", "array");
+                            _writer.WriteAttributeString("ref", ExcelHelperClass.intToABCString((int)cell.Col, (cell.Row + 1).ToString()));
+                        }
+                        _writer.WriteString(value);
+                        _writer.WriteEndElement(); 
+                    }
+                    else
+                    {// Data !!! 
+                        _writer.WriteElementString("v", cell.getValue());
+                    }
 
                     _writer.WriteEndElement();  // close cell (c)  
                 }

@@ -94,7 +94,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         EOF = 0x0A, 	// End of File
         EXCEL9FILE = 0x1C0, 	// Excel 9 File
         EXTERNCOUNT = 0x16, 	// Number of External References
-        EXTERNNAME = 0x223, 	// Externally Referenced Name
+        EXTERNNAME = 0x23, 	// Externally Referenced Name
         EXTERNSHEET = 0x17, 	// External Reference
         EXTSST = 0xFF, 	// Extended Shared String Table
         EXTSTRING = 0x804, 	// FRT String
@@ -122,7 +122,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         FOOTER = 0x15, 	// Print Footer on Each Page
         FORCEFULLCALCULATION = 0x8A3, 	// Force Full Calculation Mode
         FORMAT = 0x41E, 	// Number Format
-        FORMULA = 0x406, 	// Cell Formula
+        // FORMULA = 0x406, 	// Cell Formula
+        FORMULA = 0x06, 	// Cell Formula
         GCW = 0xAB, 	// Global Column-Width Flags
         GRIDSET = 0x82, 	// State Change of Gridlines Option
         GUIDTYPELIB = 0x897, 	// VB Project Typelib GUID

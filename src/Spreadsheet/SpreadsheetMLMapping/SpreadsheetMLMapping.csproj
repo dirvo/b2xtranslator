@@ -35,6 +35,8 @@
   <ItemGroup>
     <Compile Include="ExcelContext.cs" />
     <Compile Include="ExcelMapping.cs" />
+    <Compile Include="ExternalLinkMapping.cs" />
+    <Compile Include="FormularMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SSTMapping.cs" />
     <Compile Include="WorkbookMapping.cs" />

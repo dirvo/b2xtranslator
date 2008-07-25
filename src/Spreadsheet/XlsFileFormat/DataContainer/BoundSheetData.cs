@@ -37,6 +37,7 @@ using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
@@ -54,6 +55,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public List<RK> SINGLERKList;
         public List<BLANK> BLANKList;
         public List<MULBLANK> MULBLANKList;
+        public List<FORMULA> FORMULAList;
+        public List<ARRAY> ARRAYList; 
         public BOUNDSHEET boundsheetRecord; 
 
 
@@ -75,6 +78,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             this.SINGLERKList = new List<RK>();
             this.MULBLANKList = new List<MULBLANK>();
             this.BLANKList = new List<BLANK>();
+            this.FORMULAList = new List<FORMULA>();
+            this.ARRAYList = new List<ARRAY>(); 
             this.rowDataTable = new SortedList<int, RowData>();
             boundsheetRecord = null; 
 
@@ -164,6 +169,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             this.BLANKList.Add(blank);
             RowData rowData = this.getSpecificRow(blank.rw);
             BlankCell cell = new BlankCell();
+
             cell.Col = blank.col;
             cell.Row = blank.rw;
             cell.TemplateID = blank.ixfe;
@@ -193,6 +199,34 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         }
 
         /// <summary>
+        /// Adds a formula BIFF RECORD to the formula list and 
+        /// creates a new cell 
+        /// </summary>
+        /// <param name="formula"></param>
+        public void addFORMULA(FORMULA formula)
+        {
+            this.FORMULAList.Add(formula);
+            RowData rowData = this.getSpecificRow(formula.rw);
+            FormularCell cell = new FormularCell();
+
+
+            cell.setValue(formula.ptgStack);
+            cell.Col = formula.col;
+            cell.Row = formula.rw;
+            cell.TemplateID = formula.ixfe;
+            rowData.addCell(cell);
+        }
+
+        /// <summary>
+        /// Adds an ARRAY BIFF Record to the arraylist 
+        /// </summary>
+        /// <param name="array"></param>
+        public void addARRAY(ARRAY array)
+        {
+            this.ARRAYList.Add(array); 
+        }
+
+        /// <summary>
         /// Looks for a specific row number and if it doesn't exist the method will create the one.
         /// </summary>
         /// <param name="rownumber">the specific rownumber as integer</param>
@@ -211,6 +245,60 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             }
             return rowData;
         }
+
+        /// <summary>
+        /// Returns the stack at the position of the given values 
+        /// </summary>
+        /// <param name="rw"></param>
+        /// <param name="col"></param>
+        /// <returns></returns>
+        public Stack<AbstractPtg> getArrayData(UInt16 rw, UInt16 col)
+        {
+            Stack<AbstractPtg> stack = new Stack<AbstractPtg>(); 
+            foreach (ARRAY array in this.ARRAYList)
+            {
+                if (array.colFirst == col && array.rwFirst == rw)
+                {
+                    stack = array.ptgStack; 
+                }
+            }
+            return stack; 
+        }
+
+        /// <summary>
+        /// Searches a cell at the specific Position 
+        /// </summary>
+        /// <param name="rw"></param>
+        /// <param name="col"></param>
+        /// <returns></returns>
+        public AbstractCellData getCellAtPosition(UInt16 rw, UInt16 col)
+        {
+            RowData rd = this.getSpecificRow((int)rw);
+            AbstractCellData scell = null;
+            foreach (AbstractCellData cell in rd.Cells)
+            {
+                if (cell.Row == rw && cell.Col == col)
+                    scell = cell; 
+            }
+            return scell; 
+        }
+
+        /// <summary>
+        /// Sets the value from a Formula Cell 
+        /// </summary>
+        /// <param name="rw"></param>
+        /// <param name="col"></param>
+        public void setFormulaUsesArray(UInt16 rw, UInt16 col)
+        {
+            AbstractCellData cell = this.getCellAtPosition(rw, col);
+            if (cell is FormularCell)
+            {
+                ((FormularCell)cell).usesArrayRecord = true; 
+            }
+        }
+
+
+
         #region IVisitable Members
 
         public void Convert<T>(T mapping)

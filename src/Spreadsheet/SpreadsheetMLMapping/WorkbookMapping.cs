@@ -63,9 +63,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         {
             _writer.WriteStartDocument();
             _writer.WriteStartElement("workbook", OpenXmlNamespaces.WorkBookML);
-           
-
-
+            _writer.WriteAttributeString("xmlns", "r", "", OpenXmlNamespaces.Relationships); 
             _writer.WriteStartElement("sheets");
 
             foreach (BoundSheetData var in bsd.boundSheetDataList)
@@ -80,10 +78,40 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     _writer.WriteEndElement();
                 }
             }
+            _writer.WriteEndElement();      // close sheetData 
 
+            bool ParentTagWritten = false; 
+            if (bsd.supBookDataList.Count != 0)
+            {
+                
+                /*
+                    <externalReferences>
+                        <externalReference r:id="rId4" /> 
+                        <externalReference r:id="rId5" /> 
+                    </externalReferences>
+                 */
+                foreach (SupBookData var in bsd.supBookDataList)
+                {
+                    if (!var.SelfRef)
+                    {
+                        if (!ParentTagWritten)
+                        {
+                            _writer.WriteStartElement("externalReferences");
+                            ParentTagWritten = true; 
+                        }
+                        _writer.WriteStartElement("externalReference");
+                        _writer.WriteAttributeString("r", "id", OpenXmlNamespaces.Relationships, var.ExternalLinkRef);
+                        _writer.WriteEndElement();
+                    }
+                }
+                if (ParentTagWritten)
+                {
+                    _writer.WriteEndElement();
+                }
+            }
 
             // close tags 
-            _writer.WriteEndElement();      // close sheetData 
+           
             _writer.WriteEndElement();      // close worksheet
             _writer.WriteEndDocument();
 

@@ -34,14 +34,17 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
 {
     public class WorkbookPart : OpenXmlPart
     {
-        private UInt16 worksheetnumber;
+        private UInt16 WorksheetNumber;
+        private UInt16 ExternalLinkNumber;
         protected WorksheetPart workSheetPart;
-        protected SharedStringPart sharedStringPart; 
+        protected SharedStringPart sharedStringPart;
+        protected ExternalLinkPart externalLinkPart; 
 
         public WorkbookPart(OpenXmlPartContainer parent)
             : base(parent, 0)
         {
-            this.worksheetnumber = 1; 
+            this.WorksheetNumber = 1;
+            this.ExternalLinkNumber = 1; 
         }
 
         public override string ContentType
@@ -60,8 +63,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
         /// <returns></returns>
         public WorksheetPart AddWorksheetPart()
         {
-            this.workSheetPart = new WorksheetPart(this, this.worksheetnumber);
-            this.worksheetnumber++;
+            this.workSheetPart = new WorksheetPart(this, this.WorksheetNumber);
+            this.WorksheetNumber++;
             return this.AddPart(this.workSheetPart);
         }
 
@@ -72,6 +75,26 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
         public WorksheetPart GetWorksheetPart()
         {
             return this.workSheetPart; 
+        }
+
+        /// <summary>
+        /// returns the worksheet part from the new excel document 
+        /// </summary>
+        /// <returns></returns>
+        public ExternalLinkPart AddExternalLinkPart()
+        {
+            this.externalLinkPart = new ExternalLinkPart(this, this.ExternalLinkNumber);
+            this.ExternalLinkNumber++;
+            return this.AddPart(this.externalLinkPart);
+        }
+
+        /// <summary>
+        /// return the latest created worksheetpart
+        /// </summary>
+        /// <returns></returns>
+        public ExternalLinkPart GetExternalLinkPart()
+        {
+            return this.externalLinkPart;
         }
 
         public override string TargetName { get { return "workbook"; } }

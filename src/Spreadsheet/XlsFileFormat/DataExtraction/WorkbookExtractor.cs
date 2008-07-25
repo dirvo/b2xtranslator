@@ -51,8 +51,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public long oldOffset;
 
         public List<BOUNDSHEET> boundsheets;
-
-        public List<BoundSheetData> sheets;
+        public List<EXTERNSHEET> externSheets;
+        public List<SUPBOOK> supBooks;
+        public List<XCT> XCTList;
+        public List<CRN> CRNList; 
 
         public WorkBookData workBookData;
 
@@ -64,7 +66,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             : base(reader)
         {
             this.boundsheets = new List<BOUNDSHEET>();
-            this.sheets = new List<BoundSheetData>();
+            this.supBooks = new List<SUPBOOK>(); 
+            this.externSheets = new List<EXTERNSHEET>();
+            this.XCTList = new List<XCT>();
+            this.CRNList = new List<CRN>(); 
             this.workBookData = workBookData;
             this.oldOffset = 0;
 
@@ -184,6 +189,35 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                     {
                         // Reads the end of the internal file !!! 
                         this.StreamReader.BaseStream.Seek(0, SeekOrigin.End);
+                    }
+                    else if (bh.id == RecordNumber.EXTERNSHEET)
+                    {
+                        EXTERNSHEET extsheet = new EXTERNSHEET(this.StreamReader, bh.id, bh.length);
+                        this.externSheets.Add(extsheet);
+                        this.workBookData.addExternSheetData(extsheet); 
+                    }
+                    else if (bh.id == RecordNumber.SUPBOOK)
+                    {
+                        SUPBOOK supbook = new SUPBOOK(this.StreamReader, bh.id, bh.length);
+                        this.supBooks.Add(supbook);
+                        this.workBookData.addSupBookData(supbook); 
+                    }
+                    else if (bh.id == RecordNumber.XCT)
+                    {
+                        XCT xct = new XCT(this.StreamReader, bh.id, bh.length);
+                        this.XCTList.Add(xct);
+                        this.workBookData.addXCT(xct); 
+                    }
+                    else if (bh.id == RecordNumber.CRN)
+                    {
+                        CRN crn = new CRN(this.StreamReader, bh.id, bh.length);
+                        this.CRNList.Add(crn);
+                        this.workBookData.addCRN(crn); 
+                    }
+                    else if (bh.id == RecordNumber.EXTERNNAME)
+                    {
+                        EXTERNNAME externname = new EXTERNNAME(this.StreamReader, bh.id, bh.length);
+                        this.workBookData.addEXTERNNAME(externname); 
                     }
                     else
                     {

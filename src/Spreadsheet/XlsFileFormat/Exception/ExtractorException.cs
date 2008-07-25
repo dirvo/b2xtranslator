@@ -4,13 +4,14 @@ using System.Text;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
-    class ExtractorException: Exception 
+    public class ExtractorException: Exception 
     {
         /// <summary>
         /// some public static attributes 
         /// </summary>
         public const string NULLPOINTEREXCEPTION = "Null pointer exception!!";
-        public const string NOFILEFOUNDEXCEPTION = "No file found!!"; 
+        public const string NOFILEFOUNDEXCEPTION = "No file found!!";
+        public const string PARSEDFORMULAEXCEPTION = "Formula is not valid !!"; 
 
 
         /// <summary>

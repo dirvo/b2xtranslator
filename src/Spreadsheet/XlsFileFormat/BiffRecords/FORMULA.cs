@@ -30,24 +30,82 @@ using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 using DIaLOGIKa.b2xtranslator.Tools;
 using System.Diagnostics;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg; 
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
     public class FORMULA : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.FORMULA;
+        /// <summary>
+        /// Rownumber 
+        /// </summary>
+        public UInt16 rw;
+
+        /// <summary>
+        /// Colnumber 
+        /// </summary>
+        public UInt16 col;
+
+        /// <summary>
+        /// index to the XF record 
+        /// </summary>
+        public UInt16 ixfe;
+
+        /// <summary>
+        /// 8 byte calculated number / string / error of the formular 
+        /// </summary>
+        public byte[] val;
+
+        /// <summary>
+        /// option flags 
+        /// </summary>
+        public UInt16 grbit;
+
+        /// <summary>
+        /// used for performance reasons only 
+        /// can be ignored 
+        /// </summary>
+        public UInt32 chn;
+
+        /// <summary>
+        /// length of the formular data !!
+        /// </summary>
+        public UInt16 cce;
+
+        /// <summary>
+        /// LinkedList with the Ptg records !!
+        /// </summary>
+        public Stack<AbstractPtg> ptgStack; 
 
         public FORMULA(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
+            this.val = new byte[8];
+            this.rw = reader.ReadUInt16();
+            this.col = reader.ReadUInt16();
+            this.ixfe = reader.ReadUInt16();
+            this.val = reader.ReadBytes(8); // read 8 bytes for the value of the formular 
+            this.grbit = reader.ReadUInt16();
+            this.chn = reader.ReadUInt32(); // this is used for performance reasons only 
+            this.cce = reader.ReadUInt16();
+            this.ptgStack = new Stack<AbstractPtg>();
+            // reader.ReadBytes(this.cce);
 
-            // initialize class members from stream
-            // TODO: place code here
+            this.ptgStack = ExcelHelperClass.getFormulaStack(this.Reader, this.cce); 
             
             // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            // Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
         }
+
+
+        public override String ToString()
+        {
+            return "Fomula at position: Row - " + this.rw.ToString() + " | Col - " + this.col.ToString();   
+        }
+
+
     }
 }
