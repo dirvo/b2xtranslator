@@ -95,8 +95,15 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
         public PowerpointDocument(StructuredStorageFile file)
         {
-            this.CurrentUserStream = file.GetStream("Current User");
-            this.CurrentUserAtom = (CurrentUserAtom)Record.ReadRecord(this.CurrentUserStream, 0);
+            try
+            {
+                this.CurrentUserStream = file.GetStream("Current User");
+                this.CurrentUserAtom = (CurrentUserAtom)Record.ReadRecord(this.CurrentUserStream, 0);
+            }
+            catch (InvalidRecordException e)
+            {
+                throw new InvalidStreamException("Current user stream is not valid", e);
+            }
 
             this.PowerpointDocumentStream = file.GetStream("PowerPoint Document");
             this.PowerpointDocumentStream.Seek(this.CurrentUserAtom.OffsetToCurrentEdit, SeekOrigin.Begin);

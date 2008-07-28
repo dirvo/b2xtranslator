@@ -40,6 +40,7 @@ using DIaLOGIKa.b2xtranslator.PresentationMLMapping;
 using DIaLOGIKa.b2xtranslator.ZipUtils;
 using System.Reflection;
 using System.Threading;
+using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 
 namespace DIaLOGIKa.b2xtranslator.ppt2x
 {
@@ -122,6 +123,18 @@ namespace DIaLOGIKa.b2xtranslator.ppt2x
             {
                 TraceLogger.Error("Could not read input file {0}.", inputFile);
                 TraceLogger.Debug(ex.ToString());
+            }
+            catch (MagicNumberException ex)
+            {
+                TraceLogger.Error("Input file {0} is not a valid PowerPoint file.", inputFile);
+            }
+            catch (InvalidStreamException ex)
+            {
+                TraceLogger.Error("Input file {0} is not a valid PowerPoint file.", inputFile);
+            }
+            catch (InvalidRecordException ex)
+            {
+                TraceLogger.Error("Input file {0} is not a valid PowerPoint file.", inputFile);
             }
             catch (Exception ex)
             {

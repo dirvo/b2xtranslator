@@ -42,6 +42,7 @@
     <Compile Include="DrawingGroup.cs" />
     <Compile Include="DrawingGroupRecord.cs" />
     <Compile Include="DrawingRecord.cs" />
+    <Compile Include="Exceptions.cs" />
     <Compile Include="GroupContainer.cs" />
     <Compile Include="GroupShapeRecord.cs" />
     <Compile Include="Shapetypes\BevelType.cs" />

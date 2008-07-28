@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{6EAD0A6A-8DF0-4CA3-8D5E-3C871E7FCB62}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -68,6 +68,7 @@
     <Compile Include="GPointAtom.cs" />
     <Compile Include="GRatioAtom.cs" />
     <Compile Include="GrColorAtom.cs" />
+    <Compile Include="Exceptions.cs" />
     <Compile Include="ITextDataRecord.cs" />
     <Compile Include="List.cs" />
     <Compile Include="MainMaster.cs" />

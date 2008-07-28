@@ -1,5 +1,5 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <StartArguments>"C:\Documents and Settings\flog\Desktop\ppt2x Testsuite\EU_Interop_De Vriendt.ppt" -v 5</StartArguments>
+    <StartArguments>"C:\Documents and Settings\flog\Desktop\problemfaelle\BonneJourneetoutsimplement.ppt" -v 5</StartArguments>
   </PropertyGroup>
 </Project>

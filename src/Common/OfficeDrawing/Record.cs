@@ -268,51 +268,63 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 
         public static Record ReadRecord(BinaryReader reader, uint siblingIdx)
         {
-            UInt16 verAndInstance = reader.ReadUInt16();
-            uint version = verAndInstance & 0x000FU;         // first 4 bit of field verAndInstance
-            uint instance = (verAndInstance & 0xFFF0U) >> 4; // last 12 bit of field verAndInstance
-
-            UInt16 typeCode = reader.ReadUInt16();
-            UInt32 size = reader.ReadUInt32();
-
-            bool isContainer = (version == 0xF);
-
-            Record result;
-            Type cls;
-
-            if (TypeToRecordClassMapping.TryGetValue(typeCode, out cls))
+            try
             {
-                ConstructorInfo constructor = cls.GetConstructor(new Type[] {
+                UInt16 verAndInstance = reader.ReadUInt16();
+                uint version = verAndInstance & 0x000FU;         // first 4 bit of field verAndInstance
+                uint instance = (verAndInstance & 0xFFF0U) >> 4; // last 12 bit of field verAndInstance
+
+                UInt16 typeCode = reader.ReadUInt16();
+                UInt32 size = reader.ReadUInt32();
+
+                bool isContainer = (version == 0xF);
+
+                Record result;
+                Type cls;
+
+                if (TypeToRecordClassMapping.TryGetValue(typeCode, out cls))
+                {
+                    ConstructorInfo constructor = cls.GetConstructor(new Type[] {
                     typeof(BinaryReader), typeof(uint), typeof(uint), typeof(uint), typeof(uint) 
                 });
 
-                if (constructor == null)
-                {
-                    throw new Exception(String.Format(
-                        "Internal error: Could not find a matching constructor for class {0}",
-                        cls));
-                }
+                    if (constructor == null)
+                    {
+                        throw new Exception(String.Format(
+                            "Internal error: Could not find a matching constructor for class {0}",
+                            cls));
+                    }
 
-                try
-                {
-                    result = (Record)constructor.Invoke(new object[] {
+                    //TraceLogger.DebugInternal("Going to read record of type {0} ({1})", cls, typeCode);
+
+                    try
+                    {
+                        result = (Record)constructor.Invoke(new object[] {
                         reader, size, typeCode, version, instance
                     });
+
+                        //TraceLogger.DebugInternal("Here it is: {0}", result);
+                    }
+                    catch (TargetInvocationException e)
+                    {
+                        TraceLogger.DebugInternal(e.InnerException.ToString());
+                        throw e.InnerException;
+                    }
                 }
-                catch (TargetInvocationException e)
+                else
                 {
-                    TraceLogger.DebugInternal(e.InnerException.ToString());
-                    throw e.InnerException;
+                    //TraceLogger.DebugInternal("Going to read record of type UnknownRecord ({1})", cls, typeCode);
+                    result = new UnknownRecord(reader, size, typeCode, version, instance);
                 }
+
+                result.SiblingIdx = siblingIdx;
+
+                return result;
             }
-            else
+            catch (OutOfMemoryException e)
             {
-                result = new UnknownRecord(reader, size, typeCode, version, instance);
+                throw new InvalidRecordException("Invalid record", e);
             }
-
-            result.SiblingIdx = siblingIdx;
-
-            return result;
         }
 
         #endregion

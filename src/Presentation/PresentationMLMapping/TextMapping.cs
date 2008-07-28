@@ -95,7 +95,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             uint idx = 0;
 
-            // Special case: always write out at least one paragraph (even if idx == text.length == 0)
+            // Special case: always write out at least one paragraph (even if idx == text.Length == 0)
             while (idx < text.Length || text.Length == 0)
             {
                 ParagraphRun p = GetParagraphRun(style, idx);

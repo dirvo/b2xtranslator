@@ -30,97 +30,97 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         #region Presence flag getters
         public bool BulletFlagsFieldPresent
         {
-            get { return (this.Mask & ParagraphMask.BulletFlagsFieldPresent) != 0; }
+            get { return (this.Mask & ParagraphMask.BulletFlagsFieldExists) != 0; }
         }
 
         public bool BulletCharPresent
         {
-            get { return (this.Mask & ParagraphMask.BulletCharPresent) != 0; }
+            get { return (this.Mask & ParagraphMask.BulletChar) != 0; }
         }
 
-        public bool BulletTypefacePresent
+        public bool BulletFontPresent
         {
-            get { return (this.Mask & ParagraphMask.BulletTypefacePresent) != 0; }
+            get { return (this.Mask & ParagraphMask.BulletFont) != 0; }
         }
 
-        public bool HasCustomBulletTypeface
+        public bool BulletHasFont
         {
-            get { return (this.Mask & ParagraphMask.HasCustomBulletTypeface) != 0; }
+            get { return (this.Mask & ParagraphMask.BulletHasFont) != 0; }
         }
 
         public bool BulletSizePresent
         {
-            get { return (this.Mask & ParagraphMask.BulletSizePresent) != 0; }
+            get { return (this.Mask & ParagraphMask.BulletSize) != 0; }
         }
 
-        public bool HasCustomBulletSize
+        public bool BulletHasSize
         {
-            get { return (this.Mask & ParagraphMask.HasCustomBulletSize) != 0; }
+            get { return (this.Mask & ParagraphMask.BulletHasSize) != 0; }
         }
 
         public bool BulletColorPresent
         {
-            get { return (this.Mask & ParagraphMask.BulletColorPresent) != 0; }
+            get { return (this.Mask & ParagraphMask.BulletColor) != 0; }
         }
 
-        public bool HasCustomBulletColor
+        public bool BulletHasColor
         {
-            get { return (this.Mask & ParagraphMask.HasCustomBulletColor) != 0; }
+            get { return (this.Mask & ParagraphMask.BulletHasColor) != 0; }
         }
 
         public bool AlignmentPresent
         {
-            get { return (this.Mask & ParagraphMask.AlignmentPresent) != 0; }
+            get { return (this.Mask & ParagraphMask.Align) != 0; }
         }
 
         public bool LineSpacingPresent
         {
-            get { return (this.Mask & ParagraphMask.LineSpacingPresent) != 0; }
+            get { return (this.Mask & ParagraphMask.LineSpacing) != 0; }
         }
 
         public bool SpaceBeforePresent
         {
-            get { return (this.Mask & ParagraphMask.SpaceBeforePresent) != 0; }
+            get { return (this.Mask & ParagraphMask.SpaceBefore) != 0; }
         }
 
         public bool SpaceAfterPresent
         {
-            get { return (this.Mask & ParagraphMask.SpaceAfterPresent) != 0; }
+            get { return (this.Mask & ParagraphMask.SpaceAfter) != 0; }
         }
 
         public bool LeftMarginPresent
         {
-            get { return (this.Mask & ParagraphMask.LeftMarginPresent) != 0; }
+            get { return (this.Mask & ParagraphMask.LeftMargin) != 0; }
         }
 
         public bool IndentPresent
         {
-            get { return (this.Mask & ParagraphMask.IndentPresent) != 0; }
+            get { return (this.Mask & ParagraphMask.Indent) != 0; }
         }
 
         public bool DefaultTabSizePresent
         {
-            get { return (this.Mask & ParagraphMask.DefaultTabSizePresent) != 0; }
+            get { return (this.Mask & ParagraphMask.DefaultTabSize) != 0; }
         }
 
         public bool TabStopsPresent
         {
-            get { return (this.Mask & ParagraphMask.TabStopsPresent) != 0; }
+            get { return (this.Mask & ParagraphMask.TabStops) != 0; }
         }
 
-        public bool BaseLinePresent
+        public bool FontAlignPresent
         {
-            get { return (this.Mask & ParagraphMask.BaseLinePresent) != 0; }
+            get { return (this.Mask & ParagraphMask.FontAlign) != 0; }
         }
 
         public bool LineBreakFlagsFieldPresent
         {
-            get { return (this.Mask & ParagraphMask.LineBreakFlagsFieldPresent) != 0; }
+            get { return (this.Mask & ParagraphMask.WrapFlagsFieldExists) != 0; }
         }
 
         public bool TextDirectionPresent
         {
-            get { return (this.Mask & ParagraphMask.TextDirectionPresent) != 0; }
+            get { return (this.Mask & ParagraphMask.TextDirection) != 0; }
         }
         #endregion
 
@@ -136,7 +136,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         public Int16? LeftMargin;
         public Int16? Indent;
         public Int16? DefaultTabSize;
-        public UInt16? BaseLine;
+        public UInt16? FontAlign;
         public UInt16? LineBreakFlags;
         public UInt16? TextDirection;
 
@@ -155,13 +155,13 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             if (this.BulletCharPresent)
                 this.BulletChar = (char)reader.ReadUInt16();
 
-            if (this.BulletTypefacePresent /*&& (this.BulletFlags & (1 << 1)) != 0*/)
+            if (this.BulletFontPresent)
                 this.BulletTypefaceIdx = reader.ReadUInt16();
 
-            if (this.HasCustomBulletSize && (this.BulletFlags & (1 << 3)) != 0)
+            if (this.BulletSizePresent)
                 this.BulletSize = reader.ReadInt16();
 
-            if (this.HasCustomBulletColor && (this.BulletFlags & (1 << 2)) != 0)
+            if (this.BulletColorPresent)
                 this.BulletColor = new GrColorAtom(reader);
 
             if (this.AlignmentPresent)
@@ -185,8 +185,8 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             if (this.DefaultTabSizePresent)
                 this.DefaultTabSize = reader.ReadInt16();
 
-            if (this.BaseLinePresent)
-                this.BaseLine = reader.ReadUInt16();
+            if (this.FontAlignPresent)
+                this.FontAlign = reader.ReadUInt16();
 
             if (this.LineBreakFlagsFieldPresent)
                 this.LineBreakFlags = reader.ReadUInt16();
@@ -258,8 +258,8 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             if (this.DefaultTabSize != null)
                 result.AppendFormat("\n{0}DefaultTabSize = {1}", indent, this.DefaultTabSize);
 
-            if (this.BaseLine != null)
-                result.AppendFormat("\n{0}BaseLine = {1}", indent, this.BaseLine);
+            if (this.FontAlign != null)
+                result.AppendFormat("\n{0FontAlign = {1}", indent, this.FontAlign);
 
             if (this.LineBreakFlags != null)
                 result.AppendFormat("\n{0}LineBreakFlags = {1}", indent, this.LineBreakFlags);
@@ -280,37 +280,157 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
     public enum ParagraphMask : uint
     {
         None = 0,
-        HasCustomBullet = 1 << 0,
-        HasCustomBulletTypeface = 1 << 1,
-        HasCustomBulletColor = 1 << 2,
-        HasCustomBulletSize = 1 << 3,
 
-        BulletFlagsFieldPresent = HasCustomBullet | HasCustomBulletTypeface |
-                                      HasCustomBulletColor | HasCustomBulletSize,
+        /// <summary>
+        /// A bit that specifies whether the bulletFlags field of the TextPFException structure that
+        /// contains this PFMasks exists and whether bulletFlags.fHasBullet is valid.
+        /// </summary>
+        HasBullet = 1 << 0,
 
-        BulletTypefacePresent = 1 << 4,
-        BulletSizePresent = 1 << 5,
-        BulletColorPresent = 1 << 6,
-        BulletCharPresent = 1 << 7,
-        LeftMarginPresent = 1 << 8,
+        /// <summary>
+        /// A bit that specifies whether the bulletFlags field of the TextPFException structure that
+        /// contains this PFMasks exists and whether bulletFlags.fBulletHasFont is valid.
+        /// </summary>
+        BulletHasFont = 1 << 1,
 
-        // Bit 9 is unused
+        /// <summary>
+        /// A bit that specifies whether the bulletFlags field of the TextPFException structure that
+        /// contains this PFMasks exists and whether bulletFlags. fBulletHasColor is valid.
+        /// </summary>
+        BulletHasColor = 1 << 2,
 
-        IndentPresent = 1 << 10,
-        AlignmentPresent = 1 << 11,
-        LineSpacingPresent = 1 << 12,
-        SpaceBeforePresent = 1 << 13,
-        SpaceAfterPresent = 1 << 14,
-        DefaultTabSizePresent = 1 << 15,
-        BaseLinePresent = 1 << 16,
+        /// <summary>
+        /// A bit that specifies whether the bulletFlags field of the TextPFException structure that
+        /// contains this PFMasks exists and whether bulletFlags.fBulletHasSize is valid.
+        /// </summary>
+        BulletHasSize = 1 << 3,
 
-        HasCustomCharWrap = 1 << 17,
-        HasCustomWordWrap = 1 << 18,
-        HasCustomOverflow = 1 << 19,
+        BulletFlagsFieldExists = HasBullet | BulletHasFont | BulletHasColor | BulletHasSize,
 
-        LineBreakFlagsFieldPresent = HasCustomCharWrap | HasCustomWordWrap | HasCustomOverflow,
+        /// <summary>
+        /// A bit that specifies whether the bulletFontRef field of the TextPFException structure that
+        /// contains this PFMasks exists.
+        /// </summary>
+        BulletFont = 1 << 4,
 
-        TabStopsPresent = 1 << 20,
-        TextDirectionPresent = 1 << 21
+        /// <summary>
+        /// A bit that specifies whether the bulletColor field of the TextPFException structure that
+        /// contains this PFMasks exists.
+        /// </summary>
+        BulletColor = 1 << 5,
+
+        /// <summary>
+        /// A bit that specifies whether the bulletSize field of the TextPFException structure that
+        /// contains this PFMasks exists.
+        /// </summary>
+        BulletSize = 1 << 6,
+
+        /// <summary>
+        /// A bit that specifies whether the bulletChar field of the TextPFException structure that
+        /// contains this PFMasks exists.
+        /// </summary>
+        BulletChar = 1 << 7,
+
+        /// <summary>
+        /// A bit that specifies whether the leftMargin field of the TextPFException structure that
+        /// contains this PFMasks exists.
+        /// </summary>
+        LeftMargin = 1 << 8,
+
+        // Bit 9 is reserved
+
+        /// <summary>
+        /// A bit that specifies whether the indent field of the TextPFException structure that
+        /// contains this PFMasks exists.
+        /// </summary>
+        Indent = 1 << 10,
+
+        /// <summary>
+        /// A bit that specifies whether the textAlignment field of the TextPFException structure
+        /// that contains this PFMasks exists.
+        /// </summary>
+        Align = 1 << 11,
+
+        /// <summary>
+        /// A bit that specifies whether the lineSpacing field of the TextPFException structure
+        /// that contains this PFMasks exists.
+        /// </summary>
+        LineSpacing = 1 << 12,
+
+        /// <summary>
+        /// A bit that specifies whether the spaceBefore field of the TextPFException that
+        /// contains this PFMasks exists.
+        /// </summary>
+        SpaceBefore = 1 << 13,
+
+        /// <summary>
+        /// A bit that specifies whether the spaceAfter field of the TextPFException
+        /// structure that contains this PFMasks exists.
+        /// </summary>
+        SpaceAfter = 1 << 14,
+
+        /// <summary>
+        /// A bit that specifies whether the defaultTabSize field of the TextPFException
+        /// structure that contains this PFMasks exists.
+        /// </summary>
+        DefaultTabSize = 1 << 15,
+
+        /// <summary>
+        /// A bit that specifies whether the fontAlign field of the TextPFException
+        /// structure that contains this PFMasks exists.
+        /// </summary>
+        FontAlign = 1 << 16,
+
+        /// <summary>
+        /// A bit that specifies whether the wrapFlags field of the TextPFException
+        /// structure that contains this PFMasks exists and whether wrapFlags.charWrap is valid.
+        /// </summary>
+        CharWrap = 1 << 17,
+
+        /// <summary>
+        /// A bit that specifies whether the wrapFlags field of the TextPFException
+        /// structure that contains this PFMasks exists and whether wrapFlags.wordWrap is valid.
+        /// </summary>
+        WordWrap = 1 << 18,
+
+        /// <summary>
+        /// A bit that specifies whether the wrapFlags field of the TextPFException
+        /// structure that contains this PFMasks exists and whether wrapFlags.overflow is valid.
+        /// </summary>
+        Overflow = 1 << 19,
+
+        WrapFlagsFieldExists = CharWrap | WordWrap | Overflow,
+
+        /// <summary>
+        /// A bit that specifies whether the tabStops field of the TextPFException
+        /// structure that contains this PFMasks exists.
+        /// </summary>
+        TabStops = 1 << 20,
+
+        /// <summary>
+        /// A bit that specifies whether the textDirection field of the TextPFException
+        /// structure that contains this PFMasks exists.
+        /// </summary>
+        TextDirection = 1 << 21,
+
+        // Bit 22 is reserved
+
+        /// <summary>
+        /// A bit that specifies whether the bulletBlipRef field of the TextPFException9
+        /// structure that contains this PFMasks exists.
+        /// </summary>
+        BulletBlip = 1 << 23,
+
+        /// <summary>
+        /// A bit that specifies whether the bulletAutoNumberScheme field of the TextPFException9
+        /// structure that contains this PFMasks exists.
+        /// </summary>
+        BulletScheme = 1 << 24,
+
+        /// <summary>
+        /// A bit that specifies whether the fBulletHasAutoNumber field of the TextPFException9
+        /// structure that contains this PFMasks exists.
+        /// </summary>
+        BulletHasScheme = 1 << 25
     }
 }
