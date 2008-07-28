@@ -113,19 +113,28 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
 
             // Write theme
-            ThemePart themePart = null;
+            //
+            // Note: We need to create a new theme part for each master,
+            // even if it they have the same content.
+            //
+            // Otherwise PPT will complain about the structure of the file.
+            ThemePart themePart = _ctx.Pptx.PresentationPart.AddThemePart();
+
+            XmlNode xmlDoc;
             Theme theme = this.Master.FirstChildWithType<Theme>();
+
             if (theme != null)
             {
-                themePart = _ctx.Pptx.PresentationPart.AddThemePart();
-                theme.XmlDocumentElement.WriteTo(themePart.XmlWriter);
-                themePart.XmlWriter.Flush();
+                xmlDoc = theme.XmlDocumentElement;
             }
             else
             {
-                // In absence of Theme record write default theme
-                themePart = _ctx.Pptx.PresentationPart.GetOrCreateDefaultThemePart(Utils.GetDefaultDocument("theme"));
+                // In absence of Theme record use default theme
+                xmlDoc = Utils.GetDefaultDocument("theme");
             }
+
+            xmlDoc.WriteTo(themePart.XmlWriter);
+            themePart.XmlWriter.Flush();
 
             this.MasterPart.ReferencePart(themePart);
             
