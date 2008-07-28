@@ -183,11 +183,12 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             Name = _fileHandler.ReadString(64);
 
             // Name length check: lengthOfName = length of the element in bytes including Unicode NULL
-            UInt16 lengthOfName = _fileHandler.ReadUInt16();            
-            if (lengthOfName != (_name.Length + 1) * 2)
+            UInt16 lengthOfName = _fileHandler.ReadUInt16();
+            // Commented out due to trouble with odd unicode-named streams in PowerPoint -- flgr
+            /*if (lengthOfName != (_name.Length + 1) * 2)
             {
                 throw new InvalidValueInDirectoryEntryException("_cb");
-            }
+            }*/
 
             Type = (DirectoryEntryType)_fileHandler.ReadByte();
             Color = (DirectoryEntryColor)_fileHandler.ReadByte();
