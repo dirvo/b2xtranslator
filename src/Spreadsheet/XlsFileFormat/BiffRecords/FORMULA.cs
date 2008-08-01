@@ -94,7 +94,19 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
             this.ptgStack = new Stack<AbstractPtg>();
             // reader.ReadBytes(this.cce);
 
-            this.ptgStack = ExcelHelperClass.getFormulaStack(this.Reader, this.cce); 
+            long oldStreamPosition = this.Reader.BaseStream.Position; 
+            try
+            {
+                this.ptgStack = ExcelHelperClass.getFormulaStack(this.Reader, this.cce); 
+            }
+            catch (Exception)
+            {
+                this.Reader.BaseStream.Seek(oldStreamPosition, System.IO.SeekOrigin.Begin);
+                this.Reader.BaseStream.Seek(this.cce, System.IO.SeekOrigin.Current); 
+                TraceLogger.Debug("Formula parse error in Row {0} Column {1}", this.rw, this.col);
+               
+            }
+           
             
             // assert that the correct number of bytes has been read from the stream
             // Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 

@@ -36,6 +36,7 @@ using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
@@ -98,6 +99,11 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             _writer.WriteAttributeString("t", "array");
                             _writer.WriteAttributeString("ref", ExcelHelperClass.intToABCString((int)cell.Col, (cell.Row + 1).ToString()));
                         }
+                        if (value.Equals(""))
+                        {
+                            TraceLogger.Debug("Formula Parse Error in Row {0}\t Column {1}\t",cell.Row.ToString(), cell.Col.ToString());
+                        }
+
                         _writer.WriteString(value);
                         _writer.WriteEndElement(); 
                     }

@@ -216,7 +216,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         SELECTION = 0x1D, 	// Current Selection
         SETUP = 0xA1, 	// Page Setup
         SHEETEXT = 0x862, 	//  Extra Sheet Info
-        SHRFMLA = 0xBC, 	// Shared Formula
+        SHRFMLA = 0x4BC, 	// Shared Formula
         SORT = 0x90, 	// Sorting Options
         SORTDATA12 = 0x895, 	// Sort Data 12
         SOUND = 0x96, 	// Sound Note

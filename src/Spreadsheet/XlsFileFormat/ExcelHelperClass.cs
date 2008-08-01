@@ -164,84 +164,92 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
         public static Stack<AbstractPtg> getFormulaStack(IStreamReader reader, UInt16 cce)
         {
-            Stack<AbstractPtg> ptgStack = new Stack<AbstractPtg>(); 
-            for (uint i = 0; i < cce; i++)
+            Stack<AbstractPtg> ptgStack = new Stack<AbstractPtg>();
+            try
             {
-                PtgNumber ptgtype = (PtgNumber)reader.ReadByte();
+                for (uint i = 0; i < cce; i++)
+                {
+                    PtgNumber ptgtype = (PtgNumber)reader.ReadByte();
 
-                if ((int)ptgtype > 0x5D)
-                {
-                    ptgtype -= 0x40;
-                }
-
-                else if ((int)ptgtype > 0x3D)
-                {
-                    ptgtype -= 0x20;
-                }
-                AbstractPtg ptg = null;
-                if (ptgtype == PtgNumber.Ptg0x19Sub)
-                {
-                    Ptg0x19Sub ptgtype2 = (Ptg0x19Sub)reader.ReadByte();
-                    switch (ptgtype2)
+                    if ((int)ptgtype > 0x5D)
                     {
-                        case Ptg0x19Sub.PtgAttrSum: ptg = new PtgAttrSum(reader, ptgtype2); break;
-                        case Ptg0x19Sub.PtgAttrIf: ptg = new PtgAttrIf(reader, ptgtype2); break;
-                        case Ptg0x19Sub.PtgAttrGoto: ptg = new PtgAttrGoto(reader, ptgtype2); break;
-                        case Ptg0x19Sub.PtgAttrSemi: ptg = new PtgAttrSemi(reader, ptgtype2); break;
-                        case Ptg0x19Sub.PtgAttrChoose: ptg = new PtgAttrChoose(reader, ptgtype2); break;
-                        case Ptg0x19Sub.PtgAttrSpace: ptg = new PtgAttrSpace(reader, ptgtype2); break;
-                        case Ptg0x19Sub.PtgNotDocumented: ptg = new PtgNotDocumented(reader, ptgtype2); break; 
-                        default: break;
+                        ptgtype -= 0x40;
                     }
-                }
-                else if (ptgtype == PtgNumber.Ptg0x18Sub)
-                {
 
-                }
-                else
-                {
-                    switch (ptgtype)
+                    else if ((int)ptgtype > 0x3D)
                     {
-                        case PtgNumber.PtgInt: ptg = new PtgInt(reader, ptgtype); break;
-                        case PtgNumber.PtgAdd: ptg = new PtgAdd(reader, ptgtype); break;
-                        case PtgNumber.PtgSub: ptg = new PtgSub(reader, ptgtype); break;
-                        case PtgNumber.PtgMul: ptg = new PtgMul(reader, ptgtype); break;
-                        case PtgNumber.PtgDiv: ptg = new PtgDiv(reader, ptgtype); break;
-                        case PtgNumber.PtgParen: ptg = new PtgParen(reader, ptgtype); break;
-                        case PtgNumber.PtgNum: ptg = new PtgNum(reader, ptgtype); break;
-                        case PtgNumber.PtgRef: ptg = new PtgRef(reader, ptgtype); break;
-                        case PtgNumber.PtgPower: ptg = new PtgPower(reader, ptgtype); break;
-                        case PtgNumber.PtgPercent: ptg = new PtgPercent(reader, ptgtype); break;
-                        case PtgNumber.PtgBool: ptg = new PtgBool(reader, ptgtype); break;
-                        case PtgNumber.PtgGt: ptg = new PtgGt(reader, ptgtype); break;
-                        case PtgNumber.PtgGe: ptg = new PtgGe(reader, ptgtype); break;
-                        case PtgNumber.PtgLt: ptg = new PtgLt(reader, ptgtype); break;
-                        case PtgNumber.PtgLe: ptg = new PtgLe(reader, ptgtype); break;
-                        case PtgNumber.PtgEq: ptg = new PtgEq(reader, ptgtype); break;
-                        case PtgNumber.PtgNe: ptg = new PtgNe(reader, ptgtype); break;
-                        case PtgNumber.PtgUminus: ptg = new PtgUminus(reader, ptgtype); break;
-                        case PtgNumber.PtgUplus: ptg = new PtgUplus(reader, ptgtype); break;
-                        case PtgNumber.PtgStr: ptg = new PtgStr(reader, ptgtype); break;
-                        case PtgNumber.PtgConcat: ptg = new PtgConcat(reader, ptgtype); break;
-                        case PtgNumber.PtgUnion: ptg = new PtgUnion(reader, ptgtype); break;
-                        case PtgNumber.PtgIsect: ptg = new PtgIsect(reader, ptgtype); break;
-                        case PtgNumber.PtgMemErr: ptg = new PtgMemErr(reader, ptgtype); break;
-                        case PtgNumber.PtgArea: ptg = new PtgArea(reader, ptgtype); break;
-                        case PtgNumber.PtgFuncVar: ptg = new PtgFuncVar(reader, ptgtype); break;
-                        case PtgNumber.PtgFunc: ptg = new PtgFunc(reader, ptgtype); break;
-                        case PtgNumber.PtgExp: ptg = new PtgExp(reader, ptgtype); break;
-                        case PtgNumber.PtgRef3d: ptg = new PtgRef3d(reader, ptgtype); break;
-                        case PtgNumber.PtgArea3d: ptg = new PtgArea3d(reader, ptgtype); break;
-                        case PtgNumber.PtgNameX: ptg = new PtgNameX(reader, ptgtype); break;
-                        case PtgNumber.PtgMissArg: ptg = new PtgMissArg(reader, ptgtype); break;
-                        
-                            
-                        default: break;
+                        ptgtype -= 0x20;
                     }
+                    AbstractPtg ptg = null;
+                    if (ptgtype == PtgNumber.Ptg0x19Sub)
+                    {
+                        Ptg0x19Sub ptgtype2 = (Ptg0x19Sub)reader.ReadByte();
+                        switch (ptgtype2)
+                        {
+                            case Ptg0x19Sub.PtgAttrSum: ptg = new PtgAttrSum(reader, ptgtype2); break;
+                            case Ptg0x19Sub.PtgAttrIf: ptg = new PtgAttrIf(reader, ptgtype2); break;
+                            case Ptg0x19Sub.PtgAttrGoto: ptg = new PtgAttrGoto(reader, ptgtype2); break;
+                            case Ptg0x19Sub.PtgAttrSemi: ptg = new PtgAttrSemi(reader, ptgtype2); break;
+                            case Ptg0x19Sub.PtgAttrChoose: ptg = new PtgAttrChoose(reader, ptgtype2); break;
+                            case Ptg0x19Sub.PtgAttrSpace: ptg = new PtgAttrSpace(reader, ptgtype2); break;
+                            case Ptg0x19Sub.PtgNotDocumented: ptg = new PtgNotDocumented(reader, ptgtype2); break;
+                            default: break;
+                        }
+                    }
+                    else if (ptgtype == PtgNumber.Ptg0x18Sub)
+                    {
+
+                    }
+                    else
+                    {
+                        switch (ptgtype)
+                        {
+                            case PtgNumber.PtgInt: ptg = new PtgInt(reader, ptgtype); break;
+                            case PtgNumber.PtgAdd: ptg = new PtgAdd(reader, ptgtype); break;
+                            case PtgNumber.PtgSub: ptg = new PtgSub(reader, ptgtype); break;
+                            case PtgNumber.PtgMul: ptg = new PtgMul(reader, ptgtype); break;
+                            case PtgNumber.PtgDiv: ptg = new PtgDiv(reader, ptgtype); break;
+                            case PtgNumber.PtgParen: ptg = new PtgParen(reader, ptgtype); break;
+                            case PtgNumber.PtgNum: ptg = new PtgNum(reader, ptgtype); break;
+                            case PtgNumber.PtgRef: ptg = new PtgRef(reader, ptgtype); break;
+                            case PtgNumber.PtgPower: ptg = new PtgPower(reader, ptgtype); break;
+                            case PtgNumber.PtgPercent: ptg = new PtgPercent(reader, ptgtype); break;
+                            case PtgNumber.PtgBool: ptg = new PtgBool(reader, ptgtype); break;
+                            case PtgNumber.PtgGt: ptg = new PtgGt(reader, ptgtype); break;
+                            case PtgNumber.PtgGe: ptg = new PtgGe(reader, ptgtype); break;
+                            case PtgNumber.PtgLt: ptg = new PtgLt(reader, ptgtype); break;
+                            case PtgNumber.PtgLe: ptg = new PtgLe(reader, ptgtype); break;
+                            case PtgNumber.PtgEq: ptg = new PtgEq(reader, ptgtype); break;
+                            case PtgNumber.PtgNe: ptg = new PtgNe(reader, ptgtype); break;
+                            case PtgNumber.PtgUminus: ptg = new PtgUminus(reader, ptgtype); break;
+                            case PtgNumber.PtgUplus: ptg = new PtgUplus(reader, ptgtype); break;
+                            case PtgNumber.PtgStr: ptg = new PtgStr(reader, ptgtype); break;
+                            case PtgNumber.PtgConcat: ptg = new PtgConcat(reader, ptgtype); break;
+                            case PtgNumber.PtgUnion: ptg = new PtgUnion(reader, ptgtype); break;
+                            case PtgNumber.PtgIsect: ptg = new PtgIsect(reader, ptgtype); break;
+                            case PtgNumber.PtgMemErr: ptg = new PtgMemErr(reader, ptgtype); break;
+                            case PtgNumber.PtgArea: ptg = new PtgArea(reader, ptgtype); break;
+                            case PtgNumber.PtgFuncVar: ptg = new PtgFuncVar(reader, ptgtype); break;
+                            case PtgNumber.PtgFunc: ptg = new PtgFunc(reader, ptgtype); break;
+                            case PtgNumber.PtgExp: ptg = new PtgExp(reader, ptgtype); break;
+                            case PtgNumber.PtgRef3d: ptg = new PtgRef3d(reader, ptgtype); break;
+                            case PtgNumber.PtgArea3d: ptg = new PtgArea3d(reader, ptgtype); break;
+                            case PtgNumber.PtgNameX: ptg = new PtgNameX(reader, ptgtype); break;
+                            case PtgNumber.PtgMissArg: ptg = new PtgMissArg(reader, ptgtype); break;
+
+
+                            default: break;
+                        }
+                    }
+                    i += ptg.getLength() - 1;
+                    ptgStack.Push(ptg);
                 }
-                i += ptg.getLength() - 1;
-                ptgStack.Push(ptg);
             }
+            catch (Exception)
+            {
+                throw new ExtractorException(ExtractorException.PARSEDFORMULAEXCEPTION);
+            }
+            
             return ptgStack; 
         }
 

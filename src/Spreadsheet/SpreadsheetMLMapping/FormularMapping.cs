@@ -47,12 +47,17 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
         public static String mapFormula(Object stack, ExcelContext xlsContext)
         {
-            String namexValue; 
             Stack<String> resultStack = new Stack<string>();
+            try
+            {
+
+            
+            String namexValue; 
             if (stack is Stack<AbstractPtg>)
             {
                 Stack<AbstractPtg> opStack = new Stack<AbstractPtg>(((Stack<AbstractPtg>)stack).ToArray());
-
+                if (opStack.Count == 0)
+                    throw new Exception(); 
 
                 while (opStack.Count != 0)
                 {
@@ -398,8 +403,13 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             }
             else
             {
-                resultStack.Push(" "); 
+                resultStack.Push(""); 
             }
+        }
+        catch (Exception)
+        {
+            resultStack.Push(""); 
+        }
             return resultStack.Pop(); 
         }
     }
