@@ -483,9 +483,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             //search the paragraph end
             Int32 cpParaEnd = cp;
-            while (_doc.Text[cpParaEnd] != TextMark.ParagraphEnd && 
+            while (_doc.Text[cpParaEnd] != TextMark.ParagraphEnd &&
                 _doc.Text[cpParaEnd] != TextMark.CellOrRowMark &&
-                !(_doc.Text[cpParaEnd] == TextMark.PageBreakOrSectionMark && isSectionEnd(cpParaEnd) ))
+                !(_doc.Text[cpParaEnd] == TextMark.PageBreakOrSectionMark && isSectionEnd(cpParaEnd)))
             {
                 cpParaEnd++;
             }
@@ -545,10 +545,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 papx.Convert(new ParagraphPropertiesMapping(_writer, _ctx, paraEndChpx));
             }
 
+            //Int32 currentCP = initialCp;
+
             //write a run for each CHPX
             for (int i = 0; i < chpxs.Count; i++)
             {
-                //get the chars of this CHPX
+                //get the FC range for this run
                 int fcChpxStart = chpxFcs[i];
                 int fcChpxEnd = chpxFcs[i + 1];
 

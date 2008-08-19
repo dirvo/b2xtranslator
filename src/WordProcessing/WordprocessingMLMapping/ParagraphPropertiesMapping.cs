@@ -40,6 +40,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
     {
         private ConversionContext _ctx;
         private XmlElement _pPr;
+        private XmlElement _framePr;
         private SectionPropertyExceptions _sepx;
         private CharacterPropertyExceptions _paraEndChpx;
         private int _sectionNr;
@@ -48,6 +49,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             : base(writer)
         {
             _pPr = _nodeFactory.CreateElement("w", "pPr", OpenXmlNamespaces.WordprocessingML);
+            _framePr = _nodeFactory.CreateElement("w", "framePr", OpenXmlNamespaces.WordprocessingML);
             _paraEndChpx = paraEndChpx;
             _ctx = ctx;
         }
@@ -61,6 +63,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             : base(writer)
         {
             _pPr = _nodeFactory.CreateElement("w", "pPr", OpenXmlNamespaces.WordprocessingML);
+            _framePr = _nodeFactory.CreateElement("w", "framePr", OpenXmlNamespaces.WordprocessingML);
             _paraEndChpx = paraEndChpx;
             _sepx = sepx;
             _ctx = ctx;
@@ -382,9 +385,54 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         _pPr.AppendChild(tabs);
                         break;
 
+                    //frame properties
+
+                    case SinglePropertyModifier.OperationCode.sprmPPc:
+                        //position code
+                        byte flag = sprm.Arguments[0];
+                        Global.VerticalPositionCode pcVert = (Global.VerticalPositionCode)((flag & 0x30) >> 4);
+                        Global.HorizontalPositionCode pcHorz = (Global.HorizontalPositionCode)((flag & 0xC0) >> 6);
+                        appendValueAttribute(_framePr, "hAnchor", pcHorz.ToString());
+                        appendValueAttribute(_framePr, "vAnchor", pcVert.ToString());
+                        break;
+                    case SinglePropertyModifier.OperationCode.sprmPWr:
+                        Global.TextFrameWrapping wrapping = (Global.TextFrameWrapping)sprm.Arguments[0];
+                        appendValueAttribute(_framePr, "wrap", wrapping.ToString());
+                        break;
+                    case SinglePropertyModifier.OperationCode.sprmPDxaAbs:
+                        Int16 frameX = System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        appendValueAttribute(_framePr, "x", frameX.ToString());
+                        break;
+                    case SinglePropertyModifier.OperationCode.sprmPDyaAbs:
+                        Int16 frameY = System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        appendValueAttribute(_framePr, "y", frameY.ToString());
+                        break;
+                    case SinglePropertyModifier.OperationCode.sprmPWHeightAbs:
+                        Int16 frameHeight = System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        appendValueAttribute(_framePr, "h", frameHeight.ToString());
+                        break;
+                    case SinglePropertyModifier.OperationCode.sprmPDxaWidth:
+                        Int16 frameWidth = System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        appendValueAttribute(_framePr, "w", frameWidth.ToString());
+                        break;
+                    case SinglePropertyModifier.OperationCode.sprmPDxaFromText:
+                        Int16 frameSpaceH = System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        appendValueAttribute(_framePr, "hSpace", frameSpaceH.ToString());
+                        break;
+                    case SinglePropertyModifier.OperationCode.sprmPDyaFromText:
+                        Int16 frameSpaceV = System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        appendValueAttribute(_framePr, "vSpace", frameSpaceV.ToString());
+                        break;
+
                     default:
                         break;
                 }
+            }
+
+            //append frame properties
+            if (_framePr.Attributes.Count > 0)
+            {
+                _pPr.AppendChild(_framePr);
             }
 
             //append section properties

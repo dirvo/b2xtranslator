@@ -220,7 +220,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             //parse the piece table and construct a list that contains all chars
             this.PieceTable = new PieceTable(this.FIB, this.TableStream);
-            this.Text = this.PieceTable.GetChars(this.FIB.fcMin, this.FIB.fcMac, this.WordDocumentStream);
+            this.Text = this.PieceTable.GetAllChars(this.WordDocumentStream);
         }
 
         /// <summary>
@@ -293,7 +293,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             foreach(FormattedDiskPageCHPX fkp in this.AllChpxFkps)
             {
-                //geht the CHPX
+                //get the CHPX
                 for (int j = 0; j < fkp.grpchpx.Length; j++)
                 {
                     if (fkp.rgfc[j] < fcMin && fkp.rgfc[j + 1] > fcMin)

@@ -51,7 +51,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             FirstFooters = new List<CharacterRange>();
             EvenFooters = new List<CharacterRange>();
             OddFooters = new List<CharacterRange>();
-            
+
             //read the Table
             Int32[] table = new Int32[doc.FIB.lcbPlcfhdd / 4];
             doc.TableStream.Seek(doc.FIB.fcPlcfhdd, System.IO.SeekOrigin.Begin);
@@ -68,22 +68,70 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             int pos = 6;
             for (int i = 0; i < count; i++)
             {
-                this.EvenHeaders.Add(new CharacterRange(initialPos + table[pos], table[pos + 1] - table[pos]));
+                //Even Header
+                if (table[pos] == table[pos + 1])
+                {
+                    this.EvenHeaders.Add(null);
+                }
+                else
+                {
+                    this.EvenHeaders.Add(new CharacterRange(initialPos + table[pos], table[pos + 1] - table[pos]));
+                }
                 pos++;
 
-                this.OddHeaders.Add(new CharacterRange(initialPos + table[pos], table[pos + 1] - table[pos]));
+                //Odd Header
+                if (table[pos] == table[pos + 1])
+                {
+                    this.OddHeaders.Add(null);
+                }
+                else
+                {
+                    this.OddHeaders.Add(new CharacterRange(initialPos + table[pos], table[pos + 1] - table[pos]));
+                }
                 pos++;
 
-                this.EvenFooters.Add(new CharacterRange(initialPos + table[pos], table[pos + 1] - table[pos]));
+                //Even Footer
+                if (table[pos] == table[pos + 1])
+                {
+                    this.EvenFooters.Add(null);
+                }
+                else
+                {
+                    this.EvenFooters.Add(new CharacterRange(initialPos + table[pos], table[pos + 1] - table[pos]));
+                }
                 pos++;
 
-                this.OddFooters.Add(new CharacterRange(initialPos + table[pos], table[pos + 1] - table[pos]));
+                //Odd Footer
+                if (table[pos] == table[pos + 1])
+                {
+                    this.OddFooters.Add(null);
+                }
+                else
+                {
+                    this.OddFooters.Add(new CharacterRange(initialPos + table[pos], table[pos + 1] - table[pos]));
+                }
                 pos++;
 
-                this.FirstHeaders.Add(new CharacterRange(initialPos + table[pos], table[pos + 1] - table[pos]));
+                //First Page Header
+                if (table[pos] == table[pos + 1])
+                {
+                    this.FirstHeaders.Add(null);
+                }
+                else
+                {
+                    this.FirstHeaders.Add(new CharacterRange(initialPos + table[pos], table[pos + 1] - table[pos]));
+                }
                 pos++;
 
-                this.FirstFooters.Add(new CharacterRange(initialPos + table[pos], table[pos + 1] - table[pos]));
+                //First Page Footers
+                if (table[pos] == table[pos + 1])
+                {
+                    this.FirstFooters.Add(null);
+                }
+                else
+                {
+                    this.FirstFooters.Add(new CharacterRange(initialPos + table[pos], table[pos + 1] - table[pos]));
+                }
                 pos++;
             }
         }

@@ -123,21 +123,23 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             if (_ctx.Doc.HeaderAndFooterTable.OddHeaders.Count > 0)
             {
                 CharacterRange oddHdr = _ctx.Doc.HeaderAndFooterTable.OddHeaders[_sectNr];
-                if (oddHdr.CharacterCount > 3)
+                if (oddHdr != null && oddHdr.CharacterCount > 3)
                 {
                     HeaderPart oddPart = _ctx.Docx.MainDocumentPart.AddHeaderPart();
                     _ctx.Doc.Convert(new HeaderMapping(_ctx, oddPart, oddHdr));
                     appendRef(_sectPr, "headerReference", "default", oddPart.RelIdToString);
                 }
+
                 CharacterRange evenHdr = _ctx.Doc.HeaderAndFooterTable.EvenHeaders[_sectNr];
-                if (evenHdr.CharacterCount > 3)
+                if (evenHdr != null && evenHdr.CharacterCount > 3)
                 {
                     HeaderPart evenPart = _ctx.Docx.MainDocumentPart.AddHeaderPart();
                     _ctx.Doc.Convert(new HeaderMapping(_ctx, evenPart, evenHdr));
                     appendRef(_sectPr, "headerReference", "even", evenPart.RelIdToString);
                 }
+
                 CharacterRange firstHdr = _ctx.Doc.HeaderAndFooterTable.FirstHeaders[_sectNr];
-                if (firstHdr.CharacterCount > 3)
+                if (firstHdr != null && firstHdr.CharacterCount > 3)
                 {
                     HeaderPart firstPart = _ctx.Docx.MainDocumentPart.AddHeaderPart();
                     _ctx.Doc.Convert(new HeaderMapping(_ctx, firstPart, firstHdr));
@@ -149,21 +151,23 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             if (_ctx.Doc.HeaderAndFooterTable.OddFooters.Count > 0)
             {
                 CharacterRange oddFtr = _ctx.Doc.HeaderAndFooterTable.OddFooters[_sectNr];
-                if (oddFtr.CharacterCount > 3)
+                if (oddFtr != null && oddFtr.CharacterCount > 3)
                 {
                     FooterPart oddPart = _ctx.Docx.MainDocumentPart.AddFooterPart();
                     _ctx.Doc.Convert(new FooterMapping(_ctx, oddPart, oddFtr));
                     appendRef(_sectPr, "footerReference", "default", oddPart.RelIdToString);
                 }
+
                 CharacterRange evenFtr = _ctx.Doc.HeaderAndFooterTable.EvenFooters[_sectNr];
-                if (evenFtr.CharacterCount > 3)
+                if (evenFtr != null && evenFtr.CharacterCount > 3)
                 {
                     FooterPart evenPart = _ctx.Docx.MainDocumentPart.AddFooterPart();
                     _ctx.Doc.Convert(new FooterMapping(_ctx, evenPart, evenFtr));
                     appendRef(_sectPr, "footerReference", "even", evenPart.RelIdToString);
                 }
+
                 CharacterRange firstFtr = _ctx.Doc.HeaderAndFooterTable.FirstFooters[_sectNr];
-                if (firstFtr.CharacterCount > 3)
+                if (firstFtr != null && firstFtr.CharacterCount > 3)
                 {
                     FooterPart firstPart = _ctx.Docx.MainDocumentPart.AddFooterPart();
                     _ctx.Doc.Convert(new FooterMapping(_ctx, firstPart, firstFtr));

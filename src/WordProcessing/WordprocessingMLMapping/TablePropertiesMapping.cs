@@ -55,20 +55,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             dxa
         }
 
-        private enum VerticalPositionCode
-        {
-            margin = 0,
-            page,
-            text
-        }
-
-        private enum HorizontalPositionCode
-        {
-            text = 0,
-            margin,
-            page
-        }
-
         public TablePropertiesMapping(XmlWriter writer, StyleSheet styles, List<Int16> grid)
             : base(writer)
         {
@@ -252,8 +238,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //floating table properties
                     case SinglePropertyModifier.OperationCode.sprmTPc:
                         byte flag = sprm.Arguments[0];
-                        VerticalPositionCode pcVert = (VerticalPositionCode)((flag & 0x30) >> 4);
-                        HorizontalPositionCode pcHorz = (HorizontalPositionCode)((flag & 0xC0) >> 6);
+                        Global.VerticalPositionCode pcVert = (Global.VerticalPositionCode)((flag & 0x30) >> 4);
+                        Global.HorizontalPositionCode pcHorz = (Global.HorizontalPositionCode)((flag & 0xC0) >> 6);
                         appendValueAttribute(tblpPr, "horzAnchor", pcHorz.ToString());
                         appendValueAttribute(tblpPr, "vertAnchor", pcVert.ToString());
                         break;

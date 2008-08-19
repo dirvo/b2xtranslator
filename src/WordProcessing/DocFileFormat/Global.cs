@@ -188,5 +188,31 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             pct,
             dxa
         }
+
+        public enum VerticalPositionCode
+        {
+            margin = 0,
+            page,
+            text,
+            none
+        }
+
+        public enum HorizontalPositionCode
+        {
+            text = 0,
+            margin,
+            page,
+            none
+        }
+
+        public enum TextFrameWrapping
+        {
+            auto,
+            notBeside,
+            around,
+            none,
+            tight,
+            through
+        }
 	}
 }
