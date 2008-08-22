@@ -104,6 +104,8 @@
     <Compile Include="CharacterProperties.cs" />
     <Compile Include="ClientData.cs" />
     <Compile Include="ClientTextbox.cs" />
+    <Compile Include="FormFieldData.cs" />
+    <Compile Include="NilPicfAndBinData.cs" />
     <Compile Include="OfficeArtContent.cs" />
     <Compile Include="FileShapeAddress.cs" />
     <Compile Include="FontFamilyName.cs" />

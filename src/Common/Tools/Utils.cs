@@ -35,6 +35,13 @@ namespace DIaLOGIKa.b2xtranslator.Tools
 {
     public class Utils
     {
+        public static string ReadXstz(byte[] bytes, int pos)
+        {
+            byte[] xstz = new byte[System.BitConverter.ToInt16(bytes, pos) * 2];
+            Array.Copy(bytes, pos + 2, xstz, 0, xstz.Length);
+            return Encoding.Unicode.GetString(xstz);
+        }
+
         public static int ArraySum(byte[] values)
         {
             int ret = 0;

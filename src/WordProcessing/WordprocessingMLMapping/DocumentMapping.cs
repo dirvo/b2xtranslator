@@ -50,6 +50,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         protected ConversionContext _ctx;
         protected ParagraphPropertyExceptions _lastValidPapx;
         protected SectionPropertyExceptions _lastValidSepx;
+        protected int _skipRuns = 0;
         protected int _sectionNr = 0;
         protected int _footnoteNr = 0;
         protected ContentPart _targetPart;
@@ -545,8 +546,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 papx.Convert(new ParagraphPropertiesMapping(_writer, _ctx, paraEndChpx));
             }
 
-            //Int32 currentCP = initialCp;
-
             //write a run for each CHPX
             for (int i = 0; i < chpxs.Count; i++)
             {
@@ -591,90 +590,98 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             Int32 cp = initialCp;
 
-            RevisionData rev = new RevisionData(chpx);
-
-            if (rev.Type == RevisionData.RevisionType.Deleted)
+            if (_skipRuns <= 0)
             {
-                //If it's a deleted run
-                _writer.WriteStartElement("w", "del", OpenXmlNamespaces.WordprocessingML);
-                _writer.WriteAttributeString("w", "author", OpenXmlNamespaces.WordprocessingML, "[b2x: could not retrieve author]");
-                _writer.WriteAttributeString("w", "date", OpenXmlNamespaces.WordprocessingML, "[b2x: could not retrieve date]");
-            }
-            else if (rev.Type == RevisionData.RevisionType.Inserted)
-            {
-                //if it's a inserted run
-                _writer.WriteStartElement("w", "ins", OpenXmlNamespaces.WordprocessingML);
-                _writer.WriteAttributeString("w", "author", OpenXmlNamespaces.WordprocessingML, _doc.AuthorTable[rev.Isbt]);
-                rev.Dttm.Convert(new DateMapping(_writer));
-            }
+                RevisionData rev = new RevisionData(chpx);
 
-            //start run
-            _writer.WriteStartElement("w", "r", OpenXmlNamespaces.WordprocessingML);
+                if (rev.Type == RevisionData.RevisionType.Deleted)
+                {
+                    //If it's a deleted run
+                    _writer.WriteStartElement("w", "del", OpenXmlNamespaces.WordprocessingML);
+                    _writer.WriteAttributeString("w", "author", OpenXmlNamespaces.WordprocessingML, "[b2x: could not retrieve author]");
+                    _writer.WriteAttributeString("w", "date", OpenXmlNamespaces.WordprocessingML, "[b2x: could not retrieve date]");
+                }
+                else if (rev.Type == RevisionData.RevisionType.Inserted)
+                {
+                    //if it's a inserted run
+                    _writer.WriteStartElement("w", "ins", OpenXmlNamespaces.WordprocessingML);
+                    _writer.WriteAttributeString("w", "author", OpenXmlNamespaces.WordprocessingML, _doc.AuthorTable[rev.Isbt]);
+                    rev.Dttm.Convert(new DateMapping(_writer));
+                }
 
-            //append rsids
-            if (rev.Rsid != 0)
-            {
-                string rsid = String.Format("{0:x8}", rev.Rsid);
-                _writer.WriteAttributeString("w", "rsidR", OpenXmlNamespaces.WordprocessingML, rsid);
-                _ctx.AddRsid(rsid);
-            }
-            if (rev.RsidDel != 0)
-            {
-                string rsidDel = String.Format("{0:x8}", rev.RsidDel);
-                _writer.WriteAttributeString("w", "rsidDel", OpenXmlNamespaces.WordprocessingML, rsidDel);
-                _ctx.AddRsid(rsidDel);
-            }
-            if(rev.RsidProp != 0)
-            {
-                string rsidProp = String.Format("{0:x8}", rev.RsidProp);
-                _writer.WriteAttributeString("w", "rsidRPr", OpenXmlNamespaces.WordprocessingML, rsidProp);
-                _ctx.AddRsid(rsidProp);
-            }
+                //start run
+                _writer.WriteStartElement("w", "r", OpenXmlNamespaces.WordprocessingML);
 
-            //convert properties
-            chpx.Convert(new CharacterPropertiesMapping(_writer, _doc, rev, _lastValidPapx, false));
+                //append rsids
+                if (rev.Rsid != 0)
+                {
+                    string rsid = String.Format("{0:x8}", rev.Rsid);
+                    _writer.WriteAttributeString("w", "rsidR", OpenXmlNamespaces.WordprocessingML, rsid);
+                    _ctx.AddRsid(rsid);
+                }
+                if (rev.RsidDel != 0)
+                {
+                    string rsidDel = String.Format("{0:x8}", rev.RsidDel);
+                    _writer.WriteAttributeString("w", "rsidDel", OpenXmlNamespaces.WordprocessingML, rsidDel);
+                    _ctx.AddRsid(rsidDel);
+                }
+                if (rev.RsidProp != 0)
+                {
+                    string rsidProp = String.Format("{0:x8}", rev.RsidProp);
+                    _writer.WriteAttributeString("w", "rsidRPr", OpenXmlNamespaces.WordprocessingML, rsidProp);
+                    _ctx.AddRsid(rsidProp);
+                }
 
-            if(rev.Type == RevisionData.RevisionType.Deleted)
-                cp = writeText(chars, cp, chpx, true);
-            else
-                cp = writeText(chars, cp, chpx, false);
+                //convert properties
+                chpx.Convert(new CharacterPropertiesMapping(_writer, _doc, rev, _lastValidPapx, false));
 
-            //end run
-            _writer.WriteEndElement();
+                if (rev.Type == RevisionData.RevisionType.Deleted)
+                    writeText(chars, cp, chpx, true);
+                else
+                    writeText(chars, cp, chpx, false);
 
-            if (rev.Type == RevisionData.RevisionType.Deleted || rev.Type == RevisionData.RevisionType.Inserted)
-            {
+                //end run
                 _writer.WriteEndElement();
+
+                if (rev.Type == RevisionData.RevisionType.Deleted || rev.Type == RevisionData.RevisionType.Inserted)
+                {
+                    _writer.WriteEndElement();
+                }
+            }
+            else
+            {
+                _skipRuns--;
             }
 
-            return cp;
+            return cp + chars.Count;
         }
 
         /// <summary>
         /// Writes the given text to the document
         /// </summary>
         /// <param name="chars"></param>
-        protected Int32 writeText(List<char> chars, Int32 initialCp, CharacterPropertyExceptions chpx, bool writeDeletedText)
+        protected void writeText(List<char> chars, Int32 initialCp, CharacterPropertyExceptions chpx, bool writeDeletedText)
         {
             Int32 cp = initialCp;
             bool fSpec = isSpecial(chpx);
 
-            //start text
+            //detect text type
             string textType = "t";
-
             if(writeDeletedText)
                 textType = "delText";
 
+            //open a new w:t element
             _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
-
             if ((int)chars[0] == 32 || (int)chars[chars.Count - 1] == 32)
             {
                 _writer.WriteAttributeString("xml", "space", "", "preserve");
             }
 
             //write text
-            foreach (char c in chars)
+            for (int i = 0; i < chars.Count; i++)
             {
+                char c = chars[i];
+
                 if (c == TextMark.Tab)
                 {
                     _writer.WriteEndElement();
@@ -707,8 +714,36 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 }
                 else if (c == TextMark.FieldBeginMark)
                 {
+                    int cpFieldStart = initialCp + i;
+                    int cpFieldEnd = searchNextTextMark(_doc.Text, cpFieldStart, TextMark.FieldEndMark);
+                    Field f = new Field(_doc.Text.GetRange(cpFieldStart, cpFieldEnd - cpFieldStart + 1));
+
                     _writer.WriteStartElement("w", "fldChar", OpenXmlNamespaces.WordprocessingML);
                     _writer.WriteAttributeString("w", "fldCharType", OpenXmlNamespaces.WordprocessingML, "begin");
+
+                    if(f.FieldCode.StartsWith(" FORM"))
+                    {
+                        int cpPic = searchNextTextMark(_doc.Text, cpFieldStart, TextMark.Picture);
+                        if (cpPic < cpFieldEnd)
+                        {
+                            int fcPic = _doc.PieceTable.FileCharacterPositions[cpPic];
+                            CharacterPropertyExceptions picfChpx = _doc.GetCharacterPropertyExceptions(fcPic, fcPic + 1)[0];
+                            NilPicfAndBinData npbd = new NilPicfAndBinData(picfChpx, _doc.DataStream);
+                            FormFieldData ffdata = new FormFieldData(npbd.binData);
+                            ffdata.Convert(new FormFieldDataMapping(_writer));
+                        }
+                    }
+                    else if (f.FieldCode.StartsWith(" EMBED"))
+                    { 
+                        int cpPic = searchNextTextMark(_doc.Text, cpFieldStart, TextMark.Picture);
+                        if (cpPic < cpFieldEnd)
+                        {
+                            int fcPic = _doc.PieceTable.FileCharacterPositions[cpPic];
+                            CharacterPropertyExceptions picfChpx = _doc.GetCharacterPropertyExceptions(fcPic, fcPic + 1)[0];
+                            NilPicfAndBinData npbd = new NilPicfAndBinData(picfChpx, _doc.DataStream);
+                        }
+                    }
+
                     _writer.WriteEndElement();
                 }
                 else if (c == TextMark.FieldSeperator)
@@ -723,7 +758,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     _writer.WriteAttributeString("w", "fldCharType", OpenXmlNamespaces.WordprocessingML, "end");
                     _writer.WriteEndElement();
                 }
-                else if(c == TextMark.Symbol && fSpec)
+                else if (c == TextMark.Symbol && fSpec)
                 {
                     //close previous w:t ...
                     _writer.WriteEndElement();
@@ -739,11 +774,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 else if (c == TextMark.DrawnObject && fSpec)
                 {
                     FileShapeAddress fspa = null;
-                    if(GetType() == typeof(MainDocumentMapping) && _doc.OfficeDrawingTable.ContainsKey(cp))
+                    if (GetType() == typeof(MainDocumentMapping) && _doc.OfficeDrawingTable.ContainsKey(cp))
                     {
-                         fspa = _doc.OfficeDrawingTable[cp];
+                        fspa = _doc.OfficeDrawingTable[cp];
                     }
-                    else if(GetType() == typeof(HeaderMapping))
+                    else if (GetType() == typeof(HeaderMapping))
                     {
                         int headerCp = cp - _doc.FIB.ccpText - _doc.FIB.ccpFtn;
                         if (_doc.OfficeDrawingTableHeader.ContainsKey(headerCp))
@@ -798,17 +833,34 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 cp++;
             }
 
-            //end text
+            //close w:t
             _writer.WriteEndElement();
-
-            return cp;
         }
 
         #endregion
 
         #region HelpFunctions
 
-
+        /// <summary>
+        /// Searches the given List for the next FieldEnd character.
+        /// </summary>
+        /// <param name="chars">The List of chars</param>
+        /// <param name="initialCp">The position where the search should start</param>
+        /// <param name="mark">The TextMark</param>
+        /// <returns>The position of the next FieldEnd mark</returns>
+        protected Int32 searchNextTextMark(List<char> chars, Int32 initialCp, char mark)
+        {
+            Int32 ret = initialCp;
+            for (Int32 i = initialCp; i < chars.Count; i++)
+            {
+                if (chars[i] == mark)
+                {
+                    ret = i;
+                    break;
+                }
+            }
+            return ret;
+        }
 
         /// <summary>
         /// Checks if the PAPX is old

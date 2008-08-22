@@ -40,7 +40,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// True when facing pages should be printed
         /// </summary>
-        public bool ffacingPages;
+        public bool fFacingPages;
 
         /// <summary>
         /// True when window control is in effect
@@ -1263,7 +1263,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
                     //split byte 0 and 1 into bits
                     bits = new BitArray(new byte[] { bytes[0], bytes[1] });
-                    this.ffacingPages = bits[0];
+                    this.fFacingPages = bits[0];
                     this.fWindowControl = bits[1];
                     this.fPMHMainDoc = bits[2];
                     this.grfSuppression = (Int16)Utils.BitArrayToUInt32(Utils.BitArrayCopy(bits, 3, 2));

@@ -51,6 +51,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, dop.dxaTab.ToString());
             _writer.WriteEndElement();
 
+            //evenAndOddHeaders 
+            if (dop.fFacingPages)
+                _writer.WriteElementString("w", "evenAndOddHeaders", OpenXmlNamespaces.WordprocessingML, "");
+
             //proof state
             XmlElement proofState = _nodeFactory.CreateElement("w", "proofState", OpenXmlNamespaces.WordprocessingML);
             if (dop.fGramAllClean)

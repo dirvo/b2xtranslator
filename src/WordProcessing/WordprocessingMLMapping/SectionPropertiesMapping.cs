@@ -74,6 +74,52 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             eachPage
         }
 
+        private enum PageNumberFormatCode
+        {
+            Decimal,
+            upperRoman,
+            lowerRoman,
+            upperLetter,
+            lowerLetter,
+            ordinal,
+            cardinalText,
+            ordinalText,
+            hex,
+            chicago,
+            ideographDigital,
+            japaneseCounting,
+            Aiueo,
+            Iroha,
+            decimalFullWidth,
+            decimalHalfWidth,
+            japaneseLegal,
+            japaneseDigitalTenThousand,
+            decimalEnclosedCircle,
+            decimalFullWidth2,
+            aiueoFullWidth,
+            irohaFullWidth,
+            decimalZero,
+            bullet,
+            ganada,
+            chosung,
+            decimalEnclosedFullstop,
+            decimalEnclosedParen,
+            decimalEnclosedCircleChinese,
+            ideographEnclosedCircle,
+            ideographTraditional,
+            ideographZodiac,
+            ideographZodiacTraditional,
+            taiwaneseCounting,
+            ideographLegalTraditional,
+            taiwaneseCountingThousand,
+            taiwaneseDigital,
+            chineseCounting,
+            chineseLegalSimplified,
+            chineseCountingThousand,
+            Decimal2,
+            koreanDigital
+        }
+
         private Int16[] _colSpace;
         private Int16[] _colWidth;
         private Int16 _pgWidth, _marLeft, _marRight;
@@ -118,24 +164,25 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             XmlElement pgBorders = _nodeFactory.CreateElement("w", "pgBorders", OpenXmlNamespaces.WordprocessingML);
             XmlElement paperSrc = _nodeFactory.CreateElement("w", "paperSrc", OpenXmlNamespaces.WordprocessingML);
             XmlElement footnotePr = _nodeFactory.CreateElement("w", "footnotePr", OpenXmlNamespaces.WordprocessingML);
-
+            XmlElement pgNumType = _nodeFactory.CreateElement("w", "pgNumType", OpenXmlNamespaces.WordprocessingML);
+            
             //convert headers of this section
             if (_ctx.Doc.HeaderAndFooterTable.OddHeaders.Count > 0)
             {
-                CharacterRange oddHdr = _ctx.Doc.HeaderAndFooterTable.OddHeaders[_sectNr];
-                if (oddHdr != null && oddHdr.CharacterCount > 3)
-                {
-                    HeaderPart oddPart = _ctx.Docx.MainDocumentPart.AddHeaderPart();
-                    _ctx.Doc.Convert(new HeaderMapping(_ctx, oddPart, oddHdr));
-                    appendRef(_sectPr, "headerReference", "default", oddPart.RelIdToString);
-                }
-
                 CharacterRange evenHdr = _ctx.Doc.HeaderAndFooterTable.EvenHeaders[_sectNr];
                 if (evenHdr != null && evenHdr.CharacterCount > 3)
                 {
                     HeaderPart evenPart = _ctx.Docx.MainDocumentPart.AddHeaderPart();
                     _ctx.Doc.Convert(new HeaderMapping(_ctx, evenPart, evenHdr));
                     appendRef(_sectPr, "headerReference", "even", evenPart.RelIdToString);
+                }
+
+                CharacterRange oddHdr = _ctx.Doc.HeaderAndFooterTable.OddHeaders[_sectNr];
+                if (oddHdr != null && oddHdr.CharacterCount > 3)
+                {
+                    HeaderPart oddPart = _ctx.Docx.MainDocumentPart.AddHeaderPart();
+                    _ctx.Doc.Convert(new HeaderMapping(_ctx, oddPart, oddHdr));
+                    appendRef(_sectPr, "headerReference", "default", oddPart.RelIdToString);
                 }
 
                 CharacterRange firstHdr = _ctx.Doc.HeaderAndFooterTable.FirstHeaders[_sectNr];
@@ -150,6 +197,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //convert footers of this section
             if (_ctx.Doc.HeaderAndFooterTable.OddFooters.Count > 0)
             {
+                CharacterRange evenFtr = _ctx.Doc.HeaderAndFooterTable.EvenFooters[_sectNr];
+                if (evenFtr != null && evenFtr.CharacterCount > 3)
+                {
+                    FooterPart evenPart = _ctx.Docx.MainDocumentPart.AddFooterPart();
+                    _ctx.Doc.Convert(new FooterMapping(_ctx, evenPart, evenFtr));
+                    appendRef(_sectPr, "footerReference", "even", evenPart.RelIdToString);
+                }
+
                 CharacterRange oddFtr = _ctx.Doc.HeaderAndFooterTable.OddFooters[_sectNr];
                 if (oddFtr != null && oddFtr.CharacterCount > 3)
                 {
@@ -158,13 +213,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     appendRef(_sectPr, "footerReference", "default", oddPart.RelIdToString);
                 }
 
-                CharacterRange evenFtr = _ctx.Doc.HeaderAndFooterTable.EvenFooters[_sectNr];
-                if (evenFtr != null && evenFtr.CharacterCount > 3)
-                {
-                    FooterPart evenPart = _ctx.Docx.MainDocumentPart.AddFooterPart();
-                    _ctx.Doc.Convert(new FooterMapping(_ctx, evenPart, evenFtr));
-                    appendRef(_sectPr, "footerReference", "even", evenPart.RelIdToString);
-                }
 
                 CharacterRange firstFtr = _ctx.Doc.HeaderAndFooterTable.FirstFooters[_sectNr];
                 if (firstFtr != null && firstFtr.CharacterCount > 3)
@@ -177,87 +225,87 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             foreach (SinglePropertyModifier sprm in sepx.grpprl)
             {
-                switch ((int)sprm.OpCode)
+                switch (sprm.OpCode)
                 {
                     //page margins
-                    case 0xB021:
+                    case SinglePropertyModifier.OperationCode.sprmSDxaLeft:
                         //left margin
                         _marLeft = System.BitConverter.ToInt16(sprm.Arguments, 0);
                         appendValueAttribute(pgMar, "left", _marLeft.ToString());
                         break;
-                    case 0xB022:
+                    case SinglePropertyModifier.OperationCode.sprmSDxaRight:
                         //right margin
                         _marRight = System.BitConverter.ToInt16(sprm.Arguments, 0);
                         appendValueAttribute(pgMar, "right", _marRight.ToString());
                         break;
-                    case 0x9023:
+                    case SinglePropertyModifier.OperationCode.sprmSDyaTop:
                         //top margin
                         appendValueAttribute(pgMar, "top", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
-                    case 0x9024:
+                    case SinglePropertyModifier.OperationCode.sprmSDyaBottom:
                         //bottom margin
                         appendValueAttribute(pgMar, "bottom", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
-                    case 0xB025:
+                    case SinglePropertyModifier.OperationCode.sprmSDzaGutter:
                         //gutter margin
                         appendValueAttribute(pgMar, "gutter", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
-                    case 0xB017:
+                    case SinglePropertyModifier.OperationCode.sprmSDyaHdrTop:
                         //header margin
                         appendValueAttribute(pgMar, "header", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
-                    case 0xB018:
+                    case SinglePropertyModifier.OperationCode.sprmSDyaHdrBottom:
                         //footer margin
                         appendValueAttribute(pgMar, "footer", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
 
                     //page size and orientation
-                    case 0xb01f:
+                    case SinglePropertyModifier.OperationCode.sprmSXaPage:
                         //width
                         _pgWidth = System.BitConverter.ToInt16(sprm.Arguments, 0);
                         appendValueAttribute(pgSz, "w", _pgWidth.ToString());
                         break;
-                    case 0xb020:
+                    case SinglePropertyModifier.OperationCode.sprmSYaPage:
                         //height
                         appendValueAttribute(pgSz, "h", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
-                    case 0x301d:
+                    case SinglePropertyModifier.OperationCode.sprmSBOrientation:
                         //orientation
                         appendValueAttribute(pgSz, "orient", ((PageOrientation)sprm.Arguments[0]).ToString());
                         break;
 
                     //paper source
-                    case 0x5007:
+                    case SinglePropertyModifier.OperationCode.sprmSDmBinFirst:
                         appendValueAttribute(paperSrc, "first", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
-                    case 0x5008:
+                    case SinglePropertyModifier.OperationCode.sprmSDmBinOther:
                         appendValueAttribute(paperSrc, "other", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
 
                     //page borders
-                    case 0x702B:
-                    case 0xD234:
+                    case SinglePropertyModifier.OperationCode.sprmSBrcTop80:
+                    case SinglePropertyModifier.OperationCode.sprmSBrcTop:
                         //top
                         XmlElement topBorder = _nodeFactory.CreateElement("w", "top", OpenXmlNamespaces.WordprocessingML);
                         appendBorderAttributes(new BorderCode(sprm.Arguments), topBorder);
                         addOrSetBorder(pgBorders, topBorder);
                         break;
-                    case 0x702C:
-                    case 0xD235:
+                    case SinglePropertyModifier.OperationCode.sprmSBrcLeft80:
+                    case SinglePropertyModifier.OperationCode.sprmSBrcLeft:
                         //left
                         XmlElement leftBorder = _nodeFactory.CreateElement("w", "left", OpenXmlNamespaces.WordprocessingML);
                         appendBorderAttributes(new BorderCode(sprm.Arguments), leftBorder);
                         addOrSetBorder(pgBorders, leftBorder);
                         break;
-                    case 0x702D:
-                    case 0xD236:
+                    case SinglePropertyModifier.OperationCode.sprmSBrcBottom80:
+                    case SinglePropertyModifier.OperationCode.sprmSBrcBottom:
                         //left
                         XmlElement bottomBorder = _nodeFactory.CreateElement("w", "bottom", OpenXmlNamespaces.WordprocessingML);
                         appendBorderAttributes(new BorderCode(sprm.Arguments), bottomBorder);
                         addOrSetBorder(pgBorders, bottomBorder);
                         break;
-                    case 0x702E:
-                    case 0xD237:
+                    case SinglePropertyModifier.OperationCode.sprmSBrcRight80:
+                    case SinglePropertyModifier.OperationCode.sprmSBrcRight:
                         //left
                         XmlElement rightBorder = _nodeFactory.CreateElement("w", "right", OpenXmlNamespaces.WordprocessingML);
                         appendBorderAttributes(new BorderCode(sprm.Arguments), rightBorder);
@@ -265,88 +313,92 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         break;
 
                     //footnote porperties
-                    case 0x303c:
+                    case SinglePropertyModifier.OperationCode.sprmSRncFtn:
                         //restart code
                         FootnoteRestartCode fncFtn = (FootnoteRestartCode)System.BitConverter.ToInt16(sprm.Arguments, 0);
                         appendValueElement(footnotePr, "numRestart", fncFtn.ToString(), true);
                         break;
-                    case 0x303b:
+                    case SinglePropertyModifier.OperationCode.sprmSFpc:
                         //position code
                         Int16 fpc = System.BitConverter.ToInt16(sprm.Arguments, 0);
                         if(fpc == 2)
                             appendValueElement(footnotePr, "pos", "beneathText", true);
                         break;
-                    case 0x5040:
+                    case SinglePropertyModifier.OperationCode.sprmSNfcFtnRef:
                         //number format
                         Int16 nfc = System.BitConverter.ToInt16(sprm.Arguments, 0);
                         appendValueElement(footnotePr, "numFmt", NumberingMapping.GetNumberFormat(nfc), true);
                         break;
-                    case 0x503f:
+                    case SinglePropertyModifier.OperationCode.sprmSNFtn:
                         Int16 nFtn = System.BitConverter.ToInt16(sprm.Arguments, 0);
                         appendValueElement(footnotePr, "numStart", nFtn.ToString(), true);
                         break;
 
                     //doc grid
-                    case 0x9031:
+                    case SinglePropertyModifier.OperationCode.sprmSDyaLinePitch:
                         appendValueAttribute(docGrid, "linePitch", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
-                    case 0x7030:
+                    case SinglePropertyModifier.OperationCode.sprmSDxtCharSpace:
                         appendValueAttribute(docGrid, "charSpace", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
-                    case 0x5032:
+                    case SinglePropertyModifier.OperationCode.sprmSClm:
                         appendValueAttribute(docGrid, "type", ((DocGridType)System.BitConverter.ToInt16(sprm.Arguments, 0)).ToString());
                         break;
 
                     //columns
-                    case 0x500B:
+                    case SinglePropertyModifier.OperationCode.sprmSCcolumns:
                         Int32 colNum = System.BitConverter.ToInt16(sprm.Arguments,0) + 1;
                         appendValueAttribute(cols, "num", colNum.ToString());
                         _colSpace = new Int16[colNum];
                         _colWidth = new Int16[colNum];
                         break;
-                    case 0x900c:
+                    case SinglePropertyModifier.OperationCode.sprmSDxaColumns:
                         //evenly spaced columns
                         appendValueAttribute(cols, "space", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
-                    case 0xf203:
+                    case SinglePropertyModifier.OperationCode.sprmSDxaColWidth:
                         //col width
                         byte index = sprm.Arguments[0];
                         Int16 w = System.BitConverter.ToInt16(sprm.Arguments, 1);
                         _colWidth[index] = w;
                         break;
-                    case 0xf204:
+                    case SinglePropertyModifier.OperationCode.sprmSDxaColSpacing:
                         //not evenly spaced columns
                         _colSpace[sprm.Arguments[0]] = System.BitConverter.ToInt16(sprm.Arguments, 1);
                         break;
 
                     //bidi
-                    case 0x3228:
+                    case SinglePropertyModifier.OperationCode.sprmSFBiDi:
                         appendFlagElement(_sectPr, sprm, "bidi", true);
                         break;
 
                     //title page
-                    case 0x300A:
+                    case SinglePropertyModifier.OperationCode.sprmSFTitlePage:
                         appendFlagElement(_sectPr, sprm, "titlePg", true);
                         break;
 
-                    //text flow
-                    case 0x5033:
-
-                        break;
-
                     //RTL gutter
-                    case 0x322A:
+                    case SinglePropertyModifier.OperationCode.sprmSFRTLGutter:
                         appendFlagElement(_sectPr, sprm, "rtlGutter", true);
                         break;
 
                     //type
-                    case 0x3009:
+                    case SinglePropertyModifier.OperationCode.sprmSBkc:
                         appendValueElement(_sectPr, "type", ((SectionType)sprm.Arguments[0]).ToString(), true);
                         break;
 
                     //align
-                    case 0x301A:
+                    case SinglePropertyModifier.OperationCode.sprmSVjc:
                         appendValueElement(_sectPr, "vAlign", sprm.Arguments[0].ToString(), true);
+                        break;
+
+                    //pgNumType
+                    case SinglePropertyModifier.OperationCode.sprmSNfcPgn:
+                        PageNumberFormatCode pgnFc = (PageNumberFormatCode)sprm.Arguments[0];
+                        appendValueAttribute(pgNumType, "fmt", pgnFc.ToString());
+                        break;
+                    case SinglePropertyModifier.OperationCode.sprmSPgnStart:
+                        appendValueAttribute(pgNumType, "start", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
                 }
             }
@@ -429,6 +481,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 _sectPr.AppendChild(docGrid);
             }
 
+            //numType
+            if (pgNumType.Attributes.Count > 0)
+            {
+                _sectPr.AppendChild(pgNumType);
+            }
+
             if (_writer != null)
             {
                 //write the properties
@@ -439,12 +497,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private void appendRef(XmlElement parent, string element, string refType, string refId)
         {
             XmlElement headerRef = _nodeFactory.CreateElement("w", element, OpenXmlNamespaces.WordprocessingML);
-            XmlAttribute headerRefId = _nodeFactory.CreateAttribute("r", "id", OpenXmlNamespaces.Relationships);
-            headerRefId.Value = refId;
-            headerRef.Attributes.Append(headerRefId);
+            
             XmlAttribute headerRefType = _nodeFactory.CreateAttribute("w", "type", OpenXmlNamespaces.WordprocessingML);
             headerRefType.Value = refType;
             headerRef.Attributes.Append(headerRefType);
+
+            XmlAttribute headerRefId = _nodeFactory.CreateAttribute("r", "id", OpenXmlNamespaces.Relationships);
+            headerRefId.Value = refId;
+            headerRef.Attributes.Append(headerRefId);
+
             parent.AppendChild(headerRef);
         }
     }

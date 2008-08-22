@@ -158,7 +158,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public PictureDescriptor(CharacterPropertyExceptions chpx, VirtualStream stream)
         {
             //Get start and length of the PICT
-            Int32 fc = getFcPic(chpx);
+            Int32 fc = GetFcPic(chpx);
             if (fc >= 0)
             {
                 parse(stream, fc);
@@ -233,7 +233,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         /// <param name="chpx">The CHPX</param>
         /// <returns></returns>
-        public static Int32 getFcPic(CharacterPropertyExceptions chpx)
+        public static Int32 GetFcPic(CharacterPropertyExceptions chpx)
         {
             Int32 ret = -1;
             foreach (SinglePropertyModifier sprm in chpx.grpprl)

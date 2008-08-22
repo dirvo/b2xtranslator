@@ -32,7 +32,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             ImagePart imgPart = copyPicture(pict.BlipStoreEntry);
             if (imgPart != null)
             {
-
                 Shape shape = (Shape)pict.ShapeContainer.Children[0];
                 List<ShapeOptions.OptionEntry> options = pict.ShapeContainer.ExtractOptions();
 

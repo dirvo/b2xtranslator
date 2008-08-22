@@ -28,7 +28,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //convert the header text
             _lastValidPapx = _doc.AllPapxFkps[0].grppapx[0];
             Int32 cp = _hdr.CharacterPosition;
-            while (cp < (_hdr.CharacterPosition + _hdr.CharacterCount))
+            Int32 cpMax = _hdr.CharacterPosition + _hdr.CharacterCount;
+
+            //the CharacterCount of the headers also counts the guard paragraph mark.
+            //this additional paragraph mark shall not be converted.
+            cpMax--;
+
+            while (cp < cpMax)
             {
                 Int32 fc = _doc.PieceTable.FileCharacterPositions[cp];
                 ParagraphPropertyExceptions papx = findValidPapx(fc);
