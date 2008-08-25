@@ -718,33 +718,52 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     int cpFieldEnd = searchNextTextMark(_doc.Text, cpFieldStart, TextMark.FieldEndMark);
                     Field f = new Field(_doc.Text.GetRange(cpFieldStart, cpFieldEnd - cpFieldStart + 1));
 
-                    _writer.WriteStartElement("w", "fldChar", OpenXmlNamespaces.WordprocessingML);
-                    _writer.WriteAttributeString("w", "fldCharType", OpenXmlNamespaces.WordprocessingML, "begin");
-
                     if(f.FieldCode.StartsWith(" FORM"))
                     {
+                        _writer.WriteStartElement("w", "fldChar", OpenXmlNamespaces.WordprocessingML);
+                        _writer.WriteAttributeString("w", "fldCharType", OpenXmlNamespaces.WordprocessingML, "begin");
+
                         int cpPic = searchNextTextMark(_doc.Text, cpFieldStart, TextMark.Picture);
                         if (cpPic < cpFieldEnd)
                         {
                             int fcPic = _doc.PieceTable.FileCharacterPositions[cpPic];
-                            CharacterPropertyExceptions picfChpx = _doc.GetCharacterPropertyExceptions(fcPic, fcPic + 1)[0];
-                            NilPicfAndBinData npbd = new NilPicfAndBinData(picfChpx, _doc.DataStream);
+                            CharacterPropertyExceptions chpxPic = _doc.GetCharacterPropertyExceptions(fcPic, fcPic + 1)[0];
+                            NilPicfAndBinData npbd = new NilPicfAndBinData(chpxPic, _doc.DataStream);
                             FormFieldData ffdata = new FormFieldData(npbd.binData);
                             ffdata.Convert(new FormFieldDataMapping(_writer));
                         }
+
+                        _writer.WriteEndElement();
                     }
                     else if (f.FieldCode.StartsWith(" EMBED"))
-                    { 
+                    {
+                        _writer.WriteStartElement("w", "object", OpenXmlNamespaces.WordprocessingML);
+
                         int cpPic = searchNextTextMark(_doc.Text, cpFieldStart, TextMark.Picture);
+                        int cpFieldSep = searchNextTextMark(_doc.Text, cpFieldStart, TextMark.FieldSeperator);
                         if (cpPic < cpFieldEnd)
                         {
                             int fcPic = _doc.PieceTable.FileCharacterPositions[cpPic];
-                            CharacterPropertyExceptions picfChpx = _doc.GetCharacterPropertyExceptions(fcPic, fcPic + 1)[0];
-                            NilPicfAndBinData npbd = new NilPicfAndBinData(picfChpx, _doc.DataStream);
+                            CharacterPropertyExceptions chpxPic = _doc.GetCharacterPropertyExceptions(fcPic, fcPic + 1)[0];
+                            PictureDescriptor pic = new PictureDescriptor(chpxPic, _doc.DataStream);
+                            pic.Convert(new VMLPictureMapping(_writer, this._targetPart));
                         }
-                    }
+                        if (cpFieldSep < cpFieldEnd)
+                        {
+                            int fcFieldSep = _doc.PieceTable.FileCharacterPositions[cpFieldSep];
+                            CharacterPropertyExceptions chpxSep = _doc.GetCharacterPropertyExceptions(fcFieldSep, fcFieldSep + 1)[0];
 
-                    _writer.WriteEndElement();
+                        }
+
+                        _writer.WriteEndElement();
+                        _skipRuns = 4;
+                    }
+                    else
+                    {
+                        _writer.WriteStartElement("w", "fldChar", OpenXmlNamespaces.WordprocessingML);
+                        _writer.WriteAttributeString("w", "fldCharType", OpenXmlNamespaces.WordprocessingML, "begin");
+                        _writer.WriteEndElement();
+                    }
                 }
                 else if (c == TextMark.FieldSeperator)
                 {
