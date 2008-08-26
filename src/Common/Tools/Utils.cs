@@ -35,6 +35,48 @@ namespace DIaLOGIKa.b2xtranslator.Tools
 {
     public class Utils
     {
+        /// <summary>
+        /// Read a length prefixed Unicode string from the given stream.
+        /// The string must have the following structure:<br/>
+        /// byte 1 - 4:         Character count (cch)<br/>
+        /// byte 5 - (cch*2)+4: Unicode characters terminated by \0
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
+        public static string ReadLengthPrefixedUnicodeString(Stream stream)
+        {
+            byte[] cchBytes = new byte[4];
+            stream.Read(cchBytes, 0, cchBytes.Length);
+            Int32 cch = System.BitConverter.ToInt32(cchBytes, 0);
+
+            //dont read the terminating zero
+            byte[] stringBytes = new byte[cch*2];
+            stream.Read(stringBytes, 0, stringBytes.Length);
+
+            return Encoding.Unicode.GetString(stringBytes, 0, stringBytes.Length-2);
+        }
+
+        /// <summary>
+        /// Read a length prefixed ANSI string from the given stream.
+        /// The string must have the following structure:<br/>
+        /// byte 1-4:       Character count (cch)<br/>
+        /// byte 5-cch+4:   ANSI characters terminated by \0
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
+        public static string ReadLengthPrefixedAnsiString(Stream stream)
+        {
+            byte[] cchBytes = new byte[4];
+            stream.Read(cchBytes, 0, cchBytes.Length);
+            Int32 cch = System.BitConverter.ToInt32(cchBytes, 0);
+
+            //dont read the terminating zero
+            byte[] stringBytes = new byte[cch];
+            stream.Read(stringBytes, 0, stringBytes.Length);
+
+            return Encoding.ASCII.GetString(stringBytes, 0, stringBytes.Length - 1);
+        }
+
         public static string ReadXstz(byte[] bytes, int pos)
         {
             byte[] xstz = new byte[System.BitConverter.ToInt16(bytes, pos) * 2];

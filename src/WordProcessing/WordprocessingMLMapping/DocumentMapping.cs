@@ -735,7 +735,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                         _writer.WriteEndElement();
                     }
-                    else if (f.FieldCode.StartsWith(" EMBED"))
+                    else if (f.FieldCode.StartsWith(" EMBED") || f.FieldCode.StartsWith(" LINK"))
                     {
                         _writer.WriteStartElement("w", "object", OpenXmlNamespaces.WordprocessingML);
 
@@ -752,7 +752,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         {
                             int fcFieldSep = _doc.PieceTable.FileCharacterPositions[cpFieldSep];
                             CharacterPropertyExceptions chpxSep = _doc.GetCharacterPropertyExceptions(fcFieldSep, fcFieldSep + 1)[0];
-
+                            OleObject ole = new OleObject(chpxSep, _doc.Storage);
+                            //TODO: ole.Convert(new OleMapping(_writer));
                         }
 
                         _writer.WriteEndElement();

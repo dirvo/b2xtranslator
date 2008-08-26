@@ -72,6 +72,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public VirtualStream DataStream;
 
         /// <summary>
+        /// The StructuredStorageFile itself
+        /// </summary>
+        public StructuredStorageFile Storage;
+
+        /// <summary>
         /// The file information block of the word document
         /// </summary>
         public FileInformationBlock FIB;
@@ -150,6 +155,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         public WordDocument(StructuredStorageFile reader)
         {
+            this.Storage = reader;
             this.WordDocumentStream = reader.GetStream("WordDocument");
 
             //parse FIB

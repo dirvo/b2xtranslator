@@ -56,6 +56,7 @@
     <Compile Include="MainDocumentMapping.cs" />
     <Compile Include="MappingException.cs" />
     <Compile Include="NumberingMapping.cs" />
+    <Compile Include="OleObject.cs" />
     <Compile Include="ParagraphPropertiesMapping.cs" />
     <Compile Include="DocumentMapping.cs" />
     <Compile Include="TextboxMapping.cs" />
