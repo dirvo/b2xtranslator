@@ -46,6 +46,11 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 
         public const string CustomXmlProperties = "application/vnd.openxmlformats-officedocument.customXmlProperties+xml";
 
+        public const string OleObject = "application/vnd.openxmlformats-officedocument.oleObject";
+
+        public const string MSExcel = "application/vnd.ms-excel";
+        public const string MSWord = "application/msword";
+        public const string MSPowerpoint = "application/vnd.ms-powerpoint";
     }
      
     public static class WordprocessingMLContentTypes
@@ -145,6 +150,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string Footer = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer";
 
         public const string Image = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image";
+
+        public const string OleObject = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject";
 
         // PresentationML
         public const string SlideLayout = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout";

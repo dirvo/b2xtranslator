@@ -36,16 +36,16 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             if(_targetPart.GetType() == typeof(MainDocumentPart))
             {
-                cp = txtbxSubdocStart + doc.TextboxBreakTable.CharacterPositions[index];
-                cpEnd = txtbxSubdocStart + doc.TextboxBreakTable.CharacterPositions[index + 1];
-                bkd = doc.TextboxBreakTable.Breaks[index];
+                cp = txtbxSubdocStart + doc.TextboxBreakPlex.CharacterPositions[index];
+                cpEnd = txtbxSubdocStart + doc.TextboxBreakPlex.CharacterPositions[index + 1];
+                bkd = (BreakDescriptor)doc.TextboxBreakPlex.Structs[index];
             }
             if(_targetPart.GetType() == typeof(HeaderPart))
             {
                 txtbxSubdocStart += doc.FIB.ccpTxbx;
-                cp = txtbxSubdocStart + doc.TextboxBreakTableHeader.CharacterPositions[index];
-                cpEnd = txtbxSubdocStart + doc.TextboxBreakTableHeader.CharacterPositions[index + 1];
-                bkd = doc.TextboxBreakTableHeader.Breaks[index];
+                cp = txtbxSubdocStart + doc.TextboxBreakPlexHeader.CharacterPositions[index];
+                cpEnd = txtbxSubdocStart + doc.TextboxBreakPlexHeader.CharacterPositions[index + 1];
+                bkd = (BreakDescriptor)doc.TextboxBreakPlexHeader.Structs[index];
             }
 
             //convert the textbox text

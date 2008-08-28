@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
         protected NumberingDefinitionsPart _numberingDefinitionsPart;
         protected SettingsPart _settingsPart;
         protected FootnotesPart _footnotesPart;
+        protected CommentsPart _commentsPart;
 
         protected int _headerPartCount = 0;
         protected int _footerPartCount = 0;
@@ -116,6 +117,19 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
                     this.AddPart(_footnotesPart);
                 }
                 return _footnotesPart;
+            }
+        }
+
+        public CommentsPart CommentsPart
+        {
+            get 
+            {
+                if (_commentsPart == null)
+                {
+                    _commentsPart = new CommentsPart(this);
+                    this.AddPart(_commentsPart);
+                }
+                return _commentsPart;
             }
         }
 

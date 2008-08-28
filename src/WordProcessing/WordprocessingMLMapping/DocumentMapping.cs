@@ -53,6 +53,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         protected int _skipRuns = 0;
         protected int _sectionNr = 0;
         protected int _footnoteNr = 0;
+        protected int _commentNr = 0;
         protected ContentPart _targetPart;
 
         private class Symbol
@@ -737,6 +738,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     }
                     else if (f.FieldCode.StartsWith(" EMBED") || f.FieldCode.StartsWith(" LINK"))
                     {
+                        //close previous w:t ...
+                        _writer.WriteEndElement();
                         _writer.WriteStartElement("w", "object", OpenXmlNamespaces.WordprocessingML);
 
                         int cpPic = searchNextTextMark(_doc.Text, cpFieldStart, TextMark.Picture);
@@ -753,10 +756,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                             int fcFieldSep = _doc.PieceTable.FileCharacterPositions[cpFieldSep];
                             CharacterPropertyExceptions chpxSep = _doc.GetCharacterPropertyExceptions(fcFieldSep, fcFieldSep + 1)[0];
                             OleObject ole = new OleObject(chpxSep, _doc.Storage);
-                            //TODO: ole.Convert(new OleMapping(_writer));
+                            ole.Convert(new OleObjectMapping(_writer, _doc, _targetPart));
                         }
 
                         _writer.WriteEndElement();
+                        _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
+
                         _skipRuns = 4;
                     }
                     else
@@ -794,24 +799,29 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 else if (c == TextMark.DrawnObject && fSpec)
                 {
                     FileShapeAddress fspa = null;
-                    if (GetType() == typeof(MainDocumentMapping) && _doc.OfficeDrawingTable.ContainsKey(cp))
+                    if (GetType() == typeof(MainDocumentMapping))
                     {
-                        fspa = _doc.OfficeDrawingTable[cp];
+                        fspa = (FileShapeAddress)_doc.OfficeDrawingPlex.GetStruct(cp);
                     }
                     else if (GetType() == typeof(HeaderMapping))
                     {
                         int headerCp = cp - _doc.FIB.ccpText - _doc.FIB.ccpFtn;
-                        if (_doc.OfficeDrawingTableHeader.ContainsKey(headerCp))
-                        {
-                            fspa = _doc.OfficeDrawingTableHeader[headerCp];
-                        }
+                        fspa = (FileShapeAddress)_doc.OfficeDrawingPlexHeader.GetStruct(headerCp);
                     }
-                    if (fspa != null && fspa.ShapeContainer != null)
+                    if (fspa != null)
                     {
-                        //close previous w:t ...
-                        _writer.WriteEndElement();
-                        fspa.ShapeContainer.Convert(new VMLShapeMapping(_writer, _targetPart, fspa, true, _ctx));
-                        _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
+                        ShapeContainer shape = _doc.OfficeArtContent.GetShapeContainer(fspa.spid);
+                        if (shape != null)
+                        {
+                            //close previous w:t ...
+                            _writer.WriteEndElement();
+                            _writer.WriteStartElement("w", "pict", OpenXmlNamespaces.WordprocessingML);
+
+                            shape.Convert(new VMLShapeMapping(_writer, _targetPart, fspa, true, _ctx));
+
+                            _writer.WriteEndElement();
+                            _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
+                        }
                     }
                 }
                 else if (c == TextMark.Picture && fSpec)
@@ -821,9 +831,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     {
                         //close previous w:t ...
                         _writer.WriteEndElement();
+                        _writer.WriteStartElement("w", "pict", OpenXmlNamespaces.WordprocessingML);
+
                         pict.Convert(new VMLPictureMapping(_writer, _targetPart));
+
+                        _writer.WriteEndElement();
                         _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
-                    }
+                    }                   
                 }
                 else if (c == TextMark.AutoNumberedFootnoteReference && fSpec)
                 {
@@ -842,6 +856,26 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     }
 
                     _footnoteNr++;
+
+                    _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
+                }
+                else if (c == TextMark.AnnotationReference)
+                {
+                    //close previous w:t ...
+                    _writer.WriteEndElement();
+
+                    if (this.GetType() != typeof(CommentsMapping))
+                    {
+                        _writer.WriteStartElement("w", "commentReference", OpenXmlNamespaces.WordprocessingML);
+                        _writer.WriteAttributeString("w", "id", OpenXmlNamespaces.WordprocessingML, _commentNr.ToString());
+                        _writer.WriteEndElement();
+                    }
+                    else
+                    {
+                        _writer.WriteElementString("w", "annotationRef", OpenXmlNamespaces.WordprocessingML, "");
+                    }
+
+                    _commentNr++;
 
                     _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
                 }

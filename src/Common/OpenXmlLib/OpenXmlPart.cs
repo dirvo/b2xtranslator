@@ -57,7 +57,6 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         }
 
         public override string TargetExt { get { return ".xml"; } }
-        
         public abstract string ContentType { get; }
         public abstract string RelationshipType { get; }
         
@@ -114,6 +113,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
             }
             
             writer.AddPart(this.TargetFullName);
+
 
             writer.Write(this.GetStream());
             

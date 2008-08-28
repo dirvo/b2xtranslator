@@ -30,7 +30,7 @@ using System.Text;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
 {
-    public class CommentsPart : OpenXmlPart
+    public class CommentsPart : ContentPart
     {
         internal CommentsPart(OpenXmlPartContainer parent)
             : base(parent, 0)
@@ -48,6 +48,6 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
         }
 
         public override string TargetName { get { return "comments"; } }
-        public override string TargetDirectory { get { return Parent.TargetDirectory; } }
+        public override string TargetDirectory { get { return ""; } }
     }
 }

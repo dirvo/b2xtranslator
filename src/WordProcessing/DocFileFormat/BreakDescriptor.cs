@@ -7,7 +7,7 @@ using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class BreakDescriptor
+    public class BreakDescriptor : PlexStruct
     {
         /// <summary>
         /// Except in textbox BKD, index to PGD in plfpgd that describes the page this break is on
@@ -54,7 +54,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public bool fTextOverflow;
 
-        public BreakDescriptor(BinaryReader reader)
+        public BreakDescriptor(VirtualStreamReader reader) : base(reader)
         {
             this.ipgd = reader.ReadInt16();
             this.itxbxs = this.ipgd;

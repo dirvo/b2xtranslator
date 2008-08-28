@@ -35,8 +35,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 Shape shape = (Shape)pict.ShapeContainer.Children[0];
                 List<ShapeOptions.OptionEntry> options = pict.ShapeContainer.ExtractOptions();
 
-                _writer.WriteStartElement("w", "pict", OpenXmlNamespaces.WordprocessingML);
-
                 //v:shapetype
                 PictureFrameType type = new PictureFrameType();
                 type.Convert(new VMLShapeTypeMapping(_writer));
@@ -91,9 +89,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                 //close v:shape
                 _writer.WriteEndElement();
-
-                //close w:pict
-                _writer.WriteEndElement();
             }
         }
 
@@ -126,20 +121,20 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 switch (bse.btWin32)
                 {
                     case BlipStoreEntry.BlipType.msoblipEMF:
-                        imgPart = _targetPart.AddImagePart(ImagePartType.Emf);
+                        imgPart = _targetPart.AddImagePart(ImagePart.ImageType.Emf);
                         break;
                     case BlipStoreEntry.BlipType.msoblipWMF:
-                        imgPart = _targetPart.AddImagePart(ImagePartType.Wmf);
+                        imgPart = _targetPart.AddImagePart(ImagePart.ImageType.Wmf);
                         break;
                     case BlipStoreEntry.BlipType.msoblipJPEG:
                     case BlipStoreEntry.BlipType.msoblipCMYKJPEG:
-                        imgPart = _targetPart.AddImagePart(ImagePartType.Jpeg);
+                        imgPart = _targetPart.AddImagePart(ImagePart.ImageType.Jpeg);
                         break;
                     case BlipStoreEntry.BlipType.msoblipPNG:
-                        imgPart = _targetPart.AddImagePart(ImagePartType.Png);
+                        imgPart = _targetPart.AddImagePart(ImagePart.ImageType.Png);
                         break;
                     case BlipStoreEntry.BlipType.msoblipTIFF:
-                        imgPart = _targetPart.AddImagePart(ImagePartType.Tiff);
+                        imgPart = _targetPart.AddImagePart(ImagePart.ImageType.Tiff);
                         break;
                     case BlipStoreEntry.BlipType.msoblipPICT:
                     case BlipStoreEntry.BlipType.msoblipDIB:

@@ -13,10 +13,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <param name="bytes">The bytes</param>
         public AuthorTable(FileInformationBlock fib, VirtualStream tableStream)
         {
-            //read the bytes
-            //byte[] bytes = new byte[fib.lcbSttbfRMark];
-            //tableStream.Read(bytes, 0, (int)fib.lcbSttbfRMark, (int)fib.fcSttbfRMark);
-
             int pos = 8;
             byte[] uniChar = new byte[2];
             StringBuilder name = new StringBuilder();

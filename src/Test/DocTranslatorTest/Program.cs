@@ -88,6 +88,9 @@ namespace DocTranslatorTest
                     //write the footnotes
                     doc.Convert(new FootnotesMapping(context));
 
+                    //write the comments
+                    doc.Convert(new CommentsMapping(context));
+
                     //write settings.xml at last because of the rsid list
                     doc.DocumentProperties.Convert(new SettingsMapping(context));
 

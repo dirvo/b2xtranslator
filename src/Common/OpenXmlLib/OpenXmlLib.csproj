@@ -67,6 +67,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpreadsheetML\SpreadsheetDocument.cs" />
     <Compile Include="WordprocessingML\NumberingDefinitionsPart.cs" />
+    <Compile Include="EmbeddedObjectPart.cs" />
     <Compile Include="WordprocessingML\SettingsPart.cs" />
     <Compile Include="WordprocessingML\StyleDefinitionsPart.cs" />
     <Compile Include="ThemePart.cs" />

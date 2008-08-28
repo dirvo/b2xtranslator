@@ -46,6 +46,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         protected AppPropertiesPart _appPropertiesPart;
 
         protected int _imageCounter;
+        protected int _oleCounter;
         #endregion
 
 
@@ -120,6 +121,12 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         {
             _imageCounter++;
             return _imageCounter;
+        }
+
+        internal int GetNextOleId()
+        {
+            _oleCounter++;
+            return _oleCounter;
         }
 
         protected void WritePackage(OpenXmlWriter writer)

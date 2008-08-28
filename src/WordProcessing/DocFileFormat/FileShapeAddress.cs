@@ -7,7 +7,7 @@ using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class FileShapeAddress
+    public class FileShapeAddress : PlexStruct
     {
         public enum AnchorType
         {
@@ -112,23 +112,18 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public Int32 cTxbx;
 
         /// <summary>
-        /// The shapecontainer
-        /// </summary>
-        public ShapeContainer ShapeContainer;
-
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="reader"></param>
-        public FileShapeAddress(VirtualStreamReader reader, OfficeArtContent drawingTable)
+        public FileShapeAddress(VirtualStreamReader reader) : base(reader)
         {
-            this.spid = reader.ReadInt32();
-            this.xaLeft = reader.ReadInt32();
-            this.yaTop = reader.ReadInt32();
-            this.xaRight = reader.ReadInt32();
-            this.yaBottom = reader.ReadInt32();
+            this.spid = _reader.ReadInt32();
+            this.xaLeft = _reader.ReadInt32();
+            this.yaTop = _reader.ReadInt32();
+            this.xaRight = _reader.ReadInt32();
+            this.yaBottom = _reader.ReadInt32();
 
-            UInt16 flag = reader.ReadUInt16();
+            UInt16 flag = _reader.ReadUInt16();
             this.fHdr = Tools.Utils.BitmaskToBool(flag, 0x0001);
             this.bx = (AnchorType)Tools.Utils.BitmaskToInt(flag, 0x0006);
             this.by = (AnchorType)Tools.Utils.BitmaskToInt(flag, 0x0018);
@@ -138,9 +133,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.fBelowText = Tools.Utils.BitmaskToBool(flag, 0x4000);
             this.fAnchorLock = Tools.Utils.BitmaskToBool(flag, 0x8000);
 
-            this.cTxbx = reader.ReadInt32();
+            this.cTxbx = _reader.ReadInt32();
 
-            this.ShapeContainer = drawingTable.GetShapeContainer(this.spid);
+            //this.ShapeContainer = drawingTable.GetShapeContainer(this.spid);
         }
     }
 }

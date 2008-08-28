@@ -31,24 +31,24 @@ using System.IO;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 {
-    public enum ImagePartType
-    {
-        Bmp,
-        Emf,
-        Gif,
-        Icon,
-        Jpeg,
-        //Pcx,
-        Png,
-        Tiff,
-        Wmf
-    }
-
     public class ImagePart : OpenXmlPart
     {
-        protected ImagePartType _type;
+        public enum ImageType
+        {
+            Bmp,
+            Emf,
+            Gif,
+            Icon,
+            Jpeg,
+            //Pcx,
+            Png,
+            Tiff,
+            Wmf
+        }
 
-        internal ImagePart(ImagePartType type, OpenXmlPartContainer parent, int partIndex)
+        protected ImageType _type;
+
+        internal ImagePart(ImageType type, OpenXmlPartContainer parent, int partIndex)
             : base(parent, partIndex)
         {
             _type = type;
@@ -60,23 +60,23 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
             {
                 switch (_type)
                 {
-                    case ImagePartType.Bmp:
+                    case ImageType.Bmp:
                         return "image/bmp";
-                    case ImagePartType.Emf:
+                    case ImageType.Emf:
                         return "image/x-emf";
-                    case ImagePartType.Gif:
+                    case ImageType.Gif:
                         return "image/gif";
-                    case ImagePartType.Icon:
+                    case ImageType.Icon:
                         return "image/x-icon";
-                    case ImagePartType.Jpeg:
+                    case ImageType.Jpeg:
                         return "image/jpeg";
                     //case ImagePartType.Pcx:
                     //    return "image/pcx";
-                    case ImagePartType.Png:
+                    case ImageType.Png:
                         return "image/png";
-                    case ImagePartType.Tiff:
+                    case ImageType.Tiff:
                         return "image/tiff";
-                    case ImagePartType.Wmf:
+                    case ImageType.Wmf:
                         return "image/x-wmf";
                     default:
                         return "image/png";
@@ -97,23 +97,23 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
             {
                 switch (_type)
                 {
-                    case ImagePartType.Bmp:
+                    case ImageType.Bmp:
                         return ".bmp";
-                    case ImagePartType.Emf:
+                    case ImageType.Emf:
                         return ".emf";
-                    case ImagePartType.Gif:
+                    case ImageType.Gif:
                         return ".gif";
-                    case ImagePartType.Icon:
+                    case ImageType.Icon:
                         return ".ico";
-                    case ImagePartType.Jpeg:
+                    case ImageType.Jpeg:
                         return ".jpg";
                     //case ImagePartType.Pcx:
                     //    return ".pcx";
-                    case ImagePartType.Png:
+                    case ImageType.Png:
                         return ".png";
-                    case ImagePartType.Tiff:
+                    case ImageType.Tiff:
                         return ".tif";
-                    case ImagePartType.Wmf:
+                    case ImageType.Wmf:
                         return ".wmf";
                     default:
                         return ".png";

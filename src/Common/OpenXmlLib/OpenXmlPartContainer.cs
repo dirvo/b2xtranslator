@@ -177,30 +177,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
             allParts.AddRange(this.ReferencedParts);
 
             // write part relationships
-            if (allParts.Count > 0)
-            {
-                string relFullName = Path.Combine(Path.Combine(this.TargetDirectoryAbsolute, REL_FOLDER), TargetName + TargetExt + REL_EXTENSION);
-                writer.AddPart(relFullName);
-
-                writer.WriteStartDocument();
-                writer.WriteStartElement("Relationships", OpenXmlNamespaces.RelationsshipsPackage);
-
-                foreach (OpenXmlPart part in allParts)
-                {
-                    writer.WriteStartElement("Relationship", OpenXmlNamespaces.RelationsshipsPackage);
-                    writer.WriteAttributeString("Id", part.RelIdToString);
-                    writer.WriteAttributeString("Type", part.RelationshipType);
-
-                    // write the target relative to the current part
-                    writer.WriteAttributeString("Target", "/" + part.TargetFullName.Replace('\\', '/'));
-                    writer.WriteEndElement();
-                }
-                writer.WriteEndElement();
-                writer.WriteEndDocument();
-            }
-
-            // write external relationship parts
-            if (_externalRelationships.Count > 0)
+            if (allParts.Count > 0 || _externalRelationships.Count > 0)
             {
                 string relFullName = Path.Combine(Path.Combine(this.TargetDirectoryAbsolute, REL_FOLDER), TargetName + TargetExt + REL_EXTENSION);
                 writer.AddPart(relFullName);
@@ -213,11 +190,35 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
                     writer.WriteStartElement("Relationship", OpenXmlNamespaces.RelationsshipsPackage);
                     writer.WriteAttributeString("Id", rel.Id);
                     writer.WriteAttributeString("Type", rel.RelationshipType);
-                    writer.WriteAttributeString("Target", rel.Target.ToString());
+
+                    if (rel.Target.IsFile)
+                    {
+                        //reform the URI path for Word
+                        //Word does not accept forward slahes in the path of a local file
+                        writer.WriteAttributeString("Target", "file:///" + rel.Target.AbsolutePath.Replace("/", "\\"));
+                    }
+                    else
+                    {
+                        writer.WriteAttributeString("Target", rel.Target.ToString());
+                    }
+
                     writer.WriteAttributeString("TargetMode", "External");
 
                     writer.WriteEndElement();
                 }
+
+                foreach (OpenXmlPart part in allParts)
+                {
+                    writer.WriteStartElement("Relationship", OpenXmlNamespaces.RelationsshipsPackage);
+                    writer.WriteAttributeString("Id", part.RelIdToString);
+                    writer.WriteAttributeString("Type", part.RelationshipType);
+
+                    // write the target relative to the current part
+                    writer.WriteAttributeString("Target", "/" + part.TargetFullName.Replace('\\', '/'));
+
+                    writer.WriteEndElement();
+                }
+
                 writer.WriteEndElement();
                 writer.WriteEndDocument();
             }

@@ -43,9 +43,14 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         {
         }
 
-        public ImagePart AddImagePart(ImagePartType type)
+        public ImagePart AddImagePart(ImagePart.ImageType type)
         {
             return this.AddPart(new ImagePart(type, this, Package.GetNextImageId()));
+        }
+
+        public EmbeddedObjectPart AddEmbeddedObjectPart(EmbeddedObjectPart.ObjectType type)
+        {
+            return this.AddPart(new EmbeddedObjectPart(type, this, Package.GetNextOleId()));
         }
     }
 }

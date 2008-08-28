@@ -97,6 +97,16 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public FontTable FontTable;
 
         /// <summary>
+        /// A plex with all ATRDPre10 structs
+        /// </summary>
+        public Plex AnnotationsReferencePlex;
+
+        /// <summary>
+        /// An array with all ATRDPost10 structs
+        /// </summary>
+        public AnnotationReferenceExtraTable AnnotationReferenceExtraTable;
+
+        /// <summary>
         /// A list that contains all formatting information of 
         /// the lists and numberings in the document.
         /// </summary>
@@ -110,22 +120,22 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// 
         /// </summary>
-        public OfficeDrawingTable OfficeDrawingTable;
-
-        /// <summary>
-        /// Describes the breaks inside the textbox subdocument
-        /// </summary>
-        public TextboxBreakTable TextboxBreakTable;
-
-        /// <summary>
-        /// Describes the breaks inside the header textbox subdocument
-        /// </summary>
-        public TextboxBreakTable TextboxBreakTableHeader;
+        public Plex OfficeDrawingPlex;
 
         /// <summary>
         /// 
         /// </summary>
-        public OfficeDrawingTable OfficeDrawingTableHeader;
+        public Plex OfficeDrawingPlexHeader;
+
+        /// <summary>
+        /// Describes the breaks inside the textbox subdocument
+        /// </summary>
+        public Plex TextboxBreakPlex;
+
+        /// <summary>
+        /// Describes the breaks inside the header textbox subdocument
+        /// </summary>
+        public Plex TextboxBreakPlexHeader;
 
         /// <summary>
         /// The DocumentProperties of the word document
@@ -180,9 +190,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 this.DataStream = null;
             }
 
-            VirtualStreamReader tablereader = new VirtualStreamReader(TableStream);
-            byte[] fndRef = tablereader.ReadBytes(this.FIB.fcPlcffndRef, (int)this.FIB.lcbPlcffndRef);
-
             //parse properties
             this.DocumentProperties = new DocumentProperties(this.FIB, this.TableStream);
 
@@ -213,16 +220,17 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             //read the Drawing Content
             this.OfficeArtContent = new OfficeArtContent(this.FIB, this.TableStream);
 
-            //read the OfficeDrawing tables
-            this.OfficeDrawingTable = new OfficeDrawingTable(this, OfficeDrawingTable.OfficeDrawingTableType.MainDocument);
-            this.OfficeDrawingTableHeader = new OfficeDrawingTable(this, OfficeDrawingTable.OfficeDrawingTableType.Header);
-
             //read headers and footer table
             this.HeaderAndFooterTable = new HeaderAndFooterTable(this);
 
-            //textbox break tables
-            this.TextboxBreakTable = new TextboxBreakTable(this.FIB, this.TableStream, TextboxBreakTable.TextboxBreakTableType.MainDocument);
-            this.TextboxBreakTableHeader = new TextboxBreakTable(this.FIB, this.TableStream, TextboxBreakTable.TextboxBreakTableType.Header);
+            this.AnnotationReferenceExtraTable = new AnnotationReferenceExtraTable(this.FIB, this.TableStream);
+
+            //Read all needed Plex
+            this.AnnotationsReferencePlex = new Plex(typeof(AnnotationReferenceDescriptor), 30, this.TableStream, this.FIB.fcPlcfandRef, this.FIB.lcbPlcfandRef);
+            this.TextboxBreakPlex = new Plex(typeof(BreakDescriptor), 6, this.TableStream, this.FIB.fcPlcftxbxBkd, this.FIB.lcbPlcftxbxBkd);
+            this.TextboxBreakPlexHeader = new Plex(typeof(BreakDescriptor), 6, this.TableStream, this.FIB.fcPlcftxbxHdrBkd, this.FIB.lcbPlcftxbxHdrBkd);
+            this.OfficeDrawingPlex = new Plex(typeof(FileShapeAddress), 26, this.TableStream, this.FIB.fcPlcspaMom, this.FIB.lcbPlcspaMom);
+            this.OfficeDrawingPlexHeader = new Plex(typeof(FileShapeAddress), 26, this.TableStream, this.FIB.fcPlcspaHdr, this.FIB.lcbPlcspaHdr);
 
             //parse the piece table and construct a list that contains all chars
             this.PieceTable = new PieceTable(this.FIB, this.TableStream);

@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CharacterPropertiesMapping.cs" />
+    <Compile Include="CommentMapping.cs" />
     <Compile Include="ConversionContext.cs" />
     <Compile Include="Converter.cs" />
     <Compile Include="DateMapping.cs" />
@@ -56,7 +57,7 @@
     <Compile Include="MainDocumentMapping.cs" />
     <Compile Include="MappingException.cs" />
     <Compile Include="NumberingMapping.cs" />
-    <Compile Include="OleObject.cs" />
+    <Compile Include="OleObjectMapping.cs" />
     <Compile Include="ParagraphPropertiesMapping.cs" />
     <Compile Include="DocumentMapping.cs" />
     <Compile Include="TextboxMapping.cs" />
