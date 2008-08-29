@@ -42,7 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CharacterPropertiesMapping.cs" />
-    <Compile Include="CommentMapping.cs" />
+    <Compile Include="CommentsMapping.cs" />
     <Compile Include="ConversionContext.cs" />
     <Compile Include="Converter.cs" />
     <Compile Include="DateMapping.cs" />
