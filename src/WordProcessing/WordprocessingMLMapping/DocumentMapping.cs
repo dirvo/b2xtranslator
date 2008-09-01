@@ -606,7 +606,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 {
                     //if it's a inserted run
                     _writer.WriteStartElement("w", "ins", OpenXmlNamespaces.WordprocessingML);
-                    _writer.WriteAttributeString("w", "author", OpenXmlNamespaces.WordprocessingML, _doc.AuthorTable[rev.Isbt]);
+                    _writer.WriteAttributeString("w", "author", OpenXmlNamespaces.WordprocessingML, _doc.AuthorTable.Strings[rev.Isbt]);
                     rev.Dttm.Convert(new DateMapping(_writer));
                 }
 
@@ -985,7 +985,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     ret = new Symbol();
                     Int16 fontIndex = System.BitConverter.ToInt16(sprm.Arguments, 0);
                     Int16 code = System.BitConverter.ToInt16(sprm.Arguments, 2);
-                    ret.FontName = _doc.FontTable[fontIndex].xszFtn;
+
+                    FontFamilyName ffn = (FontFamilyName)_doc.FontTable.Data[fontIndex];
+                    ret.FontName = ffn.xszFtn;
                     ret.HexValue = String.Format("{0:x4}", code);
                     break;
                 }
@@ -1005,9 +1007,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //if cp is the last char of a section, the next section will start at cp +1
             int search = cp + 1;
 
-            for (int i = 0; i < _doc.SectionTable.rgfc.Length; i++)
+            for (int i = 0; i < _doc.SectionPlex.CharacterPositions.Count; i++)
             {
-                if (_doc.SectionTable.rgfc[i] == search)
+                if (_doc.SectionPlex.CharacterPositions[i] == search)
                 {
                     result = true;
                     break;
@@ -1058,7 +1060,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 //there is no SEPX at this position, 
                 //so the previous SEPX is valid for this cp
 
-                Int32 lastKey = _doc.SectionTable.rgfc[1];
+                Int32 lastKey = _doc.SectionPlex.CharacterPositions[1];
                 foreach (Int32 key in _ctx.AllSepx.Keys)
                 {
                     if (cp > lastKey && cp < key)

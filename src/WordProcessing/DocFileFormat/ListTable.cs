@@ -35,45 +35,34 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
     public class ListTable : List<ListData>, IVisitable
     {
-        private const int LSTF_LENGTH = 28;
-        private const int LVLF_LENGTH = 28;
-
         public ListTable(FileInformationBlock fib, VirtualStream tableStream)
         {
             if (fib.lcbPlcfLst > 0)
             {
-                byte[] bytes = new byte[fib.lcbPlcfLst];
-                tableStream.Read(bytes, 0, bytes.Length, fib.fcPlcfLst);
+                VirtualStreamReader reader = new VirtualStreamReader(tableStream);
+                reader.BaseStream.Seek(fib.fcPlcfLst, System.IO.SeekOrigin.Begin);
 
-                //the ListTable is a plex.
-                //it starts with a count, followed by the array of LST structs,
-                //followed by the array of LVL structs
+                //the ListTable is not a real plex:
+                //it starts with a count, followed by the array of LSTF structs,
+                //followed by the array of LVLF structs
 
                 //read count
-                byte[] countBytes = new byte[2];
-                tableStream.Read(countBytes, 0, 2, fib.fcPlcfLst);
-                Int16 count = System.BitConverter.ToInt16(countBytes, 0);
+                Int16 count = reader.ReadInt16();
 
-                //read the LST structs
-                int lvlPos = fib.fcPlcfLst + (int)fib.lcbPlcfLst;
+                //read the LSTF structs
                 for (int i = 0; i < count; i++)
                 {
-                    //read and parse
-                    int offset = fib.fcPlcfLst + 2 + (i * LSTF_LENGTH);
-                    byte[] lstf = new byte[LSTF_LENGTH];
-                    tableStream.Read(lstf, 0, LSTF_LENGTH, offset);
-                    ListData lst = new ListData(lstf);
+                    this.Add(new ListData(reader));
+                }
 
-                    //read the LVL structs that belong to this LST
-                    for (int j = 0; j < lst.rglvl.Length; j++)
+                //read the LVLF structs
+                for (int i = 0; i < count; i++)
+                {
+                    ListData lstf = this[i];
+                    for (int j = 0; j < lstf.rglvl.Length; j++)
                     {
-                        ListLevel lvl = new ListLevel(tableStream, lvlPos);
-                        lst.rglvl[j] = lvl;
-
-                        lvlPos += (LVLF_LENGTH + lvl.cbGrpprlPapx + lvl.cbGrpprlChpx + 2 + lvl.xst.Length * 2);
+                        lstf.rglvl[j] = new ListLevel(reader);
                     }
-
-                    this.Add(lst);
                 }
             }
         }

@@ -112,7 +112,6 @@
     <Compile Include="OfficeArtContent.cs" />
     <Compile Include="FileShapeAddress.cs" />
     <Compile Include="FontFamilyName.cs" />
-    <Compile Include="FontTable.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="CharacterRange.cs" />
     <Compile Include="HeaderAndFooterTable.cs" />
@@ -129,10 +128,11 @@
     <Compile Include="PictureBulletInformation.cs" />
     <Compile Include="PictureDescriptor.cs" />
     <Compile Include="Plex.cs" />
-    <Compile Include="PlexStruct.cs" />
+    <Compile Include="ByteStructure.cs" />
+    <Compile Include="SectionDescriptor.cs" />
     <Compile Include="SectionPropertyExceptions.cs" />
-    <Compile Include="SectionTable.cs" />
     <Compile Include="SprmTDefTable.cs" />
+    <Compile Include="StringTable.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -28,10 +28,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class ListFormatOverride
+    public class ListFormatOverride : ByteStructure
     {
         /// <summary>
         /// List ID of corresponding ListData
@@ -44,26 +45,47 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public byte clfolvl;
 
         /// <summary>
+        /// Specifies the field this LFO represents. 
+        /// MUST be a value from the following table:<br/>
+        /// 0x00:   This LFO is not used for any field.<br/>
+        /// 0xFC:   This LFO is used for the AUTONUMLGL field.<br/>
+        /// 0xFD:   This LFO is used for the AUTONUMOUT field.<br/>
+        /// 0xFE:   This LFO is used for the AUTONUM field.<br/>
+        /// 0xFF:   This LFO is not used for any field.
+        /// </summary>
+        public byte ibstFltAutoNum;
+
+        /// <summary>
+        /// A grfhic that specifies HTML incompatibilities.
+        /// </summary>
+        public byte grfhic;
+
+        /// <summary>
         /// Array of all levels whose format is overridden
         /// </summary>
         public ListFormatOverrideLevel[] rgLfoLvl;
 
+        private const int LFO_LENGTH = 16;
+
         /// <summary>
-        /// Parses the bytes to retrieve a ListFormatOverride
+        /// Parses the given Stream Reader to retrieve a ListFormatOverride
         /// </summary>
         /// <param name="bytes">The bytes</param>
-        public ListFormatOverride(byte[] bytes)
+        public ListFormatOverride(VirtualStreamReader reader) : base(reader)
         {
-            if (bytes.Length == 16)
-            {
-                this.lsid = System.BitConverter.ToInt32(bytes, 0);
-                this.clfolvl = bytes[12];
-                this.rgLfoLvl = new ListFormatOverrideLevel[this.clfolvl];
-            }
-            else
-            {
-                throw new ByteParseException("LFO");
-            }
+            long startPos = _reader.BaseStream.Position;
+
+            this.lsid = _reader.ReadInt32();
+            _reader.ReadBytes(8);
+            this.clfolvl = _reader.ReadByte();
+            this.ibstFltAutoNum = _reader.ReadByte();
+            this.grfhic = _reader.ReadByte();
+            _reader.ReadByte();
+
+            this.rgLfoLvl = new ListFormatOverrideLevel[this.clfolvl];
+
+            _reader.BaseStream.Seek(startPos, System.IO.SeekOrigin.Begin);
+            _rawBytes = _reader.ReadBytes(LFO_LENGTH);
         }
     }
 }

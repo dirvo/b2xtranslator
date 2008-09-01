@@ -53,7 +53,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
 
             //write the section properties of the body with the last SEPX
-            SectionPropertyExceptions lastSepx = _doc.SectionTable.grpsepx[_doc.SectionTable.grpsepx.Length - 1];
+            int lastSepxCp = 0;
+            foreach (int sepxCp in _ctx.AllSepx.Keys)
+            {
+                lastSepxCp = sepxCp;
+            }
+            SectionPropertyExceptions lastSepx = _ctx.AllSepx[lastSepxCp];
             lastSepx.Convert(new SectionPropertiesMapping(_writer, _ctx, _sectionNr));
 
             //end the document

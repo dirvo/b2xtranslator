@@ -45,7 +45,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private XmlElement _tcPr;
         private XmlElement _tcMar;
         private XmlElement _tcBorders;
-        private XmlElement _tcW;
         private List<Int16> _grid;
         private Int16[] _tGrid;
 

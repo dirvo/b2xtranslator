@@ -5,7 +5,7 @@ using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class AnnotationReferenceDescriptor : PlexStruct
+    public class AnnotationReferenceDescriptor : ByteStructure
     {
         /// <summary>
         /// The initials of the user who left the annotation.

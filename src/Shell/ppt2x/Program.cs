@@ -124,15 +124,15 @@ namespace DIaLOGIKa.b2xtranslator.ppt2x
                 TraceLogger.Error("Could not read input file {0}.", inputFile);
                 TraceLogger.Debug(ex.ToString());
             }
-            catch (MagicNumberException ex)
+            catch (MagicNumberException)
             {
                 TraceLogger.Error("Input file {0} is not a valid PowerPoint file.", inputFile);
             }
-            catch (InvalidStreamException ex)
+            catch (InvalidStreamException)
             {
                 TraceLogger.Error("Input file {0} is not a valid PowerPoint file.", inputFile);
             }
-            catch (InvalidRecordException ex)
+            catch (InvalidRecordException)
             {
                 TraceLogger.Error("Input file {0} is not a valid PowerPoint file.", inputFile);
             }

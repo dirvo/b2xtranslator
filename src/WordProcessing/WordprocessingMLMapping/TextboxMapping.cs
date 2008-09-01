@@ -38,14 +38,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 cp = txtbxSubdocStart + doc.TextboxBreakPlex.CharacterPositions[index];
                 cpEnd = txtbxSubdocStart + doc.TextboxBreakPlex.CharacterPositions[index + 1];
-                bkd = (BreakDescriptor)doc.TextboxBreakPlex.Structs[index];
+                bkd = (BreakDescriptor)doc.TextboxBreakPlex.Elements[index];
             }
             if(_targetPart.GetType() == typeof(HeaderPart))
             {
                 txtbxSubdocStart += doc.FIB.ccpTxbx;
                 cp = txtbxSubdocStart + doc.TextboxBreakPlexHeader.CharacterPositions[index];
                 cpEnd = txtbxSubdocStart + doc.TextboxBreakPlexHeader.CharacterPositions[index + 1];
-                bkd = (BreakDescriptor)doc.TextboxBreakPlexHeader.Structs[index];
+                bkd = (BreakDescriptor)doc.TextboxBreakPlexHeader.Elements[index];
             }
 
             //convert the textbox text

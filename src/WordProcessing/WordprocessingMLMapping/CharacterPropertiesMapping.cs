@@ -91,7 +91,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                 //author
                 XmlAttribute author = _nodeFactory.CreateAttribute("w", "author", OpenXmlNamespaces.WordprocessingML);
-                author.Value = _doc.AuthorTable[_revisionData.Isbt];
+                author.Value = _doc.AuthorTable.Strings[_revisionData.Isbt];
                 rPrChange.Attributes.Append(author);
 
                 //convert revision stack
@@ -256,18 +256,21 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     //font family
                     case 0x4A4F:
-                       XmlAttribute ascii = _nodeFactory.CreateAttribute("w", "ascii", OpenXmlNamespaces.WordprocessingML);
-                       ascii.Value = _doc.FontTable[System.BitConverter.ToUInt16(sprm.Arguments, 0)].xszFtn;
-                       rFonts.Attributes.Append(ascii);
-                       break;
+                        XmlAttribute ascii = _nodeFactory.CreateAttribute("w", "ascii", OpenXmlNamespaces.WordprocessingML);
+                        FontFamilyName ffn = (FontFamilyName)_doc.FontTable.Data[System.BitConverter.ToUInt16(sprm.Arguments, 0)];
+                        ascii.Value = ffn.xszFtn;
+                        rFonts.Attributes.Append(ascii);
+                        break;
                    case 0x4A50:
                        XmlAttribute eastAsia = _nodeFactory.CreateAttribute("w", "eastAsia", OpenXmlNamespaces.WordprocessingML);
-                       eastAsia.Value = _doc.FontTable[System.BitConverter.ToUInt16(sprm.Arguments, 0)].xszFtn;
+                       FontFamilyName ffnAsia = (FontFamilyName)_doc.FontTable.Data[System.BitConverter.ToUInt16(sprm.Arguments, 0)];
+                       eastAsia.Value = ffnAsia.xszFtn;
                        rFonts.Attributes.Append(eastAsia);
                        break;
                     case 0x4A51:
                         XmlAttribute ansi = _nodeFactory.CreateAttribute("w", "hAnsi", OpenXmlNamespaces.WordprocessingML);
-                        ansi.Value = _doc.FontTable[System.BitConverter.ToUInt16(sprm.Arguments, 0)].xszFtn;
+                        FontFamilyName ffnAnsi = (FontFamilyName)_doc.FontTable.Data[System.BitConverter.ToUInt16(sprm.Arguments, 0)];
+                        ansi.Value = ffnAnsi.xszFtn;
                         rFonts.Attributes.Append(ansi);
                         break;
 

@@ -7,7 +7,7 @@ using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class FileShapeAddress : PlexStruct
+    public class FileShapeAddress : ByteStructure
     {
         public enum AnchorType
         {

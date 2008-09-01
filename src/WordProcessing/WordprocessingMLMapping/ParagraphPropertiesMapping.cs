@@ -314,7 +314,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         appendValueElement(numPr, "ilvl", sprm.Arguments[0].ToString(), true);
                         break;
                     case SinglePropertyModifier.OperationCode.sprmPIlfo:
-                        Int16 val  = System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        UInt16 val  = System.BitConverter.ToUInt16(sprm.Arguments, 0);
                         if(val >= 0x0001 && val <= 0x07FE)
                             appendValueElement(numPr, "numId", val.ToString(), true);
                         else if (val >= 0xF802 && val <= 0xFFFF)

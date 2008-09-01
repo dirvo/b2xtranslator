@@ -29,10 +29,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.Tools;
+using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class ListData
+    public class ListData : ByteStructure
     {
         /// <summary>
         /// Unique List ID
@@ -83,44 +84,50 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public ListLevel[] rglvl;
 
+        /// <summary>
+        /// A grfhic that specifies HTML incompatibilities of the list.
+        /// </summary>
+        public byte grfhic;
+
         public const Int16 ISTD_NIL = 4095;
-        private const int RGISTD_LENGTH = 9;
+        private const int LSTF_LENGTH = 28;
+
 
         /// <summary>
-        /// Parses the bytes to retrieve a ListData
+        /// Parses the StreamReader to retrieve a ListData
         /// </summary>
         /// <param name="bytes">The bytes</param>
-        public ListData(byte[] bytes)
+        public ListData(VirtualStreamReader reader) : base(reader)
         {
-            if (bytes.Length == 28)
+            long startPos = _reader.BaseStream.Position;
+
+            this.lsid = _reader.ReadInt32();
+            this.tplc = _reader.ReadInt32();
+
+            this.rgistd = new Int16[9];
+            for (int i = 0; i < 9; i++)
             {
-                this.lsid = System.BitConverter.ToInt32(bytes, 0);
-                this.tplc = System.BitConverter.ToInt32(bytes, 4);
-
-                this.rgistd = new Int16[RGISTD_LENGTH];
-                for (int i = 0; i < RGISTD_LENGTH; i++)
-                {
-                    this.rgistd[i] = System.BitConverter.ToInt16(bytes, 8 + (i*2));
-                }
-
-                //parse flagbyte
-                int flag = (int)bytes[26];
-                this.fSimpleList = Utils.BitmaskToBool(flag, 0x01);
-
-                if(this.fSimpleList)
-                    this.rglvl = new ListLevel[1];
-                else
-                    this.rglvl = new ListLevel[9];
-
-                this.fRestartHdn = Utils.BitmaskToBool(flag, 0x02);
-                this.fAutoNum = Utils.BitmaskToBool(flag, 0x04);
-                this.fPreRTF = Utils.BitmaskToBool(flag, 0x08);
-                this.fHybrid = Utils.BitmaskToBool(flag, 0x10);
+                this.rgistd[i] = _reader.ReadInt16();
             }
+
+            //parse flagbyte
+            int flag = (int)_reader.ReadByte();
+            this.fSimpleList = Utils.BitmaskToBool(flag, 0x01);
+
+            if (this.fSimpleList)
+                this.rglvl = new ListLevel[1];
             else
-            {
-                throw new ByteParseException("LSTF");
-            }
+                this.rglvl = new ListLevel[9];
+
+            this.fRestartHdn = Utils.BitmaskToBool(flag, 0x02);
+            this.fAutoNum = Utils.BitmaskToBool(flag, 0x04);
+            this.fPreRTF = Utils.BitmaskToBool(flag, 0x08);
+            this.fHybrid = Utils.BitmaskToBool(flag, 0x10);
+
+            this.grfhic = _reader.ReadByte();
+
+            _reader.BaseStream.Seek(startPos, System.IO.SeekOrigin.Begin);
+            _rawBytes = _reader.ReadBytes(LSTF_LENGTH);
         }
     }
 }

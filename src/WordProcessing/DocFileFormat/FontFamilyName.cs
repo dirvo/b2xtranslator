@@ -30,10 +30,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Collections;
 using DIaLOGIKa.b2xtranslator.Tools;
+using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class FontFamilyName
+    public class FontFamilyName : ByteStructure
     {
         public struct FontSignature
         {
@@ -85,11 +86,67 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public FontSignature fs;
 
+
+        public FontFamilyName(VirtualStreamReader reader) : base(reader)
+        {
+            int b1 = (int)_reader.ReadByte();
+
+            int req = b1;
+            req = req << 6;
+            req = req >> 6;
+            this.prq = (byte)req;
+
+            this.fTrueType = Utils.BitmaskToBool(b1, 0x04);
+
+            int family = b1;
+            family = family << 1;
+            family = family >> 4;
+            this.ff = (byte)family;
+
+            this.wWeight = _reader.ReadInt16();
+
+            this.chs = _reader.ReadByte();
+
+            //skip byte 5
+            _reader.ReadByte();
+
+            //read the 10 bytes panose
+            this.panose = _reader.ReadBytes(10);
+
+            //read the 24 bytes FontSignature
+            this.fs = new FontSignature();
+            this.fs.UnicodeSubsetBitfield0 = _reader.ReadUInt32();
+            this.fs.UnicodeSubsetBitfield1 = _reader.ReadUInt32();
+            this.fs.UnicodeSubsetBitfield2 = _reader.ReadUInt32();
+            this.fs.UnicodeSubsetBitfield3 = _reader.ReadUInt32();
+            this.fs.CodePageBitfield0 = _reader.ReadUInt32();
+            this.fs.CodePageBitfield1 = _reader.ReadUInt32();
+
+            //read the \0 terminated string
+            long strStart = reader.BaseStream.Position;
+            long strEnd = searchTerminationZero(_reader);
+            int strLen = (int)(strEnd - strStart);
+
+            _reader.BaseStream.Seek(strStart, System.IO.SeekOrigin.Begin);
+            this.xszFtn = Encoding.Unicode.GetString(_reader.ReadBytes(strLen));
+            this.xszFtn = this.xszFtn.Replace("\0", "");
+        }
+
+        private long searchTerminationZero(VirtualStreamReader reader)
+        {
+
+            while (reader.ReadInt16() != 0)
+            {
+                ;
+            }
+            return reader.BaseStream.Position;
+        }
+
         /// <summary>
         /// Parses the byte to retrieve a FFN structure
         /// </summary>
         /// <param name="bytes">The bytes</param>
-        public FontFamilyName(byte[] bytes)
+        public FontFamilyName(byte[] bytes) : base(null)
         {
             if (bytes.Length > 40)
             {

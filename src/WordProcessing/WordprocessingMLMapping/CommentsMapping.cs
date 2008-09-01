@@ -27,13 +27,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 _writer.WriteStartElement("w", "comment", OpenXmlNamespaces.WordprocessingML);
 
-                AnnotationReferenceDescriptor atrd = (AnnotationReferenceDescriptor)doc.AnnotationsReferencePlex.Structs[index];
-                AnnotationReferenceDescriptorExtra atrdExtra = doc.AnnotationReferenceExtraTable[index];
+                AnnotationReferenceDescriptor atrdPre10 = (AnnotationReferenceDescriptor)doc.AnnotationsReferencePlex.Elements[index];
+                AnnotationReferenceDescriptorExtra atrdPost10 = doc.AnnotationReferenceExtraTable[index];
 
                 _writer.WriteAttributeString("w", "id", OpenXmlNamespaces.WordprocessingML, index.ToString());
-                _writer.WriteAttributeString("w", "author", OpenXmlNamespaces.WordprocessingML, doc.AuthorTable[atrd.AuthorIndex]);
-                atrdExtra.Date.Convert(new DateMapping(_writer));
-                _writer.WriteAttributeString("w", "initials", OpenXmlNamespaces.WordprocessingML, atrd.UserInitials);
+                _writer.WriteAttributeString("w", "author", OpenXmlNamespaces.WordprocessingML, doc.AuthorTable.Strings[atrdPre10.AuthorIndex]);
+                atrdPost10.Date.Convert(new DateMapping(_writer));
+                _writer.WriteAttributeString("w", "initials", OpenXmlNamespaces.WordprocessingML, atrdPre10.UserInitials);
 
                 cp = writeParagraph(cp);
                 _writer.WriteEndElement();

@@ -167,10 +167,18 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             //write default fonts
             _writer.WriteStartElement("w", "rFonts", OpenXmlNamespaces.WordprocessingML);
-            _writer.WriteAttributeString("w", "ascii", OpenXmlNamespaces.WordprocessingML, _ctx.Doc.FontTable[sheet.stshi.rgftcStandardChpStsh[0]].xszFtn);
-            _writer.WriteAttributeString("w", "eastAsia", OpenXmlNamespaces.WordprocessingML, _ctx.Doc.FontTable[sheet.stshi.rgftcStandardChpStsh[1]].xszFtn);
-            _writer.WriteAttributeString("w", "hAnsi", OpenXmlNamespaces.WordprocessingML, _ctx.Doc.FontTable[sheet.stshi.rgftcStandardChpStsh[2]].xszFtn);
-            _writer.WriteAttributeString("w", "cs", OpenXmlNamespaces.WordprocessingML, _ctx.Doc.FontTable[sheet.stshi.rgftcStandardChpStsh[3]].xszFtn);
+
+            FontFamilyName ffnAscii = (FontFamilyName)_ctx.Doc.FontTable.Data[sheet.stshi.rgftcStandardChpStsh[0]];
+            _writer.WriteAttributeString("w", "ascii", OpenXmlNamespaces.WordprocessingML, ffnAscii.xszFtn);
+
+            FontFamilyName ffnAsia = (FontFamilyName)_ctx.Doc.FontTable.Data[sheet.stshi.rgftcStandardChpStsh[1]];
+            _writer.WriteAttributeString("w", "eastAsia", OpenXmlNamespaces.WordprocessingML, ffnAsia.xszFtn);
+
+            FontFamilyName ffnAnsi = (FontFamilyName)_ctx.Doc.FontTable.Data[sheet.stshi.rgftcStandardChpStsh[2]];
+            _writer.WriteAttributeString("w", "hAnsi", OpenXmlNamespaces.WordprocessingML, ffnAsia.xszFtn);
+
+            FontFamilyName ffnComplex = (FontFamilyName)_ctx.Doc.FontTable.Data[sheet.stshi.rgftcStandardChpStsh[3]];
+            _writer.WriteAttributeString("w", "cs", OpenXmlNamespaces.WordprocessingML, ffnComplex.xszFtn);
             
             _writer.WriteEndElement();
 

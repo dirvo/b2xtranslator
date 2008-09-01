@@ -29,10 +29,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.Tools;
+using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class ListFormatOverrideLevel
+    public class ListFormatOverrideLevel : ByteStructure
     {
         /// <summary>
         /// Start-at value if fFormatting==false and fStartAt==true. 
@@ -55,25 +56,30 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public bool fFormatting;
 
+        private const int LFOLVL_LENGTH = 6;
+
         /// <summary>
         /// Parses the bytes to retrieve a ListFormatOverrideLevel
         /// </summary>
         /// <param name="bytes">The bytes</param>
-        public ListFormatOverrideLevel(byte[] bytes)
+        public ListFormatOverrideLevel(VirtualStreamReader reader) : base(reader)
         {
-            if (bytes.Length == 6)
-            {
-                this.iStartAt = System.BitConverter.ToInt32(bytes, 0);
+            long startPos = _reader.BaseStream.Position;
 
-                int flag = (int)System.BitConverter.ToInt16(bytes, 4);
-                this.ilvl = (byte)(flag & 0x000F);
-                this.fStartAt = Utils.BitmaskToBool(flag, 0x0010);
-                this.fFormatting = Utils.BitmaskToBool(flag, 0x0020);
-            }
-            else
+            this.iStartAt = _reader.ReadInt32();
+            int flag = (int)_reader.ReadInt16();
+            this.ilvl = (byte)(flag & 0x000F);
+            this.fStartAt = Utils.BitmaskToBool(flag, 0x0010);
+            this.fFormatting = Utils.BitmaskToBool(flag, 0x0020);
+
+            //it's a complete override, so the fix part is followed by LVL struct
+            if (this.fFormatting)
             {
-                throw new ByteParseException("LFOLVL");
+
             }
+
+            _reader.BaseStream.Seek(startPos, System.IO.SeekOrigin.Begin);
+            _rawBytes = _reader.ReadBytes(LFOLVL_LENGTH);
         }
     }
 }

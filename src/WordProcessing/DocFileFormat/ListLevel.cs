@@ -33,7 +33,7 @@ using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class ListLevel
+    public class ListLevel : ByteStructure
     {
         public enum FollowingChar
         {
@@ -127,6 +127,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public byte ilvlRestartLim;
 
         /// <summary>
+        /// A grfhic that specifies HTML incompatibilities of the level.
+        /// </summary>
+        public byte grfhic;
+
+        /// <summary>
         /// 
         /// </summary>
         public ParagraphPropertyExceptions grpprlPapx;
@@ -144,19 +149,21 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         private const int LVLF_LENGTH = 28;
 
         /// <summary>
-        /// 
+        /// Parses the given StreamReader to retrieve a LVL struct
         /// </summary>
         /// <param name="bytes"></param>
-        public ListLevel(VirtualStream tableStream, int offset)
-        { 
+        public ListLevel(VirtualStreamReader reader) : base(reader)
+        {
             //read the fix part of the LVL into an array
-            byte[] bytes = new byte[LVLF_LENGTH];
-            tableStream.Read(bytes, 0, LVLF_LENGTH, offset);
-            
+            //byte[] bytes = new byte[LVLF_LENGTH];
+            //tableStream.Read(bytes, 0, LVLF_LENGTH, offset);
+
+            long startPos = _reader.BaseStream.Position;
+
             //parse the fix part
-            this.iStartAt = System.BitConverter.ToInt32(bytes, 0);
-            this.nfc = bytes[4];
-            int flag = (int)bytes[5];
+            this.iStartAt = _reader.ReadInt32();
+            this.nfc = _reader.ReadByte();
+            int flag = _reader.ReadByte();
             this.jc = (byte)(flag & 0x03);
             this.fLegal = Utils.BitmaskToBool(flag, 0x04);
             this.fNoRestart = Utils.BitmaskToBool(flag, 0x08);
@@ -164,45 +171,39 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.fPrevSpace = Utils.BitmaskToBool(flag, 0x20);
             this.fWord6 = Utils.BitmaskToBool(flag, 0x40);
             this.rgbxchNums = new byte[9];
-            int j=0;
-            for (int i = 6; i < 15; i++)
+            for (int i = 0; i < 9; i++)
             {
-                rgbxchNums[j] = bytes[i];
-                j++;
+                rgbxchNums[i] = _reader.ReadByte();
             }
-            this.ixchFollow = (FollowingChar)bytes[15];
-            this.dxaSpace = System.BitConverter.ToInt32(bytes, 16);
-            this.dxaIndent = System.BitConverter.ToInt32(bytes, 20);
-            this.cbGrpprlChpx = bytes[24];
-            this.cbGrpprlPapx = bytes[25];
-            this.ilvlRestartLim = bytes[26];
+            this.ixchFollow = (FollowingChar)_reader.ReadByte();
 
+            this.dxaSpace = _reader.ReadInt32();
+            this.dxaIndent = _reader.ReadInt32();
+
+            this.cbGrpprlChpx = _reader.ReadByte();
+            this.cbGrpprlPapx = _reader.ReadByte();
+
+            this.ilvlRestartLim = _reader.ReadByte();
+            this.grfhic = _reader.ReadByte();
+            
             //parse the variable part
 
             //read the group of papx sprms
-            int papxPos = offset + LVLF_LENGTH;
-            byte[] papxBytes = new byte[this.cbGrpprlPapx];
-            tableStream.Read(papxBytes, 0, this.cbGrpprlPapx, papxPos);
-            //this papx ahs no istd, so use PX to parse it
-            PropertyExceptions px = new PropertyExceptions(papxBytes);
+            //this papx has no istd, so use PX to parse it
+            PropertyExceptions px = new PropertyExceptions(_reader.ReadBytes(this.cbGrpprlPapx));
             this.grpprlPapx = new ParagraphPropertyExceptions();
             this.grpprlPapx.grpprl = px.grpprl;
 
             //read the group of chpx sprms
-            int chpxPos = offset + LVLF_LENGTH + this.cbGrpprlPapx;
-            byte[] chpxBytes = new byte[this.cbGrpprlChpx];
-            tableStream.Read(chpxBytes, 0, this.cbGrpprlChpx, chpxPos);
-            this.grpprlChpx = new CharacterPropertyExceptions(chpxBytes);
+            this.grpprlChpx = new CharacterPropertyExceptions(_reader.ReadBytes(this.cbGrpprlChpx));
 
             //read the number text
-            int strPos = offset + LVLF_LENGTH + this.cbGrpprlPapx + this.cbGrpprlChpx;
-            byte[] strLenBytes = new byte[2];
-            tableStream.Read(strLenBytes,0,2,strPos);
-            Int16 strLen = System.BitConverter.ToInt16(strLenBytes, 0);
-            strPos += 2;
-            byte[] strBytes = new byte[strLen*2];
-            tableStream.Read(strBytes, 0, strLen*2, strPos);
-            this.xst = Encoding.Unicode.GetString(strBytes);
+            Int16 strLen = _reader.ReadInt16();
+            this.xst = Encoding.Unicode.GetString(_reader.ReadBytes(strLen * 2));
+
+            long endPos = _reader.BaseStream.Position;
+            _reader.BaseStream.Seek(startPos, System.IO.SeekOrigin.Begin);
+            _rawBytes = _reader.ReadBytes((int)(endPos - startPos));
         }
     }
 }

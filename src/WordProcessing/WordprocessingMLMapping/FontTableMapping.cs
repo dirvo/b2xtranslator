@@ -37,7 +37,7 @@ using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
     public class FontTableMapping : AbstractOpenXmlMapping,
-        IMapping<FontTable>
+        IMapping<StringTable>
     {
         protected enum FontFamily
         {
@@ -54,11 +54,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
         }
 
-        public void Apply(FontTable table)
+        public void Apply(StringTable table)
         {
             _writer.WriteStartElement("w", "fonts", OpenXmlNamespaces.WordprocessingML);
 
-            foreach (FontFamilyName font in table)
+            foreach (FontFamilyName font in table.Data)
             {
                 _writer.WriteStartElement("w", "font", OpenXmlNamespaces.WordprocessingML);
                 _writer.WriteAttributeString("w", "name", OpenXmlNamespaces.WordprocessingML, font.xszFtn);

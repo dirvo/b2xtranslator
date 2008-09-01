@@ -5,6 +5,7 @@ using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using DIaLOGIKa.b2xtranslator.DocFileFormat;
 using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
+using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
@@ -88,9 +89,19 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             //build a dictionary of all SEPX
             _allSepx = new Dictionary<Int32, SectionPropertyExceptions>();
-            for (int i = 0; i < doc.SectionTable.grpsepx.Length; i++)
+            for (int i = 0; i < doc.SectionPlex.Elements.Count; i++)
             {
-                _allSepx.Add(doc.SectionTable.rgfc[i + 1], doc.SectionTable.grpsepx[i]);
+                //Read the SED
+                SectionDescriptor sed = (SectionDescriptor)doc.SectionPlex.Elements[i];
+                Int32 cp = doc.SectionPlex.CharacterPositions[i + 1];
+                
+                //Get the SEPX
+                VirtualStreamReader wordReader = new VirtualStreamReader(doc.WordDocumentStream);
+                doc.WordDocumentStream.Seek(sed.fcSepx, System.IO.SeekOrigin.Begin);
+                Int16 cbSepx = wordReader.ReadInt16();
+                SectionPropertyExceptions sepx = new SectionPropertyExceptions(wordReader.ReadBytes(cbSepx - 2));
+
+                _allSepx.Add(cp, sepx);
             }
         }
 

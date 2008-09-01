@@ -5,7 +5,7 @@ using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class AnnotationReferenceDescriptorExtra : PlexStruct
+    public class AnnotationReferenceDescriptorExtra : ByteStructure
     {
         public DateAndTime Date;
 

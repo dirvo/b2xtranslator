@@ -47,14 +47,14 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public PieceTable PieceTable;
 
         /// <summary>
-        /// Contains all section descriptors
+        /// A Plex containing all section descriptors
         /// </summary>
-        public SectionTable SectionTable;
+        public Plex SectionPlex;
 
         /// <summary>
         /// Contains the names of all author who revised something in the document
         /// </summary>
-        public AuthorTable AuthorTable;
+        public StringTable AuthorTable;
 
         /// <summary>
         /// The stream "WordDocument"
@@ -94,7 +94,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// A list of all font names, used in the doucument
         /// </summary>
-        public FontTable FontTable;
+        public StringTable FontTable;
 
         /// <summary>
         /// A plex with all ATRDPre10 structs
@@ -159,6 +159,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public List<FormattedDiskPageCHPX> AllChpxFkps;
 
         /// <summary>
+        /// A List with all Section Property Exceptions
+        /// </summary>
+        public List<SectionPropertyExceptions> AllSepx;
+
+        /// <summary>
         /// A table that contains the positions of the headers and footer in the text.
         /// </summary>
         public HeaderAndFooterTable HeaderAndFooterTable;
@@ -190,47 +195,30 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 this.DataStream = null;
             }
 
-            //parse properties
-            this.DocumentProperties = new DocumentProperties(this.FIB, this.TableStream);
+            //Read all needed STTBs
+            this.AuthorTable = new StringTable(typeof(String), this.TableStream, this.FIB.fcSttbfRMark, this.FIB.lcbSttbfRMark);
+            this.FontTable = new StringTable(typeof(FontFamilyName), this.TableStream, this.FIB.fcSttbfffn, this.FIB.lcbSttbfffn);
 
-            //parse the stylesheet
-            this.Styles = new StyleSheet(this.FIB, this.TableStream, this.DataStream);
-
-            //read font table
-            this.FontTable = new FontTable(this.FIB,this.TableStream);
-
-            //read list table
-            this.ListTable = new ListTable(this.FIB, this.TableStream);
-
-            //read lfo table
-            this.ListFormatOverrideTable = new ListFormatOverrideTable(this.FIB, this.TableStream);
-
-            //parse the AuthorTable
-            this.AuthorTable = new AuthorTable(this.FIB, this.TableStream);
-
-            //read all PAPX FKPS
-            this.AllPapxFkps = FormattedDiskPagePAPX.GetAllPAPXFKPs(this.FIB, this.WordDocumentStream, this.TableStream, this.DataStream);
-
-            //read all CHPX FKPS
-            this.AllChpxFkps = FormattedDiskPageCHPX.GetAllCHPXFKPs(this.FIB, this.WordDocumentStream, this.TableStream);
-
-            //read section table
-            this.SectionTable = new SectionTable(this.FIB, this.TableStream, this.WordDocumentStream);
-
-            //read the Drawing Content
-            this.OfficeArtContent = new OfficeArtContent(this.FIB, this.TableStream);
-
-            //read headers and footer table
-            this.HeaderAndFooterTable = new HeaderAndFooterTable(this);
-
-            this.AnnotationReferenceExtraTable = new AnnotationReferenceExtraTable(this.FIB, this.TableStream);
-
-            //Read all needed Plex
+            //Read all needed PLCFs
             this.AnnotationsReferencePlex = new Plex(typeof(AnnotationReferenceDescriptor), 30, this.TableStream, this.FIB.fcPlcfandRef, this.FIB.lcbPlcfandRef);
             this.TextboxBreakPlex = new Plex(typeof(BreakDescriptor), 6, this.TableStream, this.FIB.fcPlcftxbxBkd, this.FIB.lcbPlcftxbxBkd);
             this.TextboxBreakPlexHeader = new Plex(typeof(BreakDescriptor), 6, this.TableStream, this.FIB.fcPlcftxbxHdrBkd, this.FIB.lcbPlcftxbxHdrBkd);
             this.OfficeDrawingPlex = new Plex(typeof(FileShapeAddress), 26, this.TableStream, this.FIB.fcPlcspaMom, this.FIB.lcbPlcspaMom);
             this.OfficeDrawingPlexHeader = new Plex(typeof(FileShapeAddress), 26, this.TableStream, this.FIB.fcPlcspaHdr, this.FIB.lcbPlcspaHdr);
+            this.SectionPlex = new Plex(typeof(SectionDescriptor), 12, this.TableStream, this.FIB.fcPlcfSed, this.FIB.lcbPlcfSed);
+
+            //read the FKPs
+            this.AllPapxFkps = FormattedDiskPagePAPX.GetAllPAPXFKPs(this.FIB, this.WordDocumentStream, this.TableStream, this.DataStream);
+            this.AllChpxFkps = FormattedDiskPageCHPX.GetAllCHPXFKPs(this.FIB, this.WordDocumentStream, this.TableStream);
+
+            //read custom tables
+            this.DocumentProperties = new DocumentProperties(this.FIB, this.TableStream);
+            this.Styles = new StyleSheet(this.FIB, this.TableStream, this.DataStream);
+            this.ListTable = new ListTable(this.FIB, this.TableStream);
+            this.ListFormatOverrideTable = new ListFormatOverrideTable(this.FIB, this.TableStream);
+            this.OfficeArtContent = new OfficeArtContent(this.FIB, this.TableStream);
+            this.HeaderAndFooterTable = new HeaderAndFooterTable(this);
+            this.AnnotationReferenceExtraTable = new AnnotationReferenceExtraTable(this.FIB, this.TableStream);
 
             //parse the piece table and construct a list that contains all chars
             this.PieceTable = new PieceTable(this.FIB, this.TableStream);
