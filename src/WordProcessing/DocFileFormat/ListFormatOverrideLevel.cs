@@ -62,7 +62,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// Parses the bytes to retrieve a ListFormatOverrideLevel
         /// </summary>
         /// <param name="bytes">The bytes</param>
-        public ListFormatOverrideLevel(VirtualStreamReader reader) : base(reader)
+        public ListFormatOverrideLevel(VirtualStreamReader reader, int length)
+            : base(reader, length)
         {
             long startPos = _reader.BaseStream.Position;
 

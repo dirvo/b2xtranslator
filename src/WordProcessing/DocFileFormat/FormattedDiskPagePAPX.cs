@@ -136,11 +136,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             List<FormattedDiskPagePAPX> list = new List<FormattedDiskPagePAPX>();
 
             //get bintable for PAPX
-            byte[] binTablePapx = new byte[fib.lcbPlcfbtePapx];
-            tableStream.Read(binTablePapx, 0, binTablePapx.Length, (int)fib.fcPlcfbtePapx);
+            byte[] binTablePapx = new byte[fib.lcbPlcfBtePapx];
+            tableStream.Read(binTablePapx, 0, binTablePapx.Length, (int)fib.fcPlcfBtePapx);
 
             //there are n offsets and n-1 fkp's in the bin table
-            int n = (((int)fib.lcbPlcfbtePapx - 4) / 8) + 1;
+            int n = (((int)fib.lcbPlcfBtePapx - 4) / 8) + 1;
 
             //Get the indexed PAPX FKPs
             for (int i = (n * 4); i < binTablePapx.Length; i += 4)

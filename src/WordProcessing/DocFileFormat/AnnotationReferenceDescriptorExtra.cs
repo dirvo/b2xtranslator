@@ -13,8 +13,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         public Int32 ParentOffset;
 
-        public AnnotationReferenceDescriptorExtra(VirtualStreamReader reader)
-            : base(reader)
+        public AnnotationReferenceDescriptorExtra(VirtualStreamReader reader, int length)
+            : base(reader, length)
         {
             this.Date = new DateAndTime(_reader.ReadBytes(4));
             _reader.ReadBytes(2);

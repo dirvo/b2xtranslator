@@ -1638,9 +1638,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             }
         }
 
-        private void setDefaultCompatibilityOptions(UInt16 nFib)
+        private void setDefaultCompatibilityOptions(FileInformationBlock.FibVersion nFib)
         {
-            if(nFib == 193)
+            if(nFib == FileInformationBlock.FibVersion.Fib1997)
             {
                 //Word 97 default settings
                 this.fAlignTablesRowByRow = true;
@@ -1663,7 +1663,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 this.fUseWord2002TableStyleRules = true;
                 this.fUserWord97LineBreakingRules = true;
             }
-            else if (nFib == 217)
+            else if (nFib == FileInformationBlock.FibVersion.Fib2000)
             {
                 //Word 2000 default settings
 
@@ -1678,7 +1678,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 //ToDo: underline characters in numbered lists
                 this.fUseWord2002TableStyleRules = true;
             }
-            else if(nFib == 257)
+            else if(nFib ==  FileInformationBlock.FibVersion.Fib2002)
             {
                 //Word 2002 (XP)
 
@@ -1688,7 +1688,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 this.fNoTabForInd = true;
                 this.fUseWord2002TableStyleRules = true;
             }
-            else if (nFib == 268)
+            else if (nFib == FileInformationBlock.FibVersion.Fib2003)
             {
                 //Word 2003
 
@@ -1697,7 +1697,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 this.fNoTabForInd = true;
 
             }
-            else if (nFib < 193)
+            else if (nFib < FileInformationBlock.FibVersion.Fib1997)
             {
                 throw new UnspportedFileVersionException();
             }

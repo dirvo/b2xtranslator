@@ -40,7 +40,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public List<Int32> CharacterPositions;
         public List<ByteStructure> Elements;
 
-        public Plex(Type elementType, int structureLength, VirtualStream tableStream, Int32 fc, UInt32 lcb)
+        public Plex(Type elementType, int structureLength, VirtualStream tableStream, UInt32 fc, UInt32 lcb)
         {
             tableStream.Seek((long)fc, System.IO.SeekOrigin.Begin);
             VirtualStreamReader reader = new VirtualStreamReader(tableStream);
@@ -58,8 +58,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.Elements = new List<ByteStructure>(); 
             for (int i = 0; i < n; i++)
             {
-                ConstructorInfo constructor = elementType.GetConstructor(new Type[] { typeof(VirtualStreamReader) });
-                ByteStructure st = (ByteStructure)constructor.Invoke(new object[] { reader });
+                ConstructorInfo constructor = elementType.GetConstructor(new Type[] { typeof(VirtualStreamReader), typeof(int) });
+                ByteStructure st = (ByteStructure)constructor.Invoke(new object[] { reader, structureLength });
                 this.Elements.Add(st);
             }
         }

@@ -81,7 +81,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public bool fTextOverflow;
 
-        public BreakDescriptor(VirtualStreamReader reader) : base(reader)
+        public BreakDescriptor(VirtualStreamReader reader, int length)
+            : base(reader, length)
         {
             long startPos = _reader.BaseStream.Position;
 

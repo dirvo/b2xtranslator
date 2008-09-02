@@ -36,12 +36,14 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
     public abstract class ByteStructure
     {
         protected VirtualStreamReader _reader;
+        protected int _length;
         protected byte[] _rawBytes;
+        public const int VARIABLE_LENGTH = int.MaxValue;
 
-
-        public ByteStructure(VirtualStreamReader reader) 
+        public ByteStructure(VirtualStreamReader reader, int length) 
         {
             this._reader = reader;
+            this._length = length;
         }
 
         public override string ToString()

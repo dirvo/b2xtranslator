@@ -18,8 +18,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         private const int SED_LENGTH = 12;
 
-        public SectionDescriptor(VirtualStreamReader reader)
-            : base(reader)
+        public SectionDescriptor(VirtualStreamReader reader, int length)
+            : base(reader, length)
         {
             long startPos = _reader.BaseStream.Position;
 

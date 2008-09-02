@@ -50,7 +50,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 //read the LFOs
                 for (int i = 0; i < count; i++)
                 {
-                    this.Add(new ListFormatOverride(reader));
+                    this.Add(new ListFormatOverride(reader, LFO_LENGTH));
                 }
 
                 //read the LFOLVLs
@@ -58,7 +58,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 {
                     for (int j = 0; j < this[i].clfolvl; j++)
                     {
-                        this[i].rgLfoLvl[j] = new ListFormatOverrideLevel(reader);
+                        this[i].rgLfoLvl[j] = new ListFormatOverrideLevel(reader, LFOLVL_LENGTH);
                     }
                 }
             }

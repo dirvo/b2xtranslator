@@ -77,6 +77,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public String xszFtn;
 
         /// <summary>
+        /// Alternative name of the font
+        /// </summary>
+        public String xszAlt;
+
+        /// <summary>
         /// Panose
         /// </summary>
         public byte[] panose;
@@ -87,8 +92,10 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public FontSignature fs;
 
 
-        public FontFamilyName(VirtualStreamReader reader) : base(reader)
+        public FontFamilyName(VirtualStreamReader reader, int length) : base(reader, length)
         {
+            long startPos = _reader.BaseStream.Position;
+
             int b1 = (int)_reader.ReadByte();
 
             int req = b1;
@@ -122,76 +129,33 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.fs.CodePageBitfield0 = _reader.ReadUInt32();
             this.fs.CodePageBitfield1 = _reader.ReadUInt32();
 
-            //read the \0 terminated string
+            //read the next \0 terminated string
             long strStart = reader.BaseStream.Position;
             long strEnd = searchTerminationZero(_reader);
-            int strLen = (int)(strEnd - strStart);
-
-            _reader.BaseStream.Seek(strStart, System.IO.SeekOrigin.Begin);
-            this.xszFtn = Encoding.Unicode.GetString(_reader.ReadBytes(strLen));
+            this.xszFtn = Encoding.Unicode.GetString(_reader.ReadBytes((int)(strEnd - strStart)));
             this.xszFtn = this.xszFtn.Replace("\0", "");
+
+            long readBytes = _reader.BaseStream.Position - startPos;
+            if(readBytes < _length)
+            {
+                //read the next \0 terminated string
+                strStart = reader.BaseStream.Position;
+                strEnd = searchTerminationZero(_reader);
+                this.xszAlt = Encoding.Unicode.GetString(_reader.ReadBytes((int)(strEnd - strStart)));
+                this.xszAlt = this.xszAlt.Replace("\0", "");
+            }
         }
 
         private long searchTerminationZero(VirtualStreamReader reader)
         {
-
+            long strStart = reader.BaseStream.Position;
             while (reader.ReadInt16() != 0)
             {
                 ;
             }
-            return reader.BaseStream.Position;
-        }
-
-        /// <summary>
-        /// Parses the byte to retrieve a FFN structure
-        /// </summary>
-        /// <param name="bytes">The bytes</param>
-        public FontFamilyName(byte[] bytes) : base(null)
-        {
-            if (bytes.Length > 40)
-            {
-                int cbFfnM1 = bytes[0];
-
-                //unmask byte 1
-                int req = (int)bytes[1];
-                req = req << 6;
-                req = req >> 6;
-                this.prq = (byte)req;
-
-                this.fTrueType = Utils.BitmaskToBool((int)bytes[1], 0x04);
-
-                int family = (int)bytes[1];
-                family = family << 1;
-                family = family >> 4;
-                this.ff = (byte)family;
-
-                //byte 2 and 3
-                this.wWeight = System.BitConverter.ToInt16(bytes, 2);
-
-                //byte 4
-                this.chs = bytes[4];
-
-                //byte 5
-
-                //byte 6-15
-                this.panose = new byte[10];
-                Array.Copy(bytes, 6, panose, 0, 10);
-
-                //byte 16 - 39
-                this.fs = new FontSignature();
-                this.fs.UnicodeSubsetBitfield0 = System.BitConverter.ToUInt32(bytes, 16);
-                this.fs.UnicodeSubsetBitfield1 = System.BitConverter.ToUInt32(bytes, 20);
-                this.fs.UnicodeSubsetBitfield2 = System.BitConverter.ToUInt32(bytes, 24);
-                this.fs.UnicodeSubsetBitfield3 = System.BitConverter.ToUInt32(bytes, 28);
-                this.fs.CodePageBitfield0 = System.BitConverter.ToUInt32(bytes, 32);
-                this.fs.CodePageBitfield1 = System.BitConverter.ToUInt32(bytes, 36);
-
-                //byte 40 - x (name)
-                byte[] name = new byte[bytes.Length - 40];
-                Array.Copy(bytes, 40, name, 0, name.Length);
-                this.xszFtn = Encoding.Unicode.GetString(name);
-                this.xszFtn = this.xszFtn.Replace("\0", "");
-            }
+            long pos = reader.BaseStream.Position;
+            reader.BaseStream.Seek(strStart, System.IO.SeekOrigin.Begin);
+            return pos;
         }
     }
 }

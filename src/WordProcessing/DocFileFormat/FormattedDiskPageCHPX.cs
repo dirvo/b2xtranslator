@@ -111,11 +111,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             List<FormattedDiskPageCHPX> list = new List<FormattedDiskPageCHPX>();
 
             //get bintable for CHPX
-            byte[] binTableChpx = new byte[fib.lcbPlcfbteChpx];
-            tableStream.Read(binTableChpx, 0, binTableChpx.Length, (int)fib.fcPlcfbteChpx);
+            byte[] binTableChpx = new byte[fib.lcbPlcfBteChpx];
+            tableStream.Read(binTableChpx, 0, binTableChpx.Length, (int)fib.fcPlcfBteChpx);
 
             //there are n offsets and n-1 fkp's in the bin table
-            int n = (((int)fib.lcbPlcfbteChpx - 4) / 8) + 1;
+            int n = (((int)fib.lcbPlcfBteChpx - 4) / 8) + 1;
 
             //Get the indexed CHPX FKPs
             for (int i = (n * 4); i < binTableChpx.Length; i += 4)

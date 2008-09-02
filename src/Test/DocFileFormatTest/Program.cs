@@ -76,10 +76,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
                     {
                         testDOP();
                     }
-                    else if (method == "PERF")
-                    {
-                        testPERF();
-                    }
                     else if (method == "PCT")
                     {
                         testPieceTable();
@@ -132,51 +128,10 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
             }
         }
 
-        private static void testPERF()
-        {
-            //start reading bytes
-            byte[] dopBytes = new byte[doc.FIB.lcbDop];
-            doc.TableStream.Read(dopBytes, dopBytes.Length, doc.FIB.fcDop);
-            
-            //start parsing
-            
-            //FIB
-            DateTime fibStart = DateTime.Now;
-            FileInformationBlock fib2 = new FileInformationBlock(doc.WordDocumentStream);
-            DateTime fibEnd = DateTime.Now;
-            TimeSpan fibDiff = fibEnd.Subtract(fibStart);
-
-            //DOP
-            DateTime dopStart = DateTime.Now;
-            DocumentProperties dop = new DocumentProperties(doc.FIB, doc.TableStream);
-            DateTime dopEnd = DateTime.Now;
-            TimeSpan dopDiff = dopEnd.Subtract(dopStart);
-
-            //STSH
-            DateTime stshStart = DateTime.Now;
-            StyleSheet stsh = new StyleSheet(doc.FIB, doc.TableStream, doc.DataStream);
-            DateTime stshEnd = DateTime.Now;
-            TimeSpan stshDiff = stshEnd.Subtract(stshStart);
-
-            //FKP
-            DateTime fkpStart = DateTime.Now;
-            List<FormattedDiskPagePAPX> papxe = FormattedDiskPagePAPX.GetAllPAPXFKPs(doc.FIB, doc.WordDocumentStream, doc.TableStream, doc.DataStream);
-            List<FormattedDiskPageCHPX> chpxe = FormattedDiskPageCHPX.GetAllCHPXFKPs(doc.FIB, doc.WordDocumentStream, doc.TableStream);
-            DateTime fkpEnd = DateTime.Now;
-            TimeSpan fkpDiff = fkpEnd.Subtract(fkpStart);
-
-            Console.WriteLine(
-                "Parsed File Information Block in: " + fibDiff.TotalMilliseconds + "ms\n" +
-                "Parsed Document Properties in: " + dopDiff.TotalMilliseconds + "ms\n" +
-                "Parsed Stylesheet with " + stsh.Styles.Count + " styles in: " + stshDiff.TotalMilliseconds +"ms\n" +
-                "Parsed " + (papxe.Count + chpxe.Count) + " Formatted Disk Pages in: " + fkpDiff.TotalMilliseconds + "ms"
-                );
-        }
-
         private static void testDOP()
         {
-            byte[] dopBytes = new byte[doc.FIB.lcbDop];
-            doc.TableStream.Read(dopBytes, dopBytes.Length, doc.FIB.fcDop);
+            byte[] dopBytes = new byte[(int)doc.FIB.lcbDop];
+            doc.TableStream.Read(dopBytes, dopBytes.Length, (int)doc.FIB.fcDop);
             DocumentProperties dop = new DocumentProperties(doc.FIB, doc.TableStream);
 
             Console.WriteLine("Initial Footnote number: " + dop.nFtn);

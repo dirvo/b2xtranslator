@@ -63,6 +63,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 _writer.WriteStartElement("w", "font", OpenXmlNamespaces.WordprocessingML);
                 _writer.WriteAttributeString("w", "name", OpenXmlNamespaces.WordprocessingML, font.xszFtn);
 
+                //alternative name
+                if (font.xszAlt!= null && font.xszAlt.Length > 0)
+                {
+                    _writer.WriteStartElement("w", "altName", OpenXmlNamespaces.WordprocessingML);
+                    _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, font.xszAlt);
+                    _writer.WriteEndElement();
+                }
+
                 //charset
                 _writer.WriteStartElement("w", "charset", OpenXmlNamespaces.WordprocessingML);
                 _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, String.Format("{0:x2}", font.chs));

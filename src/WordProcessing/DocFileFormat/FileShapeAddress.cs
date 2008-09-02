@@ -115,7 +115,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// 
         /// </summary>
         /// <param name="reader"></param>
-        public FileShapeAddress(VirtualStreamReader reader) : base(reader)
+        public FileShapeAddress(VirtualStreamReader reader, int length)
+            : base(reader, length)
         {
             this.spid = _reader.ReadInt32();
             this.xaLeft = _reader.ReadInt32();

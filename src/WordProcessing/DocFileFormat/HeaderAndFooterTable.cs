@@ -53,8 +53,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             OddFooters = new List<CharacterRange>();
 
             //read the Table
-            Int32[] table = new Int32[doc.FIB.lcbPlcfhdd / 4];
-            doc.TableStream.Seek(doc.FIB.fcPlcfhdd, System.IO.SeekOrigin.Begin);
+            Int32[] table = new Int32[doc.FIB.lcbPlcfHdd / 4];
+            doc.TableStream.Seek(doc.FIB.fcPlcfHdd, System.IO.SeekOrigin.Begin);
             for (int i = 0; i < table.Length; i++)
             {
                 table[i] = tableReader.ReadInt32();

@@ -37,10 +37,10 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
     {
         public ListTable(FileInformationBlock fib, VirtualStream tableStream)
         {
-            if (fib.lcbPlcfLst > 0)
+            if (fib.lcbPlfLst > 0)
             {
                 VirtualStreamReader reader = new VirtualStreamReader(tableStream);
-                reader.BaseStream.Seek(fib.fcPlcfLst, System.IO.SeekOrigin.Begin);
+                reader.BaseStream.Seek(fib.fcPlfLst, System.IO.SeekOrigin.Begin);
 
                 //the ListTable is not a real plex:
                 //it starts with a count, followed by the array of LSTF structs,
@@ -52,7 +52,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 //read the LSTF structs
                 for (int i = 0; i < count; i++)
                 {
-                    this.Add(new ListData(reader));
+                    this.Add(new ListData(reader, ByteStructure.VARIABLE_LENGTH));
                 }
 
                 //read the LVLF structs
@@ -61,7 +61,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     ListData lstf = this[i];
                     for (int j = 0; j < lstf.rglvl.Length; j++)
                     {
-                        lstf.rglvl[j] = new ListLevel(reader);
+                        lstf.rglvl[j] = new ListLevel(reader, ByteStructure.VARIABLE_LENGTH);
                     }
                 }
             }

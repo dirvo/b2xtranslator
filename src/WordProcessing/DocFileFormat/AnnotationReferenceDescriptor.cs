@@ -22,7 +22,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public Int32 BookmarkId;
 
-        public AnnotationReferenceDescriptor(VirtualStreamReader reader) : base(reader)
+        public AnnotationReferenceDescriptor(VirtualStreamReader reader, int length)
+            : base(reader, length)
         {
             //read the user initials (LPXCharBuffer9)
             Int16 cch = _reader.ReadInt16( );

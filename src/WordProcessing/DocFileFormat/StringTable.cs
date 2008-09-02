@@ -50,7 +50,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         private Encoding _enc;
 
-        public StringTable(Type dataType, VirtualStream tableStream, Int32 fc, UInt32 lcb)
+        public StringTable(Type dataType, VirtualStream tableStream, UInt32 fc, UInt32 lcb)
         {
             tableStream.Seek((long)fc, System.IO.SeekOrigin.Begin);
             VirtualStreamReader reader = new VirtualStreamReader(tableStream);
@@ -92,8 +92,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             //read the strings and extra datas
             this.Strings = new List<string>();
             this.Data = new List<ByteStructure>();
-            while (reader.BaseStream.Position < (fc + lcb))
-            {
+            for (int i = 0; i < this.cData; i++)
+			{   
                 int cchData = 0;
                 int cbData = 0;
                 if (this.fExtend)
@@ -107,6 +107,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     cbData = cchData;
                 }
 
+                long posBeforeType = reader.BaseStream.Position;
+
                 if (dataType == typeof(string))
                 {
                     //It's a real string table
@@ -115,10 +117,12 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 else
                 {
                     //It's a modified string table that contains custom data
-                    ConstructorInfo constructor = dataType.GetConstructor(new Type[] { typeof(VirtualStreamReader) });
-                    ByteStructure data = (ByteStructure)constructor.Invoke(new object[] { reader });
+                    ConstructorInfo constructor = dataType.GetConstructor(new Type[] { typeof(VirtualStreamReader), typeof(int) });
+                    ByteStructure data = (ByteStructure)constructor.Invoke(new object[] { reader, cbData });
                     this.Data.Add(data);
                 }
+
+                reader.BaseStream.Seek(posBeforeType + cbData, System.IO.SeekOrigin.Begin);
                 
                 //skip the extra byte
                 reader.ReadBytes(cbExtra);

@@ -174,18 +174,20 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.WordDocumentStream = reader.GetStream("WordDocument");
 
             //parse FIB
-            this.FIB = new FileInformationBlock(this.WordDocumentStream);
-
-            if (this.FIB.nFib < 105)
+            this.FIB = new FileInformationBlock(new VirtualStreamReader(this.WordDocumentStream));
+            if (this.FIB.nFib < FileInformationBlock.FibVersion.Fib1997)
                 throw new UnspportedFileVersionException("DocFileFormat doesn't support Word versions older than Word 97.");
 
-            //get the table stream
-            if (this.FIB.fWhichTblStm)
-                this.TableStream = reader.GetStream("1Table");
-            else
-                this.TableStream = reader.GetStream("0Table");
 
-            //get the data stream
+            //get the streams
+            if (this.FIB.fWhichTblStm)
+            {
+                this.TableStream = reader.GetStream("1Table");
+            }
+            else
+            {
+                this.TableStream = reader.GetStream("0Table");
+            }
             try
             {
                 this.DataStream = reader.GetStream("Data");
@@ -197,14 +199,14 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             //Read all needed STTBs
             this.AuthorTable = new StringTable(typeof(String), this.TableStream, this.FIB.fcSttbfRMark, this.FIB.lcbSttbfRMark);
-            this.FontTable = new StringTable(typeof(FontFamilyName), this.TableStream, this.FIB.fcSttbfffn, this.FIB.lcbSttbfffn);
+            this.FontTable = new StringTable(typeof(FontFamilyName), this.TableStream, this.FIB.fcSttbfFfn, this.FIB.lcbSttbfFfn);
 
             //Read all needed PLCFs
             this.AnnotationsReferencePlex = new Plex(typeof(AnnotationReferenceDescriptor), 30, this.TableStream, this.FIB.fcPlcfandRef, this.FIB.lcbPlcfandRef);
-            this.TextboxBreakPlex = new Plex(typeof(BreakDescriptor), 6, this.TableStream, this.FIB.fcPlcftxbxBkd, this.FIB.lcbPlcftxbxBkd);
-            this.TextboxBreakPlexHeader = new Plex(typeof(BreakDescriptor), 6, this.TableStream, this.FIB.fcPlcftxbxHdrBkd, this.FIB.lcbPlcftxbxHdrBkd);
-            this.OfficeDrawingPlex = new Plex(typeof(FileShapeAddress), 26, this.TableStream, this.FIB.fcPlcspaMom, this.FIB.lcbPlcspaMom);
-            this.OfficeDrawingPlexHeader = new Plex(typeof(FileShapeAddress), 26, this.TableStream, this.FIB.fcPlcspaHdr, this.FIB.lcbPlcspaHdr);
+            this.TextboxBreakPlex = new Plex(typeof(BreakDescriptor), 6, this.TableStream, this.FIB.fcPlcfTxbxBkd, this.FIB.lcbPlcfTxbxBkd);
+            this.TextboxBreakPlexHeader = new Plex(typeof(BreakDescriptor), 6, this.TableStream, this.FIB.fcPlcfTxbxHdrBkd, this.FIB.lcbPlcfTxbxHdrBkd);
+            this.OfficeDrawingPlex = new Plex(typeof(FileShapeAddress), 26, this.TableStream, this.FIB.fcPlcSpaMom, this.FIB.lcbPlcSpaMom);
+            this.OfficeDrawingPlexHeader = new Plex(typeof(FileShapeAddress), 26, this.TableStream, this.FIB.fcPlcSpaHdr, this.FIB.lcbPlcSpaHdr);
             this.SectionPlex = new Plex(typeof(SectionDescriptor), 12, this.TableStream, this.FIB.fcPlcfSed, this.FIB.lcbPlcfSed);
 
             //read the FKPs

@@ -21,16 +21,16 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             //FSPA has size 26 + 4 byte for the FC = 30 byte
             int n = 0;
-            int startFc = 0;
+            UInt32 startFc = 0;
             if(type == OfficeDrawingTableType.MainDocument)
             {
-                startFc = doc.FIB.fcPlcspaMom;
-                n = (int)Math.Floor((double)doc.FIB.lcbPlcspaMom / 30);
+                startFc = doc.FIB.fcPlcSpaMom;
+                n = (int)Math.Floor((double)doc.FIB.lcbPlcSpaMom / 30);
             }
             else if(type == OfficeDrawingTableType.Header)
             {
-                startFc = doc.FIB.fcPlcspaHdr;
-                n = (int)Math.Floor((double)doc.FIB.lcbPlcspaHdr / 30);
+                startFc = doc.FIB.fcPlcSpaHdr;
+                n = (int)Math.Floor((double)doc.FIB.lcbPlcSpaHdr / 30);
             }
             
             //there are n+1 FCs ...

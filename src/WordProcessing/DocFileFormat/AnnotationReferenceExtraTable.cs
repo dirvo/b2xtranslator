@@ -7,18 +7,22 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
     public class AnnotationReferenceExtraTable : List<AnnotationReferenceDescriptorExtra>
     {
+        private const int ARTDPost10_LENGTH = 16;
+
         public AnnotationReferenceExtraTable(FileInformationBlock fib, VirtualStream tableStream)
         {
-            tableStream.Seek((long)fib.fcAtrdExtra, System.IO.SeekOrigin.Begin);
-            VirtualStreamReader reader = new VirtualStreamReader(tableStream);
-
-            int cbATRDPost10 = 16;
-            int n = (int)fib.lcbAtrdExtra / cbATRDPost10;
-
-            //read the n ATRDPost10 structs
-            for (int i = 0; i < n; i++)
+            if(fib.nFib >= FileInformationBlock.FibVersion.Fib2002)
             {
-                this.Add(new AnnotationReferenceDescriptorExtra(reader));        
+                tableStream.Seek((long)fib.fcAtrdExtra, System.IO.SeekOrigin.Begin);
+                VirtualStreamReader reader = new VirtualStreamReader(tableStream);
+
+                int n = (int)fib.lcbAtrdExtra / ARTDPost10_LENGTH;
+
+                //read the n ATRDPost10 structs
+                for (int i = 0; i < n; i++)
+                {
+                    this.Add(new AnnotationReferenceDescriptorExtra(reader, ARTDPost10_LENGTH));        
+                }
             }
         }
     }

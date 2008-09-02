@@ -146,18 +146,13 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public string xst;
 
-        private const int LVLF_LENGTH = 28;
-
         /// <summary>
         /// Parses the given StreamReader to retrieve a LVL struct
         /// </summary>
         /// <param name="bytes"></param>
-        public ListLevel(VirtualStreamReader reader) : base(reader)
+        public ListLevel(VirtualStreamReader reader, int length)
+            : base(reader, length)
         {
-            //read the fix part of the LVL into an array
-            //byte[] bytes = new byte[LVLF_LENGTH];
-            //tableStream.Read(bytes, 0, LVLF_LENGTH, offset);
-
             long startPos = _reader.BaseStream.Position;
 
             //parse the fix part

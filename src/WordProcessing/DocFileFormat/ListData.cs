@@ -97,7 +97,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// Parses the StreamReader to retrieve a ListData
         /// </summary>
         /// <param name="bytes">The bytes</param>
-        public ListData(VirtualStreamReader reader) : base(reader)
+        public ListData(VirtualStreamReader reader, int length) : base(reader, length)
         {
             long startPos = _reader.BaseStream.Position;
 

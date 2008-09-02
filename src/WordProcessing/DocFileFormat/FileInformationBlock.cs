@@ -35,1182 +35,886 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
     public class FileInformationBlock
     {
-        /// <summary>
-        /// Magic number
-        /// </summary>
+        public enum FibVersion
+        {
+            Fib1997 = 0x00C1,
+            Fib2000 = 0x00D9,
+            Fib2002 = 0x0101,
+            Fib2003 = 0x010C,
+            Fib2007 = 0x0112
+        }
+
+        #region FibBase
         public UInt16 wIdent;
-
-        /// <summary>
-        /// Product version written by
-        /// </summary>
-        public UInt16 nProduct;
-
-        /// <summary>
-        /// Language stamp
-        /// </summary>
-        public UInt16 Lid;
-
-        /// <summary>
-        /// 
-        /// </summary>
+        public FibVersion nFib;
+        public UInt16 lid;
         public Int16 pnNext;
-
-        /// <summary>
-        /// Set if this document is a template
-        /// </summary>
         public bool fDot;
-
-        /// <summary>
-        /// Set if this document is a glossary
-        /// </summary>
         public bool fGlsy;
-
-        /// <summary>
-        /// Set if this document is a comlex fast-saved format
-        /// </summary>
         public bool fComplex;
-
-        /// <summary>
-        /// Set if this document is a template
-        /// </summary>
         public bool fHasPic;
-
-        /// <summary>
-        /// Count of times file was quick saved
-        /// </summary>
         public UInt16 cQuickSaves;
-
-        /// <summary>
-        /// Set if file is encrypted
-        /// </summary>
         public bool fEncrypted;
-
-        /// <summary>
-        /// 
-        /// </summary>
         public bool fWhichTblStm;
-
-        /// <summary>
-        /// Set when user has recommended that file be read read-only
-        /// </summary>
         public bool fReadOnlyRecommended;
-
-        /// <summary>
-        /// Set when file owner has made the file write reserved
-        /// </summary>
         public bool fWriteReservation;
-
-        /// <summary>
-        /// Set when using extended character set in file
-        /// </summary>
         public bool fExtChar;
-
-        /// <summary>
-        /// REVIEW
-        /// </summary>
         public bool fLoadOverwrite;
-
-        /// <summary>
-        /// REVIEW
-        /// </summary>
         public bool fFarEast;
-
-        /// <summary>
-        /// REVIEW
-        /// </summary>
         public bool fCrypto;
-
-        /// <summary>
-        /// This file format is compatible with readers that 
-        /// understand nFib at or above this value.
-        /// </summary>
         public UInt16 nFibBack;
-
-        /// <summary>
-        /// File encrypted Key, only valid if fEncrypted
-        /// </summary>
         public Int32 lKey;
-
-        /// <summary>
-        /// Environment in which file was created
-        /// </summary>
-        public byte Envr;
-
-        /// <summary>
-        /// When true, this file was last saved in the Macintosh environment
-        /// </summary>
+        public byte envr;
         public bool fMac;
-
-        /// <summary>
-        /// 
-        /// </summary>
         public bool fEmptySpecial;
-
-        /// <summary>
-        /// 
-        /// </summary>
         public bool fLoadOverridePage;
-
-        /// <summary>
-        /// 
-        /// </summary>
         public bool fFutureSavedUndo;
-
-        /// <summary>
-        /// 
-        /// </summary>
         public bool fWord97Saved;
-
-        /// <summary>
-        /// Default extended character set id for text in document stream (overridden by chp.chse).<br/>
-        /// 0 by default: characters in doc stream should be interpreted using the ANSI character set used by Windows.<br/>
-        /// 256: characters in doc stream should be interpreted using the Macintosh character set.
-        /// </summary>
-        public UInt16 Chs;
-
-        /// <summary>
-        /// Default extended character set id for text in internal data structures.<br/>
-        /// 0 by default: characters in internal data structures should be interpreted using the ANSI character set used by Windows.<br/>
-        /// 256: characters in internal data structures should be interpreted using the Macintosh character set.
-        /// </summary>
-        public UInt16 chsTables;
-
-        /// <summary>
-        /// File offset of first character of text.<br/>
-        /// In non-complex files a CP can be transformed into an FC by the following transformation:<br/>
-        /// fc = cp + fib.fcMin
-        /// </summary>
         public Int32 fcMin;
-
-        /// <summary>
-        /// File offset of last character of text in document text stream + 1
-        /// </summary>
         public Int32 fcMac;
+        #endregion
 
-        /// <summary>
-        /// Count of fields in the array of "shorts"
-        /// </summary>
-        public UInt16 Csw;
-
-        /// <summary>
-        /// Unique number identifying the file's creator.<br/>
-        /// 0x6A62 is the creator ID for Word and is reserved.<br/>
-        /// Other creators should choose a different value.
-        /// </summary>
-        public Int16 wMagicCreated;
-
-        /// <summary>
-        /// Identifies the file's last modifier
-        /// </summary>
-        public Int16 wMagicRevised;
-
-        /// <summary>
-        /// Private data
-        /// </summary>
-        public Int16 wMagicCreatedPrivate;
-
-        /// <summary>
-        /// Private data
-        /// </summary>
-        public Int16 wMagicRevisedPrivate;
-
-        /// <summary>
-        /// Language id if document was written by East Asian version of Word (i.e. FIB.fFarEast is on)
-        /// </summary>
+        #region RgW97
         public Int16 lidFE;
+        #endregion
 
-        /// <summary>
-        /// Number of fields in the array of longs
-        /// </summary>
-        public UInt16 Clw;
-
-        /// <summary>
-        /// File offset of last byte written to file + 1
-        /// </summary>
+        #region RgLw97
         public Int32 cbMac;
-
-        /// <summary>
-        /// Contains the build date of the creator.<br/>
-        /// 10695 indicates the creator program was compiled on Jan 6, 1995.
-        /// </summary>
-        public Int32 lProductCreated;
-
-        /// <summary>
-        /// Contains the build date of the file's last modifier
-        /// </summary>
-        public Int32 lProductRevised;
-
-        /// <summary>
-        /// Length of main document text stream 1
-        /// </summary>
         public Int32 ccpText;
-
-        /// <summary>
-        /// Length of footnote subdocument text stream
-        /// </summary>
         public Int32 ccpFtn;
-
-        /// <summary>
-        /// Length of header subdocument text stream
-        /// </summary>
         public Int32 ccpHdr;
-
-        /// <summary>
-        /// Length of macro subdocument text stream, which should now always be 0
-        /// </summary>
-        public Int32 ccpMcr;
-
-        /// <summary>
-        /// Length of annotation subdocument text stream
-        /// </summary>
         public Int32 ccpAtn;
-
-        /// <summary>
-        /// Length of endnote subdocument text stream
-        /// </summary>
         public Int32 ccpEdn;
-
-        /// <summary>
-        /// Length of textbox subdocument text stream
-        /// </summary>
         public Int32 ccpTxbx;
-
-        /// <summary>
-        /// Length of header textbox subdocument text stream
-        /// </summary>
         public Int32 ccpHdrTxbx;
+        #endregion
 
-        /// <summary>
-        /// When there was insufficient memory for Word to expand the plcfbte at saved time, 
-        /// the plcfbte is written to the file in a linked list of 512-byte pieces starting with this pn
-        /// </summary>
-        public Int32 pnFbpChpFirst;
-
-        /// <summary>
-        /// The page number of the lowest numbered page in the document that records CHPX FKP information
-        /// </summary>
-        public Int32 pnChpFirst;
-
-        /// <summary>
-        /// Count of CHPX FKPS recorded in file. In non-complex files if the number of 
-        /// entries is the plcfbteChpx is less than this, the plcfbteChpx is incomplete
-        /// </summary>
-        public Int32 cpnBteChp;
-
-        /// <summary>
-        /// When there was isufficient memory for Word to expand the plcfbte at save time, 
-        /// the plcfbte is written to the file in a linked list of 512-byte pieces starting with this pn
-        /// </summary>
-        public Int32 pnFbpPapFirst;
-
-        /// <summary>
-        /// The page number of the lowest numbered page in the document that records PAPX FKP information
-        /// </summary>
-        public Int32 pnPapFirst;
-
-        /// <summary>
-        /// Count of PAPX FKPS recorded in file.<br/>
-        /// In non-complex files if the number of entries in the plcfbtePapx is 
-        /// less than this, the plcfbtePapx is incomplete.
-        /// </summary>
-        public Int32 cpnBtePap;
-
-
-        public Int32 pnFbpLvcFirst;
-
-        public Int32 pnLvcFirst;
-
-        public Int32 cpnBteLvc;
-
-        public Int32 fcIslandFirst;
-
-        public Int32 fcIslandLim;
-
-        public UInt16 Cfclcb;
-
-        public Int32 fcFtshfOrig;
-
+        #region FibWord97
+        public UInt32 fcStshfOrig;
         public UInt32 lcbStshfOrig;
-
-        public Int32 fcStshf;
-
+        public UInt32 fcStshf;
         public UInt32 lcbStshf;
-
-        public Int32 fcPlcffndRef;
-
+        public UInt32 fcPlcffndRef;
         public UInt32 lcbPlcffndRef;
-
-        public Int32 fcPlcffndTxt;
-
+        public UInt32 fcPlcffndTxt;
         public UInt32 lcbPlcffndTxt;
-
-        public Int32 fcPlcfandRef;
-
+        public UInt32 fcPlcfandRef;
         public UInt32 lcbPlcfandRef;
-
-        public Int32 fcPlcfandTxt;
-
+        public UInt32 fcPlcfandTxt;
         public UInt32 lcbPlcfandTxt;
-
-        public Int32 fcPlcfSed;
-
+        public UInt32 fcPlcfSed;
         public UInt32 lcbPlcfSed;
-
-        public Int32 fcPlcfphe;
-
-        public UInt32 lcbPlcfphe;
-
-        public Int32 fcSttbfglsy;
-
-        public UInt32 lcbSttbfglsy;
-
-        public Int32 fcPlcfglsy;
-
-        public UInt32 lcbPlcfglsy;
-
-        public Int32 fcPlcfhdd;
-
-        public UInt32 lcbPlcfhdd;
-
-        public Int32 fcPlcfbteChpx;
-
-        public UInt32 lcbPlcfbteChpx;
-
-        public Int32 fcPlcfbtePapx;
-
-        public UInt32 lcbPlcfbtePapx;
-
-        public Int32 fcPlcfsea;
-
-        public UInt32 lcbPlcfsea;
-
-        public Int32 fcSttbfffn;
-
-        public UInt32 lcbSttbfffn;
-
-        public Int32 fcPlcffldMom;
-
-        public UInt32 lcbPlcffdldMom;
-
-        public Int32 fcPlcffldHdr;
-
-        public UInt32 lcbPlcffldHdr;
-
-        public Int32 fcPlcffldFtn;
-
-        public UInt32 lcbPlcffldFtn;
-
-        public Int32 fcPlcffldAtn;
-
-        public UInt32 lcbPlcffldAtn;
-
-        public Int32 fcPlcffldMcr;
-
-        public UInt32 lcbPlcffldMcr;
-
-        public Int32 fcSttbfbkmk;
-
-        public UInt32 lcbSttbfbkmk;
-
-        public Int32 fcPlcfbkf;
-
-        public UInt32 lcbPlcfbkf;
-
-        public Int32 fcPlcfbkl;
-
-        public UInt32 lcbPlcfbkl;
-
-        public Int32 fcCmds;
-
+        public UInt32 fcPlcPad;
+        public UInt32 lcbPlcPad;
+        public UInt32 fcPlcfPhe;
+        public UInt32 lcbPlcfPhe;
+        public UInt32 fcSttbfGlsy;
+        public UInt32 lcbSttbfGlsy;
+        public UInt32 fcPlcfGlsy;
+        public UInt32 lcbPlcfGlsy;
+        public UInt32 fcPlcfHdd;
+        public UInt32 lcbPlcfHdd;
+        public UInt32 fcPlcfBteChpx;
+        public UInt32 lcbPlcfBteChpx;
+        public UInt32 fcPlcfBtePapx;
+        public UInt32 lcbPlcfBtePapx;
+        public UInt32 fcPlcfSea;
+        public UInt32 lcbPlcfSea;
+        public UInt32 fcSttbfFfn;
+        public UInt32 lcbSttbfFfn;
+        public UInt32 fcPlcfFldMom;
+        public UInt32 lcbPlcfFldMom;
+        public UInt32 fcPlcfFldHdr;
+        public UInt32 lcbPlcfFldHdr;
+        public UInt32 fcPlcfFldFtn;
+        public UInt32 lcbPlcfFldFtn;
+        public UInt32 fcPlcfFldAtn;
+        public UInt32 lcbPlcfFldAtn;
+        public UInt32 fcPlcfFldMcr;
+        public UInt32 lcbPlcfFldMcr;
+        public UInt32 fcSttbfBkmk;
+        public UInt32 lcbSttbfBkmk;
+        public UInt32 fcPlcfBkf;
+        public UInt32 lcbPlcfBkf;
+        public UInt32 fcPlcfBkl;
+        public UInt32 lcbPlcfBkl;
+        public UInt32 fcCmds;
         public UInt32 lcbCmds;
-
-        public Int32 fcplcmcr;
-
-        public UInt32 lcbPlcmcr;
-
-        public Int32 fcSttbfmcr;
-
-        public UInt32 lcbSttbfmcr;
-
-        public Int32 fcPrDrvr;
-
+        public UInt32 fcSttbfMcr;
+        public UInt32 lcbSttbfMcr;
+        public UInt32 fcPrDrvr;
         public UInt32 lcbPrDrvr;
-
-        public Int32 fcPrEnvPort;
-
+        public UInt32 fcPrEnvPort;
         public UInt32 lcbPrEnvPort;
-
-        public Int32 fcPrEnvLand;
-
+        public UInt32 fcPrEnvLand;
         public UInt32 lcbPrEnvLand;
-
-        public Int32 fcWss;
-
+        public UInt32 fcWss;
         public UInt32 lcbWss;
-
-        public Int32 fcDop;
-
+        public UInt32 fcDop;
         public UInt32 lcbDop;
-
-        public Int32 fcSttbfAssoc;
-
+        public UInt32 fcSttbfAssoc;
         public UInt32 lcbSttbfAssoc;
-
-        public Int32 fcClx;
-
+        public UInt32 fcClx;
         public UInt32 lcbClx;
-
-        public Int32 fcPlcfpgdFtn;
-
-        public Int32 fcAutosaveSource;
-
+        public UInt32 fcPlcfPgdFtn;
+        public UInt32 lcbPlcfPgdFtn;
+        public UInt32 fcAutosaveSource;
         public UInt32 lcbAutosaveSource;
-
-        public Int32 fcGrpXstAtnOwners;
-
+        public UInt32 fcGrpXstAtnOwners;
         public UInt32 lcbGrpXstAtnOwners;
-
-        public Int32 fcSttbfAtnbkmk;
-
-        public UInt32 lcbSttbfAtnbkmk;
-
-        public Int32 fcPlcdoaMom;
-
-        public UInt32 lcbPlcdiaMom;
-
-        public Int32 fcPlcdoaHdr;
-
-        public UInt32 lcbPlcdoaHdr;
-
-        public Int32 fcPlcspaMom;
-
-        public UInt32 lcbPlcspaMom;
-
-        public Int32 fcPlcspaHdr;
-
-        public UInt32 lcbPlcspaHdr;
-
-        public Int32 fcPlcfAtnbkf;
-        public UInt32 lcbPlcfAtnbkf;
-
-        public Int32 fcPlcfAtnbkl;
-        public UInt32 lcbPlcfAtnbkl;
-
-        //Page 152
-
-        public Int32 fcPms;
+        public UInt32 fcSttbfAtnBkmk;
+        public UInt32 lcbSttbfAtnBkmk;
+        public UInt32 fcPlcSpaMom;
+        public UInt32 lcbPlcSpaMom;
+        public UInt32 fcPlcSpaHdr;
+        public UInt32 lcbPlcSpaHdr;
+        public UInt32 fcPlcfAtnBkf;
+        public UInt32 lcbPlcfAtnBkf;
+        public UInt32 fcPlcfAtnBkl;
+        public UInt32 lcbPlcfAtnBkl;
+        public UInt32 fcPms;
         public UInt32 lcbPms;
-
-        public Int32 fcFormFldSttbs;
+        public UInt32 fcFormFldSttbs;
         public UInt32 lcbFormFldSttbs;
-
-        public Int32 fcPlcfendRef;
+        public UInt32 fcPlcfendRef;
         public UInt32 lcbPlcfendRef;
-
-        public Int32 fcPlcfendTxt;
+        public UInt32 fcPlcfendTxt;
         public UInt32 lcbPlcfendTxt;
-
-        public Int32 fcPlcffldEdn;
-        public UInt32 lcbPlcffldEdn;
-
-        public Int32 fcPlcfpgEdn;
-        public UInt32 lcbPlcfpgEdn;
-
-        public Int32 fcDggInfo;
+        public UInt32 fcPlcfFldEdn;
+        public UInt32 lcbPlcfFldEdn;
+        public UInt32 fcDggInfo;
         public UInt32 lcbDggInfo;
-
-        public Int32 fcSttbfRMark;
+        public UInt32 fcSttbfRMark;
         public UInt32 lcbSttbfRMark;
-
-        //Page 153
-
-        public Int32 fcSttbCaption;
-        public UInt32 lcbSttbCaption;
-
-        public Int32 fcSttbAutoCaption;
-        public UInt32 lcbSttbAutoCaption;
-
-        public Int32 fcPlcfwkb;
-        public UInt32 lcbPlcfwkb;
-
-        public Int32 fcPlcfspl;
-        public UInt32 lcbPlcfspl;
-
-        public Int32 fcPlcftxbxTxt;
+        public UInt32 fcSttbfCaption;
+        public UInt32 lcbSttbfCaption;
+        public UInt32 fcSttbfAutoCaption;
+        public UInt32 lcbSttbfAutoCaption;
+        public UInt32 fcPlcfWkb;
+        public UInt32 lcbPlcfWkb;
+        public UInt32 fcPlcfSpl;
+        public UInt32 lcbPlcfSpl;
+        public UInt32 fcPlcftxbxTxt;
         public UInt32 lcbPlcftxbxTxt;
-
-        public Int32 fcPlcffldTxt;
-        public UInt32 lcbPlcffldTxt;
-
-        public Int32 fcPlcfhdrtxbxTxt;
-        public UInt32 lcbPlcfhdrtxbxTxt;
-
-        public Int32 fcPlcfldHdrTxbx;
-        public UInt32 lcbPlcfldHdrTxbx;
-
-        public Int32 fcStwUser;
-
-        //Page 154
-
+        public UInt32 fcPlcfFldTxbx;
+        public UInt32 lcbPlcfFldTxbx;
+        public UInt32 fcPlcfHdrtxbxTxt;
+        public UInt32 lcbPlcfHdrtxbxTxt;
+        public UInt32 fcPlcffldHdrTxbx;
+        public UInt32 lcbPlcffldHdrTxbx;
+        public UInt32 fcStwUser;
         public UInt32 lcbStwUser;
-
-        public Int32 fcSttbttmbd;
-        public UInt32 lcbSttbttmbd;
-
-        public Int32 fcCookieData;
+        public UInt32 fcSttbTtmbd;
+        public UInt32 lcbSttbTtmbd;
+        public UInt32 fcCookieData;
         public UInt32 lcbCookieData;
-
-        public Int32 fcSttbfIntlFld;
+        public UInt32 fcPgdMotherOldOld;
+        public UInt32 lcbPgdMotherOldOld;
+        public UInt32 fcBkdMotherOldOld;
+        public UInt32 lcbBkdMotherOldOld;
+        public UInt32 fcPgdFtnOldOld;
+        public UInt32 lcbPgdFtnOldOld;
+        public UInt32 fcBkdFtnOldOld;
+        public UInt32 lcbBkdFtnOldOld;
+        public UInt32 fcPgdEdnOldOld;
+        public UInt32 lcbPgdEdnOldOld;
+        public UInt32 fcBkdEdnOldOld;
+        public UInt32 lcbBkdEdnOldOld;
+        public UInt32 fcSttbfIntlFld;
         public UInt32 lcbSttbfIntlFld;
-
-        public Int32 fcRouteSlip;
+        public UInt32 fcRouteSlip;
         public UInt32 lcbRouteSlip;
-
-        public Int32 fcSttbSavedBy;
+        public UInt32 fcSttbSavedBy;
         public UInt32 lcbSttbSavedBy;
-
-        public Int32 fcSttbFnm;
+        public UInt32 fcSttbFnm;
         public UInt32 lcbSttbFnm;
-
-        // Page 155
-
-        public Int32 fcPlcfLst;
-        public UInt32 lcbPlcfLst;
-
-        public Int32 fcPlfLfo;
+        public UInt32 fcPlfLst;
+        public UInt32 lcbPlfLst;
+        public UInt32 fcPlfLfo;
         public UInt32 lcbPlfLfo;
-
-        public Int32 fcPlcftxbxBkd;
-        public UInt32 lcbPlcftxbxBkd;
-
-        public Int32 fcPlcftxbxHdrBkd;
-        public UInt32 lcbPlcftxbxHdrBkd;
-
-        public Int32 fcDocUndoWord9;
+        public UInt32 fcPlcfTxbxBkd;
+        public UInt32 lcbPlcfTxbxBkd;
+        public UInt32 fcPlcfTxbxHdrBkd;
+        public UInt32 lcbPlcfTxbxHdrBkd;
+        public UInt32 fcDocUndoWord9;
         public UInt32 lcbDocUndoWord9;
-
-        public Int32 fcRgbuse;
-        public UInt32 lcbRgbuse;
-
-        public Int32 fcUsp;
+        public UInt32 fcRgbUse;
+        public UInt32 lcbRgbUse;
+        public UInt32 fcUsp;
         public UInt32 lcbUsp;
-
-        public Int32 fcUskf;
+        public UInt32 fcUskf;
         public UInt32 lcbUskf;
-
-        public Int32 fcPlcupcRgbuse;
-        public UInt32 lcbPlcupcRgbuse;
-
-        public Int32 fcPlcupcUsp;
+        public UInt32 fcPlcupcRgbUse;
+        public UInt32 lcbPlcupcRgbUse;
+        public UInt32 fcPlcupcUsp;
         public UInt32 lcbPlcupcUsp;
-
-        public Int32 fcSttbGlsyStyle;
+        public UInt32 fcSttbGlsyStyle;
         public UInt32 lcbSttbGlsyStyle;
-
-        public Int32 fcPlgosl;
-
-        // Page 156
-
+        public UInt32 fcPlgosl;
         public UInt32 lcbPlgosl;
-
-        public Int32 fcPlcocx;
+        public UInt32 fcPlcocx;
         public UInt32 lcbPlcocx;
-
-        public Int32 fcPlcfbteLvc;
-        public UInt32 lcbPlcfbteLvc;
-
+        public UInt32 fcPlcfBteLvc;
+        public UInt32 lcbPlcfBteLvc;
         public UInt32 dwLowDateTime;
         public UInt32 dwHighDateTime;
-
-        public Int32 fcPlcflvcPre10;
-        public UInt32 lcbPlcflvcPre10;
-
-        public Int32 fcPlcasumy;
-        public UInt32 lcbPlcasumy;
-
-        public Int32 fcPlcfgram;
-        public UInt32 lcbPlcfgram;
-
-        public Int32 fcSttbListNames;
+        public UInt32 fcPlcfLvcPre10;
+        public UInt32 lcbPlcfLvcPre10;
+        public UInt32 fcPlcfAsumy;
+        public UInt32 lcbPlcfAsumy;
+        public UInt32 fcPlcfGram;
+        public UInt32 lcbPlcfGram;
+        public UInt32 fcSttbListNames;
         public UInt32 lcbSttbListNames;
-
-        public Int32 fcSttbfUssr;
+        public UInt32 fcSttbfUssr;
         public UInt32 lcbSttbfUssr;
+        #endregion
 
-        public Int32 fcPlcfTch;
+        #region FibWord2000
+        public UInt32 fcPlcfTch;
         public UInt32 lcbPlcfTch;
-
-        public Int32 fcRmdfThreading;
-        public UInt32 lcbRmdfThreading;
-
-        public Int32 fcMid;
-        
-        //Page 157
-
+        public UInt32 fcRmdThreading;
+        public UInt32 lcbRmdThreading;
+        public UInt32 fcMid;
         public UInt32 lcbMid;
-
-        public Int32 fcSttbRgtplc;
+        public UInt32 fcSttbRgtplc;
         public UInt32 lcbSttbRgtplc;
-
-        public Int32 fcMsoEnvelope;
+        public UInt32 fcMsoEnvelope;
         public UInt32 lcbMsoEnvelope;
-
-        public Int32 fcPlcflad;
-        public UInt32 lcbPlcflad;
-
-        public Int32 fcRgdofr;
-        public UInt32 lcbRgdofr;
-
-        public Int32 fcPlcosl;
+        public UInt32 fcPlcfLad;
+        public UInt32 lcbPlcfLad;
+        public UInt32 fcRgDofr;
+        public UInt32 lcbRgDofr;
+        public UInt32 fcPlcosl;
         public UInt32 lcbPlcosl;
+        public UInt32 fcPlcfCookieOld;
+        public UInt32 lcbPlcfCookieOld;
+        public UInt32 fcPgdMotherOld;
+        public UInt32 lcbPgdMotherOld;
+        public UInt32 fcBkdMotherOld;
+        public UInt32 lcbBkdMotherOld;
+        public UInt32 fcPgdFtnOld;
+        public UInt32 lcbPgdFtnOld;
+        public UInt32 fcBkdFtnOld;
+        public UInt32 lcbBkdFtnOld;
+        public UInt32 fcPgdEdnOld;
+        public UInt32 lcbPgdEdnOld;
+        public UInt32 fcBkdEdnOld;
+        public UInt32 lcbBkdEdnOld;
+        #endregion
 
-        public Int32 fcPlcfcookieOld;
-        public UInt32 lcbPlcfcookieOld;
-
-        //Page 158
-
-        public Int32 fcUnused;
-        public UInt32 lcbUnused;
-
-        public Int32 fcPlcfpgp;
-        public UInt32 lcbPlcfpgp;
-
-        public Int32 fcPlcfuim;
+        #region Fib2002
+        public UInt32 fcPlcfPgp;
+        public UInt32 lcbPlcfPgp;
+        public UInt32 fcPlcfuim;
         public UInt32 lcbPlcfuim;
-
-        public Int32 fcPlfguidUim;
+        public UInt32 fcPlfguidUim;
         public UInt32 lcbPlfguidUim;
-
-        public Int32 fcAtrdExtra;
+        public UInt32 fcAtrdExtra;
         public UInt32 lcbAtrdExtra;
-
-        public Int32 fcPlrsid;
+        public UInt32 fcPlrsid;
         public UInt32 lcbPlrsid;
-
-        public Int32 fcSttbfBkmkFactoid;
+        public UInt32 fcSttbfBkmkFactoid;
         public UInt32 lcbSttbfBkmkFactoid;
-
-        //Page 159
-
-        public Int32 fcPlcfBkfFactoid;
+        public UInt32 fcPlcfBkfFactoid;
         public UInt32 lcbPlcfBkfFactoid;
-
-        public Int32 fcPlcfcookie;
+        public UInt32 fcPlcfcookie;
         public UInt32 lcbPlcfcookie;
-
-        public Int32 fcPlcfBklFactoid;
+        public UInt32 fcPlcfBklFactoid;
         public UInt32 lcbPlcfBklFactoid;
-
-        public Int32 fcFactoidData;
+        public UInt32 fcFactoidData;
         public UInt32 lcbFactoidData;
-
-        public Int32 fcDocUndo;
+        public UInt32 fcDocUndo;
         public UInt32 lcbDocUndo;
-
-        public Int32 fcSttbfBkmkFcc;
+        public UInt32 fcSttbfBkmkFcc;
         public UInt32 lcbSttbfBkmkFcc;
-
-        //Page 160
-
-        public Int32 fcPlcfBkfFcc;
+        public UInt32 fcPlcfBkfFcc;
         public UInt32 lcbPlcfBkfFcc;
-
-        public Int32 fcPlcfBklFcc;
+        public UInt32 fcPlcfBklFcc;
         public UInt32 lcbPlcfBklFcc;
-
-        public Int32 fcSttbfbkmkBPRepairs;
+        public UInt32 fcSttbfbkmkBPRepairs;
         public UInt32 lcbSttbfbkmkBPRepairs;
-
-        public Int32 fcPlcfbkfBPRepairs;
+        public UInt32 fcPlcfbkfBPRepairs;
         public UInt32 lcbPlcfbkfBPRepairs;
-
-        public Int32 fcPlcfbklBPRepairs;
+        public UInt32 fcPlcfbklBPRepairs;
         public UInt32 lcbPlcfbklBPRepairs;
-
-        public Int32 fcPmsNew;
-
-        //Page 161
-
+        public UInt32 fcPmsNew;
         public UInt32 lcbPmsNew;
-
-        public Int32 fcODSO;
+        public UInt32 fcODSO;
         public UInt32 lcbODSO;
-
-        public Int32 fcPlcfpmiOldXP;
+        public UInt32 fcPlcfpmiOldXP;
         public UInt32 lcbPlcfpmiOldXP;
-
-        public Int32 fcPlcfpmiNewXP;
+        public UInt32 fcPlcfpmiNewXP;
         public UInt32 lcbPlcfpmiNewXP;
-
-        public Int32 fcPlcfpmiMixedXP;
+        public UInt32 fcPlcfpmiMixedXP;
         public UInt32 lcbPlcfpmiMixedXP;
-
-        public Int32 fcEncryptedProps;
-        public UInt32 lcbEncryptedProps;
-
-        public Int32 fcPlcffactoid;
+        public UInt32 fcPlcffactoid;
         public UInt32 lcbPlcffactoid;
+        public UInt32 fcPlcflvcOldXP;
+        public UInt32 lcbPlcflvcOldXP;
+        public UInt32 fcPlcflvcNewXP;
+        public UInt32 lcbPlcflvcNewXP;
+        public UInt32 fcPlcflvcMixedXP;
+        public UInt32 lcbPlcflvcMixedXP;
+        #endregion
 
-        public Int32 fcPlcflvcOldXp;
-
-        //Page 162
-
-        public UInt32 lcbPlcflvcOldXp;
-
-        public Int32 fcPlcflvcNewXp;
-        public UInt32 lcbPlcflvcNewXp;
-
-        public Int32 fcPlcflvcMixedXp;
-        public UInt32 lcbPlcflvcMixedXp;
-
-        public Int32 fcHplxsdr;
+        #region Fib2003
+        public UInt32 fcHplxsdr;
         public UInt32 lcbHplxsdr;
-
-        public Int32 fcSttbfBkmSdt;
-        public UInt32 lcbSttbfBkmSdt;
-
-        public Int32 fcPlcfBkfSdt;
+        public UInt32 fcSttbfBkmkSdt;
+        public UInt32 lcbSttbfBkmkSdt;
+        public UInt32 fcPlcfBkfSdt;
         public UInt32 lcbPlcfBkfSdt;
-
-        //Page 163
-
-        public Int32 fcPlcfBklSdt;
+        public UInt32 fcPlcfBklSdt;
         public UInt32 lcbPlcfBklSdt;
-
-        public Int32 fcCustomXForm;
+        public UInt32 fcCustomXForm;
         public UInt32 lcbCustomXForm;
-
-        public Int32 fcSttbfBkmkProt;
+        public UInt32 fcSttbfBkmkProt;
         public UInt32 lcbSttbfBkmkProt;
-
-        public Int32 fcPlcfBkfProt;
+        public UInt32 fcPlcfBkfProt;
         public UInt32 lcbPlcfBkfProt;
-
-        public Int32 fcPlcfBklProt;
+        public UInt32 fcPlcfBklProt;
         public UInt32 lcbPlcfBklProt;
-
-        public Int32 fcSttbProtUser;
+        public UInt32 fcSttbProtUser;
         public UInt32 lcbSttbProtUser;
-
-        //Page 164
-
-        public Int32 fcPlcftpc;
-        public UInt32 lcbPlcftpc;
-
-        public Int32 fcPlcfpmiOld;
+        public UInt32 fcPlcfpmiOld;
         public UInt32 lcbPlcfpmiOld;
-
-        public Int32 fcPlcfpmiOldInline;
+        public UInt32 fcPlcfpmiOldInline;
         public UInt32 lcbPlcfpmiOldInline;
-
-        public Int32 fcPlcfpmiNew;
+        public UInt32 fcPlcfpmiNew;
         public UInt32 lcbPlcfpmiNew;
-
-        public Int32 fcPlcfpmiNewInline;
+        public UInt32 fcPlcfpmiNewInline;
         public UInt32 lcbPlcfpmiNewInline;
-
-        public Int32 fcPlcflvcOld;
+        public UInt32 fcPlcflvcOld;
         public UInt32 lcbPlcflvcOld;
-
-        public Int32 fcPlcflvcOldInline;
+        public UInt32 fcPlcflvcOldInline;
         public UInt32 lcbPlcflvcOldInline;
-
-        public Int32 fcPlcflvcNew;
+        public UInt32 fcPlcflvcNew;
         public UInt32 lcbPlcflvcNew;
-
-        public Int32 fcPlcflvcNewInline;
+        public UInt32 fcPlcflvcNewInline;
         public UInt32 lcbPlcflvcNewInline;
-
-        //Page 165
-
-        public Int32 fcAfd;
+        public UInt32 fcPgdMother;
+        public UInt32 lcbPgdMother;
+        public UInt32 fcBkdMother;
+        public UInt32 lcbBkdMother;
+        public UInt32 fcAfdMother;
+        public UInt32 lcbAfdMother;
+        public UInt32 fcPgdFtn;
+        public UInt32 lcbPgdFtn;
+        public UInt32 fcBkdFtn;
+        public UInt32 lcbBkdFtn;
+        public UInt32 fcAfdFtn;
+        public UInt32 lcbAfdFtn;
+        public UInt32 fcPgdEdn;
+        public UInt32 lcbPgdEdn;
+        public UInt32 fcBkdEdn;
+        public UInt32 lcbBkdEdn;
+        public UInt32 fcAfdEdn;
+        public UInt32 lcbAfdEdn;
+        public UInt32 fcAfd;
         public UInt32 lcbAfd;
-        public UInt16 cswNew;
-        public UInt16 nFib;
+        #endregion
+
+        #region Fib2007
+        public UInt32 fcPlcfmthd;
+        public UInt32 lcbPlcfmthd;
+        public UInt32 fcSttbfBkmkMoveFrom;
+        public UInt32 lcbSttbfBkmkMoveFrom;
+        public UInt32 fcPlcfBkfMoveFrom;
+        public UInt32 lcbPlcfBkfMoveFrom;
+        public UInt32 fcPlcfBklMoveFrom;
+        public UInt32 lcbPlcfBklMoveFrom;
+        public UInt32 fcSttbfBkmkMoveTo;
+        public UInt32 lcbSttbfBkmkMoveTo;
+        public UInt32 fcPlcfBkfMoveTo;
+        public UInt32 lcbPlcfBkfMoveTo;
+        public UInt32 fcPlcfBklMoveTo;
+        public UInt32 lcbPlcfBklMoveTo;
+        public UInt32 fcSttbfBkmkArto;
+        public UInt32 lcbSttbfBkmkArto;
+        public UInt32 fcPlcfBkfArto;
+        public UInt32 lcbPlcfBkfArto;
+        public UInt32 fcPlcfBklArto;
+        public UInt32 lcbPlcfBklArto;
+        public UInt32 fcArtoData;
+        public UInt32 lcbArtoData;
+        public UInt32 fcOssTheme;
+        public UInt32 lcbOssTheme;
+        public UInt32 fcColorSchemeMapping;
+        public UInt32 lcbColorSchemeMapping;
+        #endregion
+
+        #region FibNew
+        public FibVersion nFibNew;
         public UInt16 cQuickSavesNew;
+        #endregion
+
+        #region others
+        public UInt16 csw;
+        public UInt16 cslw;
+        public UInt16 cbRgFcLcb;
+        public UInt16 cswNew;
+        #endregion
 
         //*****************************************************************************************
         //                                                                              CONSTRUCTOR
         //*****************************************************************************************
 
-        /// <summary>
-        /// Parses the File Information Block of a Compound Document
-        /// </summary>
-        /// <param name="wordDocument">The "WordDocument" stream</param>
-        public FileInformationBlock(VirtualStream st)
+        public FileInformationBlock(VirtualStreamReader reader)
         {
-            try
-            {
-                //read the first 1472 bytes (FIB)
-                byte[] bytes = new byte[1472];
-                st.Read(bytes, 0, 1472, 0);
+            UInt16 flag16 = 0;
+            byte flag8 = 0;
 
-                //start parsing the variables
-                wIdent = System.BitConverter.ToUInt16(bytes, 0);
-                nFib = System.BitConverter.ToUInt16(bytes, 2);
-                nProduct = System.BitConverter.ToUInt16(bytes, 4);
-                Lid = System.BitConverter.ToUInt16(bytes, 6);
-                pnNext = System.BitConverter.ToInt16(bytes, 8);
-                fDot = Utils.BitmaskToBool(System.BitConverter.ToInt16(bytes, 10), 0x0001);
-                fGlsy = Utils.BitmaskToBool(System.BitConverter.ToInt16(bytes, 10), 0x0002);
-                fComplex = Utils.BitmaskToBool(System.BitConverter.ToInt16(bytes, 10), 0x0002);
-                fHasPic = Utils.BitmaskToBool(System.BitConverter.ToInt16(bytes, 10), 0x0008);
-                cQuickSaves = (UInt16)(((int)System.BitConverter.ToUInt16(bytes, 10) & 0x00F0) >> 4);
-                fEncrypted = Utils.BitmaskToBool(System.BitConverter.ToInt16(bytes, 10), 0x0100);
-                fWhichTblStm = Utils.BitmaskToBool(System.BitConverter.ToInt16(bytes, 10), 0x0200);
-                fReadOnlyRecommended = Utils.BitmaskToBool(System.BitConverter.ToInt16(bytes, 10), 0x0400);
-                fWriteReservation = Utils.BitmaskToBool(System.BitConverter.ToInt16(bytes, 10), 0x0800);
-                fExtChar = Utils.BitmaskToBool(System.BitConverter.ToInt16(bytes, 10), 0x1000);
-                fLoadOverwrite = Utils.BitmaskToBool(System.BitConverter.ToInt16(bytes, 10), 0x2000);
-                fFarEast = Utils.BitmaskToBool(System.BitConverter.ToInt16(bytes, 10), 0x4000);
-                fCrypto = Utils.BitmaskToBool(System.BitConverter.ToInt16(bytes, 10), 0x8000);
-                nFibBack = System.BitConverter.ToUInt16(bytes, 12);
-                lKey = System.BitConverter.ToInt32(bytes, 14);
-                Envr = bytes[18];
-                fMac = Utils.BitmaskToBool((int)bytes[19], 0x01);
-                fEmptySpecial = Utils.BitmaskToBool((int)bytes[19], 0x02);
-                fLoadOverridePage = Utils.BitmaskToBool((int)bytes[19], 0x04);
-                fFutureSavedUndo = Utils.BitmaskToBool((int)bytes[19], 0x08);
-                fWord97Saved = Utils.BitmaskToBool((int)bytes[19], 0x10);
-                Chs = System.BitConverter.ToUInt16(bytes, 20);
-                chsTables = System.BitConverter.ToUInt16(bytes, 22);
-                fcMin = System.BitConverter.ToInt32(bytes, 24);
-                fcMac = System.BitConverter.ToInt32(bytes, 28);
-                Csw = System.BitConverter.ToUInt16(bytes, 32);
-                wMagicCreated = System.BitConverter.ToInt16(bytes, 34);
-                wMagicRevised = System.BitConverter.ToInt16(bytes, 36);
-                wMagicCreatedPrivate = System.BitConverter.ToInt16(bytes, 38);
-                wMagicRevisedPrivate = System.BitConverter.ToInt16(bytes, 40);
-                lidFE = System.BitConverter.ToInt16(bytes, 60);
-                Clw = System.BitConverter.ToUInt16(bytes, 62);
-                cbMac = System.BitConverter.ToInt32(bytes, 64);
-                lProductCreated = System.BitConverter.ToInt32(bytes, 68);
-                lProductRevised = System.BitConverter.ToInt32(bytes, 72);
-                ccpText = System.BitConverter.ToInt32(bytes, 76);
-                ccpFtn = System.BitConverter.ToInt32(bytes, 80);
-                ccpHdr = System.BitConverter.ToInt32(bytes, 84);
-                ccpMcr = System.BitConverter.ToInt32(bytes, 88);
-                ccpAtn = System.BitConverter.ToInt32(bytes, 92);
-                ccpEdn = System.BitConverter.ToInt32(bytes, 96);
-                ccpTxbx = System.BitConverter.ToInt32(bytes, 100);
-                ccpHdrTxbx = System.BitConverter.ToInt32(bytes, 104);
-                pnFbpChpFirst = System.BitConverter.ToInt32(bytes, 108);
-                pnChpFirst = System.BitConverter.ToInt32(bytes, 112);
-                cpnBteChp = System.BitConverter.ToInt32(bytes, 116);
-                pnFbpPapFirst = System.BitConverter.ToInt32(bytes, 120);
-                pnPapFirst = System.BitConverter.ToInt32(bytes, 124);
-                cpnBtePap = System.BitConverter.ToInt32(bytes, 128);
-                pnFbpLvcFirst = System.BitConverter.ToInt32(bytes, 132);
-                pnLvcFirst = System.BitConverter.ToInt32(bytes, 136);
-                cpnBteLvc = System.BitConverter.ToInt32(bytes, 140);
-                fcIslandFirst = System.BitConverter.ToInt32(bytes, 144);
-                fcIslandLim = System.BitConverter.ToInt32(bytes, 148);
-                Cfclcb = System.BitConverter.ToUInt16(bytes, 152);
-                fcFtshfOrig = System.BitConverter.ToInt32(bytes, 154);
-                lcbStshfOrig = System.BitConverter.ToUInt32(bytes, 158);
-                fcStshf = System.BitConverter.ToInt32(bytes, 162);
-                lcbStshf = System.BitConverter.ToUInt32(bytes, 166);
-                fcPlcffndRef = System.BitConverter.ToInt32(bytes, 170);
-                lcbPlcffndRef = System.BitConverter.ToUInt32(bytes, 174);
-                fcPlcffndTxt = System.BitConverter.ToInt32(bytes, 178);
-                lcbPlcffndTxt = System.BitConverter.ToUInt32(bytes, 182);
-                fcPlcfandRef = System.BitConverter.ToInt32(bytes, 186);
-                lcbPlcfandRef = System.BitConverter.ToUInt32(bytes, 190);
-                fcPlcfandTxt = System.BitConverter.ToInt32(bytes, 194);
-                lcbPlcfandTxt = System.BitConverter.ToUInt32(bytes, 198);
-                fcPlcfSed = System.BitConverter.ToInt32(bytes, 202);
-                lcbPlcfSed = System.BitConverter.ToUInt32(bytes, 206);
-                fcPlcfphe = System.BitConverter.ToInt32(bytes, 218);
-                lcbPlcfphe = System.BitConverter.ToUInt32(bytes, 222);
-                fcSttbfglsy = System.BitConverter.ToInt32(bytes, 226);
-                lcbSttbfglsy = System.BitConverter.ToUInt32(bytes, 230);
-                fcPlcfglsy = System.BitConverter.ToInt32(bytes, 234);
-                lcbPlcfglsy = System.BitConverter.ToUInt32(bytes, 238);
-                fcPlcfhdd = System.BitConverter.ToInt32(bytes, 242);
-                lcbPlcfhdd = System.BitConverter.ToUInt32(bytes, 246);
-                fcPlcfbteChpx = System.BitConverter.ToInt32(bytes, 250);
-                lcbPlcfbteChpx = System.BitConverter.ToUInt32(bytes, 254);
-                fcPlcfbtePapx = System.BitConverter.ToInt32(bytes, 258);
-                lcbPlcfbtePapx = System.BitConverter.ToUInt32(bytes, 262);
-                fcPlcfsea = System.BitConverter.ToInt32(bytes, 266);
-                lcbPlcfsea = System.BitConverter.ToUInt32(bytes, 270);
-                fcSttbfffn = System.BitConverter.ToInt32(bytes, 274);
-                lcbSttbfffn = System.BitConverter.ToUInt32(bytes, 278);
-                fcPlcffldMom = System.BitConverter.ToInt32(bytes, 282);
-                lcbPlcffdldMom = System.BitConverter.ToUInt32(bytes, 286);
-                fcPlcffldHdr = System.BitConverter.ToInt32(bytes, 290);
-                lcbPlcffldHdr = System.BitConverter.ToUInt32(bytes, 294);
-                fcPlcffldFtn = System.BitConverter.ToInt32(bytes, 298);
-                lcbPlcffldFtn = System.BitConverter.ToUInt32(bytes, 302);
-                fcPlcffldAtn = System.BitConverter.ToInt32(bytes, 306);
-                lcbPlcffldAtn = System.BitConverter.ToUInt32(bytes, 310);
-                fcPlcffldMcr = System.BitConverter.ToInt32(bytes, 314);
-                lcbPlcffldMcr = System.BitConverter.ToUInt32(bytes, 318);
-                fcSttbfbkmk = System.BitConverter.ToInt32(bytes, 322);
-                lcbSttbfbkmk = System.BitConverter.ToUInt32(bytes, 326);
-                fcPlcfbkf = System.BitConverter.ToInt32(bytes, 330);
-                lcbPlcfbkf = System.BitConverter.ToUInt32(bytes, 334);
-                fcPlcfbkl = System.BitConverter.ToInt32(bytes, 338);
-                lcbPlcfbkl = System.BitConverter.ToUInt32(bytes, 342);
-                fcCmds = System.BitConverter.ToInt32(bytes, 346);
-                lcbCmds = System.BitConverter.ToUInt32(bytes, 350);
-                fcplcmcr = System.BitConverter.ToInt32(bytes, 354);
-                lcbPlcmcr = System.BitConverter.ToUInt32(bytes, 358);
-                fcSttbfmcr = System.BitConverter.ToInt32(bytes, 362);
-                lcbSttbfmcr = System.BitConverter.ToUInt32(bytes, 366);
-                fcPrDrvr = System.BitConverter.ToInt32(bytes, 370);
-                lcbPrDrvr = System.BitConverter.ToUInt32(bytes, 374);
-                fcPrEnvPort = System.BitConverter.ToInt32(bytes, 378);
-                lcbPrEnvPort = System.BitConverter.ToUInt32(bytes, 382);
-                fcPrEnvLand = System.BitConverter.ToInt32(bytes, 386);
-                lcbPrEnvLand = System.BitConverter.ToUInt32(bytes, 390);
-                fcWss = System.BitConverter.ToInt32(bytes, 394);
-                lcbWss = System.BitConverter.ToUInt32(bytes, 398);
-                fcDop = System.BitConverter.ToInt32(bytes, 402);
-                lcbDop = System.BitConverter.ToUInt32(bytes, 406);
-                fcSttbfAssoc = System.BitConverter.ToInt32(bytes, 410);
-                lcbSttbfAssoc = System.BitConverter.ToUInt32(bytes, 414);
-                fcClx = System.BitConverter.ToInt32(bytes, 418);
-                lcbClx = System.BitConverter.ToUInt32(bytes, 422);
-                fcPlcfpgdFtn = System.BitConverter.ToInt32(bytes, 426);
-                fcAutosaveSource = System.BitConverter.ToInt32(bytes, 434);
-                //Page 151
-                lcbAutosaveSource = System.BitConverter.ToUInt32(bytes, 438);
-                fcGrpXstAtnOwners = System.BitConverter.ToInt32(bytes, 442);
-                lcbGrpXstAtnOwners = System.BitConverter.ToUInt32(bytes, 446);
-                fcSttbfAtnbkmk = System.BitConverter.ToInt32(bytes, 450);
-                lcbSttbfAtnbkmk = System.BitConverter.ToUInt32(bytes, 454);
-                fcPlcdoaMom = System.BitConverter.ToInt32(bytes, 458);
-                lcbPlcdiaMom = System.BitConverter.ToUInt32(bytes, 462);
-                fcPlcdoaHdr = System.BitConverter.ToInt32(bytes, 466);
-                lcbPlcdoaHdr = System.BitConverter.ToUInt32(bytes, 470);
-                fcPlcspaMom = System.BitConverter.ToInt32(bytes, 474);
-                lcbPlcspaMom = System.BitConverter.ToUInt32(bytes, 478);
-                fcPlcspaHdr = System.BitConverter.ToInt32(bytes, 482);
-                lcbPlcspaHdr = System.BitConverter.ToUInt32(bytes, 486);
-                fcPlcfAtnbkf = System.BitConverter.ToInt32(bytes, 490);
-                lcbPlcfAtnbkf = System.BitConverter.ToUInt32(bytes, 494);
-                fcPlcfAtnbkl = System.BitConverter.ToInt32(bytes, 498);
-                lcbPlcfAtnbkl = System.BitConverter.ToUInt32(bytes, 502);
-                //Page 152
-                fcPms = System.BitConverter.ToInt32(bytes, 506);
-                lcbPms = System.BitConverter.ToUInt32(bytes, 510);
-                fcFormFldSttbs = System.BitConverter.ToInt32(bytes, 514);
-                lcbFormFldSttbs = System.BitConverter.ToUInt32(bytes, 518);
-                fcPlcfendRef = System.BitConverter.ToInt32(bytes, 522);
-                lcbPlcfendRef = System.BitConverter.ToUInt32(bytes, 526);
-                fcPlcfendTxt = System.BitConverter.ToInt32(bytes, 530);
-                lcbPlcfendTxt = System.BitConverter.ToUInt32(bytes, 534);
-                fcPlcffldEdn = System.BitConverter.ToInt32(bytes, 538);
-                lcbPlcffldEdn = System.BitConverter.ToUInt32(bytes, 542);
-                fcPlcfpgEdn = System.BitConverter.ToInt32(bytes, 546);
-                lcbPlcfpgEdn = System.BitConverter.ToUInt32(bytes, 550);
-                fcDggInfo = System.BitConverter.ToInt32(bytes, 554);
-                lcbDggInfo = System.BitConverter.ToUInt32(bytes, 558);
-                fcSttbfRMark = System.BitConverter.ToInt32(bytes, 562);
-                lcbSttbfRMark = System.BitConverter.ToUInt32(bytes, 566);
-                //Page 153
-                fcSttbCaption = System.BitConverter.ToInt32(bytes, 570);
-                lcbSttbCaption = System.BitConverter.ToUInt32(bytes, 574);
-                fcSttbAutoCaption = System.BitConverter.ToInt32(bytes, 578);
-                lcbSttbAutoCaption = System.BitConverter.ToUInt32(bytes, 582);
-                fcPlcfwkb = System.BitConverter.ToInt32(bytes, 586);
-                lcbPlcfwkb = System.BitConverter.ToUInt32(bytes, 590);
-                fcPlcfspl = System.BitConverter.ToInt32(bytes, 594);
-                lcbPlcfspl = System.BitConverter.ToUInt32(bytes, 598);
-                fcPlcftxbxTxt = System.BitConverter.ToInt32(bytes, 602);
-                lcbPlcftxbxTxt = System.BitConverter.ToUInt32(bytes, 606);
-                fcPlcffldTxt = System.BitConverter.ToInt32(bytes, 610);
-                lcbPlcffldTxt = System.BitConverter.ToUInt32(bytes, 614);
-                fcPlcfhdrtxbxTxt = System.BitConverter.ToInt32(bytes, 618);
-                lcbPlcfhdrtxbxTxt = System.BitConverter.ToUInt32(bytes, 622);
-                fcPlcfldHdrTxbx = System.BitConverter.ToInt32(bytes, 626);
-                lcbPlcfldHdrTxbx = System.BitConverter.ToUInt32(bytes, 630);
-                fcStwUser = System.BitConverter.ToInt32(bytes, 634);
-                //Page 154
-                lcbStwUser = System.BitConverter.ToUInt32(bytes, 638);
-                fcSttbttmbd = System.BitConverter.ToInt32(bytes, 642);
-                lcbSttbttmbd = System.BitConverter.ToUInt32(bytes, 646);
-                fcCookieData = System.BitConverter.ToInt32(bytes, 650);
-                lcbCookieData = System.BitConverter.ToUInt32(bytes, 654);
-                fcSttbfIntlFld = System.BitConverter.ToInt32(bytes, 706);
-                lcbSttbfIntlFld = System.BitConverter.ToUInt32(bytes, 710);
-                fcRouteSlip = System.BitConverter.ToInt32(bytes, 714);
-                lcbRouteSlip = System.BitConverter.ToUInt32(bytes, 718);
-                fcSttbSavedBy = System.BitConverter.ToInt32(bytes, 722);
-                lcbSttbSavedBy = System.BitConverter.ToUInt32(bytes, 726);
-                fcSttbFnm = System.BitConverter.ToInt32(bytes, 730);
-                lcbSttbFnm = System.BitConverter.ToUInt32(bytes, 734);
-                //Page 155
-                fcPlcfLst = System.BitConverter.ToInt32(bytes, 738);
-                lcbPlcfLst = System.BitConverter.ToUInt32(bytes, 742);
-                fcPlfLfo = System.BitConverter.ToInt32(bytes, 746);
-                lcbPlfLfo = System.BitConverter.ToUInt32(bytes, 750);
-                fcPlcftxbxBkd = System.BitConverter.ToInt32(bytes, 754);
-                lcbPlcftxbxBkd = System.BitConverter.ToUInt32(bytes, 758);
-                fcPlcftxbxHdrBkd = System.BitConverter.ToInt32(bytes, 762);
-                lcbPlcftxbxHdrBkd = System.BitConverter.ToUInt32(bytes, 766);
-                fcDocUndoWord9 = System.BitConverter.ToInt32(bytes, 770);
-                lcbDocUndoWord9 = System.BitConverter.ToUInt32(bytes, 774);
-                fcRgbuse = System.BitConverter.ToInt32(bytes, 778);
-                lcbRgbuse = System.BitConverter.ToUInt32(bytes, 782);
-                fcUsp = System.BitConverter.ToInt32(bytes, 786);
-                lcbUsp = System.BitConverter.ToUInt32(bytes, 790);
-                fcUskf = System.BitConverter.ToInt32(bytes, 794);
-                lcbUskf = System.BitConverter.ToUInt32(bytes, 798);
-                fcPlcupcRgbuse = System.BitConverter.ToInt32(bytes, 802);
-                lcbPlcupcRgbuse = System.BitConverter.ToUInt32(bytes, 806);
-                fcPlcupcUsp = System.BitConverter.ToInt32(bytes, 810);
-                lcbPlcupcUsp = System.BitConverter.ToUInt32(bytes, 814);
-                fcSttbGlsyStyle = System.BitConverter.ToInt32(bytes, 818);
-                lcbSttbGlsyStyle = System.BitConverter.ToUInt32(bytes, 822);
-                fcPlgosl = System.BitConverter.ToInt32(bytes, 826);
-                //Page 156
-                lcbPlgosl = System.BitConverter.ToUInt32(bytes, 830);
-                fcPlcocx = System.BitConverter.ToInt32(bytes, 834);
-                lcbPlcocx = System.BitConverter.ToUInt32(bytes, 838);
-                fcPlcfbteLvc = System.BitConverter.ToInt32(bytes, 842);
-                lcbPlcfbteLvc = System.BitConverter.ToUInt32(bytes, 846);
-                dwLowDateTime = System.BitConverter.ToUInt32(bytes, 850);
-                dwHighDateTime = System.BitConverter.ToUInt32(bytes, 854);
-                fcPlcflvcPre10 = System.BitConverter.ToInt32(bytes, 858);
-                lcbPlcflvcPre10 = System.BitConverter.ToUInt32(bytes, 862);
-                fcPlcasumy = System.BitConverter.ToInt32(bytes, 866);
-                lcbPlcasumy = System.BitConverter.ToUInt32(bytes, 870);
-                fcPlcfgram = System.BitConverter.ToInt32(bytes, 874);
-                lcbPlcfgram = System.BitConverter.ToUInt32(bytes, 878);
-                fcSttbListNames = System.BitConverter.ToInt32(bytes, 882);
-                lcbSttbListNames = System.BitConverter.ToUInt32(bytes, 886);
-                fcSttbfUssr = System.BitConverter.ToInt32(bytes, 890);
-                lcbSttbfUssr = System.BitConverter.ToUInt32(bytes, 894);
-                fcPlcfTch = System.BitConverter.ToInt32(bytes, 898);
-                lcbPlcfTch = System.BitConverter.ToUInt32(bytes, 902);
-                fcRmdfThreading = System.BitConverter.ToInt32(bytes, 906);
-                lcbRmdfThreading = System.BitConverter.ToUInt32(bytes, 910);
-                fcMid = System.BitConverter.ToInt32(bytes, 914);
-                //Page 157
-                lcbMid = System.BitConverter.ToUInt32(bytes, 918);
-                fcSttbRgtplc = System.BitConverter.ToInt32(bytes, 922);
-                lcbSttbRgtplc = System.BitConverter.ToUInt32(bytes, 926);
-                fcMsoEnvelope = System.BitConverter.ToInt32(bytes, 930);
-                lcbMsoEnvelope = System.BitConverter.ToUInt32(bytes, 934);
-                fcPlcflad = System.BitConverter.ToInt32(bytes, 938);
-                lcbPlcflad = System.BitConverter.ToUInt32(bytes, 942);
-                fcRgdofr = System.BitConverter.ToInt32(bytes, 946);
-                lcbRgdofr = System.BitConverter.ToUInt32(bytes, 950);
-                fcPlcosl = System.BitConverter.ToInt32(bytes, 954);
-                lcbPlcosl = System.BitConverter.ToUInt32(bytes, 958);
-                fcPlcfcookieOld = System.BitConverter.ToInt32(bytes, 962);
-                lcbPlcfcookieOld = System.BitConverter.ToUInt32(bytes, 966);
-                //Page 158
-                fcUnused = System.BitConverter.ToInt32(bytes, 1018);
-                lcbUnused = System.BitConverter.ToUInt32(bytes, 1022);
-                fcPlcfpgp = System.BitConverter.ToInt32(bytes, 1026);
-                lcbPlcfpgp = System.BitConverter.ToUInt32(bytes, 1030);
-                fcPlcfuim = System.BitConverter.ToInt32(bytes, 1034);
-                lcbPlcfuim = System.BitConverter.ToUInt32(bytes, 1038);
-                fcPlfguidUim = System.BitConverter.ToInt32(bytes, 1042);
-                lcbPlfguidUim = System.BitConverter.ToUInt32(bytes, 1046);
-                fcAtrdExtra = System.BitConverter.ToInt32(bytes, 1050);
-                lcbAtrdExtra = System.BitConverter.ToUInt32(bytes, 1054);
-                fcPlrsid = System.BitConverter.ToInt32(bytes, 1058);
-                lcbPlrsid = System.BitConverter.ToUInt32(bytes, 1062);
-                fcSttbfBkmkFactoid = System.BitConverter.ToInt32(bytes, 1066);
-                lcbSttbfBkmkFactoid = System.BitConverter.ToUInt32(bytes, 1070);
-                //Page 159
-                fcPlcfBkfFactoid = System.BitConverter.ToInt32(bytes, 1074);
-                lcbPlcfBkfFactoid = System.BitConverter.ToUInt32(bytes, 1078);
-                fcPlcfcookie = System.BitConverter.ToInt32(bytes, 1082);
-                lcbPlcfcookie = System.BitConverter.ToUInt32(bytes, 1086);
-                fcPlcfBklFactoid = System.BitConverter.ToInt32(bytes, 1090);
-                lcbPlcfBklFactoid = System.BitConverter.ToUInt32(bytes, 1094);
-                fcFactoidData = System.BitConverter.ToInt32(bytes, 1098);
-                lcbFactoidData = System.BitConverter.ToUInt32(bytes, 1102);
-                fcDocUndo = System.BitConverter.ToInt32(bytes, 1106);
-                lcbDocUndo = System.BitConverter.ToUInt32(bytes, 1010);
-                fcSttbfBkmkFcc = System.BitConverter.ToInt32(bytes, 1114);
-                lcbSttbfBkmkFcc = System.BitConverter.ToUInt32(bytes, 1118);
-                //Page 160
-                fcPlcfBkfFcc = System.BitConverter.ToInt32(bytes, 1122);
-                lcbPlcfBkfFcc = System.BitConverter.ToUInt32(bytes, 1126);
-                fcPlcfBklFcc = System.BitConverter.ToInt32(bytes, 1130);
-                lcbPlcfBklFcc = System.BitConverter.ToUInt32(bytes, 1134);
-                fcSttbfbkmkBPRepairs = System.BitConverter.ToInt32(bytes, 1138);
-                lcbSttbfbkmkBPRepairs = System.BitConverter.ToUInt32(bytes, 1142);
-                fcPlcfbkfBPRepairs = System.BitConverter.ToInt32(bytes, 1146);
-                lcbPlcfbkfBPRepairs = System.BitConverter.ToUInt32(bytes, 1150);
-                fcPlcfbklBPRepairs = System.BitConverter.ToInt32(bytes, 1154);
-                lcbPlcfbklBPRepairs = System.BitConverter.ToUInt32(bytes, 1158);
-                fcPmsNew = System.BitConverter.ToInt32(bytes, 1162);
-                //Page 161
-                lcbPmsNew = System.BitConverter.ToUInt32(bytes, 1158);
-                fcODSO = System.BitConverter.ToInt32(bytes, 1170);
-                lcbODSO = System.BitConverter.ToUInt32(bytes, 1174);
-                fcPlcfpmiOldXP = System.BitConverter.ToInt32(bytes, 1178);
-                lcbPlcfpmiOldXP = System.BitConverter.ToUInt32(bytes, 1182);
-                fcPlcfpmiNewXP = System.BitConverter.ToInt32(bytes, 1186);
-                lcbPlcfpmiNewXP = System.BitConverter.ToUInt32(bytes, 1190);
-                fcPlcfpmiMixedXP = System.BitConverter.ToInt32(bytes, 1194);
-                lcbPlcfpmiMixedXP = System.BitConverter.ToUInt32(bytes, 1198);
-                fcEncryptedProps = System.BitConverter.ToInt32(bytes, 1202);
-                lcbEncryptedProps = System.BitConverter.ToUInt32(bytes, 1206);
-                fcPlcffactoid = System.BitConverter.ToInt32(bytes, 1210);
-                lcbPlcffactoid = System.BitConverter.ToUInt32(bytes, 1214);
-                fcPlcflvcOldXp = System.BitConverter.ToInt32(bytes, 1218);
-                //Page 162
-                lcbPlcflvcOldXp = System.BitConverter.ToUInt32(bytes, 1222);
-                fcPlcflvcNewXp = System.BitConverter.ToInt32(bytes, 1226);
-                lcbPlcflvcNewXp = System.BitConverter.ToUInt32(bytes, 1230);
-                fcPlcflvcMixedXp = System.BitConverter.ToInt32(bytes, 1234);
-                lcbPlcflvcMixedXp = System.BitConverter.ToUInt32(bytes, 1238);
-                fcHplxsdr = System.BitConverter.ToInt32(bytes, 1242);
-                lcbHplxsdr = System.BitConverter.ToUInt32(bytes, 1246);
-                fcSttbfBkmSdt = System.BitConverter.ToInt32(bytes, 1250);
-                lcbSttbfBkmSdt = System.BitConverter.ToUInt32(bytes, 1254);
-                fcPlcfBkfSdt = System.BitConverter.ToInt32(bytes, 1258);
-                lcbPlcfBkfSdt = System.BitConverter.ToUInt32(bytes, 1262);
-                //Page 163
-                fcPlcfBklSdt = System.BitConverter.ToInt32(bytes, 1266);
-                lcbPlcfBklSdt = System.BitConverter.ToUInt32(bytes, 1270);
-                fcCustomXForm = System.BitConverter.ToInt32(bytes, 1274);
-                lcbCustomXForm = System.BitConverter.ToUInt32(bytes, 1278);
-                fcSttbfBkmkProt = System.BitConverter.ToInt32(bytes, 1282);
-                lcbSttbfBkmkProt = System.BitConverter.ToUInt32(bytes, 1286);
-                fcPlcfBkfProt = System.BitConverter.ToInt32(bytes, 1290);
-                lcbPlcfBkfProt = System.BitConverter.ToUInt32(bytes, 1294);
-                fcPlcfBklProt = System.BitConverter.ToInt32(bytes, 1298);
-                lcbPlcfBklProt = System.BitConverter.ToUInt32(bytes, 1302);
-                fcSttbProtUser = System.BitConverter.ToInt32(bytes, 1306);
-                lcbSttbProtUser = System.BitConverter.ToUInt32(bytes, 1310);
-                //Page 164
-                fcPlcftpc = System.BitConverter.ToInt32(bytes, 1314);
-                lcbPlcftpc = System.BitConverter.ToUInt32(bytes, 1318);
-                fcPlcfpmiOld = System.BitConverter.ToInt32(bytes, 1322);
-                lcbPlcfpmiOld = System.BitConverter.ToUInt32(bytes, 1326);
-                fcPlcfpmiOldInline = System.BitConverter.ToInt32(bytes, 1330);
-                lcbPlcfpmiOldInline = System.BitConverter.ToUInt32(bytes, 1334);
-                fcPlcfpmiNew = System.BitConverter.ToInt32(bytes, 1338);
-                lcbPlcfpmiNew = System.BitConverter.ToUInt32(bytes, 1342);
-                fcPlcfpmiNewInline = System.BitConverter.ToInt32(bytes, 1346);
-                lcbPlcfpmiNewInline = System.BitConverter.ToUInt32(bytes, 1350);
-                fcPlcflvcOld = System.BitConverter.ToInt32(bytes, 1354);
-                lcbPlcflvcOld = System.BitConverter.ToUInt32(bytes, 1358);
-                fcPlcflvcOldInline = System.BitConverter.ToInt32(bytes, 1362);
-                lcbPlcflvcOldInline = System.BitConverter.ToUInt32(bytes, 1366);
-                fcPlcflvcNew = System.BitConverter.ToInt32(bytes, 1370);
-                lcbPlcflvcNew = System.BitConverter.ToUInt32(bytes, 1374);
-                fcPlcflvcNewInline = System.BitConverter.ToInt32(bytes, 1378);
-                lcbPlcflvcNewInline = System.BitConverter.ToUInt32(bytes, 1382);
-                //Page 165
-                fcAfd = System.BitConverter.ToInt32(bytes, 1458);
-                lcbAfd = System.BitConverter.ToUInt32(bytes, 162);
-                cswNew = System.BitConverter.ToUInt16(bytes, 1466);
-                //nFib = System.BitConverter.ToUInt16(bytes, 1468);
-                cQuickSavesNew = System.BitConverter.ToUInt16(bytes, 1470);
-            }
-            catch(Exception)
+            //read the FIB base
+            this.wIdent = reader.ReadUInt16();
+            this.nFib = (FibVersion)reader.ReadUInt16();
+            reader.ReadBytes(2);
+            this.lid = reader.ReadUInt16();
+            this.pnNext = reader.ReadInt16();
+            flag16 = reader.ReadUInt16();
+            this.fDot = Utils.BitmaskToBool((int)flag16, 0x0001);
+            this.fGlsy = Utils.BitmaskToBool((int)flag16, 0x0002);
+            this.fComplex = Utils.BitmaskToBool((int)flag16, 0x0002);
+            this.fHasPic = Utils.BitmaskToBool((int)flag16, 0x0008);
+            this.cQuickSaves = (UInt16)(((int)flag16 & 0x00F0) >> 4);
+            this.fEncrypted = Utils.BitmaskToBool((int)flag16, 0x0100);
+            this.fWhichTblStm = Utils.BitmaskToBool((int)flag16, 0x0200);
+            this.fReadOnlyRecommended = Utils.BitmaskToBool((int)flag16, 0x0400);
+            this.fWriteReservation = Utils.BitmaskToBool((int)flag16, 0x0800);
+            this.fExtChar = Utils.BitmaskToBool((int)flag16, 0x1000);
+            this.fLoadOverwrite = Utils.BitmaskToBool((int)flag16, 0x2000);
+            this.fFarEast = Utils.BitmaskToBool((int)flag16, 0x4000);
+            this.fCrypto = Utils.BitmaskToBool((int)flag16, 0x8000);
+            this.nFibBack = reader.ReadUInt16();
+            this.lKey = reader.ReadInt32();
+            this.envr = reader.ReadByte();
+            flag8 = reader.ReadByte();
+            this.fMac = Utils.BitmaskToBool((int)flag8, 0x01);
+            this.fEmptySpecial = Utils.BitmaskToBool((int)flag8, 0x02);
+            this.fLoadOverridePage = Utils.BitmaskToBool((int)flag8, 0x04);
+            this.fFutureSavedUndo = Utils.BitmaskToBool((int)flag8, 0x08);
+            this.fWord97Saved = Utils.BitmaskToBool((int)flag8, 0x10);
+            reader.ReadBytes(4);
+            this.fcMin = reader.ReadInt32();
+            this.fcMac = reader.ReadInt32();
+
+            this.csw = reader.ReadUInt16();
+
+            //read the RgW97
+            reader.ReadBytes(26);
+            this.lidFE = reader.ReadInt16();
+
+            this.cslw = reader.ReadUInt16();
+
+            //read the RgLW97
+            this.cbMac = reader.ReadInt32();
+            reader.ReadBytes(8);
+            this.ccpText = reader.ReadInt32();
+            this.ccpFtn = reader.ReadInt32();
+            this.ccpHdr = reader.ReadInt32();
+            reader.ReadBytes(4);
+            this.ccpAtn = reader.ReadInt32();
+            this.ccpEdn = reader.ReadInt32();
+            this.ccpTxbx = reader.ReadInt32();
+            this.ccpHdrTxbx = reader.ReadInt32();
+            reader.ReadBytes(44);
+
+            this.cbRgFcLcb = reader.ReadUInt16();
+
+            if (this.nFib >= FibVersion.Fib1997)
             {
-                throw new ByteParseException("FIB");
+                //Read the FibRgFcLcb97
+                this.fcStshfOrig = reader.ReadUInt32();
+                this.lcbStshfOrig = reader.ReadUInt32();
+                this.fcStshf = reader.ReadUInt32();
+                this.lcbStshf = reader.ReadUInt32();
+                this.fcPlcffndRef = reader.ReadUInt32();
+                this.lcbPlcffndRef = reader.ReadUInt32();
+                this.fcPlcffndTxt = reader.ReadUInt32();
+                this.lcbPlcffndTxt = reader.ReadUInt32();
+                this.fcPlcfandRef = reader.ReadUInt32();
+                this.lcbPlcfandRef = reader.ReadUInt32();
+                this.fcPlcfandTxt = reader.ReadUInt32();
+                this.lcbPlcfandTxt = reader.ReadUInt32();
+                this.fcPlcfSed = reader.ReadUInt32();
+                this.lcbPlcfSed = reader.ReadUInt32();
+                this.fcPlcPad = reader.ReadUInt32();
+                this.lcbPlcPad = reader.ReadUInt32();
+                this.fcPlcfPhe = reader.ReadUInt32();
+                this.lcbPlcfPhe = reader.ReadUInt32();
+                this.fcSttbfGlsy = reader.ReadUInt32();
+                this.lcbSttbfGlsy = reader.ReadUInt32();
+                this.fcPlcfGlsy = reader.ReadUInt32();
+                this.lcbPlcfGlsy = reader.ReadUInt32();
+                this.fcPlcfHdd = reader.ReadUInt32();
+                this.lcbPlcfHdd = reader.ReadUInt32();
+                this.fcPlcfBteChpx = reader.ReadUInt32();
+                this.lcbPlcfBteChpx = reader.ReadUInt32();
+                this.fcPlcfBtePapx = reader.ReadUInt32();
+                this.lcbPlcfBtePapx = reader.ReadUInt32();
+                this.fcPlcfSea = reader.ReadUInt32();
+                this.lcbPlcfSea = reader.ReadUInt32();
+                this.fcSttbfFfn = reader.ReadUInt32();
+                this.lcbSttbfFfn = reader.ReadUInt32();
+                this.fcPlcfFldMom = reader.ReadUInt32();
+                this.lcbPlcfFldMom = reader.ReadUInt32();
+                this.fcPlcfFldHdr = reader.ReadUInt32();
+                this.lcbPlcfFldHdr = reader.ReadUInt32();
+                this.fcPlcfFldFtn = reader.ReadUInt32();
+                this.lcbPlcfFldFtn = reader.ReadUInt32();
+                this.fcPlcfFldAtn = reader.ReadUInt32();
+                this.lcbPlcfFldAtn = reader.ReadUInt32();
+                this.fcPlcfFldMcr = reader.ReadUInt32();
+                this.lcbPlcfFldMcr = reader.ReadUInt32();
+                this.fcSttbfBkmk = reader.ReadUInt32();
+                this.lcbSttbfBkmk = reader.ReadUInt32();
+                this.fcPlcfBkf = reader.ReadUInt32();
+                this.lcbPlcfBkf = reader.ReadUInt32();
+                this.fcPlcfBkl = reader.ReadUInt32();
+                this.lcbPlcfBkl = reader.ReadUInt32();
+                this.fcCmds = reader.ReadUInt32();
+                this.lcbCmds = reader.ReadUInt32();
+                reader.ReadUInt32();
+                reader.ReadUInt32();
+                this.fcSttbfMcr = reader.ReadUInt32();
+                this.lcbSttbfMcr = reader.ReadUInt32();
+                this.fcPrDrvr = reader.ReadUInt32();
+                this.lcbPrDrvr = reader.ReadUInt32();
+                this.fcPrEnvPort = reader.ReadUInt32();
+                this.lcbPrEnvPort = reader.ReadUInt32();
+                this.fcPrEnvLand = reader.ReadUInt32();
+                this.lcbPrEnvLand = reader.ReadUInt32();
+                this.fcWss = reader.ReadUInt32();
+                this.lcbWss = reader.ReadUInt32();
+                this.fcDop = reader.ReadUInt32();
+                this.lcbDop = reader.ReadUInt32();
+                this.fcSttbfAssoc = reader.ReadUInt32();
+                this.lcbSttbfAssoc = reader.ReadUInt32();
+                this.fcClx = reader.ReadUInt32();
+                this.lcbClx = reader.ReadUInt32();
+                this.fcPlcfPgdFtn = reader.ReadUInt32();
+                this.lcbPlcfPgdFtn = reader.ReadUInt32();
+                this.fcAutosaveSource = reader.ReadUInt32();
+                this.lcbAutosaveSource = reader.ReadUInt32();
+                this.fcGrpXstAtnOwners = reader.ReadUInt32();
+                this.lcbGrpXstAtnOwners = reader.ReadUInt32();
+                this.fcSttbfAtnBkmk = reader.ReadUInt32();
+                this.lcbSttbfAtnBkmk = reader.ReadUInt32();
+                reader.ReadUInt32();
+                reader.ReadUInt32();
+                reader.ReadUInt32();
+                reader.ReadUInt32();
+                this.fcPlcSpaMom = reader.ReadUInt32();
+                this.lcbPlcSpaMom = reader.ReadUInt32();
+                this.fcPlcSpaHdr = reader.ReadUInt32();
+                this.lcbPlcSpaHdr = reader.ReadUInt32();
+                this.fcPlcfAtnBkf = reader.ReadUInt32();
+                this.lcbPlcfAtnBkf = reader.ReadUInt32();
+                this.fcPlcfAtnBkl = reader.ReadUInt32();
+                this.lcbPlcfAtnBkl = reader.ReadUInt32();
+                this.fcPms = reader.ReadUInt32();
+                this.lcbPms = reader.ReadUInt32();
+                this.fcFormFldSttbs = reader.ReadUInt32();
+                this.lcbFormFldSttbs = reader.ReadUInt32();
+                this.fcPlcfendRef = reader.ReadUInt32();
+                this.lcbPlcfendRef = reader.ReadUInt32();
+                this.fcPlcfendTxt = reader.ReadUInt32();
+                this.lcbPlcfendTxt = reader.ReadUInt32();
+                this.fcPlcfFldEdn = reader.ReadUInt32();
+                this.lcbPlcfFldEdn = reader.ReadUInt32();
+                reader.ReadUInt32();
+                reader.ReadUInt32();
+                this.fcDggInfo = reader.ReadUInt32();
+                this.lcbDggInfo = reader.ReadUInt32();
+                this.fcSttbfRMark = reader.ReadUInt32();
+                this.lcbSttbfRMark = reader.ReadUInt32();
+                this.fcSttbfCaption = reader.ReadUInt32();
+                this.lcbSttbfCaption = reader.ReadUInt32();
+                this.fcSttbfAutoCaption = reader.ReadUInt32();
+                this.lcbSttbfAutoCaption = reader.ReadUInt32();
+                this.fcPlcfWkb = reader.ReadUInt32();
+                this.lcbPlcfWkb = reader.ReadUInt32();
+                this.fcPlcfSpl = reader.ReadUInt32();
+                this.lcbPlcfSpl = reader.ReadUInt32();
+                this.fcPlcftxbxTxt = reader.ReadUInt32();
+                this.lcbPlcftxbxTxt = reader.ReadUInt32();
+                this.fcPlcfFldTxbx = reader.ReadUInt32();
+                this.lcbPlcfFldTxbx = reader.ReadUInt32();
+                this.fcPlcfHdrtxbxTxt = reader.ReadUInt32();
+                this.lcbPlcfHdrtxbxTxt = reader.ReadUInt32();
+                this.fcPlcffldHdrTxbx = reader.ReadUInt32();
+                this.lcbPlcffldHdrTxbx = reader.ReadUInt32();
+                this.fcStwUser = reader.ReadUInt32();
+                this.lcbStwUser = reader.ReadUInt32();
+                this.fcSttbTtmbd = reader.ReadUInt32();
+                this.lcbSttbTtmbd = reader.ReadUInt32();
+                this.fcCookieData = reader.ReadUInt32();
+                this.lcbCookieData = reader.ReadUInt32();
+                this.fcPgdMotherOldOld = reader.ReadUInt32();
+                this.lcbPgdMotherOldOld = reader.ReadUInt32();
+                this.fcBkdMotherOldOld = reader.ReadUInt32();
+                this.lcbBkdMotherOldOld = reader.ReadUInt32();
+                this.fcPgdFtnOldOld = reader.ReadUInt32();
+                this.lcbPgdFtnOldOld = reader.ReadUInt32();
+                this.fcBkdFtnOldOld = reader.ReadUInt32();
+                this.lcbBkdFtnOldOld = reader.ReadUInt32();
+                this.fcPgdEdnOldOld = reader.ReadUInt32();
+                this.lcbPgdEdnOldOld = reader.ReadUInt32();
+                this.fcBkdEdnOldOld = reader.ReadUInt32();
+                this.lcbBkdEdnOldOld = reader.ReadUInt32();
+                this.fcSttbfIntlFld = reader.ReadUInt32();
+                this.lcbSttbfIntlFld = reader.ReadUInt32();
+                this.fcRouteSlip = reader.ReadUInt32();
+                this.lcbRouteSlip = reader.ReadUInt32();
+                this.fcSttbSavedBy = reader.ReadUInt32();
+                this.lcbSttbSavedBy = reader.ReadUInt32();
+                this.fcSttbFnm = reader.ReadUInt32();
+                this.lcbSttbFnm = reader.ReadUInt32();
+                this.fcPlfLst = reader.ReadUInt32();
+                this.lcbPlfLst = reader.ReadUInt32();
+                this.fcPlfLfo = reader.ReadUInt32();
+                this.lcbPlfLfo = reader.ReadUInt32();
+                this.fcPlcfTxbxBkd = reader.ReadUInt32();
+                this.lcbPlcfTxbxBkd = reader.ReadUInt32();
+                this.fcPlcfTxbxHdrBkd = reader.ReadUInt32();
+                this.lcbPlcfTxbxHdrBkd = reader.ReadUInt32();
+                this.fcDocUndoWord9 = reader.ReadUInt32();
+                this.lcbDocUndoWord9 = reader.ReadUInt32();
+                this.fcRgbUse = reader.ReadUInt32();
+                this.lcbRgbUse = reader.ReadUInt32();
+                this.fcUsp = reader.ReadUInt32();
+                this.lcbUsp = reader.ReadUInt32();
+                this.fcUskf = reader.ReadUInt32();
+                this.lcbUskf = reader.ReadUInt32();
+                this.fcPlcupcRgbUse = reader.ReadUInt32();
+                this.lcbPlcupcRgbUse = reader.ReadUInt32();
+                this.fcPlcupcUsp = reader.ReadUInt32();
+                this.lcbPlcupcUsp = reader.ReadUInt32();
+                this.fcSttbGlsyStyle = reader.ReadUInt32();
+                this.lcbSttbGlsyStyle = reader.ReadUInt32();
+                this.fcPlgosl = reader.ReadUInt32();
+                this.lcbPlgosl = reader.ReadUInt32();
+                this.fcPlcocx = reader.ReadUInt32();
+                this.lcbPlcocx = reader.ReadUInt32();
+                this.fcPlcfBteLvc = reader.ReadUInt32();
+                this.lcbPlcfBteLvc = reader.ReadUInt32();
+                this.dwLowDateTime = reader.ReadUInt32();
+                this.dwHighDateTime = reader.ReadUInt32();
+                this.fcPlcfLvcPre10 = reader.ReadUInt32();
+                this.lcbPlcfLvcPre10 = reader.ReadUInt32();
+                this.fcPlcfAsumy = reader.ReadUInt32();
+                this.lcbPlcfAsumy = reader.ReadUInt32();
+                this.fcPlcfGram = reader.ReadUInt32();
+                this.lcbPlcfGram = reader.ReadUInt32();
+                this.fcSttbListNames = reader.ReadUInt32();
+                this.lcbSttbListNames = reader.ReadUInt32();
+                this.fcSttbfUssr = reader.ReadUInt32();
+                this.lcbSttbfUssr = reader.ReadUInt32();
+            }
+            if (this.nFib >= FibVersion.Fib2000)
+            {
+                //Read also the FibRgFcLcb2000
+                this.fcPlcfTch = reader.ReadUInt32();
+                this.lcbPlcfTch = reader.ReadUInt32();
+                this.fcRmdThreading = reader.ReadUInt32();
+                this.lcbRmdThreading = reader.ReadUInt32();
+                this.fcMid = reader.ReadUInt32();
+                this.lcbMid = reader.ReadUInt32();
+                this.fcSttbRgtplc = reader.ReadUInt32();
+                this.lcbSttbRgtplc = reader.ReadUInt32();
+                this.fcMsoEnvelope = reader.ReadUInt32();
+                this.lcbMsoEnvelope = reader.ReadUInt32();
+                this.fcPlcfLad = reader.ReadUInt32();
+                this.lcbPlcfLad = reader.ReadUInt32();
+                this.fcRgDofr = reader.ReadUInt32();
+                this.lcbRgDofr = reader.ReadUInt32();
+                this.fcPlcosl = reader.ReadUInt32();
+                this.lcbPlcosl = reader.ReadUInt32();
+                this.fcPlcfCookieOld = reader.ReadUInt32();
+                this.lcbPlcfCookieOld = reader.ReadUInt32();
+                this.fcPgdMotherOld = reader.ReadUInt32();
+                this.lcbPgdMotherOld = reader.ReadUInt32();
+                this.fcBkdMotherOld = reader.ReadUInt32();
+                this.lcbBkdMotherOld = reader.ReadUInt32();
+                this.fcPgdFtnOld = reader.ReadUInt32();
+                this.lcbPgdFtnOld = reader.ReadUInt32();
+                this.fcBkdFtnOld = reader.ReadUInt32();
+                this.lcbBkdFtnOld = reader.ReadUInt32();
+                this.fcPgdEdnOld = reader.ReadUInt32();
+                this.lcbPgdEdnOld = reader.ReadUInt32();
+                this.fcBkdEdnOld = reader.ReadUInt32();
+                this.lcbBkdEdnOld = reader.ReadUInt32();
+            }
+            if (this.nFib >= FibVersion.Fib2002)
+            {
+                //Read also the fibRgFcLcb2002
+                reader.ReadUInt32();
+                reader.ReadUInt32();
+                this.fcPlcfPgp = reader.ReadUInt32();
+                this.lcbPlcfPgp = reader.ReadUInt32();
+                this.fcPlcfuim = reader.ReadUInt32();
+                this.lcbPlcfuim = reader.ReadUInt32();
+                this.fcPlfguidUim = reader.ReadUInt32();
+                this.lcbPlfguidUim = reader.ReadUInt32();
+                this.fcAtrdExtra = reader.ReadUInt32();
+                this.lcbAtrdExtra = reader.ReadUInt32();
+                this.fcPlrsid = reader.ReadUInt32();
+                this.lcbPlrsid = reader.ReadUInt32();
+                this.fcSttbfBkmkFactoid = reader.ReadUInt32();
+                this.lcbSttbfBkmkFactoid = reader.ReadUInt32();
+                this.fcPlcfBkfFactoid = reader.ReadUInt32();
+                this.lcbPlcfBkfFactoid = reader.ReadUInt32();
+                this.fcPlcfcookie = reader.ReadUInt32();
+                this.lcbPlcfcookie = reader.ReadUInt32();
+                this.fcPlcfBklFactoid = reader.ReadUInt32();
+                this.lcbPlcfBklFactoid = reader.ReadUInt32();
+                this.fcFactoidData = reader.ReadUInt32();
+                this.lcbFactoidData = reader.ReadUInt32();
+                this.fcDocUndo = reader.ReadUInt32();
+                this.lcbDocUndo = reader.ReadUInt32();
+                this.fcSttbfBkmkFcc = reader.ReadUInt32();
+                this.lcbSttbfBkmkFcc = reader.ReadUInt32();
+                this.fcPlcfBkfFcc = reader.ReadUInt32();
+                this.lcbPlcfBkfFcc = reader.ReadUInt32();
+                this.fcPlcfBklFcc = reader.ReadUInt32();
+                this.lcbPlcfBklFcc = reader.ReadUInt32();
+                this.fcSttbfbkmkBPRepairs = reader.ReadUInt32();
+                this.lcbSttbfbkmkBPRepairs = reader.ReadUInt32();
+                this.fcPlcfbkfBPRepairs = reader.ReadUInt32();
+                this.lcbPlcfbkfBPRepairs = reader.ReadUInt32();
+                this.fcPlcfbklBPRepairs = reader.ReadUInt32();
+                this.lcbPlcfbklBPRepairs = reader.ReadUInt32();
+                this.fcPmsNew = reader.ReadUInt32();
+                this.lcbPmsNew = reader.ReadUInt32();
+                this.fcODSO = reader.ReadUInt32();
+                this.lcbODSO = reader.ReadUInt32();
+                this.fcPlcfpmiOldXP = reader.ReadUInt32();
+                this.lcbPlcfpmiOldXP = reader.ReadUInt32();
+                this.fcPlcfpmiNewXP = reader.ReadUInt32();
+                this.lcbPlcfpmiNewXP = reader.ReadUInt32();
+                this.fcPlcfpmiMixedXP = reader.ReadUInt32();
+                this.lcbPlcfpmiMixedXP = reader.ReadUInt32();
+                reader.ReadUInt32();
+                reader.ReadUInt32();
+                this.fcPlcffactoid = reader.ReadUInt32();
+                this.lcbPlcffactoid = reader.ReadUInt32();
+                this.fcPlcflvcOldXP = reader.ReadUInt32();
+                this.lcbPlcflvcOldXP = reader.ReadUInt32();
+                this.fcPlcflvcNewXP = reader.ReadUInt32();
+                this.lcbPlcflvcNewXP = reader.ReadUInt32();
+                this.fcPlcflvcMixedXP = reader.ReadUInt32();
+                this.lcbPlcflvcMixedXP = reader.ReadUInt32();
+            }
+            if (this.nFib >= FibVersion.Fib2003)
+            {
+                //Read also the fibRgFcLcb2003
+                this.fcHplxsdr = reader.ReadUInt32();
+                this.lcbHplxsdr = reader.ReadUInt32();
+                this.fcSttbfBkmkSdt = reader.ReadUInt32();
+                this.lcbSttbfBkmkSdt = reader.ReadUInt32();
+                this.fcPlcfBkfSdt = reader.ReadUInt32();
+                this.lcbPlcfBkfSdt = reader.ReadUInt32();
+                this.fcPlcfBklSdt = reader.ReadUInt32();
+                this.lcbPlcfBklSdt = reader.ReadUInt32();
+                this.fcCustomXForm = reader.ReadUInt32();
+                this.lcbCustomXForm = reader.ReadUInt32();
+                this.fcSttbfBkmkProt = reader.ReadUInt32();
+                this.lcbSttbfBkmkProt = reader.ReadUInt32();
+                this.fcPlcfBkfProt = reader.ReadUInt32();
+                this.lcbPlcfBkfProt = reader.ReadUInt32();
+                this.fcPlcfBklProt = reader.ReadUInt32();
+                this.lcbPlcfBklProt = reader.ReadUInt32();
+                this.fcSttbProtUser = reader.ReadUInt32();
+                this.lcbSttbProtUser = reader.ReadUInt32();
+                reader.ReadUInt32();
+                reader.ReadUInt32();
+                this.fcPlcfpmiOld = reader.ReadUInt32();
+                this.lcbPlcfpmiOld = reader.ReadUInt32();
+                this.fcPlcfpmiOldInline = reader.ReadUInt32();
+                this.lcbPlcfpmiOldInline = reader.ReadUInt32();
+                this.fcPlcfpmiNew = reader.ReadUInt32();
+                this.lcbPlcfpmiNew = reader.ReadUInt32();
+                this.fcPlcfpmiNewInline = reader.ReadUInt32();
+                this.lcbPlcfpmiNewInline = reader.ReadUInt32();
+                this.fcPlcflvcOld = reader.ReadUInt32();
+                this.lcbPlcflvcOld = reader.ReadUInt32();
+                this.fcPlcflvcOldInline = reader.ReadUInt32();
+                this.lcbPlcflvcOldInline = reader.ReadUInt32();
+                this.fcPlcflvcNew = reader.ReadUInt32();
+                this.lcbPlcflvcNew = reader.ReadUInt32();
+                this.fcPlcflvcNewInline = reader.ReadUInt32();
+                this.lcbPlcflvcNewInline = reader.ReadUInt32();
+                this.fcPgdMother = reader.ReadUInt32();
+                this.lcbPgdMother = reader.ReadUInt32();
+                this.fcBkdMother = reader.ReadUInt32();
+                this.lcbBkdMother = reader.ReadUInt32();
+                this.fcAfdMother = reader.ReadUInt32();
+                this.lcbAfdMother = reader.ReadUInt32();
+                this.fcPgdFtn = reader.ReadUInt32();
+                this.lcbPgdFtn = reader.ReadUInt32();
+                this.fcBkdFtn = reader.ReadUInt32();
+                this.lcbBkdFtn = reader.ReadUInt32();
+                this.fcAfdFtn = reader.ReadUInt32();
+                this.lcbAfdFtn = reader.ReadUInt32();
+                this.fcPgdEdn = reader.ReadUInt32();
+                this.lcbPgdEdn = reader.ReadUInt32();
+                this.fcBkdEdn = reader.ReadUInt32();
+                this.lcbBkdEdn = reader.ReadUInt32();
+                this.fcAfdEdn = reader.ReadUInt32();
+                this.lcbAfdEdn = reader.ReadUInt32();
+                this.fcAfd = reader.ReadUInt32();
+                this.lcbAfd = reader.ReadUInt32();
+            }
+            if (this.nFib >= FibVersion.Fib2007)
+            {
+                //Read also the fibRgFcLcb2007
+                this.fcPlcfmthd = reader.ReadUInt32();
+                this.lcbPlcfmthd = reader.ReadUInt32();
+                this.fcSttbfBkmkMoveFrom = reader.ReadUInt32();
+                this.lcbSttbfBkmkMoveFrom = reader.ReadUInt32();
+                this.fcPlcfBkfMoveFrom = reader.ReadUInt32();
+                this.lcbPlcfBkfMoveFrom = reader.ReadUInt32();
+                this.fcPlcfBklMoveFrom = reader.ReadUInt32();
+                this.lcbPlcfBklMoveFrom = reader.ReadUInt32();
+                this.fcSttbfBkmkMoveTo = reader.ReadUInt32();
+                this.lcbSttbfBkmkMoveTo = reader.ReadUInt32();
+                this.fcPlcfBkfMoveTo = reader.ReadUInt32();
+                this.lcbPlcfBkfMoveTo = reader.ReadUInt32();
+                this.fcPlcfBklMoveTo = reader.ReadUInt32();
+                this.lcbPlcfBklMoveTo = reader.ReadUInt32();
+                reader.ReadUInt32();
+                reader.ReadUInt32();
+                reader.ReadUInt32();
+                reader.ReadUInt32();
+                reader.ReadUInt32();
+                reader.ReadUInt32();
+                this.fcSttbfBkmkArto = reader.ReadUInt32();
+                this.lcbSttbfBkmkArto = reader.ReadUInt32();
+                this.fcPlcfBkfArto = reader.ReadUInt32();
+                this.lcbPlcfBkfArto = reader.ReadUInt32();
+                this.fcPlcfBklArto = reader.ReadUInt32();
+                this.lcbPlcfBklArto = reader.ReadUInt32();
+                this.fcArtoData = reader.ReadUInt32();
+                this.lcbArtoData = reader.ReadUInt32();
+                reader.ReadUInt32();
+                reader.ReadUInt32();
+                reader.ReadUInt32();
+                reader.ReadUInt32();
+                reader.ReadUInt32();
+                reader.ReadUInt32();
+                this.fcOssTheme = reader.ReadUInt32();
+                this.lcbOssTheme = reader.ReadUInt32();
+                this.fcColorSchemeMapping = reader.ReadUInt32();
+                this.lcbColorSchemeMapping = reader.ReadUInt32();
+            }
+
+            this.cswNew = reader.ReadUInt16();
+
+            if (this.cswNew != 0)
+            {
+                //Read the FibRgCswNew
+                this.nFibNew = (FibVersion)reader.ReadUInt16();
+                this.cQuickSavesNew = reader.ReadUInt16();
             }
         }
     }
