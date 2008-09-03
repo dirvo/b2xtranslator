@@ -84,8 +84,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public BreakDescriptor(VirtualStreamReader reader, int length)
             : base(reader, length)
         {
-            long startPos = _reader.BaseStream.Position;
-
             this.ipgd = reader.ReadInt16();
             this.itxbxs = this.ipgd;
             this.dcpDepend = reader.ReadInt16();
@@ -96,9 +94,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.fMarked = Utils.BitmaskToBool(flag, 0x0400);
             this.fUnk = Utils.BitmaskToBool(flag, 0x0800);
             this.fTextOverflow = Utils.BitmaskToBool(flag, 0x1000);
-
-            _reader.BaseStream.Seek(startPos, SeekOrigin.Begin);
-            _rawBytes = _reader.ReadBytes(12);
         }
     }
 }

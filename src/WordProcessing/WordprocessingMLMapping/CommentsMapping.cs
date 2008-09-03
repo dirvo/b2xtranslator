@@ -17,23 +17,27 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         public override void Apply(WordDocument doc)
         {
             _doc = doc;
-            int index = 0;
+            int index = 0; 
 
             _writer.WriteStartElement("w", "comments", OpenXmlNamespaces.WordprocessingML);
 
-            Int32 cpStart = doc.FIB.ccpText + doc.FIB.ccpFtn + doc.FIB.ccpHdr;
-            Int32 cp = cpStart;
-            while (cp < (cpStart + doc.FIB.ccpAtn - 2))
-            {
+            Int32 cp = doc.FIB.ccpText + doc.FIB.ccpFtn + doc.FIB.ccpHdr;
+            for (int i = 0; i < doc.AnnotationsReferencePlex.Elements.Count; i++)
+			{   
                 _writer.WriteStartElement("w", "comment", OpenXmlNamespaces.WordprocessingML);
 
                 AnnotationReferenceDescriptor atrdPre10 = (AnnotationReferenceDescriptor)doc.AnnotationsReferencePlex.Elements[index];
-                AnnotationReferenceDescriptorExtra atrdPost10 = doc.AnnotationReferenceExtraTable[index];
-
                 _writer.WriteAttributeString("w", "id", OpenXmlNamespaces.WordprocessingML, index.ToString());
                 _writer.WriteAttributeString("w", "author", OpenXmlNamespaces.WordprocessingML, doc.AuthorTable.Strings[atrdPre10.AuthorIndex]);
-                atrdPost10.Date.Convert(new DateMapping(_writer));
                 _writer.WriteAttributeString("w", "initials", OpenXmlNamespaces.WordprocessingML, atrdPre10.UserInitials);
+
+                //ATRDpost10 is optional and not saved in all files
+                if (doc.AnnotationReferenceExtraTable != null && 
+                    doc.AnnotationReferenceExtraTable.Count > index)
+                {
+                    AnnotationReferenceDescriptorExtra atrdPost10 = doc.AnnotationReferenceExtraTable[index];
+                    atrdPost10.Date.Convert(new DateMapping(_writer));
+                }
 
                 cp = writeParagraph(cp);
                 _writer.WriteEndElement();

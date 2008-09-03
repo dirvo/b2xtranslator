@@ -42,8 +42,15 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         public ByteStructure(VirtualStreamReader reader, int length) 
         {
-            this._reader = reader;
-            this._length = length;
+            _reader = reader;
+            _length = length;
+
+            //read the raw bytes
+            if (_length != VARIABLE_LENGTH)
+            {
+                _rawBytes = _reader.ReadBytes(_length);
+                _reader.BaseStream.Seek(-1 * _length, System.IO.SeekOrigin.Current);
+            }
         }
 
         public override string ToString()

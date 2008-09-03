@@ -55,7 +55,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             _writer.WriteStartElement("o", "OLEObject", OpenXmlNamespaces.Office);
 
-            EmbeddedObjectPart.ObjectType type = EmbeddedObjectPart.ObjectType.Other;
+            EmbeddedObjectPart.ObjectType type;
             if (ole.ClipboardFormat == "Biff8")
             {
                 type = EmbeddedObjectPart.ObjectType.Excel;
@@ -67,6 +67,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             else if (ole.ClipboardFormat == "MSPresentation")
             {
                 type = EmbeddedObjectPart.ObjectType.Powerpoint;
+            }
+            else
+            {
+                type = EmbeddedObjectPart.ObjectType.Other;
             }
 
             //type

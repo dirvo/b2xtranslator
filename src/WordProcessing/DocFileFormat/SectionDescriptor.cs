@@ -21,15 +21,10 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public SectionDescriptor(VirtualStreamReader reader, int length)
             : base(reader, length)
         {
-            long startPos = _reader.BaseStream.Position;
-
             this.fn = _reader.ReadInt16();
             this.fcSepx = _reader.ReadInt32();
             this.fnMpr = _reader.ReadInt16();
             this.fcMpr = _reader.ReadInt32();
-
-            _reader.BaseStream.Seek(startPos, System.IO.SeekOrigin.Begin);
-            _rawBytes = _reader.ReadBytes(SED_LENGTH);
         }
     }
 }

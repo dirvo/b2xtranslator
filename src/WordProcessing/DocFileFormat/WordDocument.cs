@@ -175,9 +175,16 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             //parse FIB
             this.FIB = new FileInformationBlock(new VirtualStreamReader(this.WordDocumentStream));
-            if (this.FIB.nFib < FileInformationBlock.FibVersion.Fib1997)
-                throw new UnspportedFileVersionException("DocFileFormat doesn't support Word versions older than Word 97.");
 
+            //throw exception for not supported file versions
+            if (this.FIB.nFib < FileInformationBlock.FibVersion.Fib1997)
+            {
+                throw new UnspportedFileVersionException("This file has been created with an older version of Word. This format is currently not supported.");
+            }
+            if (this.FIB.fComplex)
+            {
+                throw new UnspportedFileVersionException("This file has been fast-saved. This format is currently not supported.");
+            }
 
             //get the streams
             if (this.FIB.fWhichTblStm)

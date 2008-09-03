@@ -135,8 +135,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.fAnchorLock = Tools.Utils.BitmaskToBool(flag, 0x8000);
 
             this.cTxbx = _reader.ReadInt32();
-
-            //this.ShapeContainer = drawingTable.GetShapeContainer(this.spid);
         }
     }
 }

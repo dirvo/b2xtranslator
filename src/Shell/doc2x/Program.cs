@@ -84,22 +84,15 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                 //open the reader
                 using (StructuredStorageFile reader = new StructuredStorageFile(procFile.File.FullName))
                 {
-
                     //parse the document
                     WordDocument doc = new WordDocument(reader);
 
-                    if (!doc.FIB.fComplex)
-                    {
-                        Converter.Convert(doc, outputFile);
+                    //convert the document
+                    Converter.Convert(doc, outputFile);
 
-                        DateTime end = DateTime.Now;
-                        TimeSpan diff = end.Subtract(start);
-                        TraceLogger.Info("Conversion of file {0} finished in {1} seconds", inputFile, diff.TotalSeconds.ToString(CultureInfo.InvariantCulture));
-                    }
-                    else 
-                    {
-                        TraceLogger.Error("{0} has been fast-saved. This format is currently not supported.", inputFile);
-                    }
+                    DateTime end = DateTime.Now;
+                    TimeSpan diff = end.Subtract(start);
+                    TraceLogger.Info("Conversion of file {0} finished in {1} seconds", inputFile, diff.TotalSeconds.ToString(CultureInfo.InvariantCulture));
                 }
             }
             catch (DirectoryNotFoundException ex)
