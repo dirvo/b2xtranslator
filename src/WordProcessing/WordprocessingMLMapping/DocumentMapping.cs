@@ -715,6 +715,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 }
                 else if (c == TextMark.FieldBeginMark)
                 {
+                    //close previous w:t ...
+                    _writer.WriteEndElement();
+
                     int cpFieldStart = initialCp + i;
                     int cpFieldEnd = searchNextTextMark(_doc.Text, cpFieldStart, TextMark.FieldEndMark);
                     Field f = new Field(_doc.Text.GetRange(cpFieldStart, cpFieldEnd - cpFieldStart + 1));
@@ -738,8 +741,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     }
                     else if (f.FieldCode.StartsWith(" EMBED") || f.FieldCode.StartsWith(" LINK"))
                     {
-                        //close previous w:t ...
-                        _writer.WriteEndElement();
                         _writer.WriteStartElement("w", "object", OpenXmlNamespaces.WordprocessingML);
 
                         int cpPic = searchNextTextMark(_doc.Text, cpFieldStart, TextMark.Picture);
@@ -760,28 +761,40 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         }
 
                         _writer.WriteEndElement();
-                        _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
 
                         _skipRuns = 4;
                     }
                     else
                     {
+
                         _writer.WriteStartElement("w", "fldChar", OpenXmlNamespaces.WordprocessingML);
                         _writer.WriteAttributeString("w", "fldCharType", OpenXmlNamespaces.WordprocessingML, "begin");
                         _writer.WriteEndElement();
                     }
+
+                    _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
                 }
                 else if (c == TextMark.FieldSeperator)
                 {
+                    //close previous w:t ...
+                    _writer.WriteEndElement();
+
                     _writer.WriteStartElement("w", "fldChar", OpenXmlNamespaces.WordprocessingML);
                     _writer.WriteAttributeString("w", "fldCharType", OpenXmlNamespaces.WordprocessingML, "separate");
                     _writer.WriteEndElement();
+
+                    _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
                 }
                 else if (c == TextMark.FieldEndMark)
                 {
+                    //close previous w:t ...
+                    _writer.WriteEndElement();
+
                     _writer.WriteStartElement("w", "fldChar", OpenXmlNamespaces.WordprocessingML);
                     _writer.WriteAttributeString("w", "fldCharType", OpenXmlNamespaces.WordprocessingML, "end");
                     _writer.WriteEndElement();
+
+                    _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
                 }
                 else if (c == TextMark.Symbol && fSpec)
                 {
