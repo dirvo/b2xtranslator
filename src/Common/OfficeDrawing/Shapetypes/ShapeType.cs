@@ -35,6 +35,8 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
             public string xrange = null;
             public string switchHandle = null;
             public string yrange = null;
+            public string polar = null;
+            public string radiusrange = null; 
 
         }
 

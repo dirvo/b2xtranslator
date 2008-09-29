@@ -32,8 +32,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _writer.WriteAttributeString("o", "spt", OpenXmlNamespaces.Office, shapeType.TypeCode.ToString());
 
             //adj
-            _writer.WriteAttributeString("adj", "10800");
-
+            if (shapeType.AdjustmentValues != null)
+            {
+                _writer.WriteAttributeString("adj", shapeType.AdjustmentValues);
+            }
+            else
+            {
+                _writer.WriteAttributeString("adj", "10800");
+            }
             //The path
             if (shapeType.Path != null)
                 _writer.WriteAttributeString("path", shapeType.Path);
@@ -78,6 +84,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 _writer.WriteAttributeString("textboxrect", shapeType.TextboxRectangle);
             }
+            if (shapeType.ConnectorAngles != null)
+            {
+                _writer.WriteAttributeString("o", "connectangles", OpenXmlNamespaces.Office, shapeType.ConnectorAngles);
+            }
             _writer.WriteEndElement();
 
 
@@ -102,6 +112,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     if (handle.yrange != null)
                         _writer.WriteAttributeString("yrange", handle.yrange);
 
+                    if (handle.polar != null)
+                        _writer.WriteAttributeString("polar", handle.polar);
+
+                    if (handle.radiusrange != null)
+                        _writer.WriteAttributeString("radiusrange", handle.radiusrange);
                     
                     _writer.WriteEndElement();
                 }
