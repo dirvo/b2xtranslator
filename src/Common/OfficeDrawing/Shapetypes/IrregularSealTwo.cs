@@ -19,6 +19,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
             this.ConnectorAngles = "270,180,90,0";
 
             this.TextboxRectangle = "5372,6382,14640,15935";
+
         }
     }
 }
