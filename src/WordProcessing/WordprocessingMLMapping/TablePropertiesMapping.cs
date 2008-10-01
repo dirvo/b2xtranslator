@@ -126,9 +126,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //style
                     case SinglePropertyModifier.OperationCode.sprmTIstd:
                     case SinglePropertyModifier.OperationCode.sprmTIstdPermute:
-                        string id = StyleSheetMapping.MakeStyleId(_styles.Styles[System.BitConverter.ToInt16(sprm.Arguments, 0)]);
-                        if(id != "TableNormal")
-                            appendValueElement(_tblPr, "tblStyle", id, true);
+                        Int16 index = System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        if(_styles.Styles.Count > index)
+                        {
+                            string id = StyleSheetMapping.MakeStyleId(_styles.Styles[index]);
+                            if(id != "TableNormal")
+                                appendValueElement(_tblPr, "tblStyle", id, true);
+                        }
                         break;
 
                     //bidi

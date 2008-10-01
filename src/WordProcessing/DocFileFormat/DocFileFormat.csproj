@@ -107,6 +107,7 @@
     <Compile Include="ClientData.cs" />
     <Compile Include="ClientTextbox.cs" />
     <Compile Include="AnnotationReferenceDescriptor.cs" />
+    <Compile Include="CommentAuthorTable.cs" />
     <Compile Include="FormFieldData.cs" />
     <Compile Include="NilPicfAndBinData.cs" />
     <Compile Include="OfficeArtContent.cs" />

@@ -168,6 +168,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public HeaderAndFooterTable HeaderAndFooterTable;
 
+        /// <summary>
+        /// A Table that contains the names of all comment authors.
+        /// </summary>
+        public CommentAuthorTable CommentAuthorTable;
+
         public WordDocument(StructuredStorageFile reader)
         {
             this.Storage = reader;
@@ -228,6 +233,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.OfficeArtContent = new OfficeArtContent(this.FIB, this.TableStream);
             this.HeaderAndFooterTable = new HeaderAndFooterTable(this);
             this.AnnotationReferenceExtraTable = new AnnotationReferenceExtraTable(this.FIB, this.TableStream);
+            this.CommentAuthorTable = new CommentAuthorTable(this.FIB, this.TableStream);
 
             //parse the piece table and construct a list that contains all chars
             this.PieceTable = new PieceTable(this.FIB, this.TableStream);

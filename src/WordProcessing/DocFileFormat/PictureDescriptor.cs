@@ -211,14 +211,18 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     this.cProps = reader.ReadInt16();
 
                     //Parse the OfficeDrawing Stuff
-                    this.ShapeContainer = (ShapeContainer)Record.ReadRecord(reader, 0);
-                    long pos = reader.BaseStream.Position;
-                    if( pos < (fc + lcb))
+                    Record reco = Record.ReadRecord(reader, 0);
+                    if (reco.GetType() == typeof(ShapeContainer))
                     {
-                        Record rec = Record.ReadRecord(reader, 0);
-                        if(rec.GetType() == typeof(BlipStoreEntry))
+                        this.ShapeContainer = (ShapeContainer)reco;
+                        long pos = reader.BaseStream.Position;
+                        if (pos < (fc + lcb))
                         {
-                            this.BlipStoreEntry = (BlipStoreEntry)rec;
+                            Record rec = Record.ReadRecord(reader, 0);
+                            if (rec.GetType() == typeof(BlipStoreEntry))
+                            {
+                                this.BlipStoreEntry = (BlipStoreEntry)rec;
+                            }
                         }
                     }
                 }

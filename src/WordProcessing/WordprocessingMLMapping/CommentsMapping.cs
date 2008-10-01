@@ -28,7 +28,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                 AnnotationReferenceDescriptor atrdPre10 = (AnnotationReferenceDescriptor)doc.AnnotationsReferencePlex.Elements[index];
                 _writer.WriteAttributeString("w", "id", OpenXmlNamespaces.WordprocessingML, index.ToString());
-                _writer.WriteAttributeString("w", "author", OpenXmlNamespaces.WordprocessingML, doc.AuthorTable.Strings[atrdPre10.AuthorIndex]);
+                _writer.WriteAttributeString("w", "author", OpenXmlNamespaces.WordprocessingML, doc.CommentAuthorTable[atrdPre10.AuthorIndex]);
                 _writer.WriteAttributeString("w", "initials", OpenXmlNamespaces.WordprocessingML, atrdPre10.UserInitials);
 
                 //ATRDpost10 is optional and not saved in all files
