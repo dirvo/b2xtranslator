@@ -129,6 +129,11 @@
     <Compile Include="Shapetypes\RectangleType.cs" />
     <Compile Include="RegularContainer.cs" />
     <Compile Include="Shapetypes\RightArrowCalloutType.cs" />
+    <Compile Include="Shapetypes\Seal16Type.cs" />
+    <Compile Include="Shapetypes\Seal24Type.cs" />
+    <Compile Include="Shapetypes\Seal32Type.cs" />
+    <Compile Include="Shapetypes\Seal4Type.cs" />
+    <Compile Include="Shapetypes\Seal8Type.cs" />
     <Compile Include="Shapetypes\StripedRightArrowType.cs" />
     <Compile Include="Shapetypes\SunType.cs" />
     <Compile Include="Shapetypes\UpArrowCalloutType.cs" />
