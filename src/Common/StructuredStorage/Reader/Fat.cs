@@ -28,8 +28,9 @@
 
 using System;
 using System.Collections.Generic;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
 
-namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
+namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Reader
 {
     /// <summary>
     /// Represents the Fat in a compound file
@@ -50,7 +51,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// </summary>
         /// <param name="header">Handle to the header of the compound file</param>
         /// <param name="fileHandler">Handle to the file handler of the compound file</param>
-        internal Fat(Header header, FileHandler fileHandler)
+        internal Fat(Header header, InputHandler fileHandler)
             : base(header, fileHandler)
         {            
             Init();

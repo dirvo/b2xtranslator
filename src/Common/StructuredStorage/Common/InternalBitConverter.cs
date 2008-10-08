@@ -30,7 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
+namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Common
 {
     /// <summary>
     /// Wrapper of the class BitConverter in order to support big endian
@@ -92,6 +92,53 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
                 result = result.Remove(result.IndexOf("\0"));
             }
             return result;
+        }
+
+
+        internal byte[] getBytes(UInt16 value)
+        {
+            byte[] result = BitConverter.GetBytes(value);
+
+            if (BitConverter.IsLittleEndian ^ _IsLittleEndian)
+            {
+                Array.Reverse(result);
+            }
+            return result;
+        }
+
+
+        internal byte[] getBytes(UInt32 value)
+        {
+            byte[] result = BitConverter.GetBytes(value);
+
+            if (BitConverter.IsLittleEndian ^ _IsLittleEndian)
+            {
+                Array.Reverse(result);
+            }
+            return result;
+        }
+
+
+        internal byte[] getBytes(UInt64 value)
+        {
+            byte[] result = BitConverter.GetBytes(value);
+
+            if (BitConverter.IsLittleEndian ^ _IsLittleEndian)
+            {
+                Array.Reverse(result);
+            }
+            return result;
+        }
+
+        internal List<byte> getBytes(List <UInt32> input)
+        {
+            List<byte> output = new List<byte>();
+
+            foreach (UInt32 entry in input)
+	        {
+                output.AddRange(getBytes(entry));
+            }
+            return output;
         }
     }
 }

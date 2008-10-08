@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2008, DIaLOGIKa
  * All rights reserved.
  *
@@ -28,47 +28,45 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Globalization;
-
-namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Common
+using System.IO;
+namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Reader
 {
-
-    /// <summary>
-    /// Provides methods for masking/unmasking strings in a path
-    /// Author: math
-    /// </summary>
-    static internal class MaskingHandler
+    public interface IStructuredStorageReader : IDisposable
     {
-        static readonly UInt32[] CharsToMask = { '%', '\\' };
+        /// <summary>
+        /// Collection of all _entries contained in a compound file
+        /// </summary> 
+        ICollection<DirectoryEntry> AllEntries { get; }
+
+        /// <summary> 
+        /// Collection of all stream _entries contained in a compound file
+        /// </summary> 
+        ICollection<DirectoryEntry> AllStreamEntries { get; }
         
+        /// <summary>
+        /// Collection of all entry names contained in a compound file
+        /// </summary>        
+        ICollection<string> FullNameOfAllEntries { get; }
 
         /// <summary>
-        /// Masks the given string
-        /// </summary>
-        internal static string Mask(string text)
-        {
-            string result = text;
-            foreach (UInt32 character in CharsToMask)
-	        {
-                result = result.Replace(new String((char)character,1), String.Format(CultureInfo.InvariantCulture, "%{0:X4}", character));
-	        }
-            return result;
-        }
-
+        /// Collection of all stream entry names contained in a compound file
+        /// </summary>        
+        ICollection<string> FullNameOfAllStreamEntries { get; }
 
         /// <summary>
-        /// Unmasks the given string
+        /// Closes the file handle
         /// </summary>
-        internal static string UnMask(string text)
-        {
-            string result = text;
-            foreach (UInt32 character in CharsToMask)
-            {
-                result = result.Replace(String.Format("%{0:X4}", character), new String((char)character, 1));
-            }
-            return result;
-        }
+        void Close();
 
+        /// <summary>
+        /// Returns a handle to a stream with the given name/path.
+        /// If a path is used, it must be preceeded by '\'.
+        /// The characters '\' ( if not separators in the path) and '%' must be masked by '%XXXX'
+        /// where 'XXXX' is the unicode in hex of '\' and '%', respectively
+        /// </summary>
+        /// <param name="path">The path of the virtual stream.</param>
+        /// <returns>An object which enables access to the virtual stream.</returns>
+        VirtualStream GetStream(string path);
+        // TODO: return a System.IO.Stream object only
     }
 }

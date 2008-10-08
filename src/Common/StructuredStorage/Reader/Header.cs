@@ -28,202 +28,26 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
 
-namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
+namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Reader
 {
     /// <summary>
     /// Encapsulates the header of a compound file
     /// Author: math
     /// </summary>
-    internal class Header
+    internal class Header : AbstractHeader
     {
-        FileHandler _fileHandler;
-
-        // Sector shift and sector size
-        private UInt16 _sectorShift;
-        public UInt16 SectorShift
-        {
-            get { return _sectorShift; }
-            set 
-            { 
-                _sectorShift = value;
-                // Calculate sector size
-                _sectorSize = (UInt16)Math.Pow((double)2, (double)_sectorShift);
-                if (_sectorShift != 9 && _sectorShift != 12)
-                {
-                    throw new UnsupportedSizeException("SectorShift");
-                }
-            }
-        }
-        private UInt16 _sectorSize;
-        public UInt16 SectorSize
-        {
-            get { return _sectorSize; }
-        }
-
-
-        // Minisector shift and Minisector size
-        private UInt16 _miniSectorShift;
-        public UInt16 MiniSectorShift
-        {
-            get { return _miniSectorShift; }
-            set
-            {
-                _miniSectorShift = value;
-                // Calculate mini sector size
-                _miniSectorSize = (UInt16)Math.Pow((double)2, (double)_miniSectorShift);
-                if (_miniSectorShift != 6)
-                {
-                    throw new UnsupportedSizeException("MiniSectorShift");
-                }
-            }
-        }
-        private UInt16 _miniSectorSize;
-        public UInt16 MiniSectorSize
-        {
-            get { return _miniSectorSize; }
-        }
-
-
-        // CSectDir
-        private UInt32 _noSectorsInDirectoryChain4KB;
-        public UInt32 NoSectorsInDirectoryChain4KB
-	    {
-            get { return _noSectorsInDirectoryChain4KB; }
-		    set
-            {
-                if (_sectorSize == 512 && value != 0)
-                {
-                    throw new ValueNotZeroException("_csectDir");
-                }
-                _noSectorsInDirectoryChain4KB = value;
-            }            
-	    }	
-
-
-        // CSectFat
-        private UInt32 _noSectorsInFatChain;
-	    public UInt32 NoSectorsInFatChain
-	    {
-		    get { return _noSectorsInFatChain; }
-		    set
-            { 
-                _noSectorsInFatChain = value;
-                if (value > _fileHandler.FileStreamSize / SectorSize)
-                {
-                    throw new InvalidValueInHeaderException("NoSectorsInFatChain");
-                }
-            
-            }
-	    }
-
-
-        // SectDirStart
-        private UInt32 _directoryStartSector;
-        public UInt32 DirectoryStartSector
-        {
-            get { return _directoryStartSector; }
-            set
-            {
-                _directoryStartSector = value;
-                if (value > _fileHandler.FileStreamSize / SectorSize && value != SectorId.ENDOFCHAIN)
-                {
-                    throw new InvalidValueInHeaderException("DirectoryStartSector");
-                }
-            }
-        }
-
-
-        // UInt32ULMiniSectorCutoff
-        private UInt32 _miniSectorCutoff;
-        public UInt32 MiniSectorCutoff
-        {
-            get { return _miniSectorCutoff; }
-            set
-            {
-                _miniSectorCutoff = value;
-                if (value != 0x1000)
-                {
-                    throw new UnsupportedSizeException("MiniSectorCutoff");
-                }
-            }
-        }
-
-
-
-        // SectMiniFatStart
-        private UInt32 _miniFatStartSector;
-        public UInt32 MiniFatStartSector
-        {
-            get { return _miniFatStartSector; }
-            set
-            {
-                _miniFatStartSector = value;
-                if (value > _fileHandler.FileStreamSize / SectorSize && value != SectorId.ENDOFCHAIN)
-                {
-                    throw new InvalidValueInHeaderException("MiniFatStartSector");
-                }
-            }
-        }
-
-
-        // CSectMiniFat
-        private UInt32 _noSectorsInMiniFatChain;
-        public UInt32 NoSectorsInMiniFatChain
-        {
-            get { return _noSectorsInMiniFatChain; }
-            set
-            {
-                _noSectorsInMiniFatChain = value;
-                if (value > _fileHandler.FileStreamSize / SectorSize)
-                {
-                    throw new InvalidValueInHeaderException("NoSectorsInMiniFatChain");
-                }
-
-            }
-        }
-
-
-        // SectDifStart
-        private UInt32 _diFatStartSector;
-        public UInt32 DiFatStartSector
-        {
-            get { return _diFatStartSector; }
-            set
-            {
-                _diFatStartSector = value;
-                if (value > _fileHandler.FileStreamSize / SectorSize && value != SectorId.ENDOFCHAIN)
-                {
-                    throw new InvalidValueInHeaderException("DiFatStartSector");
-                }
-            }
-        }
-        
-
-        // CSectDif
-        private UInt32 _noSectorsInDiFatChain;
-        public UInt32 NoSectorsInDiFatChain
-        {
-            get { return _noSectorsInDiFatChain; }
-            set
-            {
-                _noSectorsInDiFatChain = value;
-                if (value > _fileHandler.FileStreamSize / SectorSize)
-                {
-                    throw new InvalidValueInHeaderException("NoSectorsInDiFatChain");
-                }
-
-            }
-        }
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="fileHandler">The Handle to the file handler of the compound file</param>
-        internal Header(FileHandler fileHandler)
+        internal Header(InputHandler fileHandler)
         {
-            _fileHandler = fileHandler;
-            _fileHandler.SetHeaderReference(this);
+            _ioHandler = fileHandler;
+            _ioHandler.SetHeaderReference(this);
             ReadHeader();
         }
 
@@ -233,36 +57,38 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// </summary>
         private void ReadHeader()
         {
+            InputHandler fileHandler = ((InputHandler)_ioHandler);
+
             // Determine endian
             byte[] byteArray16 = new byte[2];
-            _fileHandler.ReadPosition(byteArray16, 0x1C);
+            fileHandler.ReadPosition(byteArray16, 0x1C);
             if (byteArray16[0] == 0xFE && byteArray16[1] == 0xFF)
             {
-                _fileHandler.InitBitConverter(true);
+                fileHandler.InitBitConverter(true);
             }
             else
             {
-                _fileHandler.InitBitConverter(false);
+                fileHandler.InitBitConverter(false);
             }
 
             // Check for Magic Number                       
-            if (_fileHandler.ReadUInt64(0x0) != 0xE11AB1A1E011CFD0)
+            if (fileHandler.ReadUInt64(0x0) != MAGIC_NUMBER)
             {
                 throw new MagicNumberException();
             }
 
-            SectorShift = _fileHandler.ReadUInt16(0x1E);
-            MiniSectorShift = _fileHandler.ReadUInt16();
+            SectorShift = fileHandler.ReadUInt16(0x1E);
+            MiniSectorShift = fileHandler.ReadUInt16();
             
-            NoSectorsInDirectoryChain4KB = _fileHandler.ReadUInt32(0x28);
-            NoSectorsInFatChain = _fileHandler.ReadUInt32();
-            DirectoryStartSector = _fileHandler.ReadUInt32();                      
+            NoSectorsInDirectoryChain4KB = fileHandler.ReadUInt32(0x28);
+            NoSectorsInFatChain = fileHandler.ReadUInt32();
+            DirectoryStartSector = fileHandler.ReadUInt32();                      
             
-            MiniSectorCutoff = _fileHandler.ReadUInt32(0x38);
-            MiniFatStartSector = _fileHandler.ReadUInt32();
-            NoSectorsInMiniFatChain = _fileHandler.ReadUInt32();
-            DiFatStartSector = _fileHandler.ReadUInt32();
-            NoSectorsInDiFatChain = _fileHandler.ReadUInt32(); 
+            MiniSectorCutoff = fileHandler.ReadUInt32(0x38);
+            MiniFatStartSector = fileHandler.ReadUInt32();
+            NoSectorsInMiniFatChain = fileHandler.ReadUInt32();
+            DiFatStartSector = fileHandler.ReadUInt32();
+            NoSectorsInDiFatChain = fileHandler.ReadUInt32(); 
         }
     }
 }

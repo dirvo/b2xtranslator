@@ -35,7 +35,7 @@ using System.Runtime.Serialization;
 /// Author: math
 /// </summary>
 
-namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
+namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Common
 {
     [Serializable]
     public class MagicNumberException : Exception
@@ -214,6 +214,34 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         }
 
         protected FileHandlerNotCorrectlyInitializedException(SerializationInfo info, StreamingContext ctxt)
+            : base(info, ctxt)
+        {
+        }
+    }
+
+    [Serializable]
+    public class DiFatInconsistentException : Exception
+    {
+        public DiFatInconsistentException()
+            : base("Inconsistancy found while writing DiFat.")
+        {
+        }
+
+        protected DiFatInconsistentException(SerializationInfo info, StreamingContext ctxt)
+            : base(info, ctxt)
+        {
+        }
+    }
+
+    [Serializable]
+    public class InvalidSectorSizeException : Exception
+    {
+        public InvalidSectorSizeException()
+            : base("Inconsistancy found while writing a sector.")
+        {
+        }
+
+        protected InvalidSectorSizeException(SerializationInfo info, StreamingContext ctxt)
             : base(info, ctxt)
         {
         }

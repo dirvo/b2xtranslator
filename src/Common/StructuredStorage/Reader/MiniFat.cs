@@ -28,8 +28,9 @@
 
 using System;
 using System.Collections.Generic;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
 
-namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
+namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Reader
 {
 
     /// <summary>
@@ -57,7 +58,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// <param name="header">Handle to the header of the compound file</param>
         /// <param name="fileHandler">Handle to the file handler of the compound file</param>
         /// <param name="miniStreamStart">Address of the sector where the mini stream starts</param>
-        internal MiniFat(Fat fat, Header header, FileHandler fileHandler, UInt32 miniStreamStart, UInt64 sizeOfMiniStream)
+        internal MiniFat(Fat fat, Header header, InputHandler fileHandler, UInt32 miniStreamStart, UInt64 sizeOfMiniStream)
             : base(header, fileHandler)
         {                        
             _fat = fat;

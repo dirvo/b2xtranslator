@@ -30,134 +30,18 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.Tools;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
 
-namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
+namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Reader
 {
     /// <summary>
     /// Encapsulates a directory entry
     /// Author: math
     /// </summary>
-    public class DirectoryEntry
+    public class DirectoryEntry : AbstractDirectoryEntry
     {
-        FileHandler _fileHandler;
+        InputHandler _fileHandler;
         Header _header;
-
-        UInt32 _sid;
-        public UInt32 Sid
-        {
-            get { return _sid; }            
-        }
-
-        string _path;
-        public string Path
-        {
-            get { return _path + Name; }            
-        }
-
-
-        // Name
-        string _name;
-        public string Name
-        {
-            get { return MaskingHandler.Mask(_name); }
-            private set { _name = value; }
-        }
-
-
-        // Type
-        DirectoryEntryType _type;
-        public DirectoryEntryType Type
-        {
-            get { return _type; }
-            private set
-            {
-                if ((int)value < 0 || (int)value > 5)
-                {
-                    throw new InvalidValueInDirectoryEntryException("_mse");
-                }
-                _type = value;
-            }
-        }
-        
-
-        // Color
-        DirectoryEntryColor _color;
-        public DirectoryEntryColor Color
-        {
-            get { return _color; }
-            private set
-            {
-                if ((int)value < 0 || (int)value > 1)
-                {
-                    throw new InvalidValueInDirectoryEntryException("_bflags");
-                }
-                _color = value;
-            }
-        }
-
-
-        // Left sibling sid
-        UInt32 _leftSiblingSid;
-        public UInt32 LeftSiblingSid
-        {
-            get { return _leftSiblingSid; }
-            private set { _leftSiblingSid = value; }
-        }
-
-
-        // Right sibling sid
-        UInt32 _rightSiblingSid;
-        public UInt32 RightSiblingSid
-        {
-            get { return _rightSiblingSid; }
-            private set { _rightSiblingSid = value; }
-        }
-
-
-        // Child sibling sid
-        UInt32 _childSiblingSid;
-        public UInt32 ChildSiblingSid
-        {
-            get { return _childSiblingSid; }
-            private set { _childSiblingSid = value; }
-        }
-
-
-        //CLSID
-        Guid _clsId;
-        public Guid ClsId
-        {
-            get { return _clsId; }
-            private set { _clsId = value; }
-        }
-
-
-        // User flags
-        UInt32 _userFlags;
-        public UInt32 UserFlags
-        {
-            get { return _userFlags; }
-            private set { _userFlags = value; }
-        }
-
-       
-        // Start sector
-        UInt32 _startSector;
-        public UInt32 StartSector
-        {
-            get { return _startSector; }
-            private set { _startSector = value; }
-        }
-
-
-        // Size of stream in bytes
-        UInt64 _sizeOfStream;
-        public UInt64 SizeOfStream
-        {
-            get { return _sizeOfStream; }
-            private set { _sizeOfStream = value; }
-        }
-
 
         /// <summary>
         /// Constructor
@@ -165,11 +49,11 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// <param name="header">Handle to the header of the compound file</param>
         /// <param name="fileHandler">Handle to the file handler of the compound file</param>
         /// <param name="sid">The sid of the directory entry</param>
-        internal DirectoryEntry(Header header, FileHandler fileHandler, UInt32 sid, string path)
+        internal DirectoryEntry(Header header, InputHandler fileHandler, UInt32 sid, string path) : base(sid)
         {
             _header = header;
             _fileHandler = fileHandler;
-            _sid = sid;            
+            //_sid = sid;            
             ReadDirectoryEntry();
             _path = path;
         }

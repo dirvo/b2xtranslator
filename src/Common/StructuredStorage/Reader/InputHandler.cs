@@ -28,67 +28,33 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
 
-namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
+namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Reader
 {
 
     /// <summary>
     /// Provides methods for accessing the file stream
     /// Author: math
     /// </summary>
-    internal class FileHandler
+    internal class InputHandler : AbstractIOHandler
     {
-        FileStream _fileStream;
-        InternalBitConverter _bitConverter;
-        Header _header;
-        
+       
         /// <summary>
         /// Constructor, opens the given file
         /// </summary>        
-        public FileHandler(string fileName)
+        public InputHandler(string fileName)
         {
-            _fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-        }
-
-
-        /// <summary>
-        /// Closes the file associated with this handler
-        /// </summary>
-        public void CloseFile()
-        {
-            if (_fileStream != null)
-            {
-                _fileStream.Close();
-            }
+            _stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
         }
 
 
         /// <summary>
         /// The size of the associated stream in bytes
         /// </summary>
-        internal UInt64 FileStreamSize
+        override internal UInt64 IOStreamSize
         {
-            get { return (UInt64)_fileStream.Length; }
-        }
-
-
-        /// <summary>
-        /// Initializes the internal bit converter
-        /// </summary>
-        /// <param name="isLittleEndian">flag whether big endian or little endian is used</param>
-        internal void InitBitConverter(bool isLittleEndian)
-        {
-            _bitConverter = new InternalBitConverter(isLittleEndian);            
-        }
-
-
-        /// <summary>
-        /// Initializes the reference to the header
-        /// </summary>
-        /// <param name="header"></param>
-        internal void SetHeaderReference(Header header)
-        {
-            _header = header;                
+            get { return (UInt64)_stream.Length; }
         }
 
 
@@ -101,7 +67,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             {
                 throw new ArgumentOutOfRangeException("offset");
             }
-            return _fileStream.Seek(offset, SeekOrigin.Current);
+            return _stream.Seek(offset, SeekOrigin.Current);
         }
         
 
@@ -124,9 +90,9 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             // header sector == -1
             if (sector == -1)
             {
-                return _fileStream.Seek(0, SeekOrigin.Begin);
+                return _stream.Seek(0, SeekOrigin.Begin);
             }
-            return _fileStream.Seek((sector << _header.SectorShift) + Measures.HeaderSize, SeekOrigin.Begin);
+            return _stream.Seek((sector << _header.SectorShift) + Measures.HeaderSize, SeekOrigin.Begin);
         }
 
 
@@ -150,9 +116,9 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             // header sector == -1
             if (sector == -1)
             {
-                return _fileStream.Seek(position, SeekOrigin.Begin);
+                return _stream.Seek(position, SeekOrigin.Begin);
             }
-            return _fileStream.Seek((sector << _header.SectorShift) + Measures.HeaderSize + position, SeekOrigin.Begin);
+            return _stream.Seek((sector << _header.SectorShift) + Measures.HeaderSize + position, SeekOrigin.Begin);
         }
 
 
@@ -163,7 +129,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// <returns>The byte value read from the stream. </returns>
         internal byte ReadByte()
         {
-            int result = _fileStream.ReadByte(); 
+            int result = _stream.ReadByte(); 
             if (result == -1)
             {
                 throw new ReadBytesAmountMismatchException();
@@ -192,7 +158,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// <param name="count">The number of bytes to read</param>        
         internal void Read(byte[] array, int offset, int count)
         {
-            int result = _fileStream.Read(array, offset, count);
+            int result = _stream.Read(array, offset, count);
             if (result != count)
             {
                 throw new ReadBytesAmountMismatchException();
@@ -207,7 +173,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// <returns>The byte cast to an int, or -1 if reading from the end of the stream.</returns>
         internal int UncheckedReadByte()
         {
-            return _fileStream.ReadByte();            
+            return _stream.ReadByte();            
         }
 
 
@@ -223,7 +189,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// of bytes are not currently available, or zero if the end of the stream is reached.</returns>
         internal int UncheckedRead(byte[] array, int offset, int count)
         {
-            return _fileStream.Read(array, offset, count);            
+            return _stream.Read(array, offset, count);            
         }
 
 
@@ -238,8 +204,8 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             {
                 throw new ArgumentOutOfRangeException("position");
             }
-            _fileStream.Seek(position, 0);
-            int result = _fileStream.Read(array, 0, array.Length);
+            _stream.Seek(position, 0);
+            int result = _stream.Read(array, 0, array.Length);
             if (result != array.Length)
             {
                 throw new ReadBytesAmountMismatchException();

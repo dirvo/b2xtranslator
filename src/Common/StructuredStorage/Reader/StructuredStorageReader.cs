@@ -31,20 +31,21 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Diagnostics;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
 
 [assembly: CLSCompliant(false)]
 
-namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
+namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Reader
 {
 
     /// <summary>
     /// Provides methods for accessing a compound file.
     /// Author: math
     /// </summary>
-    public class StructuredStorageFile : IStructuredStorageFile
+    public class StructuredStorageReader : IStructuredStorageReader
     {
 
-        FileHandler _fileHandler;
+        InputHandler _fileHandler;
         Header _header;
         Fat _fat;
         MiniFat _miniFat;
@@ -87,7 +88,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
 
         /// <summary>
-        /// Collection of all entries contained in a compound file
+        /// Collection of all _entries contained in a compound file
         /// </summary> 
         public ICollection<DirectoryEntry> AllEntries
         {
@@ -96,7 +97,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
 
         /// <summary> 
-        /// Collection of all stream entries contained in a compound file
+        /// Collection of all stream _entries contained in a compound file
         /// </summary> 
         public ICollection<DirectoryEntry> AllStreamEntries
         {
@@ -108,9 +109,9 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// Initalizes a handle to a compound file with the given name
         /// </summary>
         /// <param name="fileName">The name of the file including its path</param>
-        public StructuredStorageFile(string fileName)
+        public StructuredStorageReader(string fileName)
         {
-            _fileHandler = new FileHandler(fileName);
+            _fileHandler = new InputHandler(fileName);
             _header = new Header(_fileHandler);
             _fat = new Fat(_header, _fileHandler);
             _directory = new DirectoryTree(_fat, _header, _fileHandler);
@@ -161,7 +162,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// </summary>
         public void Close()
         {
-            _fileHandler.CloseFile();
+            _fileHandler.CloseStream();
         }
 
 

@@ -29,8 +29,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
 
-namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
+namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Reader
 {
     /// <summary>
     /// Represents the directory structure of a compound file
@@ -40,7 +41,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
     {
         Fat _fat;
         Header _header;
-        FileHandler _fileHandler;
+        InputHandler _fileHandler;
         List<UInt32> _sectorsUsedByDirectory;      
 
         List<DirectoryEntry> _directoryEntries = new List<DirectoryEntry>();
@@ -52,7 +53,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         /// <param name="fat">Handle to the Fat of the compound file</param>
         /// <param name="header">Handle to the header of the compound file</param>
         /// <param name="fileHandler">Handle to the file handler of the compound file</param>
-        internal DirectoryTree(Fat fat, Header header, FileHandler fileHandler)
+        internal DirectoryTree(Fat fat, Header header, InputHandler fileHandler)
         {
             _fat = fat;
             _header = header;
@@ -73,22 +74,23 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             }
             else
             {
-                _sectorsUsedByDirectory = _fat.GetSectorChain(startSector, (UInt64)Math.Ceiling((double)_fileHandler.FileStreamSize / _header.SectorSize), "Directory", true);
+                _sectorsUsedByDirectory = _fat.GetSectorChain(startSector, (UInt64)Math.Ceiling((double)_fileHandler.IOStreamSize / _header.SectorSize), "Directory", true);
             }
             GetAllDirectoryEntriesRecursive(0, "");
         }
 
 
         /// <summary>
-        /// Determines the directory entries in a compound file recursively
+        /// Determines the directory _entries in a compound file recursively
         /// </summary>
         /// <param name="sid">start sid</param>
         private void GetAllDirectoryEntriesRecursive(UInt32 sid, string path)
         {
-            DirectoryEntry entry = ReadDirectoryEntry(sid, path);
+            DirectoryEntry entry = ReadDirectoryEntry(sid, path);            
             UInt32 left = entry.LeftSiblingSid;
             UInt32 right = entry.RightSiblingSid;
             UInt32 child = entry.ChildSiblingSid;
+            //Console.WriteLine("{0:X02}: Left: {2:X02}, Right: {3:X02}, Child: {4:X02}, Name: {1}, Color: {5}", entry.Sid, entry.Name, (left > 0xFF)? 0xFF : left, (right > 0xFF)? 0xFF : right, (child > 0xFF)? 0xFF : child, entry.Color.ToString() );
 
             // Check for cycle
             if (_directoryEntries.Exists(delegate(DirectoryEntry x) { return x.Sid == entry.Sid; }))
@@ -266,7 +268,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
 
         /// <summary>
-        /// Returns all entries contained in a compound file
+        /// Returns all _entries contained in a compound file
         /// </summary>        
         internal ReadOnlyCollection<DirectoryEntry> GetAllEntries()
         {
@@ -275,7 +277,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
 
 
         /// <summary>
-        /// Returns all stream entries contained in a compound file
+        /// Returns all stream _entries contained in a compound file
         /// </summary>        
         internal ReadOnlyCollection<DirectoryEntry> GetAllStreamEntries()
         {

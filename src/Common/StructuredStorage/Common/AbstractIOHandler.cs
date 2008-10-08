@@ -28,62 +28,46 @@
 
 using System;
 using System.Collections.Generic;
-
-/// <summary>
-/// Global definitions
-/// Author: math
-/// </summary>
-
+using System.Text;
+using System.IO;
 
 namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Common
 {
-
-    /// <summary>
-    /// Constants used to identify sectors in fat, minifat and directory
-    /// </summary>
-    internal static class SectorId
-	{      
-        internal const UInt32 MAXREGSECT = 0xFFFFFFFA;
-        internal const UInt32 DIFSECT = 0xFFFFFFFC;
-        internal const UInt32 FATSECT = 0xFFFFFFFD;
-        internal const UInt32 ENDOFCHAIN = 0xFFFFFFFE;
-        internal const UInt32 FREESECT = 0xFFFFFFFF;
-
-        internal const UInt32 NOSTREAM = 0xFFFFFFFF;
-	}
-
-
-    /// <summary>
-    /// Size constants 
-    /// </summary>
-    internal static class Measures
+    abstract internal class AbstractIOHandler
     {
-        internal const int DirectoryEntrySize = 128;
-        internal const int HeaderSize = 512;
+        protected Stream _stream;
+        protected AbstractHeader _header;
+        protected InternalBitConverter _bitConverter;
+
+        abstract internal UInt64 IOStreamSize { get; }
+
+        /// <summary>
+        /// Initializes the internal bit converter
+        /// </summary>
+        /// <param name="isLittleEndian">flag whether big endian or little endian is used</param>
+        internal void InitBitConverter(bool isLittleEndian)
+        {
+            _bitConverter = new InternalBitConverter(isLittleEndian);
+        }
+
+        /// <summary>
+        /// Initializes the reference to the header
+        /// </summary>
+        /// <param name="header"></param>
+        internal void SetHeaderReference(AbstractHeader header)
+        {
+            _header = header;
+        }
+
+        /// <summary>
+        /// Closes the file associated with this handler
+        /// </summary>
+        public void CloseStream()
+        {
+            if (_stream != null)
+            {
+                _stream.Close();
+            }
+        }
     }
-
-
-    /// <summary>
-    /// Type of a directory entry
-    /// </summary>
-    public enum DirectoryEntryType
-    {
-        STGTY_INVALID = 0,
-        STGTY_STORAGE = 1,
-        STGTY_STREAM = 2,
-        STGTY_LOCKBYTES = 3,
-        STGTY_PROPERTY = 4,
-        STGTY_ROOT = 5    
-    }
-
-
-    /// <summary>
-    /// Color of a directory entry in the red-black-tree
-    /// </summary>
-    public enum DirectoryEntryColor
-    {
-        DE_RED = 0,
-        DE_BLACK = 1
-    }
-
 }

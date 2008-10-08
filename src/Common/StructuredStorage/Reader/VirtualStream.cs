@@ -29,8 +29,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
 
-namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
+namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Reader
 {
 
     /// <summary>
@@ -279,7 +280,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
         [Obsolete("Use Seek(count, SeekOrigin.Current) instead.")]
         public int Skip(uint count)
         {
-            // TODO: Someone more familiar with StructuredStorageReader
+            // TODO: Someone more familiar with StructuredStorage.Reader
             // than I am is free to do a more efficient implementation of this. -- flgr
             return this.Read(new byte[count]);
         }
@@ -310,12 +311,12 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorageReader
             
         //    int sectorInChain = (int)(position / _fat.SectorSize);
 
-        //    if (sectorInChain >= _sectors.Count)
+        //    if (sectorInChain >= _entries.Count)
         //    {
         //        return -1;
         //    }
 
-        //    _fat.SeekToPositionInSector(_sectors[sectorInChain], position % _fat.SectorSize);
+        //    _fat.SeekToPositionInSector(_entries[sectorInChain], position % _fat.SectorSize);
         //    return _fat.UncheckedReadByte();
         //}
 
