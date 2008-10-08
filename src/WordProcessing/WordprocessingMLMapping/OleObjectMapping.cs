@@ -33,7 +33,7 @@ using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using System.IO;
 using DIaLOGIKa.b2xtranslator.DocFileFormat;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {

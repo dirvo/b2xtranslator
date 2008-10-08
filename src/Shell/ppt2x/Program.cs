@@ -28,7 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using System.Xml;
 using System.IO;
 using DIaLOGIKa.b2xtranslator.Tools;
@@ -41,6 +41,7 @@ using DIaLOGIKa.b2xtranslator.ZipUtils;
 using System.Reflection;
 using System.Threading;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
 
 namespace DIaLOGIKa.b2xtranslator.ppt2x
 {
@@ -84,7 +85,7 @@ namespace DIaLOGIKa.b2xtranslator.ppt2x
                 DateTime start = DateTime.Now;
 
                 //open the reader
-                using (StructuredStorageFile reader = new StructuredStorageFile(procFile.File.FullName))
+                using (StructuredStorageReader reader = new StructuredStorageReader(procFile.File.FullName))
                 {
 
                     //parse the document

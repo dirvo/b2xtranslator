@@ -315,22 +315,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //footnote porperties
                     case SinglePropertyModifier.OperationCode.sprmSRncFtn:
                         //restart code
-                        Int16 frc = 0;
-                        if (sprm.Arguments.Length == 1)
-                            frc = (Int16)sprm.Arguments[0];
-                        else
-                            frc = System.BitConverter.ToInt16(sprm.Arguments, 0);
-                        FootnoteRestartCode fncFtn = (FootnoteRestartCode)frc;
+                        FootnoteRestartCode fncFtn = (FootnoteRestartCode)System.BitConverter.ToInt16(sprm.Arguments, 0);
                         appendValueElement(footnotePr, "numRestart", fncFtn.ToString(), true);
-
                         break;
                     case SinglePropertyModifier.OperationCode.sprmSFpc:
                         //position code
-                        Int16 fpc = 0;
-                        if (sprm.Arguments.Length == 1)
-                            fpc = (Int16)sprm.Arguments[0];
-                        else
-                            fpc = System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        Int16 fpc = System.BitConverter.ToInt16(sprm.Arguments, 0);
                         if(fpc == 2)
                             appendValueElement(footnotePr, "pos", "beneathText", true);
                         break;

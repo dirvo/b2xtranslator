@@ -28,7 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.DocFileFormat;
 using System.IO;
 using System.Collections;
@@ -38,7 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
     class Program
     {
         private static string method, file;
-        private static StructuredStorageFile reader;
+        private static StructuredStorageReader reader;
         private static WordDocument doc;
 
         static void Main(string[] args)
@@ -48,7 +48,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
                 //parse arguments
                 parseArgs(args);
 
-                reader = new StructuredStorageFile(file);
+                reader = new StructuredStorageReader(file);
                 doc = new WordDocument(reader);
 
                 method = method.ToUpper();

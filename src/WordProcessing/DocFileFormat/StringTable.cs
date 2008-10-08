@@ -28,7 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using System.Reflection;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
@@ -52,83 +52,80 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         public StringTable(Type dataType, VirtualStream tableStream, UInt32 fc, UInt32 lcb)
         {
-            if (lcb > 0)
+            tableStream.Seek((long)fc, System.IO.SeekOrigin.Begin);
+            VirtualStreamReader reader = new VirtualStreamReader(tableStream);
+
+            //read fExtend
+            if (reader.ReadUInt16() == 0xFFFF)
             {
+                //if the first 2 bytes are 0xFFFF the STTB contains unicode characters
+                this.fExtend = true;
+                _enc = Encoding.Unicode;
+            }
+            else
+            {
+                //else the STTB contains 1byte characters and the fExtend field is non-existend
+                //seek back to the beginning
+                this.fExtend = false;
+                _enc = Encoding.ASCII;
                 tableStream.Seek((long)fc, System.IO.SeekOrigin.Begin);
-                VirtualStreamReader reader = new VirtualStreamReader(tableStream);
+            }
 
-                //read fExtend
-                if (reader.ReadUInt16() == 0xFFFF)
+            //read cData
+            long cDataStart = tableStream.Position;
+            UInt16 c = reader.ReadUInt16();
+            if (c != 0xFFFF)
+            {
+                //cData is a 2byte unsigned Integer and the read bytes are already cData
+                this.cData = (int)c;
+            }
+            else
+            {
+                //cData is a 4byte signed Integer, so we need to seek back
+                tableStream.Seek((long)fc + cDataStart, System.IO.SeekOrigin.Begin);
+                this.cData = reader.ReadInt32();
+            }
+
+            //read cbExtra
+            this.cbExtra = reader.ReadUInt16();
+
+            //read the strings and extra datas
+            this.Strings = new List<string>();
+            this.Data = new List<ByteStructure>();
+            for (int i = 0; i < this.cData; i++)
+			{   
+                int cchData = 0;
+                int cbData = 0;
+                if (this.fExtend)
                 {
-                    //if the first 2 bytes are 0xFFFF the STTB contains unicode characters
-                    this.fExtend = true;
-                    _enc = Encoding.Unicode;
+                    cchData = (int)reader.ReadUInt16();
+                    cbData = cchData * 2;
                 }
                 else
                 {
-                    //else the STTB contains 1byte characters and the fExtend field is non-existend
-                    //seek back to the beginning
-                    this.fExtend = false;
-                    _enc = Encoding.ASCII;
-                    tableStream.Seek((long)fc, System.IO.SeekOrigin.Begin);
+                    cchData = (int)reader.ReadByte();
+                    cbData = cchData;
                 }
 
-                //read cData
-                long cDataStart = tableStream.Position;
-                UInt16 c = reader.ReadUInt16();
-                if (c != 0xFFFF)
+                long posBeforeType = reader.BaseStream.Position;
+
+                if (dataType == typeof(string))
                 {
-                    //cData is a 2byte unsigned Integer and the read bytes are already cData
-                    this.cData = (int)c;
+                    //It's a real string table
+                    this.Strings.Add(_enc.GetString(reader.ReadBytes(cbData)));
                 }
                 else
                 {
-                    //cData is a 4byte signed Integer, so we need to seek back
-                    tableStream.Seek((long)fc + cDataStart, System.IO.SeekOrigin.Begin);
-                    this.cData = reader.ReadInt32();
+                    //It's a modified string table that contains custom data
+                    ConstructorInfo constructor = dataType.GetConstructor(new Type[] { typeof(VirtualStreamReader), typeof(int) });
+                    ByteStructure data = (ByteStructure)constructor.Invoke(new object[] { reader, cbData });
+                    this.Data.Add(data);
                 }
 
-                //read cbExtra
-                this.cbExtra = reader.ReadUInt16();
-
-                //read the strings and extra datas
-                this.Strings = new List<string>();
-                this.Data = new List<ByteStructure>();
-                for (int i = 0; i < this.cData; i++)
-                {
-                    int cchData = 0;
-                    int cbData = 0;
-                    if (this.fExtend)
-                    {
-                        cchData = (int)reader.ReadUInt16();
-                        cbData = cchData * 2;
-                    }
-                    else
-                    {
-                        cchData = (int)reader.ReadByte();
-                        cbData = cchData;
-                    }
-
-                    long posBeforeType = reader.BaseStream.Position;
-
-                    if (dataType == typeof(string))
-                    {
-                        //It's a real string table
-                        this.Strings.Add(_enc.GetString(reader.ReadBytes(cbData)));
-                    }
-                    else
-                    {
-                        //It's a modified string table that contains custom data
-                        ConstructorInfo constructor = dataType.GetConstructor(new Type[] { typeof(VirtualStreamReader), typeof(int) });
-                        ByteStructure data = (ByteStructure)constructor.Invoke(new object[] { reader, cbData });
-                        this.Data.Add(data);
-                    }
-
-                    reader.BaseStream.Seek(posBeforeType + cbData, System.IO.SeekOrigin.Begin);
-
-                    //skip the extra byte
-                    reader.ReadBytes(cbExtra);
-                }
+                reader.BaseStream.Seek(posBeforeType + cbData, System.IO.SeekOrigin.Begin);
+                
+                //skip the extra byte
+                reader.ReadBytes(cbExtra);
             }
         }
 

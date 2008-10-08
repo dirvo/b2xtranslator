@@ -28,7 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using System.IO;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
@@ -82,7 +82,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                         byte[] piecetable = new byte[lcb];
                         Array.Copy(bytes, pos + 5, piecetable, 0, piecetable.Length);
 
-                        //count of PCD entries
+                        //count of PCD _entries
                         int n = (lcb - 4) / 12;
 
                         //and n piece descriptors

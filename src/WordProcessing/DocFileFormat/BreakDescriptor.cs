@@ -29,7 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat

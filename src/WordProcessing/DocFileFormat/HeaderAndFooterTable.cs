@@ -28,7 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
@@ -63,8 +63,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             int initialPos = doc.FIB.ccpText + doc.FIB.ccpFtn;
 
-            //the first 6 entries are about footnote and endnote formatting
-            //so skip these entries
+            //the first 6 _entries are about footnote and endnote formatting
+            //so skip these _entries
             int pos = 6;
             for (int i = 0; i < count; i++)
             {

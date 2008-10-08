@@ -29,7 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.DocFileFormat;
 using System.IO;
 using System.Xml;
@@ -51,7 +51,7 @@ namespace DocTranslatorTest
             DateTime start = DateTime.Now;
 
             //open the reader
-            StructuredStorageFile reader = new StructuredStorageFile(file);
+            StructuredStorageReader reader = new StructuredStorageReader(file);
 
             //parse the document
             WordDocument doc = new WordDocument(reader);

@@ -29,9 +29,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.DocFileFormat;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Tools;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
@@ -62,9 +63,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
         public List<VirtualStream> ObjectPool;
 
-        private StructuredStorageFile _docStorage;
+        private StructuredStorageReader _docStorage;
 
-        public OleObject(CharacterPropertyExceptions chpx, StructuredStorageFile docStorage)
+        public OleObject(CharacterPropertyExceptions chpx, StructuredStorageReader docStorage)
         {
             this._docStorage = docStorage;
             this.ObjectId = getOleEntryName(chpx);

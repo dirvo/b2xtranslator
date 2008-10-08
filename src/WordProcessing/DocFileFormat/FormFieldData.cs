@@ -28,7 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Tools;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
@@ -187,7 +187,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public string xstzExitMcr;
 
         /// <summary>
-        /// An optional STTB that specifies the entries in the dropdown list box. <br/><br/>
+        /// An optional STTB that specifies the _entries in the dropdown list box. <br/><br/>
         /// 
         /// MUST exist if and only if iType is iTypeDrop (2). 
         /// Entries are Unicode strings and do not have extra data. 

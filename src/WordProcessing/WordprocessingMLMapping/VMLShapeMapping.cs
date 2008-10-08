@@ -14,21 +14,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
     public class VMLShapeMapping: PropertiesMapping,
           IMapping<ShapeContainer>
     {
-        private enum PibType
-        {
-            msoblipflagComment,
-            msoblipflagFile,
-            msoblipflagURL,
-            msoblipflagDoNotSave,
-            msoblipflagLinkToFile
-        }
-
         private BlipStoreContainer _blipStore = null;
         private ConversionContext _ctx;
         private FileShapeAddress _fspa;
         private ContentPart _targetPart;
         private XmlElement _fill, _stroke, _shadow, _imagedata;
         private bool _documentBase;
+
 
         public VMLShapeMapping(XmlWriter writer, ContentPart targetPart, FileShapeAddress fspa, bool documentBase, ConversionContext ctx)
             : base(writer)
@@ -276,18 +268,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         break;
 
                     case ShapeOptions.PropertyId.pibName:
-                        if (entry.fComplex)
-                        {
-                            UInt32 flags = getPibFlags(options);
-                            string name = "";
-                            if ((PibType)flags == PibType.msoblipflagComment)
-                            {
-                                name = Encoding.Unicode.GetString(entry.opComplex);
-                                name = name.Substring(0, name.Length - 1);
-                                
-                            }
-                            appendValueAttribute(_imagedata, "o", "title", name, OpenXmlNamespaces.Office);
-                        }
+                        string name = Encoding.Unicode.GetString(entry.opComplex);
+                        name = name.Substring(0, name.Length - 1);
+                        appendValueAttribute(_imagedata, "o", "title", name, OpenXmlNamespaces.Office);
                         break;
                 }
             }
@@ -368,19 +351,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _writer.Flush();
         }
 
-        private UInt32 getPibFlags(List<ShapeOptions.OptionEntry> options)
-        {
-            UInt32 ret = 0;
-            foreach (ShapeOptions.OptionEntry opt in options)
-            {
-                if (opt.pid == ShapeOptions.PropertyId.pibFlags)
-                {
-                    ret = opt.op;
-                    break;
-                }
-            }
-            return ret;
-        }
 
         /// <summary>
         /// Returns the OpenXML fill type of a fill effect

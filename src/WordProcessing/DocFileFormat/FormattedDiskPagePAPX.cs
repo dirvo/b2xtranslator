@@ -28,7 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
@@ -125,7 +125,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         }
 
         /// <summary>
-        /// Parses the 0Table (or 1Table) for FKP entries containing PAPX
+        /// Parses the 0Table (or 1Table) for FKP _entries containing PAPX
         /// </summary>
         /// <param name="fib">The FileInformationBlock</param>
         /// <param name="wordStream">The WordDocument stream</param>
@@ -183,7 +183,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 FormattedDiskPage fkp = fkps[i];
 
                 //the last entry of each is always the same as the first entry of the next FKP
-                //so, ignore all last entries except for the last FKP.
+                //so, ignore all last _entries except for the last FKP.
                 int max = fkp.rgfc.Length;
                 if (i < fkps.Count - 1)
                     max--;

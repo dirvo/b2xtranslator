@@ -28,10 +28,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 using System.Reflection;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
@@ -74,7 +75,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// The StructuredStorageFile itself
         /// </summary>
-        public StructuredStorageFile Storage;
+        public StructuredStorageReader Storage;
 
         /// <summary>
         /// The file information block of the word document
@@ -168,12 +169,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public HeaderAndFooterTable HeaderAndFooterTable;
 
-        /// <summary>
-        /// A Table that contains the names of all comment authors.
-        /// </summary>
-        public CommentAuthorTable CommentAuthorTable;
-
-        public WordDocument(StructuredStorageFile reader)
+        public WordDocument(StructuredStorageReader reader)
         {
             this.Storage = reader;
             this.WordDocumentStream = reader.GetStream("WordDocument");
@@ -233,7 +229,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.OfficeArtContent = new OfficeArtContent(this.FIB, this.TableStream);
             this.HeaderAndFooterTable = new HeaderAndFooterTable(this);
             this.AnnotationReferenceExtraTable = new AnnotationReferenceExtraTable(this.FIB, this.TableStream);
-            this.CommentAuthorTable = new CommentAuthorTable(this.FIB, this.TableStream);
 
             //parse the piece table and construct a list that contains all chars
             this.PieceTable = new PieceTable(this.FIB, this.TableStream);

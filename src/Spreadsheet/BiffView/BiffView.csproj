@@ -84,9 +84,9 @@
     <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\StructuredStorageReader\StructuredStorageReader.csproj">
+    <ProjectReference Include="..\..\Common\StructuredStorage\StructuredStorage.csproj">
       <Project>{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}</Project>
-      <Name>StructuredStorageReader</Name>
+      <Name>StructuredStorage</Name>
     </ProjectReference>
     <ProjectReference Include="..\XlsFileFormat\XlsFileFormat.csproj">
       <Project>{92295756-46BB-4D1F-B0FD-CA7DF03F6C65}</Project>

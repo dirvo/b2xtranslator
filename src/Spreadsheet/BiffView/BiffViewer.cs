@@ -27,12 +27,13 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using System.Windows.Forms;
 using System.IO;
 using System.Reflection;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 using System.ComponentModel;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
 {
@@ -68,11 +69,11 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
 
         public void DoTheMagic()
         {
-            StructuredStorageFile reader = null;
+            StructuredStorageReader reader = null;
             StreamWriter sw = null;
             try
             {
-                reader = new StructuredStorageFile(this.Options.InputDocument);
+                reader = new StructuredStorageReader(this.Options.InputDocument);
                 IStreamReader workbookReader = new VirtualStreamReader(reader.GetStream("Workbook"));
 
                 if (this.Options.Mode == BiffViewerMode.File)

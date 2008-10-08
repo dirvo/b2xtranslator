@@ -28,7 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
@@ -100,7 +100,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         }
 
         /// <summary>
-        /// Parses the 0Table (or 1Table) for FKP entries containing CHPX
+        /// Parses the 0Table (or 1Table) for FKP _entries containing CHPX
         /// </summary>
         /// <param name="fib">The FileInformationBlock</param>
         /// <param name="wordStream">The WordDocument stream</param>

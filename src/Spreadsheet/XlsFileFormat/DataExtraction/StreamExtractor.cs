@@ -32,7 +32,7 @@ using System.Text;
 using System.IO;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
@@ -41,7 +41,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
     /// </summary>
     public class StreamExtractor
     {
-        StructuredStorageFile storageReader; 
+        StructuredStorageReader storageReader; 
 
         // some const declarations 
         public const string SUMMARYINFORMATIONSEARCH = "SummaryInformation";
@@ -78,8 +78,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             try
             {
                 // init StorageReader
-                storageReader = new StructuredStorageFile(this.fileName);
-                // read stream entries
+                storageReader = new StructuredStorageReader(this.fileName);
+                // read stream _entries
                 ICollection<DirectoryEntry> streamEntries = storageReader.AllStreamEntries;
 
                 foreach (object var in streamEntries)

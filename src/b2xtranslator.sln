@@ -97,7 +97,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordprocessingMLMapping", "
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StructuredStorageReader", "Common\StructuredStorageReader\StructuredStorageReader.csproj", "{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StructuredStorage", "Common\StructuredStorage\StructuredStorage.csproj", "{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -163,7 +163,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpreadsheetMLMapping", "Spr
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xlsStreamListExtractor", "xlsStreamListExtractor\xlsStreamListExtractor.csproj", "{138C27D2-9058-4700-8647-8636C0717107}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompoundFileWritingTest", "Test\CompoundFileWritingTest\CompoundFileWritingTest.csproj", "{8D84E4F8-78FA-4A4A-A8D5-BB9C9E28A79E}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompoundFileReadWriteExtractTest", "Test\CompoundFileReadWriteExtractTest\CompoundFileReadWriteExtractTest.csproj", "{0633D500-337B-49BD-9566-C50F0FDAA6D2}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -259,10 +265,14 @@ Global
 		{7085D1EB-E797-4841-A564-68EF63688A24}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7085D1EB-E797-4841-A564-68EF63688A24}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7085D1EB-E797-4841-A564-68EF63688A24}.Release|Any CPU.Build.0 = Release|Any CPU
-		{138C27D2-9058-4700-8647-8636C0717107}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{138C27D2-9058-4700-8647-8636C0717107}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{138C27D2-9058-4700-8647-8636C0717107}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{138C27D2-9058-4700-8647-8636C0717107}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D84E4F8-78FA-4A4A-A8D5-BB9C9E28A79E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D84E4F8-78FA-4A4A-A8D5-BB9C9E28A79E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D84E4F8-78FA-4A4A-A8D5-BB9C9E28A79E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D84E4F8-78FA-4A4A-A8D5-BB9C9E28A79E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0633D500-337B-49BD-9566-C50F0FDAA6D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0633D500-337B-49BD-9566-C50F0FDAA6D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0633D500-337B-49BD-9566-C50F0FDAA6D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0633D500-337B-49BD-9566-C50F0FDAA6D2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -273,7 +283,8 @@ Global
 		{1855519D-6C8C-44B2-B197-DB40DD648FB6} = {23B4E6F7-CF43-4B43-ABCE-26C39E173ABD}
 		{5558D1F7-91D9-47A8-B39D-AE593B3AF812} = {23B4E6F7-CF43-4B43-ABCE-26C39E173ABD}
 		{A6AF6065-0740-42A1-BC9D-02AACDAF1476} = {23B4E6F7-CF43-4B43-ABCE-26C39E173ABD}
-		{138C27D2-9058-4700-8647-8636C0717107} = {23B4E6F7-CF43-4B43-ABCE-26C39E173ABD}
+		{8D84E4F8-78FA-4A4A-A8D5-BB9C9E28A79E} = {23B4E6F7-CF43-4B43-ABCE-26C39E173ABD}
+		{0633D500-337B-49BD-9566-C50F0FDAA6D2} = {23B4E6F7-CF43-4B43-ABCE-26C39E173ABD}
 		{70A244FD-C90E-4474-9E70-82BCF5147FF9} = {6F47D61C-D3A4-4DC1-B19A-F97AD18E6E10}
 		{A4EFE5FA-BDEB-452B-8751-1A495E5C9759} = {6F47D61C-D3A4-4DC1-B19A-F97AD18E6E10}
 		{4C10271C-CD9B-49F5-9479-3C6EB7404E75} = {D8DB984C-ED04-4525-9923-798363B513FC}

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 
@@ -211,18 +211,14 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     this.cProps = reader.ReadInt16();
 
                     //Parse the OfficeDrawing Stuff
-                    Record reco = Record.ReadRecord(reader, 0);
-                    if (reco.GetType() == typeof(ShapeContainer))
+                    this.ShapeContainer = (ShapeContainer)Record.ReadRecord(reader, 0);
+                    long pos = reader.BaseStream.Position;
+                    if( pos < (fc + lcb))
                     {
-                        this.ShapeContainer = (ShapeContainer)reco;
-                        long pos = reader.BaseStream.Position;
-                        if (pos < (fc + lcb))
+                        Record rec = Record.ReadRecord(reader, 0);
+                        if(rec.GetType() == typeof(BlipStoreEntry))
                         {
-                            Record rec = Record.ReadRecord(reader, 0);
-                            if (rec.GetType() == typeof(BlipStoreEntry))
-                            {
-                                this.BlipStoreEntry = (BlipStoreEntry)rec;
-                            }
+                            this.BlipStoreEntry = (BlipStoreEntry)rec;
                         }
                     }
                 }

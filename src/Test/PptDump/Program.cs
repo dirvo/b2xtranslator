@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using DIaLOGIKa.b2xtranslator.Tools;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.PptFileFormat;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 
@@ -25,7 +25,7 @@ namespace DIaLOGIKa.b2xtranslator.PptDump
             string inputFile = args[0];
             ProcessingFile procFile = new ProcessingFile(inputFile);
 
-            StructuredStorageFile file = new StructuredStorageFile(procFile.File.FullName);
+            StructuredStorageReader file = new StructuredStorageReader(procFile.File.FullName);
             PowerpointDocument pptDoc = new PowerpointDocument(file);
 
             // Dump unknown records

@@ -179,7 +179,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     //default
 
-                    //entries
+                    //_entries
 
                     break;
                 default:

@@ -28,7 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.DocFileFormat;
 using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
@@ -39,6 +39,7 @@ using DIaLOGIKa.b2xtranslator.Tools;
 using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
 
 namespace DIaLOGIKa.b2xtranslator.doc2x
 {
@@ -82,7 +83,7 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                 DateTime start = DateTime.Now;
 
                 //open the reader
-                using (StructuredStorageFile reader = new StructuredStorageFile(procFile.File.FullName))
+                using (StructuredStorageReader reader = new StructuredStorageReader(procFile.File.FullName))
                 {
                     //parse the document
                     WordDocument doc = new WordDocument(reader);

@@ -70,7 +70,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
 
 
-            // create the string entries 
+            // create the string _entries 
             foreach (String var in sstData.StringList)
             {
                 _writer.WriteStartElement("si" );

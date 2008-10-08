@@ -37,7 +37,7 @@ using DIaLOGIKa.b2xtranslator.Tools;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 using System.IO.Compression;
 using System.IO;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using System.Threading;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping

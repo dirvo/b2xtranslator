@@ -29,7 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 using System.Reflection;
 using System.IO;
@@ -93,7 +93,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         /// </summary>
         public List<Slide> SlideRecords = new List<Slide>();
 
-        public PowerpointDocument(StructuredStorageFile file)
+        public PowerpointDocument(StructuredStorageReader file)
         {
             try
             {
@@ -195,7 +195,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
         /// <summary>
         /// Construct the complete persist object directory by traversing all PersistDirectoryAtoms
-        /// from all UserEditAtoms from the last edit to the first one and adding all entries of
+        /// from all UserEditAtoms from the last edit to the first one and adding all _entries of
         /// all encountered persist directories to the resulting persist object directory.
         /// 
         /// When the same persist id occurs multiple times with different offsets the one from the

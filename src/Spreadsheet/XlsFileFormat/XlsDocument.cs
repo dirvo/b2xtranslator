@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer; 
 
@@ -61,7 +61,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// Ctor 
         /// </summary>
         /// <param name="file"></param>
-        public XlsDocument(IStructuredStorageFile file)
+        public XlsDocument(IStructuredStorageReader file)
         {
             this.workBookData = new WorkBookData(); 
             this.workBookStreamReader = new VirtualStreamReader(file.GetStream(WORKBOOK));

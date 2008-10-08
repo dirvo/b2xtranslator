@@ -50,9 +50,9 @@
       <Project>{4C10271C-CD9B-49F5-9479-3C6EB7404E75}</Project>
       <Name>OpenXmlLib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Common\StructuredStorageReader\StructuredStorageReader.csproj">
+    <ProjectReference Include="..\..\Common\StructuredStorage\StructuredStorage.csproj">
       <Project>{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}</Project>
-      <Name>StructuredStorageReader</Name>
+      <Name>StructuredStorage</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Common\ZipUtils\ZipUtils.csproj">
       <Project>{05A5C68E-B901-4AD0-87F1-5E43DDC759CE}</Project>

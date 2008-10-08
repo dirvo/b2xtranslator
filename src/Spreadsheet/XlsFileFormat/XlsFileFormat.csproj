@@ -367,9 +367,9 @@
       <Project>{0F0F6BAF-BC5D-4DC6-AE53-8257305EE5CA}</Project>
       <Name>CommonTranslatorLib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Common\StructuredStorageReader\StructuredStorageReader.csproj">
+    <ProjectReference Include="..\..\Common\StructuredStorage\StructuredStorage.csproj">
       <Project>{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}</Project>
-      <Name>StructuredStorageReader</Name>
+      <Name>StructuredStorage</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Common\Tools\Tools.csproj">
       <Project>{B44FAEE0-B32E-4682-AA42-618C893F14C6}</Project>

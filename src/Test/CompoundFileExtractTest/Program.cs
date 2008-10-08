@@ -29,11 +29,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.StructuredStorageReader;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using System.IO;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.Tools;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
 
 namespace CompoundFileExtractTest
 {
@@ -64,16 +65,16 @@ namespace CompoundFileExtractTest
             foreach (string file in args)
             {
 
-                StructuredStorageFile storageReader = null;
+                StructuredStorageReader storageReader = null;
                 DateTime begin = DateTime.Now;
                 TimeSpan extractionTime = new TimeSpan();
 
                 try
                 {                   
                     // init StorageReader
-                    storageReader = new StructuredStorageFile(file);
+                    storageReader = new StructuredStorageReader(file);
 
-                    // read stream entries
+                    // read stream _entries
                     ICollection<DirectoryEntry> streamEntries = storageReader.AllStreamEntries;
 
                     // create valid path names
