@@ -33,11 +33,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("StructuredStorageReader")]
+[assembly: AssemblyTitle("StructuredStorage.Reader")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("DIaLOGIKa")]
-[assembly: AssemblyProduct("StructuredStorageReader")]
+[assembly: AssemblyProduct("StructuredStorage.Reader")]
 [assembly: AssemblyCopyright("Copyright © DIaLOGIKa GmbH 2008")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

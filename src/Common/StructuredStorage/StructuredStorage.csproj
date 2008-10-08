@@ -7,8 +7,8 @@
     <ProjectGuid>{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DIaLOGIKa.b2xtranslator.StructuredStorageReader</RootNamespace>
-    <AssemblyName>DIaLOGIKa.b2xtranslator.StructuredStorageReader</AssemblyName>
+    <RootNamespace>DIaLOGIKa.b2xtranslator.StructuredStorage</RootNamespace>
+    <AssemblyName>DIaLOGIKa.b2xtranslator.StructuredStorage</AssemblyName>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>2.0</OldToolsVersion>
@@ -38,23 +38,38 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbstractFat.cs" />
-    <Compile Include="IStreamReader.cs" />
-    <Compile Include="IStructuredStorageFile.cs" />
-    <Compile Include="MaskingHandler.cs" />
-    <Compile Include="InternalBitConverter.cs" />
-    <Compile Include="DirectoryTree.cs" />
-    <Compile Include="Exceptions.cs" />
-    <Compile Include="Fat.cs" />
-    <Compile Include="FileHandler.cs" />
-    <Compile Include="GlobalDefines.cs" />
-    <Compile Include="Header.cs" />
-    <Compile Include="MiniFat.cs" />
+    <Compile Include="Common\AbstractDirectoryEntry.cs" />
+    <Compile Include="Reader\AbstractFat.cs" />
+    <Compile Include="Common\AbstractIOHandler.cs" />
+    <Compile Include="Common\AbstractHeader.cs" />
+    <Compile Include="Reader\IStreamReader.cs" />
+    <Compile Include="Reader\IStructuredStorageReader.cs" />
+    <Compile Include="Common\MaskingHandler.cs" />
+    <Compile Include="Common\InternalBitConverter.cs" />
+    <Compile Include="Reader\DirectoryTree.cs" />
+    <Compile Include="Common\Exceptions.cs" />
+    <Compile Include="Reader\Fat.cs" />
+    <Compile Include="Writer\AbstractFat.cs" />
+    <Compile Include="Writer\BaseDirectoryEntry.cs" />
+    <Compile Include="Writer\Fat.cs" />
+    <Compile Include="Writer\MiniFat.cs" />
+    <Compile Include="Writer\RootDirectoryEntry.cs" />
+    <Compile Include="Writer\StorageDirectoryEntry.cs" />
+    <Compile Include="Writer\Header.cs" />
+    <Compile Include="Reader\InputHandler.cs" />
+    <Compile Include="Common\GlobalDefines.cs" />
+    <Compile Include="Reader\Header.cs" />
+    <Compile Include="Reader\MiniFat.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StructuredStorageFile.cs" />
-    <Compile Include="VirtualStream.cs" />
-    <Compile Include="DirectoryEntry.cs" />
-    <Compile Include="VirtualStreamReader.cs" />
+    <Compile Include="Writer\StructuredStorageContext.cs" />
+    <Compile Include="Writer\VirtualStream.cs" />
+    <Compile Include="Writer\StreamDirectoryEntry.cs" />
+    <Compile Include="Reader\StructuredStorageReader.cs" />
+    <Compile Include="Writer\StructuredStorageWriter.cs" />
+    <Compile Include="Reader\VirtualStream.cs" />
+    <Compile Include="Reader\DirectoryEntry.cs" />
+    <Compile Include="Reader\VirtualStreamReader.cs" />
+    <Compile Include="Writer\OutputHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tools\Tools.csproj">
