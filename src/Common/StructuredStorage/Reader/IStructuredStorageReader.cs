@@ -53,6 +53,10 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Reader
         /// </summary>        
         ICollection<string> FullNameOfAllStreamEntries { get; }
 
+
+        DirectoryEntry RootDirectoryEntry { get; }
+
+
         /// <summary>
         /// Closes the file handle
         /// </summary>

@@ -94,6 +94,12 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
+        public void setClsId(Guid clsId)
+        {
+            ClsId = clsId;
+        }
+
+
         internal List<BaseDirectoryEntry> RecursiveGetAllDirectoryEntries()
         {
             List<BaseDirectoryEntry> result = new List<BaseDirectoryEntry>();
@@ -122,31 +128,33 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
 
         internal void RecursiveCreateRedBlackTrees()
         {
-            CreateRedBlackTree();
+            this.ChildSiblingSid = CreateRedBlackTree();
+
             foreach (StorageDirectoryEntry entry in _storageDirectoryEntries)
             {
                 entry.RecursiveCreateRedBlackTrees();
             }
+
+            //foreach (BaseDirectoryEntry entry in _allDirectoryEntries)
+            //{
+            //    UInt32 left = entry.LeftSiblingSid;
+            //    UInt32 right = entry.RightSiblingSid;
+            //    UInt32 child = entry.ChildSiblingSid;
+            //    Console.WriteLine("{0:X02}: Left: {2:X02}, Right: {3:X02}, Child: {4:X02}, Name: {1}, Color: {5}", entry.Sid, entry.Name, (left > 0xFF) ? 0xFF : left, (right > 0xFF) ? 0xFF : right, (child > 0xFF) ? 0xFF : child, entry.Color.ToString());
+            //}
+            //Console.WriteLine("----------");
         }
 
 
-        private void CreateRedBlackTree()
+        private UInt32 CreateRedBlackTree()
         {          
             _allDirectoryEntries.Sort(
                 delegate(BaseDirectoryEntry a, BaseDirectoryEntry b) 
                 { return (a.Name.Length == b.Name.Length) ? a.Name.ToLower().CompareTo(b.Name.ToLower()) : a.Name.Length.CompareTo(b.Name.Length); }
                 );
 
-            this.ChildSiblingSid = setRelationsAndColorRecursive(this._allDirectoryEntries, (int)Math.Floor(Math.Log(_allDirectoryEntries.Count, 2)), 0);
-
-            foreach (BaseDirectoryEntry entry in _allDirectoryEntries)
-            {
-                UInt32 left = entry.LeftSiblingSid;
-                UInt32 right = entry.RightSiblingSid;
-                UInt32 child = entry.ChildSiblingSid;
-                //Console.WriteLine("{0:X02}: Left: {2:X02}, Right: {3:X02}, Child: {4:X02}, Name: {1}, Color: {5}", entry.Sid, entry.Name, (left > 0xFF) ? 0xFF : left, (right > 0xFF) ? 0xFF : right, (child > 0xFF) ? 0xFF : child, entry.Color.ToString());                
-            }
-            //Console.WriteLine("----------");
+            //this.ChildSiblingSid = setRelationsAndColorRecursive(this._allDirectoryEntries, (int)Math.Floor(Math.Log(_allDirectoryEntries.Count, 2)), 0);
+            return setRelationsAndColorRecursive(this._allDirectoryEntries, (int)Math.Floor(Math.Log(_allDirectoryEntries.Count, 2)), 0);
         }
 
 

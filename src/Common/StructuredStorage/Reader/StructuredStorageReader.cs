@@ -105,6 +105,11 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Reader
         }
 
 
+        public DirectoryEntry RootDirectoryEntry
+        {
+            get { return _directory.GetDirectoryEntry(0x0); }
+        }
+
         /// <summary>
         /// Initalizes a handle to a compound file with the given name
         /// </summary>

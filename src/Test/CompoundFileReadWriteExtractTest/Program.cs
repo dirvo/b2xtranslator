@@ -43,7 +43,7 @@ namespace CompoundFileReadWriteExtractTest
                     ICollection<DirectoryEntry> streamEntries = storageReader.AllStreamEntries;
 
                     // create valid path names
-                    Dictionary<string, string> pathNames = new Dictionary<string, string>();
+                    Dictionary<string, KeyValuePair<string,Guid> > pathNames1 = new Dictionary<string, KeyValuePair<string,Guid> >();
                     foreach (DirectoryEntry entry in streamEntries)
                     {
                         string name = entry.Path;
@@ -51,12 +51,13 @@ namespace CompoundFileReadWriteExtractTest
                         {
                             name = name.Replace(invalidChars[i], '_');
                         }
-                        pathNames.Add(entry.Path, name);
+                        pathNames1.Add(entry.Path, new KeyValuePair<string,Guid>(name,entry.ClsId) );
                     }
                       
                     // Create Directory Structure
                     StructuredStorageWriter sso = new StructuredStorageWriter();
-                    foreach (string key in pathNames.Keys)
+                    sso.RootDirectoryEntry.setClsId(storageReader.RootDirectoryEntry.ClsId);
+                    foreach (string key in pathNames1.Keys)
                     {
                         StorageDirectoryEntry sde = sso.RootDirectoryEntry;
                         string[] storages = key.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
@@ -66,6 +67,7 @@ namespace CompoundFileReadWriteExtractTest
                             {
                                 StorageDirectoryEntry result = sde.AddStorageDirectoryEntry(storages[i]);
                                 sde = (result == null) ? sde : result;
+                                sde.setClsId(pathNames1[key].Value);
                                 continue;
                             }
                             VirtualStream vstream = storageReader.GetStream(key);
@@ -111,7 +113,7 @@ namespace CompoundFileReadWriteExtractTest
                     streamEntries = storageReader.AllStreamEntries;
 
                     // create valid path names
-                    pathNames = new Dictionary<string, string>();
+                    Dictionary<string, string> pathNames2 = new Dictionary<string, string>();
                     foreach (DirectoryEntry entry in streamEntries)
                     {
                         string name = entry.Path;
@@ -119,7 +121,7 @@ namespace CompoundFileReadWriteExtractTest
                         {
                             name = name.Replace(invalidChars[i], '_');
                         }
-                        pathNames.Add(entry.Path, name);
+                        pathNames2.Add(entry.Path, name);
                     }
 
                     // create output directory
@@ -129,13 +131,13 @@ namespace CompoundFileReadWriteExtractTest
                     Directory.CreateDirectory(outputDir);
 
                     // for each stream                    
-                    foreach (string key in pathNames.Keys)
+                    foreach (string key in pathNames2.Keys)
                     {
                         // get virtual stream by path name
                         IStreamReader streamReader = new VirtualStreamReader(storageReader.GetStream(key));
 
                         // read bytes from stream, write them back to disk
-                        FileStream fs = new FileStream(outputDir + "\\" + pathNames[key] + ".stream", FileMode.Create);
+                        FileStream fs = new FileStream(outputDir + "\\" + pathNames2[key] + ".stream", FileMode.Create);
                         BinaryWriter writer = new BinaryWriter(fs);
                         array = new byte[bytesToReadAtOnce];                        
                         do
