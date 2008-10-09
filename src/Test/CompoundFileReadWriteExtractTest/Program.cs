@@ -98,7 +98,7 @@ namespace CompoundFileReadWriteExtractTest
                     do
                     {
                         bytesRead = myStream.Read(array, 0, bytesToReadAtOnce);
-                        outputFile.Write(array, 0, bytesToReadAtOnce);
+                        outputFile.Write(array, 0, bytesRead);
                     } while (bytesRead == array.Length);
                     outputFile.Close();
 
