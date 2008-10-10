@@ -90,7 +90,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 if (streamname.StartsWith(this.Path))
                 {
-                    this.Streams.Add(streamname.Substring(streamname.LastIndexOf("\\")), docStorage.GetStream(streamname));
+                    this.Streams.Add(streamname.Substring(streamname.LastIndexOf("\\") + 1), docStorage.GetStream(streamname));
                 }
             }
 
