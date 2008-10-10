@@ -52,23 +52,23 @@ namespace CompoundFileReadWriteExtractTest
                             { return a.Sid.CompareTo(b.Sid); }
                         );
 
-                    foreach (DirectoryEntry entry in allEntries)
-                    {
-                        Console.WriteLine(entry.Sid + ":");
-                        Console.WriteLine("{0}: {1}", entry.Name, entry.LengthOfName);
-                        string hexName = "";
-                        for (int i = 0; i < entry.Name.Length; i++)
-                        {
-                            hexName += String.Format("{0:X2} ", (UInt32)entry.Name[i]);
-                        }
-                        Console.WriteLine("{0}", hexName);                        
-                        UInt32 left = entry.LeftSiblingSid;
-                        UInt32 right = entry.RightSiblingSid;
-                        UInt32 child = entry.ChildSiblingSid;
-                        Console.WriteLine("{0:X02}: Left: {2:X02}, Right: {3:X02}, Child: {4:X02}, Name: {1}, Color: {5}", entry.Sid, entry.Name, (left > 0xFF) ? 0xFF : left, (right > 0xFF) ? 0xFF : right, (child > 0xFF) ? 0xFF : child, entry.Color.ToString());
-                        Console.WriteLine("----------");
-                        Console.WriteLine("");
-                    }   
+                    //foreach (DirectoryEntry entry in allEntries)
+                    //{
+                    //    Console.WriteLine(entry.Sid + ":");
+                    //    Console.WriteLine("{0}: {1}", entry.Name, entry.LengthOfName);
+                    //    string hexName = "";
+                    //    for (int i = 0; i < entry.Name.Length; i++)
+                    //    {
+                    //        hexName += String.Format("{0:X2} ", (UInt32)entry.Name[i]);
+                    //    }
+                    //    Console.WriteLine("{0}", hexName);                        
+                    //    UInt32 left = entry.LeftSiblingSid;
+                    //    UInt32 right = entry.RightSiblingSid;
+                    //    UInt32 child = entry.ChildSiblingSid;
+                    //    Console.WriteLine("{0:X02}: Left: {2:X02}, Right: {3:X02}, Child: {4:X02}, Name: {1}, Color: {5}", entry.Sid, entry.Name, (left > 0xFF) ? 0xFF : left, (right > 0xFF) ? 0xFF : right, (child > 0xFF) ? 0xFF : child, entry.Color.ToString());
+                    //    Console.WriteLine("----------");
+                    //    Console.WriteLine("");
+                    //}   
 
                     // create valid path names
                     Dictionary<DirectoryEntry, KeyValuePair<string, Guid>> pathNames1 = new Dictionary<DirectoryEntry, KeyValuePair<string, Guid>>();
