@@ -34,6 +34,7 @@ using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using System.IO;
 using DIaLOGIKa.b2xtranslator.DocFileFormat;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Writer;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
@@ -116,15 +117,18 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// <param name="ole"></param>
         private void copyEmbeddedObject(OleObject ole, EmbeddedObjectPart part)
         {
-            //BinaryWriter writer = new BinaryWriter(part.GetStream());
+            //create a new storage
+            StructuredStorageWriter writer = new StructuredStorageWriter();
+            writer.RootDirectoryEntry.setClsId(ole.ClassId);
 
-            //foreach(VirtualStream stream in ole.ObjectPool)
-            //{
-            //    VirtualStreamReader oleReader = new VirtualStreamReader(stream);
-            //    writer.Write(oleReader.ReadBytes((int)oleReader.BaseStream.Length));
-            //}
+            //copy the OLE streams from the old storage to the new storage
+            foreach (string oleStream in ole.Streams.Keys)
+            {
+                writer.RootDirectoryEntry.AddStreamDirectoryEntry(oleStream, ole.Streams[oleStream]);
+            }
 
-            //writer.Flush();
+           //write the storage to the xml part
+           writer.write(part.GetStream());
         }
     }
 }

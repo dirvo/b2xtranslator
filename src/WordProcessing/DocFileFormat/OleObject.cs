@@ -40,6 +40,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
     {
         public string ObjectId;
 
+        public Guid ClassId;
+
         /// <summary>
         /// The path of the object in the storage
         /// </summary>
@@ -61,7 +63,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
         public string Program;
 
-        public List<VirtualStream> ObjectPool;
+        public Dictionary<string, VirtualStream> Streams;
 
         private StructuredStorageReader _docStorage;
 
@@ -69,8 +71,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             this._docStorage = docStorage;
             this.ObjectId = getOleEntryName(chpx);
-            this.Path = "\\ObjectPool\\" + this.ObjectId + "\\";
 
+            this.Path = "\\ObjectPool\\" + this.ObjectId + "\\";
             processOleStream(this.Path + "\u0001Ole");
 
             if (this.fLinked)
@@ -82,13 +84,23 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 processCompObjStream(this.Path + "\u0001CompObj");
             }
 
-            //create the object pool list
-            this.ObjectPool = new List<VirtualStream>();
+            //get the storage entries of this object
+            this.Streams = new Dictionary<string, VirtualStream>();
             foreach (string streamname in docStorage.FullNameOfAllStreamEntries)
             {
                 if (streamname.StartsWith(this.Path))
                 {
-                    this.ObjectPool.Add(docStorage.GetStream(streamname));
+                    this.Streams.Add(streamname.Substring(streamname.LastIndexOf("\\")), docStorage.GetStream(streamname));
+                }
+            }
+
+            //find the class if of this object
+            foreach (DirectoryEntry entry in docStorage.AllEntries)
+            {
+                if (entry.Name == this.ObjectId)
+                {
+                    this.ClassId = entry.ClsId;
+                    break;
                 }
             }
         }
