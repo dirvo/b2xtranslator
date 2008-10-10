@@ -59,13 +59,6 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
-        internal StorageDirectoryEntry(string name, UInt32 sid, StructuredStorageContext context)
-            : base(sid, name, context)
-        {
-            Type = DirectoryEntryType.STGTY_STORAGE;
-        }
-
-
         public void AddStreamDirectoryEntry(string name, Stream stream)
         {
             if (_streamDirectoryEntries.Exists(delegate(StreamDirectoryEntry a) { return name == a.Name; }))
@@ -152,6 +145,12 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
                 delegate(BaseDirectoryEntry a, BaseDirectoryEntry b) 
                 { return (a.Name.Length == b.Name.Length) ? a.Name.ToLower().CompareTo(b.Name.ToLower()) : a.Name.Length.CompareTo(b.Name.Length); }
                 );
+
+
+            foreach (BaseDirectoryEntry entry in _allDirectoryEntries)
+            {
+                entry.Sid = Context.getNewSid();
+            }
 
             //this.ChildSiblingSid = setRelationsAndColorRecursive(this._allDirectoryEntries, (int)Math.Floor(Math.Log(_allDirectoryEntries.Count, 2)), 0);
             return setRelationsAndColorRecursive(this._allDirectoryEntries, (int)Math.Floor(Math.Log(_allDirectoryEntries.Count, 2)), 0);

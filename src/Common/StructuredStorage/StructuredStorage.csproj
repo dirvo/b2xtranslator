@@ -51,6 +51,7 @@
     <Compile Include="Reader\Fat.cs" />
     <Compile Include="Writer\AbstractFat.cs" />
     <Compile Include="Writer\BaseDirectoryEntry.cs" />
+    <Compile Include="Writer\EmptyDirectoryEntry.cs" />
     <Compile Include="Writer\Fat.cs" />
     <Compile Include="Writer\MiniFat.cs" />
     <Compile Include="Writer\RootDirectoryEntry.cs" />

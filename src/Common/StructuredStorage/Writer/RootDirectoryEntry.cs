@@ -44,9 +44,10 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
 
 
         internal RootDirectoryEntry(StructuredStorageContext context)
-            : base("Root Entry", 0x0, context)
+            : base("Root Entry", context)
         {            
             Type = DirectoryEntryType.STGTY_ROOT;
+            Sid = 0x0;
         }
 
 

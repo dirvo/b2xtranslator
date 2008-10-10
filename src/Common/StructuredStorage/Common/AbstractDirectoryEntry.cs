@@ -34,10 +34,11 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Common
 {
     public class AbstractDirectoryEntry
     {
-        private UInt32 _sid;
+        UInt32 _sid;
         public UInt32 Sid
         {
             get { return _sid; }
+            protected set { _sid = value; }
         }
 
         protected string _path;
@@ -66,10 +67,16 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Common
         {
             get
             {
+                if (_name.Length == 0)
+                {
+                    _lengthOfName = 0;
+                    return 0;
+                }
+
                 // length of name in bytes including unicode 0;
-                _lengthOfName = (UInt16)((_name.Length + 1)*2);
+                _lengthOfName = (UInt16)((_name.Length + 1)*2);              
                 return _lengthOfName;
-            }            
+            }
         }
 
 
@@ -167,6 +174,9 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Common
             get { return _sizeOfStream; }
             protected set { _sizeOfStream = value; }
         }
+
+        internal AbstractDirectoryEntry() : this(0x0)
+        {}
 
         internal AbstractDirectoryEntry(UInt32 sid)
         {

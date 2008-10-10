@@ -42,23 +42,12 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
-        internal BaseDirectoryEntry(string name, StructuredStorageContext context)
-            : base(context.getNewSid())
+        internal BaseDirectoryEntry(string name, StructuredStorageContext context)            
         {
             _context = context;
             Name = name;
             setInitialValues();
         }
-
-
-        internal BaseDirectoryEntry(UInt32 sid, string name, StructuredStorageContext context)
-            : base(sid)
-        {
-            _context = context;
-            Name = name;
-            setInitialValues();
-        }
-
 
         private void setInitialValues()
         {

@@ -6,6 +6,7 @@ using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.Tools;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Writer;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
 
 namespace CompoundFileReadWriteExtractTest
 {
@@ -41,39 +42,75 @@ namespace CompoundFileReadWriteExtractTest
 
                     // read stream _entries
                     ICollection<DirectoryEntry> streamEntries = storageReader.AllStreamEntries;
+                    //ICollection<DirectoryEntry> allEntries = storageReader.AllEntries;
+                    //allEntries.Add(storageReader.RootDirectoryEntry);
+
+                    List<DirectoryEntry> allEntries = new List<DirectoryEntry>();
+                    allEntries.AddRange(storageReader.AllEntries);
+                    allEntries.Sort(
+                            delegate(DirectoryEntry a, DirectoryEntry b)
+                            { return a.Sid.CompareTo(b.Sid); }
+                        );
+
+                    foreach (DirectoryEntry entry in allEntries)
+                    {
+                        Console.WriteLine(entry.Sid + ":");
+                        Console.WriteLine("{0}: {1}", entry.Name, entry.LengthOfName);
+                        string hexName = "";
+                        for (int i = 0; i < entry.Name.Length; i++)
+                        {
+                            hexName += String.Format("{0:X2} ", (UInt32)entry.Name[i]);
+                        }
+                        Console.WriteLine("{0}", hexName);                        
+                        UInt32 left = entry.LeftSiblingSid;
+                        UInt32 right = entry.RightSiblingSid;
+                        UInt32 child = entry.ChildSiblingSid;
+                        Console.WriteLine("{0:X02}: Left: {2:X02}, Right: {3:X02}, Child: {4:X02}, Name: {1}, Color: {5}", entry.Sid, entry.Name, (left > 0xFF) ? 0xFF : left, (right > 0xFF) ? 0xFF : right, (child > 0xFF) ? 0xFF : child, entry.Color.ToString());
+                        Console.WriteLine("----------");
+                        Console.WriteLine("");
+                    }   
 
                     // create valid path names
-                    Dictionary<string, KeyValuePair<string,Guid> > pathNames1 = new Dictionary<string, KeyValuePair<string,Guid> >();
-                    foreach (DirectoryEntry entry in streamEntries)
+                    Dictionary<DirectoryEntry, KeyValuePair<string, Guid>> pathNames1 = new Dictionary<DirectoryEntry, KeyValuePair<string, Guid>>();
+                    foreach (DirectoryEntry entry in allEntries)
                     {
                         string name = entry.Path;
                         for (int i = 0; i < invalidChars.Length; i++)
                         {
                             name = name.Replace(invalidChars[i], '_');
                         }
-                        pathNames1.Add(entry.Path, new KeyValuePair<string,Guid>(name,entry.ClsId) );
+                        pathNames1.Add(entry, new KeyValuePair<string,Guid>(name,entry.ClsId) );
                     }
-                      
+
+ 
                     // Create Directory Structure
                     StructuredStorageWriter sso = new StructuredStorageWriter();
                     sso.RootDirectoryEntry.setClsId(storageReader.RootDirectoryEntry.ClsId);
-                    foreach (string key in pathNames1.Keys)
+                    foreach (DirectoryEntry entry in pathNames1.Keys)
                     {
+
                         StorageDirectoryEntry sde = sso.RootDirectoryEntry;
-                        string[] storages = key.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
+                        string[] storages = entry.Path.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
                         for (int i = 0; i < storages.Length; i++)
                         {
-                            if (i != storages.Length - 1)
+                            if (entry.Type == DirectoryEntryType.STGTY_ROOT)
+                            {
+                                continue;
+                            }
+                            if (entry.Type == DirectoryEntryType.STGTY_STORAGE || i < storages.Length - 1)
                             {
                                 StorageDirectoryEntry result = sde.AddStorageDirectoryEntry(storages[i]);
                                 sde = (result == null) ? sde : result;
-                                sde.setClsId(pathNames1[key].Value);
+                                if (i == storages.Length - 1)
+                                {
+                                    sde.setClsId(entry.ClsId);
+                                }
                                 continue;
                             }
-                            VirtualStream vstream = storageReader.GetStream(key);
+                            VirtualStream vstream = storageReader.GetStream(entry.Path);
                             sde.AddStreamDirectoryEntry(storages[i], vstream);
                         }
-                    }
+                    }                    
 
                     // Write sso to stream
                     MemoryStream myStream = new MemoryStream();                    
