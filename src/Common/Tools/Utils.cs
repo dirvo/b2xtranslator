@@ -74,7 +74,10 @@ namespace DIaLOGIKa.b2xtranslator.Tools
             byte[] stringBytes = new byte[cch];
             stream.Read(stringBytes, 0, stringBytes.Length);
 
-            return Encoding.ASCII.GetString(stringBytes, 0, stringBytes.Length - 1);
+            if (cch > 0)
+                return Encoding.ASCII.GetString(stringBytes, 0, stringBytes.Length - 1);
+            else
+                return null;
         }
 
         public static string ReadXstz(byte[] bytes, int pos)

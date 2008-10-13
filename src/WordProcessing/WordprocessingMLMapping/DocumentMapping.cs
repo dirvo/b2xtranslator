@@ -743,21 +743,31 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     {
                         _writer.WriteStartElement("w", "object", OpenXmlNamespaces.WordprocessingML);
 
+                        //an OLE object needs a reference to its shape.
+                        string shapeId = "";
+
                         int cpPic = searchNextTextMark(_doc.Text, cpFieldStart, TextMark.Picture);
                         int cpFieldSep = searchNextTextMark(_doc.Text, cpFieldStart, TextMark.FieldSeperator);
+
                         if (cpPic < cpFieldEnd)
                         {
                             int fcPic = _doc.PieceTable.FileCharacterPositions[cpPic];
                             CharacterPropertyExceptions chpxPic = _doc.GetCharacterPropertyExceptions(fcPic, fcPic + 1)[0];
                             PictureDescriptor pic = new PictureDescriptor(chpxPic, _doc.DataStream);
-                            pic.Convert(new VMLPictureMapping(_writer, this._targetPart));
-                        }
-                        if (cpFieldSep < cpFieldEnd)
-                        {
-                            int fcFieldSep = _doc.PieceTable.FileCharacterPositions[cpFieldSep];
-                            CharacterPropertyExceptions chpxSep = _doc.GetCharacterPropertyExceptions(fcFieldSep, fcFieldSep + 1)[0];
-                            OleObject ole = new OleObject(chpxSep, _doc.Storage);
-                            ole.Convert(new OleObjectMapping(_writer, _doc, _targetPart));
+
+                            //append the origin attributes
+                            _writer.WriteAttributeString("w", "dxaOrig", OpenXmlNamespaces.WordprocessingML, (pic.dxaGoal + pic.dxaOrigin).ToString());
+                            _writer.WriteAttributeString("w", "dyaOrig", OpenXmlNamespaces.WordprocessingML, (pic.dyaGoal + pic.dyaOrigin).ToString());
+
+                            pic.Convert(new VMLPictureMapping(_writer, this._targetPart, true));
+
+                            if (cpFieldSep < cpFieldEnd)
+                            {
+                                int fcFieldSep = _doc.PieceTable.FileCharacterPositions[cpFieldSep];
+                                CharacterPropertyExceptions chpxSep = _doc.GetCharacterPropertyExceptions(fcFieldSep, fcFieldSep + 1)[0];
+                                OleObject ole = new OleObject(chpxSep, _doc.Storage);
+                                ole.Convert(new OleObjectMapping(_writer, _doc, _targetPart, pic));
+                            }
                         }
 
                         _writer.WriteEndElement();
@@ -846,7 +856,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         _writer.WriteEndElement();
                         _writer.WriteStartElement("w", "pict", OpenXmlNamespaces.WordprocessingML);
 
-                        pict.Convert(new VMLPictureMapping(_writer, _targetPart));
+                        pict.Convert(new VMLPictureMapping(_writer, _targetPart, false));
 
                         _writer.WriteEndElement();
                         _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);

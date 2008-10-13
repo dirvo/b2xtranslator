@@ -38,6 +38,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
     public class OleObject : IVisitable
     {
+        public enum LinkUpdateOption
+        {
+            NoLink = 0,
+            Always = 1,
+            OnCall = 3
+        }
+
         public string ObjectId;
 
         public Guid ClassId;
@@ -62,6 +69,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         public string Link;
 
         public string Program;
+
+        public LinkUpdateOption UpdateMode;
 
         public Dictionary<string, VirtualStream> Streams;
 
@@ -167,6 +176,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 //read the embedded/linked flag
                 Int32 flag = reader.ReadInt32();
                 this.fLinked = Utils.BitmaskToBool(flag, 0x1);
+
+                //Link update option
+                this.UpdateMode = (LinkUpdateOption)reader.ReadInt32();
             }
             catch (StreamNotFoundException) { }
         }

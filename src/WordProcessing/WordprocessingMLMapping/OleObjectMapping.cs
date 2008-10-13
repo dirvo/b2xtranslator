@@ -44,12 +44,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
     {
         ContentPart _targetPart;
         WordDocument _doc;
+        PictureDescriptor _pict;
 
-        public OleObjectMapping(XmlWriter writer, WordDocument doc, ContentPart targetPart)
+        public OleObjectMapping(XmlWriter writer, WordDocument doc, ContentPart targetPart, PictureDescriptor pict)
             : base(writer)
         {
             _targetPart = targetPart;
             _doc = doc;
+            _pict = pict;
         }
 
         public void Apply(OleObject ole)
@@ -81,6 +83,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 ExternalRelationship rel = _targetPart.AddExternalRelationship(OpenXmlRelationshipTypes.OleObject, link);
                 _writer.WriteAttributeString("r", "id", OpenXmlNamespaces.Relationships, rel.Id);
                 _writer.WriteAttributeString("Type", "Link");
+                _writer.WriteAttributeString("UpdateMode", ole.UpdateMode.ToString());
             }
             else
             {
@@ -95,17 +98,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //ProgID
             _writer.WriteAttributeString("ProgID", ole.Program);
 
+            //ShapeId
+            _writer.WriteAttributeString("ShapeID", _pict.ShapeContainer.GetHashCode().ToString());
+
             //DrawAspect
             _writer.WriteAttributeString("DrawAspect", "Content");
 
             //ObjectID
             _writer.WriteAttributeString("ObjectID", ole.ObjectId);
 
-            //linking options
-            if (ole.fLinked)
-            {
-                _writer.WriteAttributeString("UpdateMode", "Always");
-            }
 
             _writer.WriteEndElement();
         }

@@ -20,11 +20,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
           IMapping<PictureDescriptor>
     {
         ContentPart _targetPart;
+        bool _olePreview;
 
-        public VMLPictureMapping(XmlWriter writer, ContentPart targetPart)
+        public VMLPictureMapping(XmlWriter writer, ContentPart targetPart, bool olePreview)
             : base(writer)
         {
             _targetPart = targetPart;
+            _olePreview = olePreview;
         }
 
         public void Apply(PictureDescriptor pict)
@@ -51,6 +53,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 style.Append("width:").Append(width.ToPoints()).Append("pt;");
                 style.Append("height:").Append(height.ToPoints()).Append("pt;");
                 _writer.WriteAttributeString("style", style.ToString());
+
+                _writer.WriteAttributeString("id", pict.ShapeContainer.GetHashCode().ToString());
+
+                if (_olePreview)
+                {
+                    _writer.WriteAttributeString("o", "ole", OpenXmlNamespaces.Office, "");
+                }
 
                 foreach (ShapeOptions.OptionEntry entry in options)
                 {
@@ -79,6 +88,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 //v:imageData
                 _writer.WriteStartElement("v", "imageData", OpenXmlNamespaces.VectorML);
                 _writer.WriteAttributeString("r", "id", OpenXmlNamespaces.Relationships, imgPart.RelIdToString);
+                _writer.WriteAttributeString("o", "title", OpenXmlNamespaces.Office, "");
                 _writer.WriteEndElement();
 
                 //borders
