@@ -55,6 +55,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         public void write(Stream outputStream)
         {
             _context.RootDirectoryEntry.RecursiveCreateRedBlackTrees();
+
             List<BaseDirectoryEntry> allEntries = _context.RootDirectoryEntry.RecursiveGetAllDirectoryEntries();
             allEntries.Sort(
                     delegate(BaseDirectoryEntry a, BaseDirectoryEntry b)
@@ -66,12 +67,15 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
             //    Console.WriteLine(entry.Sid + ":");
             //    Console.WriteLine("{0}: {1}", entry.Name, entry.LengthOfName);
             //    string hexName = "";
-            //    for(int i=0; i< entry.Name.Length; i++)
+            //    string hexNameL = "";
+            //    for (int i = 0; i < entry.Name.Length; i++)
             //    {
-            //        hexName += String.Format("{0:X2} ",(UInt32)entry.Name[i]);
+            //        hexName += String.Format("{0:X2} ", (UInt32)entry.Name[i]);
+            //        hexNameL += String.Format("{0:X2} ", (UInt32)entry.Name.ToLower()[i]);
             //    }
             //    Console.WriteLine("{0}", hexName);
-                                
+            //    Console.WriteLine("{0}", hexNameL);
+
             //    UInt32 left = entry.LeftSiblingSid;
             //    UInt32 right = entry.RightSiblingSid;
             //    UInt32 child = entry.ChildSiblingSid;

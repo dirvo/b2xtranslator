@@ -141,11 +141,12 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
 
         private UInt32 CreateRedBlackTree()
         {          
-            _allDirectoryEntries.Sort(
-                delegate(BaseDirectoryEntry a, BaseDirectoryEntry b) 
-                { return (a.Name.Length == b.Name.Length) ? a.Name.ToLower().CompareTo(b.Name.ToLower()) : a.Name.Length.CompareTo(b.Name.Length); }
-                );
+            //_allDirectoryEntries.Sort(
+            //    delegate(BaseDirectoryEntry a, BaseDirectoryEntry b) 
+            //    { return (a.Name.Length == b.Name.Length) ? a.Name.ToLower().CompareTo(b.Name.ToLower()) : a.Name.Length.CompareTo(b.Name.Length); }
+            //    );
 
+            _allDirectoryEntries.Sort(DirectoryEntryComparison);
 
             foreach (BaseDirectoryEntry entry in _allDirectoryEntries)
             {
@@ -187,7 +188,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
             {
                 entryList[middleIndex].RightSiblingSid = rightSubTree[rightmiddleIndex].Sid;
                 setRelationsAndColorRecursive(rightSubTree, treeHeight, treeLevel + 1);
-            }
+            }            
 
             return entryList[middleIndex].Sid;
         }
@@ -196,6 +197,27 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         private static int getMiddleIndex(List<BaseDirectoryEntry> list)
         {
             return (int)Math.Floor((list.Count - 1)/ 2.0);
+        }
+
+        protected int DirectoryEntryComparison(BaseDirectoryEntry a, BaseDirectoryEntry b)
+        {
+            if (a.Name.Length != b.Name.Length)
+            {
+                return a.Name.Length.CompareTo(b.Name.Length);
+            }
+
+            String aL = a.Name.ToLower();
+            String bL = b.Name.ToLower();
+
+            for (int i = 0; i < aL.Length; i++)
+            {
+                if ((UInt32)aL[i] != (UInt32)bL[i])
+                {
+                    return ((UInt32)aL[i]).CompareTo((UInt32)bL[i]);
+                }
+            }
+
+            return 0;
         }
     }
 }

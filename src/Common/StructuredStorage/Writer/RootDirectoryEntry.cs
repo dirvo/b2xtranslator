@@ -58,5 +58,6 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
             this.StartSector = virtualMiniStream.StartSector;
             this.SizeOfStream = virtualMiniStream.Length;
         }
+
     }
 }
