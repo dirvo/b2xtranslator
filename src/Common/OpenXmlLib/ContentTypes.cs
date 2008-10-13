@@ -47,6 +47,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string CustomXmlProperties = "application/vnd.openxmlformats-officedocument.customXmlProperties+xml";
 
         public const string OleObject = "application/vnd.openxmlformats-officedocument.oleObject";
+        public const string VbaProject = "application/vnd.ms-office.vbaProject";
+        public const string VbaData = "application/vnd.ms-word.vbaData+xml";
 
         public const string MSExcel = "application/vnd.ms-excel";
         public const string MSWord = "application/msword";
@@ -57,6 +59,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
     {
         // WordprocessingML content types
         public const string MainDocument = "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml";
+        public const string MainDocumentMacro = "application/vnd.ms-word.document.macroEnabled.main+xml";
+
         public const string Styles = "application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml";
         public const string Numbering = "application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml";
         public const string FontTable = "application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml";
@@ -111,6 +115,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string WordprocessingML = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
         public const string WordprocessingDrawingML = "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing";
         public const string VectorML = "urn:schemas-microsoft-com:vml";
+        public const string MicrosoftWordML = "http://schemas.microsoft.com/office/word/2006/wordml";
 
         // PresentationML namespaces
         public const string PresentationML = "http://schemas.openxmlformats.org/presentationml/2006/main";
@@ -152,6 +157,9 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string Image = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image";
 
         public const string OleObject = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject";
+
+        public const string VbaProject = "http://schemas.microsoft.com/office/2006/relationships/vbaProject";
+        public const string VbaData = "http://schemas.microsoft.com/office/2006/relationships/wordVbaData";
 
         // PresentationML
         public const string SlideLayout = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout";

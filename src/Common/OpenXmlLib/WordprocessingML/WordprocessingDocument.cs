@@ -48,7 +48,22 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
         protected WordprocessingDocument(string fileName, WordprocessingDocumentType type)
             : base(fileName)
         {
-            _mainDocumentPart = new MainDocumentPart(this);
+            switch (type)
+            {
+                case WordprocessingDocumentType.Document:
+                    _mainDocumentPart = new MainDocumentPart(this, WordprocessingMLContentTypes.MainDocument);
+                    break;
+                case WordprocessingDocumentType.MacroEnabledDocument:
+                    _mainDocumentPart = new MainDocumentPart(this, WordprocessingMLContentTypes.MainDocumentMacro);
+                    break;
+                case WordprocessingDocumentType.MacroEnabledTemplate:
+                    _mainDocumentPart = new MainDocumentPart(this, WordprocessingMLContentTypes.MainDocument);
+                    break;
+                case WordprocessingDocumentType.Template:
+                    _mainDocumentPart = new MainDocumentPart(this, WordprocessingMLContentTypes.MainDocument);
+                    break;
+            }
+            
             _documentType = type;
             this.AddPart(_mainDocumentPart);
         }

@@ -108,6 +108,8 @@
     <Compile Include="ClientTextbox.cs" />
     <Compile Include="AnnotationReferenceDescriptor.cs" />
     <Compile Include="FormFieldData.cs" />
+    <Compile Include="CommandTable.cs" />
+    <Compile Include="MacroData.cs" />
     <Compile Include="NilPicfAndBinData.cs" />
     <Compile Include="OfficeArtContent.cs" />
     <Compile Include="FileShapeAddress.cs" />

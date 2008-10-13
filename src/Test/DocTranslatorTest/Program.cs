@@ -59,50 +59,16 @@ namespace DocTranslatorTest
             //starting
             if (!doc.FIB.fComplex)
             {
-                using (WordprocessingDocument docx = WordprocessingDocument.Create(file + "x", WordprocessingDocumentType.Document))
-                {
-                    //Setup the writer
-                    XmlWriterSettings xws = new XmlWriterSettings();
-                    xws.OmitXmlDeclaration = false;
-                    xws.CloseOutput = true;
-                    xws.Encoding = Encoding.UTF8;
-                    xws.ConformanceLevel = ConformanceLevel.Document;
-
-                    //Build the context
-                    ConversionContext context = new ConversionContext(doc);
-                    context.WriterSettings = xws;
-                    context.Docx = docx;
-
-                    //write styles.xml
-                    doc.Styles.Convert(new StyleSheetMapping(context));
-
-                    //write numbering.xml
-                    doc.ListTable.Convert(new NumberingMapping(context));
-
-                    //write fontTable.xml
-                    doc.FontTable.Convert(new FontTableMapping(context));
-
-                    //write document.xml and the header and footers
-                    doc.Convert(new MainDocumentMapping(context));
-
-                    //write the footnotes
-                    doc.Convert(new FootnotesMapping(context));
-
-                    //write the comments
-                    doc.Convert(new CommentsMapping(context));
-
-                    //write settings.xml at last because of the rsid list
-                    doc.DocumentProperties.Convert(new SettingsMapping(context));
-
-                    DateTime end = DateTime.Now;
-                    TimeSpan diff = end.Subtract(start);
-                    Console.WriteLine("Conversion finished in "  + diff.TotalSeconds + " seconds");
-                }
+                Converter.Convert(doc, file + "x");
             }
             else
             {
                 Console.WriteLine(file + " has been fast-saved. This format is currently not supported.");
             }
+
+            DateTime end = DateTime.Now;
+            TimeSpan diff = end.Subtract(start);
+            Console.WriteLine("Conversion finished in " + diff.TotalSeconds + " seconds");
 
             reader.Close();
         }

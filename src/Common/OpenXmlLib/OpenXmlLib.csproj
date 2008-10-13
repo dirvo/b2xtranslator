@@ -48,6 +48,8 @@
     <Compile Include="SpreadsheetML\ExternalLinkPart.cs" />
     <Compile Include="SpreadsheetML\SharedStringPart.cs" />
     <Compile Include="SpreadsheetML\WorksheetPart.cs" />
+    <Compile Include="VbaDataPart.cs" />
+    <Compile Include="VbaProjectPart.cs" />
     <Compile Include="WordprocessingML\CommentsPart.cs" />
     <Compile Include="ContentTypes.cs" />
     <Compile Include="CorePropertiesPart.cs" />

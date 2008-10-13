@@ -47,6 +47,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public PieceTable PieceTable;
 
+        public CommandTable CommandTable;
+
         /// <summary>
         /// A Plex containing all section descriptors
         /// </summary>
@@ -229,6 +231,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.OfficeArtContent = new OfficeArtContent(this.FIB, this.TableStream);
             this.HeaderAndFooterTable = new HeaderAndFooterTable(this);
             this.AnnotationReferenceExtraTable = new AnnotationReferenceExtraTable(this.FIB, this.TableStream);
+            this.CommandTable = new CommandTable(this.FIB, this.TableStream);
 
             //parse the piece table and construct a list that contains all chars
             this.PieceTable = new PieceTable(this.FIB, this.TableStream);

@@ -4,6 +4,7 @@ using System.Text;
 using DIaLOGIKa.b2xtranslator.DocFileFormat;
 using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
@@ -11,7 +12,21 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
     {
         public static void Convert(WordDocument doc, string outputFilename)
         {
-            using (WordprocessingDocument docx = WordprocessingDocument.Create(outputFilename, WordprocessingDocumentType.Document))
+            ConversionContext context = new ConversionContext(doc);
+            WordprocessingDocument docx = null;
+
+            if (doc.CommandTable.MacroDatas.Count > 0)
+            {
+                //macro enabled document
+                docx = WordprocessingDocument.Create(outputFilename.Replace(".docx", ".docm"), WordprocessingDocumentType.MacroEnabledDocument);
+            }
+            else
+            {
+                //normal document
+                docx = WordprocessingDocument.Create(outputFilename, WordprocessingDocumentType.Document);
+            }
+
+            using (docx)
             {
                 //Setup the writer
                 XmlWriterSettings xws = new XmlWriterSettings();
@@ -21,9 +36,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 xws.ConformanceLevel = ConformanceLevel.Document;
 
                 //Setup the context
-                ConversionContext context = new ConversionContext(doc);
                 context.WriterSettings = xws;
                 context.Docx = docx;
+
+                //convert the macros
+                if (docx.DocumentType == WordprocessingDocumentType.MacroEnabledDocument)
+                {
+                    doc.Convert(new MacroBinaryMapping(context));
+                    doc.Convert(new MacroDataMapping(context));
+                }
 
                 //Write styles.xml
                 doc.Styles.Convert(new StyleSheetMapping(context));

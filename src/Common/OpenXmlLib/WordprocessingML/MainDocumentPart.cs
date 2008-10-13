@@ -39,16 +39,20 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
         protected SettingsPart _settingsPart;
         protected FootnotesPart _footnotesPart;
         protected CommentsPart _commentsPart;
+        protected VbaProjectPart _vbaProjectPart;
 
         protected int _headerPartCount = 0;
         protected int _footerPartCount = 0;
+
+        private string _contentType = WordprocessingMLContentTypes.MainDocument;
         
-        public MainDocumentPart(OpenXmlPartContainer parent)
+        public MainDocumentPart(OpenXmlPartContainer parent, string contentType)
             : base(parent)
         {
+            _contentType = contentType;
         }
 
-        public override string ContentType { get { return WordprocessingMLContentTypes.MainDocument; } }
+        public override string ContentType { get { return _contentType; } }
         public override string RelationshipType { get { return OpenXmlRelationshipTypes.OfficeDocument; } }
         public override string TargetName { get { return "document"; } }
         public override string TargetDirectory { get { return "word"; } }
@@ -130,6 +134,18 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
                     this.AddPart(_commentsPart);
                 }
                 return _commentsPart;
+            }
+        }
+
+        public VbaProjectPart VbaProjectPart
+        {
+            get 
+            {
+                if(_vbaProjectPart == null)
+                {
+                    _vbaProjectPart = this.AddPart(new VbaProjectPart(this));
+                }
+                return _vbaProjectPart;
             }
         }
 

@@ -50,11 +50,19 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         private Encoding _enc;
 
+        public StringTable(Type dataType, VirtualStreamReader reader)
+        {
+            parse(dataType, reader, (UInt32)reader.BaseStream.Position);
+        }
+
         public StringTable(Type dataType, VirtualStream tableStream, UInt32 fc, UInt32 lcb)
         {
             tableStream.Seek((long)fc, System.IO.SeekOrigin.Begin);
-            VirtualStreamReader reader = new VirtualStreamReader(tableStream);
+            parse(dataType, new VirtualStreamReader(tableStream), fc);
+        }
 
+        private void parse(Type dataType, VirtualStreamReader reader, UInt32 fc)
+        {
             //read fExtend
             if (reader.ReadUInt16() == 0xFFFF)
             {
@@ -68,11 +76,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 //seek back to the beginning
                 this.fExtend = false;
                 _enc = Encoding.ASCII;
-                tableStream.Seek((long)fc, System.IO.SeekOrigin.Begin);
+                reader.BaseStream.Seek((long)fc, System.IO.SeekOrigin.Begin);
             }
 
             //read cData
-            long cDataStart = tableStream.Position;
+            long cDataStart = reader.BaseStream.Position;
             UInt16 c = reader.ReadUInt16();
             if (c != 0xFFFF)
             {
@@ -82,7 +90,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             else
             {
                 //cData is a 4byte signed Integer, so we need to seek back
-                tableStream.Seek((long)fc + cDataStart, System.IO.SeekOrigin.Begin);
+                reader.BaseStream.Seek((long)fc + cDataStart, System.IO.SeekOrigin.Begin);
                 this.cData = reader.ReadInt32();
             }
 
