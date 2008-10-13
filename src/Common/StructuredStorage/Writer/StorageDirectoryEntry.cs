@@ -206,14 +206,14 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
                 return a.Name.Length.CompareTo(b.Name.Length);
             }
 
-            String aL = a.Name.ToLower();
-            String bL = b.Name.ToLower();
+            String aU = a.Name.ToUpper();
+            String bU = b.Name.ToUpper();
 
-            for (int i = 0; i < aL.Length; i++)
+            for (int i = 0; i < aU.Length; i++)
             {
-                if ((UInt32)aL[i] != (UInt32)bL[i])
+                if ((UInt32)aU[i] != (UInt32)bU[i])
                 {
-                    return ((UInt32)aL[i]).CompareTo((UInt32)bL[i]);
+                    return ((UInt32)aU[i]).CompareTo((UInt32)bU[i]);
                 }
             }
 

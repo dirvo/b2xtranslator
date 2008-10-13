@@ -67,14 +67,14 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
             //    Console.WriteLine(entry.Sid + ":");
             //    Console.WriteLine("{0}: {1}", entry.Name, entry.LengthOfName);
             //    string hexName = "";
-            //    string hexNameL = "";
+            //    string hexNameU = "";
             //    for (int i = 0; i < entry.Name.Length; i++)
             //    {
             //        hexName += String.Format("{0:X2} ", (UInt32)entry.Name[i]);
-            //        hexNameL += String.Format("{0:X2} ", (UInt32)entry.Name.ToLower()[i]);
+            //        hexNameU += String.Format("{0:X2} ", (UInt32)entry.Name.ToUpper()[i]);
             //    }
             //    Console.WriteLine("{0}", hexName);
-            //    Console.WriteLine("{0}", hexNameL);
+            //    Console.WriteLine("{0}", hexNameU);
 
             //    UInt32 left = entry.LeftSiblingSid;
             //    UInt32 right = entry.RightSiblingSid;
