@@ -204,64 +204,67 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         {
             int pos = 0;
             this.version = System.BitConverter.ToUInt32(bytes, pos);
-            pos += 4;
 
-            int bits = (int)System.BitConverter.ToUInt16(bytes, pos);
-            this.iType = (FormFieldType)Utils.BitmaskToInt(bits, 0x3);
-            this.iRes = (UInt16)Utils.BitmaskToInt(bits, 0x7C);
-            this.fOwnHelp = Utils.BitmaskToBool(bits, 0x80);
-            this.fOwnStat = Utils.BitmaskToBool(bits, 0x100);
-            this.fProt = Utils.BitmaskToBool(bits, 0x200);
-            this.iSize = (byte)Utils.BitmaskToInt(bits, 0x400);
-            this.iTypeTxt = (TextboxType)Utils.BitmaskToInt(bits, 0x3800);
-            this.fRecalc = Utils.BitmaskToBool(bits, 0x4000);
-            this.fHasListBox = Utils.BitmaskToBool(bits, 0x8000);
-            pos += 2;
-
-            this.cch = System.BitConverter.ToUInt16(bytes, pos);
-            pos += 2;
-
-            this.hps = System.BitConverter.ToUInt16(bytes, pos);
-            pos += 2;
-
-            //read the name
-            this.xstzName = Utils.ReadXstz(bytes, pos);
-            pos += (this.xstzName.Length * 2) + 2 + 2;
-
-            //read text def
-            if (this.iType == FormFieldType.iTypeText)
+            if (this.version == 0xFFFFFFFF)
             {
-                this.xstzTextDef = Utils.ReadXstz(bytes, pos);
-                pos += (this.xstzTextDef.Length * 2) + 2 + 2;
-            }
+                pos += 4;
 
-            //definition
-            if (this.iType == FormFieldType.iTypeChck || this.iType == FormFieldType.iTypeDrop)
-            {
-                this.wDef = System.BitConverter.ToUInt16(bytes, pos);
+                int bits = (int)System.BitConverter.ToUInt16(bytes, pos);
+                this.iType = (FormFieldType)Utils.BitmaskToInt(bits, 0x3);
+                this.iRes = (UInt16)Utils.BitmaskToInt(bits, 0x7C);
+                this.fOwnHelp = Utils.BitmaskToBool(bits, 0x80);
+                this.fOwnStat = Utils.BitmaskToBool(bits, 0x100);
+                this.fProt = Utils.BitmaskToBool(bits, 0x200);
+                this.iSize = (byte)Utils.BitmaskToInt(bits, 0x400);
+                this.iTypeTxt = (TextboxType)Utils.BitmaskToInt(bits, 0x3800);
+                this.fRecalc = Utils.BitmaskToBool(bits, 0x4000);
+                this.fHasListBox = Utils.BitmaskToBool(bits, 0x8000);
                 pos += 2;
+
+                this.cch = System.BitConverter.ToUInt16(bytes, pos);
+                pos += 2;
+
+                this.hps = System.BitConverter.ToUInt16(bytes, pos);
+                pos += 2;
+
+                //read the name
+                this.xstzName = Utils.ReadXstz(bytes, pos);
+                pos += (this.xstzName.Length * 2) + 2 + 2;
+
+                //read text def
+                if (this.iType == FormFieldType.iTypeText)
+                {
+                    this.xstzTextDef = Utils.ReadXstz(bytes, pos);
+                    pos += (this.xstzTextDef.Length * 2) + 2 + 2;
+                }
+
+                //definition
+                if (this.iType == FormFieldType.iTypeChck || this.iType == FormFieldType.iTypeDrop)
+                {
+                    this.wDef = System.BitConverter.ToUInt16(bytes, pos);
+                    pos += 2;
+                }
+
+                //read the text format
+                this.xstzTextFormat = Utils.ReadXstz(bytes, pos);
+                pos += (this.xstzTextFormat.Length * 2) + 2 + 2;
+
+                //read the help test
+                this.xstzHelpText = Utils.ReadXstz(bytes, pos);
+                pos += (this.xstzHelpText.Length * 2) + 2 + 2;
+
+                //read the status
+                this.xstzStatText = Utils.ReadXstz(bytes, pos);
+                pos += (this.xstzStatText.Length * 2) + 2 + 2;
+
+                //read the entry macro
+                this.xstzEntryMcr = Utils.ReadXstz(bytes, pos);
+                pos += (this.xstzEntryMcr.Length * 2) + 2 + 2;
+
+                //read the exit macro
+                this.xstzExitMcr = Utils.ReadXstz(bytes, pos);
+                pos += (this.xstzExitMcr.Length * 2) + 2 + 2;
             }
-
-            //read the text format
-            this.xstzTextFormat = Utils.ReadXstz(bytes, pos);
-            pos += (this.xstzTextFormat.Length * 2) + 2 + 2;
-
-            //read the help test
-            this.xstzHelpText = Utils.ReadXstz(bytes, pos);
-            pos += (this.xstzHelpText.Length * 2) + 2 + 2;
-
-            //read the status
-            this.xstzStatText = Utils.ReadXstz(bytes, pos);
-            pos += (this.xstzStatText.Length * 2) + 2 + 2;
-
-            //read the entry macro
-            this.xstzEntryMcr = Utils.ReadXstz(bytes, pos);
-            pos += (this.xstzEntryMcr.Length * 2) + 2 + 2;
-
-            //read the exit macro
-            this.xstzExitMcr = Utils.ReadXstz(bytes, pos);
-            pos += (this.xstzExitMcr.Length * 2) + 2 + 2;
-
         }
 
         public enum FormFieldType

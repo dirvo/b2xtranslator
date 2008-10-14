@@ -54,6 +54,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         protected int _sectionNr = 0;
         protected int _footnoteNr = 0;
         protected int _commentNr = 0;
+        protected bool _writeInstrText = false;
         protected ContentPart _targetPart;
 
         private class Symbol
@@ -72,7 +73,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             _ctx = ctx;
             _targetPart = targetPart;
-            Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+            //Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
         }
 
         /// <summary>
@@ -85,7 +86,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             _ctx = ctx;
             _targetPart = targetPart;
-            Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+            //Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
         }
 
         public abstract void Apply(WordDocument doc);
@@ -718,7 +719,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             string textType = "t";
             if(writeDeletedText)
                 textType = "delText";
-
+            else if(_writeInstrText)
+                textType = "instrText";
+ 
             //open a new w:t element
             _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
             if ((int)chars[0] == 32 || (int)chars[chars.Count - 1] == 32)
@@ -834,13 +837,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     }
                     else
                     {
-
                         _writer.WriteStartElement("w", "fldChar", OpenXmlNamespaces.WordprocessingML);
                         _writer.WriteAttributeString("w", "fldCharType", OpenXmlNamespaces.WordprocessingML, "begin");
                         _writer.WriteEndElement();
                     }
 
-                    _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
+                    _writeInstrText = true;
+
+                    _writer.WriteStartElement("w", "instrText", OpenXmlNamespaces.WordprocessingML);
                 }
                 else if (c == TextMark.FieldSeperator)
                 {
@@ -862,7 +866,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     _writer.WriteAttributeString("w", "fldCharType", OpenXmlNamespaces.WordprocessingML, "end");
                     _writer.WriteEndElement();
 
-                    _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
+                    _writeInstrText = false;
+
+                    _writer.WriteStartElement("w", "t", OpenXmlNamespaces.WordprocessingML);
                 }
                 else if (c == TextMark.Symbol && fSpec)
                 {
