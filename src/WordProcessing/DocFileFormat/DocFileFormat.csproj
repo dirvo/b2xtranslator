@@ -102,6 +102,7 @@
     <Compile Include="AnnotationReferenceDescriptorExtra.cs" />
     <Compile Include="AnnotationReferenceExtraTable.cs" />
     <Compile Include="AuthorTable.cs" />
+    <Compile Include="BookmarkFirst.cs" />
     <Compile Include="BreakDescriptor.cs" />
     <Compile Include="CharacterProperties.cs" />
     <Compile Include="ClientData.cs" />

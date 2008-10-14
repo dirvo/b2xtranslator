@@ -124,8 +124,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                                 f += multi;
                             }
                         }
-                        this.FileCharacterPositions.Add(this.FileCharacterPositions.Count, fib.fcMac);
-                        this.CharacterPositions.Add(fib.fcMac, this.FileCharacterPositions.Count);
+                        int maxCp = this.FileCharacterPositions.Count;
+                        this.FileCharacterPositions.Add(maxCp, fib.fcMac);
+                        this.CharacterPositions.Add(fib.fcMac, maxCp);
 
                         //piecetable was found
                         goon = false;

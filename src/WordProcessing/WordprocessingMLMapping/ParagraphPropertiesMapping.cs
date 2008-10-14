@@ -315,10 +315,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         break;
                     case SinglePropertyModifier.OperationCode.sprmPIlfo:
                         UInt16 val  = System.BitConverter.ToUInt16(sprm.Arguments, 0);
-                        if(val >= 0x0001 && val <= 0x07FE)
-                            appendValueElement(numPr, "numId", val.ToString(), true);
-                        else if (val >= 0xF802 && val <= 0xFFFF)
-                            appendValueElement(numPr, "numId", (val*-1).ToString(), true);
+                        appendValueElement(numPr, "numId", val.ToString(), true);
 
                         ////check if there is a ilvl reference, if not, check the count of LVLs.
                         ////if only one LVL exists in the referenced list, create a hard reference to that LVL

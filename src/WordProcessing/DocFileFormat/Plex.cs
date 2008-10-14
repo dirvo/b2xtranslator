@@ -45,7 +45,17 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             tableStream.Seek((long)fc, System.IO.SeekOrigin.Begin);
             VirtualStreamReader reader = new VirtualStreamReader(tableStream);
 
-            int n = ((int)lcb - CP_LENGTH) / (structureLength + CP_LENGTH);
+            int n = 0;
+            if(structureLength > 0)
+            {
+                //this PLEX contains CPs and Elements
+                n = ((int)lcb - CP_LENGTH) / (structureLength + CP_LENGTH);
+            }
+            else
+            {
+                //this PLEX only contains CPs
+                n = ((int)lcb - CP_LENGTH) / CP_LENGTH;
+            }
 
             //read the n + 1 CPs
             this.CharacterPositions = new List<Int32>();
@@ -55,12 +65,15 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             }
 
             //read the n structs
-            this.Elements = new List<ByteStructure>(); 
-            for (int i = 0; i < n; i++)
+            if (elementType != null && structureLength > 0)
             {
-                ConstructorInfo constructor = elementType.GetConstructor(new Type[] { typeof(VirtualStreamReader), typeof(int) });
-                ByteStructure st = (ByteStructure)constructor.Invoke(new object[] { reader, structureLength });
-                this.Elements.Add(st);
+                this.Elements = new List<ByteStructure>();
+                for (int i = 0; i < n; i++)
+                {
+                    ConstructorInfo constructor = elementType.GetConstructor(new Type[] { typeof(VirtualStreamReader), typeof(int) });
+                    ByteStructure st = (ByteStructure)constructor.Invoke(new object[] { reader, structureLength });
+                    this.Elements.Add(st);
+                }
             }
         }
 

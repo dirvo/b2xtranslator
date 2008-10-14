@@ -99,6 +99,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public StringTable FontTable;
 
+        public StringTable BookmarkNames;
+
         /// <summary>
         /// A plex with all ATRDPre10 structs
         /// </summary>
@@ -139,6 +141,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// Describes the breaks inside the header textbox subdocument
         /// </summary>
         public Plex TextboxBreakPlexHeader;
+
+        public Plex BookmarkStartPlex;
+        public Plex BookmarkEndPlex;
 
         /// <summary>
         /// The DocumentProperties of the word document
@@ -210,6 +215,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             //Read all needed STTBs
             this.AuthorTable = new StringTable(typeof(String), this.TableStream, this.FIB.fcSttbfRMark, this.FIB.lcbSttbfRMark);
             this.FontTable = new StringTable(typeof(FontFamilyName), this.TableStream, this.FIB.fcSttbfFfn, this.FIB.lcbSttbfFfn);
+            this.BookmarkNames = new StringTable(typeof(String), this.TableStream, this.FIB.fcSttbfBkmk, this.FIB.lcbSttbfBkmk);
 
             //Read all needed PLCFs
             this.AnnotationsReferencePlex = new Plex(typeof(AnnotationReferenceDescriptor), 30, this.TableStream, this.FIB.fcPlcfandRef, this.FIB.lcbPlcfandRef);
@@ -218,6 +224,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.OfficeDrawingPlex = new Plex(typeof(FileShapeAddress), 26, this.TableStream, this.FIB.fcPlcSpaMom, this.FIB.lcbPlcSpaMom);
             this.OfficeDrawingPlexHeader = new Plex(typeof(FileShapeAddress), 26, this.TableStream, this.FIB.fcPlcSpaHdr, this.FIB.lcbPlcSpaHdr);
             this.SectionPlex = new Plex(typeof(SectionDescriptor), 12, this.TableStream, this.FIB.fcPlcfSed, this.FIB.lcbPlcfSed);
+            this.BookmarkStartPlex = new Plex(typeof(BookmarkFirst), 4, this.TableStream, this.FIB.fcPlcfBkf, this.FIB.lcbPlcfBkf);
+            this.BookmarkEndPlex = new Plex(null, 0, this.TableStream, this.FIB.fcPlcfBkl, this.FIB.lcbPlcfBkl);
 
             //read the FKPs
             this.AllPapxFkps = FormattedDiskPagePAPX.GetAllPAPXFKPs(this.FIB, this.WordDocumentStream, this.TableStream, this.DataStream);

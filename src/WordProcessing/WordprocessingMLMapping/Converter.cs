@@ -15,7 +15,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             ConversionContext context = new ConversionContext(doc);
             WordprocessingDocument docx = null;
 
-            if (doc.CommandTable.MacroDatas.Count > 0)
+            if (doc.CommandTable.MacroDatas != null)
             {
                 //macro enabled document
                 docx = WordprocessingDocument.Create(outputFilename.Replace(".docx", ".docm"), WordprocessingDocumentType.MacroEnabledDocument);

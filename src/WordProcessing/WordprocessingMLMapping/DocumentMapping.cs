@@ -547,7 +547,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 papx.Convert(new ParagraphPropertiesMapping(_writer, _ctx, paraEndChpx));
             }
 
-            //write a run for each CHPX
+            //write a runs for each CHPX
             for (int i = 0; i < chpxs.Count; i++)
             {
                 //get the FC range for this run
@@ -571,8 +571,55 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 //read the chars that are formatted via this CHPX
                 List<char> chpxChars = _doc.PieceTable.GetChars(fcChpxStart, fcChpxEnd, _doc.WordDocumentStream);
 
-                //write the run
-                if (chpxChars.Count > 0)
+                //search for bookmarks in the chars
+                List<int> bookmarks = searchBookmarks(chpxChars, cp);
+
+                //if there are bookmarks in this run, split the run into several runs
+                if (bookmarks.Count > 0)
+                {
+                    List<List<char>> runs = splitCharList(chpxChars, bookmarks);
+                    for (int s = 0; s < runs.Count; s++)
+                    {
+                        if (_doc.BookmarkStartPlex.CharacterPositions.Contains(cp) &&
+                            _doc.BookmarkEndPlex.CharacterPositions.Contains(cp))
+                        {
+                            //there start and end bookmarks here
+
+                            //so get all bookmarks that end here
+                            for (int b = 0; b < _doc.BookmarkEndPlex.CharacterPositions.Count; b++)
+                            {
+                                if (_doc.BookmarkEndPlex.CharacterPositions[b] == cp)
+                                {
+                                    //and check if the matching start bookmark also starts here
+                                    if (_doc.BookmarkStartPlex.CharacterPositions[b] == cp)
+                                    {
+                                        //then write a start and a end
+                                        writeBookmarkStart((BookmarkFirst)_doc.BookmarkStartPlex.Elements[b]);
+                                        writeBookmarkEnd((BookmarkFirst)_doc.BookmarkStartPlex.Elements[b]);
+                                    }
+                                    else
+                                    {
+                                        //write a end
+                                        writeBookmarkEnd((BookmarkFirst)_doc.BookmarkStartPlex.Elements[b]);
+                                    }
+                                }
+                            }
+
+                            writeBookmarkStarts(cp);
+                        }
+                        else if (_doc.BookmarkStartPlex.CharacterPositions.Contains(cp))
+                        {
+                            writeBookmarkStarts(cp);
+                        }
+                        else if (_doc.BookmarkEndPlex.CharacterPositions.Contains(cp))
+                        {
+                            writeBookmarkEnds(cp);
+                        }
+
+                        cp = writeRun(runs[s], chpxs[i], cp);
+                    }
+                }
+                else
                 {
                     cp = writeRun(chpxChars, chpxs[i], cp);
                 }
@@ -591,7 +638,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             Int32 cp = initialCp;
 
-            if (_skipRuns <= 0)
+            if (_skipRuns <= 0 && chars.Count > 0)
             {
                 RevisionData rev = new RevisionData(chpx);
 
@@ -656,6 +703,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             return cp + chars.Count;
         }
+
 
         /// <summary>
         /// Writes the given text to the document
@@ -742,9 +790,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     else if (f.FieldCode.StartsWith(" EMBED") || f.FieldCode.StartsWith(" LINK"))
                     {
                         _writer.WriteStartElement("w", "object", OpenXmlNamespaces.WordprocessingML);
-
-                        //an OLE object needs a reference to its shape.
-                        string shapeId = "";
 
                         int cpPic = searchNextTextMark(_doc.Text, cpFieldStart, TextMark.Picture);
                         int cpFieldSep = searchNextTextMark(_doc.Text, cpFieldStart, TextMark.FieldSeperator);
@@ -914,9 +959,106 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _writer.WriteEndElement();
         }
 
+
+        /// <summary>
+        /// Writes a bookmark start element at the given position
+        /// </summary>
+        /// <param name="cp"></param>
+        protected void writeBookmarkStarts(Int32 cp)
+        {
+            for (int b = 0; b < _doc.BookmarkStartPlex.CharacterPositions.Count; b++)
+            {
+                if (_doc.BookmarkStartPlex.CharacterPositions[b] == cp)
+                {
+                    writeBookmarkStart((BookmarkFirst)_doc.BookmarkStartPlex.Elements[b]);
+                }
+            }
+        }
+
+        protected void writeBookmarkStart(BookmarkFirst bookmark)
+        {
+            //write bookmark start
+            _writer.WriteStartElement("w", "bookmarkStart", OpenXmlNamespaces.WordprocessingML);
+            _writer.WriteAttributeString("w", "id", OpenXmlNamespaces.WordprocessingML, bookmark.ibkl.ToString());
+            _writer.WriteAttributeString("w", "name", OpenXmlNamespaces.WordprocessingML, _doc.BookmarkNames.Strings[bookmark.ibkl]);
+            _writer.WriteEndElement();
+        }
+
+        /// <summary>
+        /// Writes a bookmark end element at the given position
+        /// </summary>
+        /// <param name="cp"></param>
+        protected void writeBookmarkEnds(Int32 cp)
+        {
+            //write all bookmark ends
+            for (int b = 0; b < _doc.BookmarkEndPlex.CharacterPositions.Count; b++)
+            {
+                if (_doc.BookmarkEndPlex.CharacterPositions[b] == cp)
+                {
+                    writeBookmarkEnd((BookmarkFirst)_doc.BookmarkStartPlex.Elements[b]);
+                }
+            }          
+        }
+
+        protected void writeBookmarkEnd(BookmarkFirst bookmark)
+        {
+            //write bookmark end
+            _writer.WriteStartElement("w", "bookmarkEnd", OpenXmlNamespaces.WordprocessingML);
+            _writer.WriteAttributeString("w", "id", OpenXmlNamespaces.WordprocessingML, bookmark.ibkl.ToString());
+            _writer.WriteEndElement();
+        }
+
         #endregion
 
         #region HelpFunctions
+
+        /// <summary>
+        /// Splits a list of characters into several lists
+        /// </summary>
+        /// <returns></returns>
+        protected List<List<char>> splitCharList(List<char> chars, List<int> splitIndices)
+        {
+            List<List<char>> ret = new List<List<char>>();
+
+            int startIndex = 0;
+
+            //add the parts
+            for (int i = 0; i < splitIndices.Count; i++)
+            {
+                int cch = splitIndices[i] - startIndex;
+                if (cch > 0)
+                {
+                    ret.Add(chars.GetRange(startIndex, cch));
+                }
+                startIndex += cch;
+            }
+
+            //add the last part
+            ret.Add(chars.GetRange(startIndex, chars.Count-startIndex));
+
+            return ret;
+        }
+
+        /// <summary>
+        /// Searches for bookmarks in the list of characters.
+        /// </summary>
+        /// <param name="chars"></param>
+        /// <returns>A List with all bookmarks indices in the given character list</returns>
+        protected List<Int32> searchBookmarks(List<char> chars, Int32 initialCp)
+        {
+            List<Int32> ret = new List<int>();
+            Int32 cp = initialCp;
+            for (int i = 0; i < chars.Count; i++)
+            {
+                if (_doc.BookmarkStartPlex.CharacterPositions.Contains(cp) ||
+                    _doc.BookmarkEndPlex.CharacterPositions.Contains(cp))
+                {
+                    ret.Add(i);
+                }
+                cp++;
+            }
+            return ret;
+        }
 
         /// <summary>
         /// Searches the given List for the next FieldEnd character.
