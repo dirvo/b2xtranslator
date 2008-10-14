@@ -739,7 +739,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 }
                 else if (c == TextMark.HardLineBreak)
                 {
+                    //close previous w:t ...
+                    _writer.WriteEndElement();
                     _writer.WriteElementString("w", "br", OpenXmlNamespaces.WordprocessingML, "");
+                    _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
                 }
                 else if (c == TextMark.ParagraphEnd)
                 {
@@ -750,16 +753,26 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //write page break, section breaks are written by writeParagraph() method
                     if (!isSectionEnd(cp))
                     {
+                        //close previous w:t ...
+                        _writer.WriteEndElement();
+
                         _writer.WriteStartElement("w", "br", OpenXmlNamespaces.WordprocessingML);
                         _writer.WriteAttributeString("w", "type", OpenXmlNamespaces.WordprocessingML, "page");
                         _writer.WriteEndElement();
+
+                        _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
                     }
                 }
                 else if (c == TextMark.ColumnBreak)
                 {
+                    //close previous w:t ...
+                    _writer.WriteEndElement();
+
                     _writer.WriteStartElement("w", "br", OpenXmlNamespaces.WordprocessingML);
                     _writer.WriteAttributeString("w", "type", OpenXmlNamespaces.WordprocessingML, "column");
                     _writer.WriteEndElement();
+
+                    _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
                 }
                 else if (c == TextMark.FieldBeginMark)
                 {
@@ -966,11 +979,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// <param name="cp"></param>
         protected void writeBookmarkStarts(Int32 cp)
         {
-            for (int b = 0; b < _doc.BookmarkStartPlex.CharacterPositions.Count; b++)
+            if (_doc.BookmarkStartPlex.CharacterPositions.Count > 1)
             {
-                if (_doc.BookmarkStartPlex.CharacterPositions[b] == cp)
+                for (int b = 0; b < _doc.BookmarkStartPlex.CharacterPositions.Count; b++)
                 {
-                    writeBookmarkStart((BookmarkFirst)_doc.BookmarkStartPlex.Elements[b]);
+                    if (_doc.BookmarkStartPlex.CharacterPositions[b] == cp)
+                    {
+                        writeBookmarkStart((BookmarkFirst)_doc.BookmarkStartPlex.Elements[b]);
+                    }
                 }
             }
         }
@@ -990,14 +1006,17 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// <param name="cp"></param>
         protected void writeBookmarkEnds(Int32 cp)
         {
-            //write all bookmark ends
-            for (int b = 0; b < _doc.BookmarkEndPlex.CharacterPositions.Count; b++)
+            if (_doc.BookmarkEndPlex.CharacterPositions.Count > 1)
             {
-                if (_doc.BookmarkEndPlex.CharacterPositions[b] == cp)
+                //write all bookmark ends
+                for (int b = 0; b < _doc.BookmarkEndPlex.CharacterPositions.Count; b++)
                 {
-                    writeBookmarkEnd((BookmarkFirst)_doc.BookmarkStartPlex.Elements[b]);
-                }
-            }          
+                    if (_doc.BookmarkEndPlex.CharacterPositions[b] == cp)
+                    {
+                        writeBookmarkEnd((BookmarkFirst)_doc.BookmarkStartPlex.Elements[b]);
+                    }
+                }     
+            }
         }
 
         protected void writeBookmarkEnd(BookmarkFirst bookmark)

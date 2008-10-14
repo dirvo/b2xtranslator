@@ -60,6 +60,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         // WordprocessingML content types
         public const string MainDocument = "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml";
         public const string MainDocumentMacro = "application/vnd.ms-word.document.macroEnabled.main+xml";
+        public const string MainDocumentTemplate = "application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml";
+        public const string MainDocumentMacroTemplate = "application/vnd.ms-word.template.macroEnabledTemplate.main+xml";
 
         public const string Styles = "application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml";
         public const string Numbering = "application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml";

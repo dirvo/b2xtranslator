@@ -56,11 +56,11 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
                 case WordprocessingDocumentType.MacroEnabledDocument:
                     _mainDocumentPart = new MainDocumentPart(this, WordprocessingMLContentTypes.MainDocumentMacro);
                     break;
-                case WordprocessingDocumentType.MacroEnabledTemplate:
-                    _mainDocumentPart = new MainDocumentPart(this, WordprocessingMLContentTypes.MainDocument);
-                    break;
                 case WordprocessingDocumentType.Template:
-                    _mainDocumentPart = new MainDocumentPart(this, WordprocessingMLContentTypes.MainDocument);
+                    _mainDocumentPart = new MainDocumentPart(this, WordprocessingMLContentTypes.MainDocumentTemplate);
+                    break;
+                case WordprocessingDocumentType.MacroEnabledTemplate:
+                    _mainDocumentPart = new MainDocumentPart(this, WordprocessingMLContentTypes.MainDocumentMacroTemplate);
                     break;
             }
             

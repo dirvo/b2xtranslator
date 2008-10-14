@@ -5,6 +5,7 @@ using DIaLOGIKa.b2xtranslator.DocFileFormat;
 using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
+using System.IO;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
@@ -15,15 +16,37 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             ConversionContext context = new ConversionContext(doc);
             WordprocessingDocument docx = null;
 
-            if (doc.CommandTable.MacroDatas != null)
+            //detect the document type
+            if (doc.FIB.fDot)
             {
-                //macro enabled document
-                docx = WordprocessingDocument.Create(outputFilename.Replace(".docx", ".docm"), WordprocessingDocumentType.MacroEnabledDocument);
+                //template
+                if (doc.CommandTable.MacroDatas != null)
+                {
+                    //macro enabled template
+                    docx = WordprocessingDocument.Create( getOutputFilename(outputFilename, WordprocessingDocumentType.MacroEnabledTemplate), 
+                        WordprocessingDocumentType.MacroEnabledTemplate);
+                }
+                else
+                {
+                    //without macros
+                    docx = WordprocessingDocument.Create(getOutputFilename(outputFilename, WordprocessingDocumentType.Template), 
+                        WordprocessingDocumentType.Template);
+                }
             }
             else
             {
-                //normal document
-                docx = WordprocessingDocument.Create(outputFilename, WordprocessingDocumentType.Document);
+                //no template
+                if (doc.CommandTable.MacroDatas != null)
+                {
+                    //macro enabled document
+                    docx = WordprocessingDocument.Create(getOutputFilename(outputFilename, WordprocessingDocumentType.MacroEnabledDocument), 
+                        WordprocessingDocumentType.MacroEnabledDocument);
+                }
+                else
+                {
+                    docx = WordprocessingDocument.Create(getOutputFilename(outputFilename, WordprocessingDocumentType.Document), 
+                        WordprocessingDocumentType.Document);
+                }
             }
 
             using (docx)
@@ -40,7 +63,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 context.Docx = docx;
 
                 //convert the macros
-                if (docx.DocumentType == WordprocessingDocumentType.MacroEnabledDocument)
+                if (docx.DocumentType == WordprocessingDocumentType.MacroEnabledDocument ||
+                    docx.DocumentType == WordprocessingDocumentType.MacroEnabledTemplate)
                 {
                     doc.Convert(new MacroBinaryMapping(context));
                     doc.Convert(new MacroDataMapping(context));
@@ -66,6 +90,39 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                 //write settings.xml at last because of the rsid list
                 doc.DocumentProperties.Convert(new SettingsMapping(context));
+            }
+        }
+    
+        private static string getOutputFilename(string inputfilename, WordprocessingDocumentType doctype)
+        {
+            string outExt = ".docx";
+            switch (doctype)
+            {
+                case WordprocessingDocumentType.Document:
+                    outExt = ".docx";
+                    break;
+                case WordprocessingDocumentType.MacroEnabledDocument:
+                    outExt = ".docm";
+                    break;
+                case WordprocessingDocumentType.MacroEnabledTemplate:
+                    outExt = ".dotm";
+                    break;
+                case WordprocessingDocumentType.Template:
+                    outExt = ".dotx";
+                    break;
+                default:
+                    outExt = ".docx";
+                    break;
+            }
+
+            string inExt = Path.GetExtension(inputfilename);
+            if (inExt != null)
+            {
+                return inputfilename.Replace(inExt, outExt);
+            }
+            else
+            {
+                return inputfilename + outExt;
             }
         }
     }
