@@ -161,6 +161,25 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Reader
             }
         }
 
+        /// <summary>
+        /// Returns a handle to a directory entry with the given name/path.
+        /// If a path is used, it must be preceeded by '\'.
+        /// The characters '\' ( if not separators in the path) and '%' must be masked by '%XXXX'
+        /// where 'XXXX' is the unicode in hex of '\' and '%', respectively
+        /// </summary>
+        /// <param name="path">The path of the directory entry.</param>
+        /// <returns>An object which enables access to the directory entry.</returns>
+        public DirectoryEntry GetEntry(string path)
+        {
+            DirectoryEntry entry = _directory.GetDirectoryEntry(path);
+            if (entry == null)
+            {
+                throw new DirectoryEntryNotFoundException(path);
+            }
+
+            return entry;
+        }
+
 
         /// <summary>
         /// Closes the file handle

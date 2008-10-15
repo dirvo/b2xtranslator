@@ -206,6 +206,20 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Common
     }
 
     [Serializable]
+    public class DirectoryEntryNotFoundException : Exception
+    {
+        public DirectoryEntryNotFoundException(string name)
+            : base("DirectoryEntry with name '" + name + "' not found.")
+        {
+        }
+
+        protected DirectoryEntryNotFoundException(SerializationInfo info, StreamingContext ctxt)
+            : base(info, ctxt)
+        {
+        }
+    }
+
+    [Serializable]
     public class FileHandlerNotCorrectlyInitializedException : Exception
     {
         public FileHandlerNotCorrectlyInitializedException()
