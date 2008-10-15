@@ -73,6 +73,12 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Reader
             {
                 throw new InvalidValueInDirectoryEntryException("_cb");
             }*/
+            // Added warning - math
+            if (lengthOfName != (_name.Length + 1) * 2)
+            {
+                TraceLogger.Warning("Length of the name (_cb) of stream '" + Name + "' is not correct.");
+            }
+
 
             Type = (DirectoryEntryType)_fileHandler.ReadByte();
             Color = (DirectoryEntryColor)_fileHandler.ReadByte();
