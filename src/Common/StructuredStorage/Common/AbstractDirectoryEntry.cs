@@ -32,7 +32,12 @@ using System.Text;
 
 namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Common
 {
-    public class AbstractDirectoryEntry
+
+    /// <summary>
+    /// Abstract class for a directory entry in a structured storage.
+    /// Athor: math
+    /// </summary>
+    abstract public class AbstractDirectoryEntry
     {
         UInt32 _sid;
         public UInt32 Sid

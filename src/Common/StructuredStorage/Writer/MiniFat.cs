@@ -34,8 +34,14 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
 
 namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
 {
+
+    /// <summary>
+    /// Represents the minifat of a structured storage.
+    /// Author: math
+    /// </summary>
     internal class MiniFat : AbstractFat
     {
+        // Start sector of the minifat.
         UInt32 _miniFatStart = SectorId.FREESECT;
         internal UInt32 MiniFatStart
         {
@@ -43,19 +49,26 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
+        // Number of sectors in the mini fat.
         UInt32 _numMiniFatSectors = 0x0;
         internal UInt32 NumMiniFatSectors
         {
             get { return _numMiniFatSectors; }            
         }
 
-
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="context">the current context</param>
         internal MiniFat(StructuredStorageContext context)
             : base(context)
         {            
         }
 
 
+        /// <summary>
+        /// Writes minifat chain to fat and writes the minifat data to the output stream of the current context.
+        /// </summary>
         override internal void write()
         {
             _numMiniFatSectors = (UInt32)Math.Ceiling((double)(_entries.Count * 4) / (double)_context.Header.SectorSize);

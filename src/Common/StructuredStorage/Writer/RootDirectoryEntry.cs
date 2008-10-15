@@ -34,8 +34,13 @@ using System.IO;
 
 namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
 {
+    /// <summary>
+    /// Class which represents the root directory entry of a structured storage.
+    /// Author: math
+    /// </summary>
     public class RootDirectoryEntry : StorageDirectoryEntry
     {
+        // The mini stream.
         OutputHandler _miniStream = new OutputHandler(new MemoryStream());
         internal OutputHandler MiniStream
         {
@@ -43,6 +48,10 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="context">the current context</param>
         internal RootDirectoryEntry(StructuredStorageContext context)
             : base("Root Entry", context)
         {            
@@ -51,6 +60,9 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
+        /// <summary>
+        /// Writes the mini stream chain to the fat and the mini stream data to the output stream of the current context.
+        /// </summary>
         internal override void writeReferencedStream()
         {
             VirtualStream virtualMiniStream = new VirtualStream(_miniStream.BaseStream, Context.Fat, Context.Header.SectorSize, Context.TempOutputStream);

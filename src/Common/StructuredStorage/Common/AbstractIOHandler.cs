@@ -33,6 +33,11 @@ using System.IO;
 
 namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Common
 {
+
+    /// <summary>
+    /// Abstract class for input and putput handlers.
+    /// Author: math
+    /// </summary>
     abstract internal class AbstractIOHandler
     {
         protected Stream _stream;

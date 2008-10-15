@@ -33,7 +33,7 @@ using System.Text;
 namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Common
 {   
     /// <summary>
-    /// Encapsulates the header of a compound file
+    /// Abstract class fo the header of a compound file.
     /// Author: math
     /// </summary>
     abstract internal class AbstractHeader

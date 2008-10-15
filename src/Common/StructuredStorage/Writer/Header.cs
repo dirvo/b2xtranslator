@@ -35,13 +35,21 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
 {
+
+    /// <summary>
+    /// Class which represents the header of a structured storage.
+    /// Author: math
+    /// </summary>
     internal class Header : AbstractHeader
     {
         List<byte> _diFatSectors = new List<byte>();
         int _diFatSectorCount = 0; 
         StructuredStorageContext _context;
 
-
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="context">the current context</param>
         internal Header(StructuredStorageContext context)
         {
             _ioHandler = new OutputHandler(new MemoryStream());
@@ -51,7 +59,9 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
             setHeaderDefaults();
         }
 
-
+        /// <summary>
+        /// Initializes header defaults.
+        /// </summary>
         void setHeaderDefaults()
         {
             MiniSectorShift = 6;
@@ -61,6 +71,10 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
+        /// <summary>
+        /// Writes the next difat sector (which is one of the first 109) to the header.
+        /// </summary>
+        /// <param name="sector"></param>
         internal void writeNextDiFatSector(UInt32 sector)
         {
             if (_diFatSectorCount >= 109)
@@ -74,6 +88,9 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
+        /// <summary>
+        /// Writes the header to the internal stream.
+        /// </summary>
         internal void write()
         {
             OutputHandler outputHandler = ((OutputHandler)_ioHandler);
@@ -126,6 +143,10 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
+        /// <summary>
+        /// Writes the internal header stream to the given stream.
+        /// </summary>
+        /// <param name="stream">The stream to which is written to.</param>
         internal void writeToStream(Stream stream)
         {
             OutputHandler outputHandler = ((OutputHandler)_ioHandler);

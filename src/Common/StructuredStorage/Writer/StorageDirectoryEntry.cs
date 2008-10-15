@@ -34,24 +34,36 @@ using System.IO;
 
 namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
 {
+
+    /// <summary>
+    /// Represents a storage directory entry in a structured storage.
+    /// Author: math
+    /// </summary>
     public class StorageDirectoryEntry : BaseDirectoryEntry
     {
+        // The stream directory entries of this storage directory entry
         List<StreamDirectoryEntry> _streamDirectoryEntries = new List<StreamDirectoryEntry>();
         internal List<StreamDirectoryEntry> StreamDirectoryEntries
         {
             get { return _streamDirectoryEntries; }            
         }
 
-
+        // The storage directory entries of this storage directory entry
         List<StorageDirectoryEntry> _storageDirectoryEntries = new List<StorageDirectoryEntry>();
         internal List<StorageDirectoryEntry> StorageDirectoryEntries
         {
             get { return _storageDirectoryEntries; }            
         }
 
+        // The stream and storage directory entries of this storage directory entry
         List<BaseDirectoryEntry> _allDirectoryEntries = new List<BaseDirectoryEntry>();
 
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="name">The name of the directory entry.</param>
+        /// <param name="context">The current context.</param>
         internal StorageDirectoryEntry(string name, StructuredStorageContext context)
             : base(name, context)
         {
@@ -59,6 +71,11 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
+        /// <summary>
+        /// Adds a stream directory entry to this storage directory entry.
+        /// </summary>
+        /// <param name="name">The name of the stream directory entry to add.</param>
+        /// <param name="stream">The stream referenced by the stream directory entry</param>
         public void AddStreamDirectoryEntry(string name, Stream stream)
         {
             if (_streamDirectoryEntries.Exists(delegate(StreamDirectoryEntry a) { return name == a.Name; }))
@@ -71,6 +88,11 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
+        /// <summary>
+        /// Adds a storage directory entry to this storage directory entry.
+        /// </summary>
+        /// <param name="name">The name of the storage directory entry to add.</param>
+        /// <returns>The storage directory entry whic hahs been added.</returns>
         public StorageDirectoryEntry AddStorageDirectoryEntry(string name)
         {
             StorageDirectoryEntry result = null;
@@ -87,12 +109,20 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
+        /// <summary>
+        /// Sets the clsID.
+        /// </summary>
+        /// <param name="clsId">The clsId to set.</param>
         public void setClsId(Guid clsId)
         {
             ClsId = clsId;
         }
 
 
+        /// <summary>
+        /// Recursively gets all storage directory entries starting at this directory entry.
+        /// </summary>
+        /// <returns>A list of directory entries.</returns>
         internal List<BaseDirectoryEntry> RecursiveGetAllDirectoryEntries()
         {
             List<BaseDirectoryEntry> result = new List<BaseDirectoryEntry>();
@@ -100,6 +130,9 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
+        /// <summary>
+        /// The recursive implementation of the method RecursiveGetAllDirectoryEntries().
+        /// </summary>
         private List<BaseDirectoryEntry> RecursiveGetAllDirectoryEntries(List<BaseDirectoryEntry> result)
         {
             foreach (StorageDirectoryEntry entry in _storageDirectoryEntries)
@@ -119,6 +152,9 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
+        /// <summary>
+        /// Creates the red-black-tree recursively
+        /// </summary>
         internal void RecursiveCreateRedBlackTrees()
         {
             this.ChildSiblingSid = CreateRedBlackTree();
@@ -139,25 +175,29 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
+        /// <summary>
+        /// Creates the red-black-tree for this directory entry
+        /// </summary>
         private UInt32 CreateRedBlackTree()
         {          
-            //_allDirectoryEntries.Sort(
-            //    delegate(BaseDirectoryEntry a, BaseDirectoryEntry b) 
-            //    { return (a.Name.Length == b.Name.Length) ? a.Name.ToLower().CompareTo(b.Name.ToLower()) : a.Name.Length.CompareTo(b.Name.Length); }
-            //    );
-
             _allDirectoryEntries.Sort(DirectoryEntryComparison);
 
             foreach (BaseDirectoryEntry entry in _allDirectoryEntries)
             {
                 entry.Sid = Context.getNewSid();
             }
-
-            //this.ChildSiblingSid = setRelationsAndColorRecursive(this._allDirectoryEntries, (int)Math.Floor(Math.Log(_allDirectoryEntries.Count, 2)), 0);
+            
             return setRelationsAndColorRecursive(this._allDirectoryEntries, (int)Math.Floor(Math.Log(_allDirectoryEntries.Count, 2)), 0);
         }
 
 
+        /// <summary>
+        /// Helper function for the method CreateRedBlackTree()
+        /// </summary>
+        /// <param name="entryList">The list of directory entries</param>
+        /// <param name="treeHeight">The height of the balanced red-black-tree</param>
+        /// <param name="treeLevel">The current tree level</param>
+        /// <returns>The root of this red-black-tree</returns>
         private UInt32 setRelationsAndColorRecursive(List<BaseDirectoryEntry> entryList, int treeHeight, int treeLevel)
         {
             if (entryList.Count < 1)
@@ -194,11 +234,23 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
+        /// <summary>
+        /// Calculation of the middle index of a list of directory entries.
+        /// </summary>
+        /// <param name="list">The input list.</param>
+        /// <returns>The result</returns>
         private static int getMiddleIndex(List<BaseDirectoryEntry> list)
         {
             return (int)Math.Floor((list.Count - 1)/ 2.0);
         }
 
+
+        /// <summary>
+        /// Method for comparing directory entries (used in the red-black-tree).
+        /// </summary>
+        /// <param name="a">The 1st directory entry.</param>
+        /// <param name="b">The 2nd directory entry.</param>
+        /// <returns>Comparison result.</returns>
         protected int DirectoryEntryComparison(BaseDirectoryEntry a, BaseDirectoryEntry b)
         {
             if (a.Name.Length != b.Name.Length)

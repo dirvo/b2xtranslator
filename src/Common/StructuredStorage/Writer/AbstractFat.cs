@@ -33,18 +33,32 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
 
 namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
 {
-    class AbstractFat
+    /// <summary>
+    /// Abstract class of a Fat in a compound file
+    /// Author: math
+    /// </summary>
+    abstract class AbstractFat
     {
         protected List<UInt32> _entries = new List<UInt32>();
         protected UInt32 _currentEntry = 0;
         protected StructuredStorageContext _context;
 
 
+        /// <summary>
+        /// Constructor
+        /// <param name="context">the current context</param>
+        /// </summary>
         protected AbstractFat(StructuredStorageContext context)
         {
             _context = context;
         }
 
+
+        /// <summary>
+        /// Write a chain to the fat.
+        /// </summary>
+        /// <param name="entryCount">number of entries in the chain</param>
+        /// <returns></returns>
         internal UInt32 writeChain(UInt32 entryCount)
         {
             if (entryCount == 0)
@@ -66,8 +80,8 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
             return startSector;
         }
 
-        virtual internal void write()
-        {}
+
+        abstract internal void write();
 
     }
 }

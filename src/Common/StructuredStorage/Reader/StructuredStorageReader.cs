@@ -104,7 +104,9 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Reader
             get { return _directory.GetAllStreamEntries(); }
         }
 
-
+        /// <summary>
+        /// Returns a handle to the RootDirectoryEntry.
+        /// </summary>
         public DirectoryEntry RootDirectoryEntry
         {
             get { return _directory.GetDirectoryEntry(0x0); }

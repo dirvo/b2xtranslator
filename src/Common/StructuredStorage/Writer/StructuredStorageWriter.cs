@@ -35,23 +35,35 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
 {
+    /// <summary>
+    /// The root class for creating a structured storage
+    /// Author: math
+    /// </summary>
     public class StructuredStorageWriter
     {
         StructuredStorageContext _context;
 
 
+        // The root directory entry of this structured storage.
         public StorageDirectoryEntry RootDirectoryEntry
         {
             get { return _context.RootDirectoryEntry; }
         }
         
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         public StructuredStorageWriter()
         {
             _context = new StructuredStorageContext();
         }
 
 
+        /// <summary>
+        /// Writes the structured storage to a given stream.
+        /// </summary>
+        /// <param name="outputStream">The output stream.</param>
         public void write(Stream outputStream)
         {
             _context.RootDirectoryEntry.RecursiveCreateRedBlackTrees();
@@ -106,8 +118,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
                 entry.write();
             }
 
-            // Directory Entry: 128 bytes
-            
+            // Directory Entry: 128 bytes            
             UInt32 dirEntriesPerSector = _context.Header.SectorSize / 128u;
             UInt32 numToPad = dirEntriesPerSector - ((UInt32)allEntries.Count % dirEntriesPerSector);
 
@@ -131,14 +142,18 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
             _context.Header.MiniFatStartSector = _context.MiniFat.MiniFatStart;
             _context.Header.NoSectorsInMiniFatChain = _context.MiniFat.NumMiniFatSectors;
 
+            // write fat
             _context.Fat.write();
 
+            // set header values
             _context.Header.NoSectorsInDiFatChain = _context.Fat.NumDiFatSectors;
             _context.Header.NoSectorsInFatChain = _context.Fat.NumFatSectors;
             _context.Header.DiFatStartSector = _context.Fat.DiFatStartSector;
             
+            // write header
             _context.Header.write();
 
+            // write temporary streams to the output streams.
             _context.Header.writeToStream(outputStream);
             _context.TempOutputStream.writeToStream(outputStream);
         }

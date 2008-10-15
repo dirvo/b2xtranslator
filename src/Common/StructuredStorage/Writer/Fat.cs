@@ -33,11 +33,17 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
 
 namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
 {
+
+    /// <summary>
+    /// Class which represents the fat of a structured storage.
+    /// Author: math
+    /// </summary>
     class Fat : AbstractFat
     {
         List<UInt32> _diFatEntries = new List<UInt32>();
 
-
+    
+        // Number of sectors used by the fat.
         UInt32 _numFatSectors;
         internal UInt32 NumFatSectors
         {
@@ -45,6 +51,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
+        // Number of sectors used by the difat.
         UInt32 _numDiFatSectors;
         internal UInt32 NumDiFatSectors
         {
@@ -52,6 +59,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
+        // Start sector of the difat.
         UInt32 _diFatStartSector;
         internal UInt32 DiFatStartSector
         {
@@ -59,12 +67,21 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="context">the current context</param>
         internal Fat(StructuredStorageContext context)
             : base(context)
         {
         }
 
 
+        /// <summary>
+        /// Writes the difat entries to the fat
+        /// </summary>
+        /// <param name="sectorCount">Number of difat sectors.</param>
+        /// <returns>Start sector of the difat.</returns>
         private UInt32 writeDiFatEntriesToFat(UInt32 sectorCount)
         {
             if (sectorCount == 0)
@@ -84,13 +101,19 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
-        private void writeDiFatSectorsToFile(UInt32 fatStartSector)
+        /// <summary>
+        /// Writes the difat sectors to the output stream of the current context
+        /// </summary>
+        /// <param name="fatStartSector"></param>
+        private void writeDiFatSectorsToStream(UInt32 fatStartSector)
         {
+            // Add all entries of the difat
             for (UInt32 i = 0; i < _numFatSectors; i++)
             {
                 _diFatEntries.Add(fatStartSector + i);
             }
 
+            // Write the first 109 entries into the header
             for (int i = 0; i < 109; i++)
             {
                 if (i < _diFatEntries.Count)
@@ -108,9 +131,10 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
                 return;
             }
 
+            // handle remaining difat entries 
 
             List<UInt32> greaterDiFatEntries = new List<UInt32>();
-
+            
             for (int i = 0; i < _diFatEntries.Count - 109; i++)
             {
                 greaterDiFatEntries.Add(_diFatEntries[i + 109]);
@@ -119,6 +143,8 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
             UInt32 diFatLink = _diFatStartSector + 1;
             int addressesInSector = _context.Header.SectorSize / 4;
             int sectorSplit = addressesInSector;
+
+            // split difat at sector boundary and add link to next difat sector
             while (greaterDiFatEntries.Count >= sectorSplit)
             {
                 greaterDiFatEntries.Insert(sectorSplit-1, diFatLink);
@@ -134,30 +160,28 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
             greaterDiFatEntries.RemoveAt(greaterDiFatEntries.Count - 1);
             greaterDiFatEntries.Add(SectorId.ENDOFCHAIN);
 
-            //List<byte> output = new List<byte>();
-            //foreach (UInt32 entry in greaterDiFatEntries)
-            //{
-            //    output.AddRange(_context.InternalBitConverter.getBytes(entry));
-            //}
-
             List<byte> output = _context.InternalBitConverter.getBytes(greaterDiFatEntries);
 
+            // consistency check
             if (output.Count % _context.Header.SectorSize != 0)
             {
                 throw new DiFatInconsistentException();
             }
 
+            // write remaining difat sectors to stream
             _context.TempOutputStream.writeSectors(output.ToArray(), _context.Header.SectorSize, SectorId.FREESECT);
 
         }
 
 
+        /// <summary>
+        /// Marks the difat and fat sectors in the fat and writes the difat and fat data to the output stream of the current context.
+        /// </summary>
         internal override void write()
         {
-            //List<byte> output = prepareWrite();
-            
+
+            // calculation of _numFatSectors and _numDiFatSectors (depending on each other)
             _numDiFatSectors = 0;            
-            // do it twice for correct calculation
             while (true)
             {
                 UInt32 numDiFatSectorsOld = _numDiFatSectors;
@@ -169,29 +193,15 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
                 }                
             }
 
-            //_context.Header.NoSectorsInFatChain = numFatSectors;
-            //_context.Header.NoSectorsInDiFatChain = numDiFatSectors;
-
             // writeDiFat
             _diFatStartSector = writeDiFatEntriesToFat(_numDiFatSectors);           
-            writeDiFatSectorsToFile(_currentEntry);
+            writeDiFatSectorsToStream(_currentEntry);
            
             // Denote Fat entries in Fat
             for (int i = 0; i < _numFatSectors; i++)
             {
                 _entries.Add(SectorId.FATSECT);
             }
-
-            //List<byte> output = prepareWrite();
-
-
-            //do
-            //{
-            //    numDiFatSectorsOld = numDiFatSectors;
-            //    numFatSectors = (UInt32)Math.Ceiling(((double)(numMiniStreamSectors + numMiniFatSectors + num_DirectorySectors + numNormalStreamSectors + numDiFatSectors) * 4) / (double)(_header.SectorSize));
-            //    numDiFatSectors = (numFatSectors < 109) ? 0 : (UInt32)Math.Ceiling((double)(numFatSectors * 4) / (double)(_header.SectorSize - 1));
-            //}
-            //while (numDiFatSectors != numDiFatSectorsOld);
 
             // write Fat
             _context.TempOutputStream.writeSectors((_context.InternalBitConverter.getBytes(_entries)).ToArray(), _context.Header.SectorSize, SectorId.FREESECT);

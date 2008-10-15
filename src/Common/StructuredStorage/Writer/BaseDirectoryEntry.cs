@@ -33,7 +33,12 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
 
 namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
 {
-    public class BaseDirectoryEntry : AbstractDirectoryEntry
+
+    /// <summary>
+    /// Common base class for stream and storage directory entries
+    /// Author: math
+    /// </summary>
+    abstract public class BaseDirectoryEntry : AbstractDirectoryEntry
     {
         private StructuredStorageContext _context;
         internal StructuredStorageContext Context
@@ -42,6 +47,11 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name">Name of the directory entry.</param>
+        /// <param name="context">the current context</param>
         internal BaseDirectoryEntry(string name, StructuredStorageContext context)            
         {
             _context = context;
@@ -49,6 +59,10 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
             setInitialValues();
         }
 
+
+        /// <summary>
+        /// Set the initial values
+        /// </summary>
         private void setInitialValues()
         {
             this.ChildSiblingSid = SectorId.FREESECT;
@@ -63,6 +77,9 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
+        /// <summary>
+        /// Writes the directory entry to the directory stream of the current context
+        /// </summary>
         internal void write()
         {
             OutputHandler directoryStream = _context.DirectoryStream;
@@ -94,6 +111,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
+        // Does nothing in the base class implementation.
         internal virtual void writeReferencedStream()
         {
             return;

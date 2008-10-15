@@ -34,52 +34,68 @@ using System.IO;
 
 namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
 {
+
+    /// <summary>
+    /// Class which pools the different elements of a structured storage in a context.
+    /// Author math.
+    /// </summary>
     internal class StructuredStorageContext
     {
         private UInt32 _sidCounter = 0x0;
 
+        // The header of this context.
         Header _header;
         internal Header Header
         {
             get { return _header; }            
         }
 
+        // The fat of this context.
         Fat _fat;
         internal Fat Fat
         {
             get { return _fat; }            
         }
 
+        // The mini fat of this context.
         MiniFat _miniFat;
         internal MiniFat MiniFat
         {
             get { return _miniFat; }            
         }
 
+        // The handler of the output stream of this context.
         OutputHandler _tempOutputStream;
         internal OutputHandler TempOutputStream
         {
             get { return _tempOutputStream; }            
         }
 
+        // The handler of the directory stream of this context.
         OutputHandler _directoryStream;
         internal OutputHandler DirectoryStream
         {
             get { return _directoryStream; }
         }
 
+        // The internal bit converter of this context.
         InternalBitConverter _internalBitConverter;
         internal InternalBitConverter InternalBitConverter
         {
             get { return _internalBitConverter; }
         }
 
+        // The root directroy entry of this context.
         private RootDirectoryEntry _rootDirectoryEntry;
         public RootDirectoryEntry RootDirectoryEntry
         {
             get { return _rootDirectoryEntry; }
         }
 
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         internal StructuredStorageContext()
         {
             _tempOutputStream = new OutputHandler(new MemoryStream());
@@ -91,6 +107,11 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
             _rootDirectoryEntry = new RootDirectoryEntry(this);
         }
 
+
+        /// <summary>
+        ///  Returns a new sid for directory entries in this context.
+        /// </summary>
+        /// <returns>The new sid.</returns>
         internal UInt32 getNewSid()
         {
             return ++_sidCounter;

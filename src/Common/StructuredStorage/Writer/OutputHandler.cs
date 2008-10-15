@@ -34,12 +34,17 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
 
 namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
 {
+    /// <summary>
+    /// Class which encapsulates methods which ease writing structured storage components to a stream.
+    /// Author: math
+    /// </summary>
     internal class OutputHandler : AbstractIOHandler
     {
         internal Stream BaseStream
         {
             get { return _stream; }
         }
+
 
         /// <summary>
         /// Returns UInt64.MaxValue because size of stream is not defined yet.
@@ -50,6 +55,10 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="memoryStream">The target memory stream.</param>
         internal OutputHandler(MemoryStream memoryStream)
         {
             _stream = memoryStream;
@@ -57,36 +66,62 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
         
 
+        /// <summary>
+        /// Writes a byte to the stream.
+        /// </summary>
+        /// <param name="value">The byte to write.</param>
         internal void writeByte(byte value)
         {
             _stream.WriteByte(value);
         }
-        
 
+
+        /// <summary>
+        /// Writes a UInt16 to the stream.
+        /// </summary>
+        /// <param name="value">The UInt16 to write.</param>
         internal void writeUInt16(UInt16 value)
         {
             _stream.Write(_bitConverter.getBytes(value), 0, 2);
         }
 
 
+        /// <summary>
+        /// Writes a UInt32 to the stream.
+        /// </summary>
+        /// <param name="value">The UInt32 to write.</param>
         internal void writeUInt32(UInt32 value)
         {
             _stream.Write(_bitConverter.getBytes(value), 0, 4);
         }
 
 
+        /// <summary>
+        /// Writes a UInt64 to the stream.
+        /// </summary>
+        /// <param name="value">The UInt64 to write.</param>
         internal void writeUInt64(UInt64 value)
         {
             _stream.Write(_bitConverter.getBytes(value), 0, 8);
         }
 
 
+        /// <summary>
+        /// Writes a byte array to the stream.
+        /// </summary>
+        /// <param name="value">The byte array to write.</param>
         internal void write(byte[] data)
         {
             _stream.Write(data, 0, data.Length);
         }
 
 
+        /// <summary>
+        /// Writes sectors to the stream and padding the sector with the given byte.
+        /// </summary>
+        /// <param name="data">The data to write.</param>
+        /// <param name="sectorSize">The size of a sector.</param>
+        /// <param name="padding">The byte which is used for padding</param>
         internal void writeSectors(byte[] data, UInt16 sectorSize, byte padding)
         {
             uint remaining = (uint)(data.LongLength % sectorSize);
@@ -102,6 +137,12 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
+        /// <summary>
+        /// Writes sectors to the stream and padding the sector with the given UInt32.
+        /// </summary>
+        /// <param name="data">The data to write.</param>
+        /// <param name="sectorSize">The size of a sector.</param>
+        /// <param name="padding">The UInt32 which is used for padding</param>
         internal void writeSectors(byte[] data, UInt16 sectorSize, UInt32 padding)
         {
             uint remaining = (uint)(data.LongLength % sectorSize);
@@ -110,6 +151,8 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
             {
                 return;
             }
+
+            // consistency check
             if ((sectorSize - remaining) % sizeof(UInt32) != 0)
             {
                 throw new InvalidSectorSizeException();
@@ -122,6 +165,10 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
+        /// <summary>
+        /// Writes the internal memory stream to a given stream.
+        /// </summary>
+        /// <param name="stream">The output stream.</param>
         internal void writeToStream(Stream stream)
         {
             const int bytesToReadAtOnce = 512;

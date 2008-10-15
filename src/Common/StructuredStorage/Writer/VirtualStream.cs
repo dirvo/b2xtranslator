@@ -35,6 +35,11 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
 
 namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
 {
+
+    /// <summary>
+    /// Class which represents a virtual stream in a structured storage.
+    /// Author: math
+    /// </summary>
     internal class VirtualStream
     {
         AbstractFat _fat;
@@ -42,20 +47,20 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         UInt16 _sectorSize;
         OutputHandler _outputHander;
 
-
+        // Start sector of the virtual stream.
         UInt32 _startSector = SectorId.FREESECT;
         public UInt32 StartSector
         {
             get { return _startSector; }
         }
         
-
+        // Lengh of the virtual stream.
         public UInt64 Length
         {
             get { return (UInt64)_stream.Length; }
         }
 
-
+        // Number of sectors used by the virtual stream.
         UInt32 _sectorCount;
         public UInt32 SectorCount
         {
@@ -63,6 +68,13 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="stream">The input stream.</param>
+        /// <param name="fat">The fat which is used by this stream.</param>
+        /// <param name="sectorSize">The sector size.</param>
+        /// <param name="outputHander"></param>
         internal VirtualStream(Stream stream, AbstractFat fat, UInt16 sectorSize, OutputHandler outputHander)
         {
             _stream = stream;
@@ -73,6 +85,9 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Writer
         }
 
 
+        /// <summary>
+        /// Writes the virtual stream chain to the fat and the virtual stream data to the output stream of the current context.
+        /// </summary>
         internal void write()
         {
             _startSector = _fat.writeChain(SectorCount);
