@@ -40,6 +40,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
         protected FootnotesPart _footnotesPart;
         protected CommentsPart _commentsPart;
         protected VbaProjectPart _vbaProjectPart;
+        protected GlossaryPart _glossaryPart;
 
         protected int _headerPartCount = 0;
         protected int _footerPartCount = 0;
@@ -58,6 +59,19 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
         public override string TargetDirectory { get { return "word"; } }
 
         // unique parts
+
+        public GlossaryPart GlossaryPart
+        {
+            get
+            {
+                if (_glossaryPart == null)
+                {
+                    _glossaryPart = new GlossaryPart(this, WordprocessingMLContentTypes.Glossary);
+                    this.AddPart(_glossaryPart);
+                }
+                return _glossaryPart;
+            }
+        }
 
         public StyleDefinitionsPart StyleDefinitionsPart
         {

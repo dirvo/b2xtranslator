@@ -14,6 +14,10 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         public Dictionary<Int32, String> MacroNames;
 
+        public List<KeyMapEntry> KeyMapEntries;
+
+        public List<KeyMapEntry> InvalidKeyMapEntries;
+
         bool breakWhile;
 
         public CommandTable(FileInformationBlock fib, VirtualStream tableStream)
@@ -40,7 +44,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                         int iMacMcd = reader.ReadInt32();
                         for (int i = 0; i < iMacMcd; i++)
                         {
-                            this.MacroDatas.Add(new MacroData(reader, 24));
+                            this.MacroDatas.Add(new MacroData(reader));
                         }
                         break;
                     case 0x2:
@@ -51,12 +55,22 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                         reader.ReadBytes(iMacAcd * 4);
                         break;
                     case 0x3:
-                    case 0x4:
-                        //it's a PlfKme
-
-                        //skip the KMEs
+                        //Keymap Entries
+                        this.InvalidKeyMapEntries = new List<KeyMapEntry>();
                         int iMacKme = reader.ReadInt32();
-                        reader.ReadBytes(iMacKme * 14);
+                        for (int i = 0; i < iMacKme; i++)
+                        {
+                            this.InvalidKeyMapEntries.Add(new KeyMapEntry(reader));
+                        }
+                        break;
+                    case 0x4:
+                        //Invalid Keymap Entries
+                        this.KeyMapEntries = new List<KeyMapEntry>();
+                        int iMacKmeInvalid = reader.ReadInt32();
+                        for (int i = 0; i < iMacKmeInvalid; i++)
+                        {
+                            this.KeyMapEntries.Add(new KeyMapEntry(reader));
+                        }
                         break;
                     case 0x10:
                         //it's a TcgSttbf

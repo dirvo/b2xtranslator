@@ -43,6 +43,20 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         }
 
         /// <summary>
+        /// A dictionary that contains all SEPX of the document.<br/>
+        /// The key is the CP at which sections ends.<br/>
+        /// The value is the SEPX that formats the section.
+        /// </summary>
+        public Dictionary<Int32, SectionPropertyExceptions> AllSepx;
+
+        /// <summary>
+        /// A dictionary that contains all PAPX of the document.<br/>
+        /// The key is the FC at which the paragraph starts.<br/>
+        /// The value is the PAPX that formats the paragraph.
+        /// </summary>
+        public Dictionary<Int32, ParagraphPropertyExceptions> AllPapx;
+
+        /// <summary>
         /// 
         /// </summary>
         public PieceTable PieceTable;
@@ -101,6 +115,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         public StringTable BookmarkNames;
 
+        public StringTable AutoTextNames;
+
         /// <summary>
         /// A plex with all ATRDPre10 structs
         /// </summary>
@@ -133,6 +149,12 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public Plex OfficeDrawingPlexHeader;
 
         /// <summary>
+        /// Each character position specifies the beginning of a range of text 
+        /// that constitutes the contents of an AutoText item.
+        /// </summary>
+        public Plex AutoTextPlex;
+
+        /// <summary>
         /// Describes the breaks inside the textbox subdocument
         /// </summary>
         public Plex TextboxBreakPlex;
@@ -143,6 +165,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public Plex TextboxBreakPlexHeader;
 
         public Plex BookmarkStartPlex;
+
         public Plex BookmarkEndPlex;
 
         /// <summary>
@@ -167,32 +190,30 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public List<FormattedDiskPageCHPX> AllChpxFkps;
 
         /// <summary>
-        /// A List with all Section Property Exceptions
-        /// </summary>
-        public List<SectionPropertyExceptions> AllSepx;
-
-        /// <summary>
         /// A table that contains the positions of the headers and footer in the text.
         /// </summary>
         public HeaderAndFooterTable HeaderAndFooterTable;
 
+        public WordDocument Glossary;
+
         public WordDocument(StructuredStorageReader reader)
+        {
+            parse(reader, 0);
+        }
+
+        public WordDocument(StructuredStorageReader reader, Int32 fibFC)
+        {
+            parse(reader, fibFC);
+        }
+
+        private void parse(StructuredStorageReader reader, Int32 fibFC)
         {
             this.Storage = reader;
             this.WordDocumentStream = reader.GetStream("WordDocument");
 
             //parse FIB
+            this.WordDocumentStream.Seek(fibFC, System.IO.SeekOrigin.Begin);
             this.FIB = new FileInformationBlock(new VirtualStreamReader(this.WordDocumentStream));
-
-            //throw exception for not supported file versions
-            if (this.FIB.nFib < FileInformationBlock.FibVersion.Fib1997)
-            {
-                throw new UnspportedFileVersionException("This file has been created with an older version of Word. This format is currently not supported.");
-            }
-            if (this.FIB.fComplex)
-            {
-                throw new UnspportedFileVersionException("This file has been fast-saved. This format is currently not supported.");
-            }
 
             //get the streams
             if (this.FIB.fWhichTblStm)
@@ -216,6 +237,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.AuthorTable = new StringTable(typeof(String), this.TableStream, this.FIB.fcSttbfRMark, this.FIB.lcbSttbfRMark);
             this.FontTable = new StringTable(typeof(FontFamilyName), this.TableStream, this.FIB.fcSttbfFfn, this.FIB.lcbSttbfFfn);
             this.BookmarkNames = new StringTable(typeof(String), this.TableStream, this.FIB.fcSttbfBkmk, this.FIB.lcbSttbfBkmk);
+            this.AutoTextNames = new StringTable(typeof(String), this.TableStream, this.FIB.fcSttbfGlsy, this.FIB.lcbSttbfGlsy);
 
             //Read all needed PLCFs
             this.AnnotationsReferencePlex = new Plex(typeof(AnnotationReferenceDescriptor), 30, this.TableStream, this.FIB.fcPlcfandRef, this.FIB.lcbPlcfandRef);
@@ -226,6 +248,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.SectionPlex = new Plex(typeof(SectionDescriptor), 12, this.TableStream, this.FIB.fcPlcfSed, this.FIB.lcbPlcfSed);
             this.BookmarkStartPlex = new Plex(typeof(BookmarkFirst), 4, this.TableStream, this.FIB.fcPlcfBkf, this.FIB.lcbPlcfBkf);
             this.BookmarkEndPlex = new Plex(null, 0, this.TableStream, this.FIB.fcPlcfBkl, this.FIB.lcbPlcfBkl);
+            this.AutoTextPlex = new Plex(null, 0, this.TableStream, this.FIB.fcPlcfGlsy, this.FIB.lcbPlcfGlsy);
 
             //read the FKPs
             this.AllPapxFkps = FormattedDiskPagePAPX.GetAllPAPXFKPs(this.FIB, this.WordDocumentStream, this.TableStream, this.DataStream);
@@ -244,6 +267,39 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             //parse the piece table and construct a list that contains all chars
             this.PieceTable = new PieceTable(this.FIB, this.TableStream);
             this.Text = this.PieceTable.GetAllChars(this.WordDocumentStream);
+
+            //build a dictionaries of all PAPX
+            this.AllPapx = new Dictionary<Int32, ParagraphPropertyExceptions>();
+            for (int i = 0; i < this.AllPapxFkps.Count; i++)
+            {
+                for (int j = 0; j < this.AllPapxFkps[i].grppapx.Length; j++)
+                {
+                    this.AllPapx.Add(this.AllPapxFkps[i].rgfc[j], this.AllPapxFkps[i].grppapx[j]);
+                }
+            }
+
+            //build a dictionary of all SEPX
+            this.AllSepx = new Dictionary<Int32, SectionPropertyExceptions>();
+            for (int i = 0; i < this.SectionPlex.Elements.Count; i++)
+            {
+                //Read the SED
+                SectionDescriptor sed = (SectionDescriptor)this.SectionPlex.Elements[i];
+                Int32 cp = this.SectionPlex.CharacterPositions[i + 1];
+
+                //Get the SEPX
+                VirtualStreamReader wordReader = new VirtualStreamReader(this.WordDocumentStream);
+                this.WordDocumentStream.Seek(sed.fcSepx, System.IO.SeekOrigin.Begin);
+                Int16 cbSepx = wordReader.ReadInt16();
+                SectionPropertyExceptions sepx = new SectionPropertyExceptions(wordReader.ReadBytes(cbSepx - 2));
+
+                this.AllSepx.Add(cp, sepx);
+            }
+
+            //read the Glossary
+            if (this.FIB.pnNext > 0)
+            {
+                this.Glossary = new WordDocument(this.Storage, (int)(this.FIB.pnNext * 512));
+            }
         }
 
         /// <summary>

@@ -76,6 +76,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 
         public const string Header = "application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml";
         public const string Footer = "application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml";
+
+        public const string Glossary = "application/vnd.openxmlformats-officedocument.wordprocessingml.document.glossary+xml";
     }
 
     public static class SpreadsheetMLContentTypes
@@ -162,6 +164,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 
         public const string VbaProject = "http://schemas.microsoft.com/office/2006/relationships/vbaProject";
         public const string VbaData = "http://schemas.microsoft.com/office/2006/relationships/wordVbaData";
+
+        public const string GlossaryDocument = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/glossaryDocument";
 
         // PresentationML
         public const string SlideLayout = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout";

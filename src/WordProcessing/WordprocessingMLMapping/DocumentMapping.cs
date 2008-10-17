@@ -539,13 +539,19 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 //this is the last paragraph of this section
                 //write properties with section properties
-                papx.Convert(new ParagraphPropertiesMapping(_writer, _ctx, paraEndChpx, findValidSepx(cpEnd), _sectionNr));
+                if (papx != null)
+                {
+                    papx.Convert(new ParagraphPropertiesMapping(_writer, _ctx, _doc, paraEndChpx, findValidSepx(cpEnd), _sectionNr));
+                }
                 _sectionNr++;
             }
             else
             {
                 //write properties
-                papx.Convert(new ParagraphPropertiesMapping(_writer, _ctx, paraEndChpx));
+                if (papx != null)
+                {
+                    papx.Convert(new ParagraphPropertiesMapping(_writer, _ctx, _doc, paraEndChpx));
+                }
             }
 
             //write a runs for each CHPX
@@ -1218,9 +1224,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             ParagraphPropertyExceptions ret = null;
 
-            if(_ctx.AllPapx.ContainsKey(fc))
+            if(_doc.AllPapx.ContainsKey(fc))
             {
-                ret = _ctx.AllPapx[fc];
+                ret = _doc.AllPapx[fc];
                 _lastValidPapx = ret;
             }
             else
@@ -1242,7 +1248,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             try
             {
-                ret = _ctx.AllSepx[cp];
+                ret = _doc.AllSepx[cp];
                 _lastValidSepx = ret;
             }
             catch (KeyNotFoundException)
@@ -1251,11 +1257,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 //so the previous SEPX is valid for this cp
 
                 Int32 lastKey = _doc.SectionPlex.CharacterPositions[1];
-                foreach (Int32 key in _ctx.AllSepx.Keys)
+                foreach (Int32 key in _doc.AllSepx.Keys)
                 {
                     if (cp > lastKey && cp < key)
                     {
-                        ret = _ctx.AllSepx[lastKey];
+                        ret = _doc.AllSepx[lastKey];
                         break;
                     }
                     else

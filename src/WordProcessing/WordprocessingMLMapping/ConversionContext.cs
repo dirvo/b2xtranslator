@@ -46,28 +46,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         }
 
         /// <summary>
-        /// A dictionary that contains all SEPX of the document.<br/>
-        /// The key is the CP at which sections ends.<br/>
-        /// The value is the SEPX that formats the section.
-        /// </summary>
-        public Dictionary<Int32, SectionPropertyExceptions> AllSepx
-        {
-            get { return _allSepx; }
-            set { _allSepx = value; }
-        }   
-
-        /// <summary>
-        /// A dictionary that contains all PAPX of the document.<br/>
-        /// The key is the FC at which the paragraph starts.<br/>
-        /// The value is the PAPX that formats the paragraph.
-        /// </summary>
-        public Dictionary<Int32, ParagraphPropertyExceptions> AllPapx
-        {
-            get { return _allPapx; }
-            set { _allPapx = value; }
-        }
-
-        /// <summary>
         /// A list thta contains all revision ids.
         /// </summary>
         public List<string> AllRsids;
@@ -76,33 +54,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             this.Doc = doc;
             this.AllRsids = new List<string>();
-
-            //build a dictionaries of all PAPX
-            _allPapx = new Dictionary<Int32, ParagraphPropertyExceptions>();
-            for (int i = 0; i < doc.AllPapxFkps.Count; i++)
-            {
-                for (int j = 0; j < doc.AllPapxFkps[i].grppapx.Length; j++)
-                {
-                    _allPapx.Add(doc.AllPapxFkps[i].rgfc[j], doc.AllPapxFkps[i].grppapx[j]);
-                }
-            }
-
-            //build a dictionary of all SEPX
-            _allSepx = new Dictionary<Int32, SectionPropertyExceptions>();
-            for (int i = 0; i < doc.SectionPlex.Elements.Count; i++)
-            {
-                //Read the SED
-                SectionDescriptor sed = (SectionDescriptor)doc.SectionPlex.Elements[i];
-                Int32 cp = doc.SectionPlex.CharacterPositions[i + 1];
-                
-                //Get the SEPX
-                VirtualStreamReader wordReader = new VirtualStreamReader(doc.WordDocumentStream);
-                doc.WordDocumentStream.Seek(sed.fcSepx, System.IO.SeekOrigin.Begin);
-                Int16 cbSepx = wordReader.ReadInt16();
-                SectionPropertyExceptions sepx = new SectionPropertyExceptions(wordReader.ReadBytes(cbSepx - 2));
-
-                _allSepx.Add(cp, sepx);
-            }
         }
 
         /// <summary>

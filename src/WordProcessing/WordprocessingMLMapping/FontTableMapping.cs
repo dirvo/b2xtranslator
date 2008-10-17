@@ -49,8 +49,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             swiss
         }
 
-        public FontTableMapping(ConversionContext ctx)
-            : base(XmlWriter.Create(ctx.Docx.MainDocumentPart.FontTablePart.GetStream(), ctx.WriterSettings))
+        public FontTableMapping(ConversionContext ctx, OpenXmlPart targetPart)
+            : base(XmlWriter.Create(targetPart.GetStream(), ctx.WriterSettings))
         {
         }
 

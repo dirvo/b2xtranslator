@@ -42,11 +42,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
           IMapping<StyleSheet>
     {
         private ConversionContext _ctx;
+        private WordDocument _parentDoc;
 
-        public StyleSheetMapping(ConversionContext ctx)
-            : base(XmlWriter.Create(ctx.Docx.MainDocumentPart.StyleDefinitionsPart.GetStream(), ctx.WriterSettings))
+        public StyleSheetMapping(ConversionContext ctx, WordDocument parentDoc, OpenXmlPart targetPart)
+            : base(XmlWriter.Create(targetPart.GetStream(), ctx.WriterSettings))
         {
             _ctx = ctx;
+            _parentDoc = parentDoc;
         }
 
         public void Apply(StyleSheet sheet)
@@ -133,7 +135,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //write paragraph properties
                     if (style.papx != null)
                     {
-                        style.papx.Convert(new ParagraphPropertiesMapping(_writer, _ctx, null));
+                        style.papx.Convert(new ParagraphPropertiesMapping(_writer, _ctx, _parentDoc, null));
                     }
                     
                     //write character properties
@@ -141,7 +143,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     {
                         RevisionData rev = new RevisionData();
                         rev.Type = RevisionData.RevisionType.NoRevision;
-                        style.chpx.Convert(new CharacterPropertiesMapping(_writer, _ctx.Doc, rev, style.papx, true));
+                        style.chpx.Convert(new CharacterPropertiesMapping(_writer, _parentDoc, rev, style.papx, true));
                     }
 
                     //write table properties

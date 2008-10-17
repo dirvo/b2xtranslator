@@ -40,6 +40,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
           IMapping<ListTable>
     {
         private ConversionContext _ctx;
+        private WordDocument _parentDoc;
 
         private enum LevelJustification
         {
@@ -48,10 +49,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             right
         }
 
-        public NumberingMapping(ConversionContext ctx)
+        public NumberingMapping(ConversionContext ctx, WordDocument parentDoc)
             : base(XmlWriter.Create(ctx.Docx.MainDocumentPart.NumberingDefinitionsPart.GetStream(), ctx.WriterSettings))
         {
             _ctx = ctx;
+            _parentDoc = parentDoc;
         }
 
         public void Apply(ListTable rglst)
@@ -132,10 +134,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     _writer.WriteEndElement();
 
                     //pPr
-                    lvl.grpprlPapx.Convert(new ParagraphPropertiesMapping(_writer, _ctx, null));
+                    lvl.grpprlPapx.Convert(new ParagraphPropertiesMapping(_writer, _ctx, _parentDoc,  null));
 
                     //rPr
-                    lvl.grpprlChpx.Convert(new CharacterPropertiesMapping(_writer, _ctx.Doc, new RevisionData(lvl.grpprlChpx), lvl.grpprlPapx, false));
+                    lvl.grpprlChpx.Convert(new CharacterPropertiesMapping(_writer, _parentDoc, new RevisionData(lvl.grpprlChpx), lvl.grpprlPapx, false));
 
                     _writer.WriteEndElement();
                 }

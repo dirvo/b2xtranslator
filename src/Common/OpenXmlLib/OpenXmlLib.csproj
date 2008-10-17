@@ -58,6 +58,7 @@
     <Compile Include="WordprocessingML\FontTablePart.cs" />
     <Compile Include="WordprocessingML\FooterPart.cs" />
     <Compile Include="WordprocessingML\FootnotesPart.cs" />
+    <Compile Include="WordprocessingML\GlossaryPart.cs" />
     <Compile Include="WordprocessingML\HeaderPart.cs" />
     <Compile Include="ImagePart.cs" />
     <Compile Include="WordprocessingML\MainDocumentPart.cs" />

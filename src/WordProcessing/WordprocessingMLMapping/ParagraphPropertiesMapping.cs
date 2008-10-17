@@ -44,10 +44,16 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private SectionPropertyExceptions _sepx;
         private CharacterPropertyExceptions _paraEndChpx;
         private int _sectionNr;
+        private WordDocument _parentDoc;
 
-        public ParagraphPropertiesMapping(XmlWriter writer, ConversionContext ctx, CharacterPropertyExceptions paraEndChpx)
+        public ParagraphPropertiesMapping(
+            XmlWriter writer, 
+            ConversionContext ctx, 
+            WordDocument parentDoc,
+            CharacterPropertyExceptions paraEndChpx)
             : base(writer)
         {
+            _parentDoc = parentDoc;
             _pPr = _nodeFactory.CreateElement("w", "pPr", OpenXmlNamespaces.WordprocessingML);
             _framePr = _nodeFactory.CreateElement("w", "framePr", OpenXmlNamespaces.WordprocessingML);
             _paraEndChpx = paraEndChpx;
@@ -57,11 +63,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         public ParagraphPropertiesMapping(
             XmlWriter writer, 
             ConversionContext ctx,
+            WordDocument parentDoc,
             CharacterPropertyExceptions paraEndChpx, 
             SectionPropertyExceptions sepx,
             int sectionNr)
             : base(writer)
         {
+            _parentDoc = parentDoc;
             _pPr = _nodeFactory.CreateElement("w", "pPr", OpenXmlNamespaces.WordprocessingML);
             _framePr = _nodeFactory.CreateElement("w", "framePr", OpenXmlNamespaces.WordprocessingML);
             _paraEndChpx = paraEndChpx;
@@ -81,7 +89,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //append style id , do not append "Normal" style (istd 0)
             XmlElement pStyle = _nodeFactory.CreateElement("w", "pStyle", OpenXmlNamespaces.WordprocessingML);
             XmlAttribute styleId = _nodeFactory.CreateAttribute("w", "val", OpenXmlNamespaces.WordprocessingML);
-            styleId.Value = StyleSheetMapping.MakeStyleId(_ctx.Doc.Styles.Styles[papx.istd]);
+            styleId.Value = StyleSheetMapping.MakeStyleId(_parentDoc.Styles.Styles[papx.istd]);
             pStyle.Attributes.Append(styleId);
             _pPr.AppendChild(pStyle);
 

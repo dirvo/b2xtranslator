@@ -71,16 +71,16 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 }
 
                 //Write styles.xml
-                doc.Styles.Convert(new StyleSheetMapping(context));
+                doc.Styles.Convert(new StyleSheetMapping(context, doc, docx.MainDocumentPart.StyleDefinitionsPart));
 
                 //Write numbering.xml
-                doc.ListTable.Convert(new NumberingMapping(context));
+                doc.ListTable.Convert(new NumberingMapping(context, doc));
 
                 //Write fontTable.xml
-                doc.FontTable.Convert(new FontTableMapping(context));
+                doc.FontTable.Convert(new FontTableMapping(context, docx.MainDocumentPart.FontTablePart));
 
                 //write document.xml and the header and footers
-                doc.Convert(new MainDocumentMapping(context));
+                doc.Convert(new MainDocumentMapping(context, context.Docx.MainDocumentPart));
 
                 //write the footnotes
                 doc.Convert(new FootnotesMapping(context));
@@ -89,7 +89,18 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 doc.Convert(new CommentsMapping(context));
 
                 //write settings.xml at last because of the rsid list
-                doc.DocumentProperties.Convert(new SettingsMapping(context));
+                doc.DocumentProperties.Convert(new SettingsMapping(context, docx.MainDocumentPart.SettingsPart));
+
+                //convert the glossary subdocument
+                if (doc.Glossary != null)
+                {
+                    doc.Glossary.Convert(new GlossaryMapping(context, context.Docx.MainDocumentPart.GlossaryPart));
+                    doc.Glossary.FontTable.Convert(new FontTableMapping(context, docx.MainDocumentPart.GlossaryPart.FontTablePart));
+                    //doc.Glossary.Styles.Convert(new StyleSheetMapping(context, doc.Glossary, docx.MainDocumentPart.GlossaryPart.StyleDefinitionsPart));
+
+                    //write settings.xml at last because of the rsid list
+                    doc.Glossary.DocumentProperties.Convert(new SettingsMapping(context, docx.MainDocumentPart.GlossaryPart.SettingsPart));
+                }
             }
         }
     

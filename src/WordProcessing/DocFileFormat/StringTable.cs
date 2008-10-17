@@ -57,8 +57,11 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         public StringTable(Type dataType, VirtualStream tableStream, UInt32 fc, UInt32 lcb)
         {
-            tableStream.Seek((long)fc, System.IO.SeekOrigin.Begin);
-            parse(dataType, new VirtualStreamReader(tableStream), fc);
+            if (lcb > 0)
+            {
+                tableStream.Seek((long)fc, System.IO.SeekOrigin.Begin);
+                parse(dataType, new VirtualStreamReader(tableStream), fc);
+            }
         }
 
         private void parse(Type dataType, VirtualStreamReader reader, UInt32 fc)

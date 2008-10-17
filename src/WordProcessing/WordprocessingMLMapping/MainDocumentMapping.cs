@@ -10,8 +10,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
     public class MainDocumentMapping : DocumentMapping
     {
-        public MainDocumentMapping(ConversionContext ctx)
-            : base(ctx, ctx.Docx.MainDocumentPart)
+        public MainDocumentMapping(ConversionContext ctx, ContentPart targetPart)
+            : base(ctx, targetPart)
         {
         }
 
@@ -54,11 +54,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             //write the section properties of the body with the last SEPX
             int lastSepxCp = 0;
-            foreach (int sepxCp in _ctx.AllSepx.Keys)
+            foreach (int sepxCp in _doc.AllSepx.Keys)
             {
                 lastSepxCp = sepxCp;
             }
-            SectionPropertyExceptions lastSepx = _ctx.AllSepx[lastSepxCp];
+            SectionPropertyExceptions lastSepx = _doc.AllSepx[lastSepxCp];
             lastSepx.Convert(new SectionPropertiesMapping(_writer, _ctx, _sectionNr));
 
             //end the document

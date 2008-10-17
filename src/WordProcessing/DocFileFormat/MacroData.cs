@@ -22,8 +22,10 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public Int16 ibstName;
 
-        public MacroData(VirtualStreamReader reader, int length)
-            : base(reader, length)
+        private const int MCD_LENGTH = 24;
+
+        public MacroData(VirtualStreamReader reader)
+            : base(reader, MCD_LENGTH)
         {
             //first 2 bytes are reserved
             reader.ReadBytes(2);

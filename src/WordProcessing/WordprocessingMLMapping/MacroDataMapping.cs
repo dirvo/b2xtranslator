@@ -26,15 +26,21 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 _writer.WriteStartElement("wne", "mcd", OpenXmlNamespaces.MicrosoftWordML);
                 MacroData mcd = doc.CommandTable.MacroDatas[i];
 
-                _writer.WriteAttributeString(
-                    "wne", "macroName", 
-                    OpenXmlNamespaces.MicrosoftWordML, 
-                    doc.CommandTable.MacroNames[mcd.ibst]);
+                if (doc.CommandTable.MacroNames != null)
+                {
+                    _writer.WriteAttributeString(
+                        "wne", "macroName",
+                        OpenXmlNamespaces.MicrosoftWordML,
+                        doc.CommandTable.MacroNames[mcd.ibst]);
+                }
 
-                _writer.WriteAttributeString(
-                    "wne", "name",
-                    OpenXmlNamespaces.MicrosoftWordML,
-                    doc.CommandTable.CommandStringTable.Strings[mcd.ibstName]);
+                if (doc.CommandTable.CommandStringTable != null)
+                {
+                    _writer.WriteAttributeString(
+                        "wne", "name",
+                        OpenXmlNamespaces.MicrosoftWordML,
+                        doc.CommandTable.CommandStringTable.Strings[mcd.ibstName]);
+                }
 
                 _writer.WriteEndElement();
             }
