@@ -40,6 +40,12 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         protected byte[] _rawBytes;
         public const int VARIABLE_LENGTH = int.MaxValue;
 
+        public byte[] RawBytes
+        {
+            get { return _rawBytes; }
+        }
+	
+
         public ByteStructure(VirtualStreamReader reader, int length) 
         {
             _reader = reader;

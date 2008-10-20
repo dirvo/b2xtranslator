@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Tools;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class CommandTable
+    public class CommandTable : IVisitable
     {
         public StringTable CommandStringTable;
 
@@ -16,9 +17,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         public List<KeyMapEntry> KeyMapEntries;
 
-        public List<KeyMapEntry> InvalidKeyMapEntries;
+        public CustomToolbarWrapper CustomToolbars;
 
-        bool breakWhile;
+        private bool breakWhile;
 
         public CommandTable(FileInformationBlock fib, VirtualStream tableStream)
         {
@@ -26,6 +27,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             VirtualStreamReader reader = new VirtualStreamReader(tableStream);
 
             //byte[] bytes = reader.ReadBytes((int)fib.lcbCmds);
+            this.MacroDatas = new List<MacroData>();
+            this.KeyMapEntries = new List<KeyMapEntry>();
+            this.MacroNames = new Dictionary<int, string>();
 
             //skip the version
             reader.ReadByte();
@@ -40,7 +44,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 {
                     case 0x1:
                         //it's a PlfMcd
-                        this.MacroDatas = new List<MacroData>();
                         int iMacMcd = reader.ReadInt32();
                         for (int i = 0; i < iMacMcd; i++)
                         {
@@ -49,23 +52,20 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                         break;
                     case 0x2:
                         //it's a PlfAcd
-
                         //skip the ACDs
                         int iMacAcd = reader.ReadInt32();
                         reader.ReadBytes(iMacAcd * 4);
                         break;
                     case 0x3:
                         //Keymap Entries
-                        this.InvalidKeyMapEntries = new List<KeyMapEntry>();
                         int iMacKme = reader.ReadInt32();
                         for (int i = 0; i < iMacKme; i++)
                         {
-                            this.InvalidKeyMapEntries.Add(new KeyMapEntry(reader));
+                            this.KeyMapEntries.Add(new KeyMapEntry(reader));
                         }
                         break;
                     case 0x4:
-                        //Invalid Keymap Entries
-                        this.KeyMapEntries = new List<KeyMapEntry>();
+                        //Keymap Entries
                         int iMacKmeInvalid = reader.ReadInt32();
                         for (int i = 0; i < iMacKmeInvalid; i++)
                         {
@@ -78,7 +78,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                         break;
                     case 0x11:
                         //it's a MacroNames table
-                        this.MacroNames = new Dictionary<int, string>();
                         int iMacMn = reader.ReadInt16();
                         for (int i = 0; i < iMacMn; i++)
                         {
@@ -91,12 +90,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                         break;
                     case 0x12:
                         //it's a CTBWRAPPER structure
-                        reader.ReadBytes(8);
-                        Int16 cbTBD = reader.ReadInt16();
-                        Int16 cCust = reader.ReadInt16();
-                        Int32 cbDTBC = reader.ReadInt32();
-                        //skip the rtbdc
-                        reader.ReadBytes(cbDTBC);
+                        this.CustomToolbars = new CustomToolbarWrapper(reader);
                         break;
                     default:
                         breakWhile = true;
@@ -104,5 +98,14 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 }
             }
         }
+
+        #region IVisitable Members
+
+        public void Convert<T>(T mapping)
+        {
+            ((IMapping<CommandTable>)mapping).Apply(this);
+        }
+
+        #endregion
     }
 }

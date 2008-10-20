@@ -47,8 +47,6 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string CustomXmlProperties = "application/vnd.openxmlformats-officedocument.customXmlProperties+xml";
 
         public const string OleObject = "application/vnd.openxmlformats-officedocument.oleObject";
-        public const string VbaProject = "application/vnd.ms-office.vbaProject";
-        public const string VbaData = "application/vnd.ms-word.vbaData+xml";
 
         public const string MSExcel = "application/vnd.ms-excel";
         public const string MSWord = "application/msword";
@@ -102,6 +100,14 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string TableStyles = "application/vnd.openxmlformats-officedocument.presentationml.tableStyles+xml";
         public const string ViewProps = "application/vnd.openxmlformats-officedocument.presentationml.viewProps+xml";
         public const string PresProps = "application/vnd.openxmlformats-officedocument.presentationml.presProps+xml";
+    }
+
+    public static class MicrosoftWordContentTypes
+    {
+        public const string KeyMapCustomization = "application/vnd.ms-word.keyMapCustomizations+xml";
+        public const string VbaProject = "application/vnd.ms-office.vbaProject";
+        public const string VbaData = "application/vnd.ms-word.vbaData+xml";
+        public const string Toolbars = "application/vnd.ms-word.attachedToolbars";
     }
 
     public static class OpenXmlNamespaces
@@ -162,9 +168,6 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 
         public const string OleObject = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject";
 
-        public const string VbaProject = "http://schemas.microsoft.com/office/2006/relationships/vbaProject";
-        public const string VbaData = "http://schemas.microsoft.com/office/2006/relationships/wordVbaData";
-
         public const string GlossaryDocument = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/glossaryDocument";
 
         // PresentationML
@@ -178,5 +181,13 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string sharedStrings = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings";
         public const string externalLink = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLink";
         public const string externalLinkPath = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLinkPath";
+    }
+
+    public static class MicrosoftWordRelationshipTypes
+    {
+        public const string KeyMapCustomizations = "http://schemas.microsoft.com/office/2006/relationships/keyMapCustomizations";
+        public const string VbaProject = "http://schemas.microsoft.com/office/2006/relationships/vbaProject";
+        public const string VbaData = "http://schemas.microsoft.com/office/2006/relationships/wordVbaData";
+        public const string Toolbars = "http://schemas.microsoft.com/office/2006/relationships/attachedToolbars";
     }
 }

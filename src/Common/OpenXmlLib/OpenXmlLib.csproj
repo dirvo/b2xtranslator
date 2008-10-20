@@ -61,6 +61,7 @@
     <Compile Include="WordprocessingML\GlossaryPart.cs" />
     <Compile Include="WordprocessingML\HeaderPart.cs" />
     <Compile Include="ImagePart.cs" />
+    <Compile Include="WordprocessingML\KeyMapCustomizationsPart.cs" />
     <Compile Include="WordprocessingML\MainDocumentPart.cs" />
     <Compile Include="OpenXmlPackage.cs" />
     <Compile Include="OpenXmlPart.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="WordprocessingML\SettingsPart.cs" />
     <Compile Include="WordprocessingML\StyleDefinitionsPart.cs" />
     <Compile Include="ThemePart.cs" />
+    <Compile Include="WordprocessingML\ToolbarsPart.cs" />
     <Compile Include="WordprocessingML\WordprocessingDocument.cs" />
     <Compile Include="SpreadsheetML\WorkbookPart.cs" />
   </ItemGroup>

@@ -18,12 +18,12 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// 
         /// </summary>
-        public byte kcm1;
+        public Int16 kcm1;
 
         /// <summary>
         /// 
         /// </summary>
-        public byte kcm2;
+        public Int16 kcm2;
 
         /// <summary>
         /// 
@@ -35,6 +35,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public char paramChar;
 
+        public CommandIdentifier paramCid;
+
         private const int KME_LENGTH = 14;
         
         public KeyMapEntry(VirtualStreamReader reader)
@@ -44,12 +46,10 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             reader.ReadBytes(4);
 
             //Primary KCM
-            this.kcm1 = reader.ReadByte();
-            reader.ReadByte();
+            this.kcm1 = reader.ReadInt16();
 
             //Secondary KCM
-            this.kcm2 = reader.ReadByte();
-            reader.ReadByte();
+            this.kcm2 = reader.ReadInt16();
 
             //Key Action Type
             this.kt = (ActionType)reader.ReadInt16();
@@ -57,6 +57,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             //read the params
             switch (kt)
             {
+                case ActionType.ktCid:
+                    this.paramCid = new CommandIdentifier(reader);
+                    break;
                 case ActionType.ktChar:
                     this.paramChar = (char)reader.ReadInt32();
                     break;

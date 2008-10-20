@@ -68,6 +68,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 {
                     doc.Convert(new MacroBinaryMapping(context));
                     doc.Convert(new MacroDataMapping(context));
+                    doc.CommandTable.Convert(new CommandTableMapping(context));
                 }
 
                 //Write styles.xml

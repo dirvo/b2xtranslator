@@ -13,12 +13,12 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 
         public override string ContentType
         {
-            get { return OpenXmlContentTypes.VbaProject; }
+            get { return MicrosoftWordContentTypes.VbaProject; }
         }
 
         public override string RelationshipType
         {
-            get { return OpenXmlRelationshipTypes.VbaProject; }
+            get { return MicrosoftWordRelationshipTypes.VbaProject; }
         }
 
         public override string TargetName { get { return "vbaProject"; } }

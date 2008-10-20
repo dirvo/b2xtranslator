@@ -108,6 +108,9 @@
     <Compile Include="ClientData.cs" />
     <Compile Include="ClientTextbox.cs" />
     <Compile Include="AnnotationReferenceDescriptor.cs" />
+    <Compile Include="CommandIdentifier.cs" />
+    <Compile Include="CustomToolbar.cs" />
+    <Compile Include="CustomToolbarWrapper.cs" />
     <Compile Include="FormFieldData.cs" />
     <Compile Include="CommandTable.cs" />
     <Compile Include="KeyMapEntry.cs" />
@@ -137,6 +140,10 @@
     <Compile Include="SectionPropertyExceptions.cs" />
     <Compile Include="SprmTDefTable.cs" />
     <Compile Include="StringTable.cs" />
+    <Compile Include="ToolbarControl.cs" />
+    <Compile Include="ToolbarControlBitmap.cs" />
+    <Compile Include="ToolbarCustomization.cs" />
+    <Compile Include="ToolbarDelta.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -35,6 +35,18 @@ namespace DIaLOGIKa.b2xtranslator.Tools
 {
     public class Utils
     {
+
+        public static string ReadWString(Stream stream)
+        {
+            byte[] cch = new byte[1];
+            stream.Read(cch, 0, cch.Length);
+
+            byte[] chars = new byte[2 * cch[0]];
+            stream.Read(chars, 0, chars.Length);
+
+            return Encoding.Unicode.GetString(chars);
+        }
+
         /// <summary>
         /// Read a length prefixed Unicode string from the given stream.
         /// The string must have the following structure:<br/>
@@ -84,6 +96,17 @@ namespace DIaLOGIKa.b2xtranslator.Tools
         {
             byte[] xstz = new byte[System.BitConverter.ToInt16(bytes, pos) * 2];
             Array.Copy(bytes, pos + 2, xstz, 0, xstz.Length);
+            return Encoding.Unicode.GetString(xstz);
+        }
+
+        public static string ReadXstz(Stream stream)
+        {
+            byte[] cch = new byte[2];
+            stream.Read(cch, 0, cch.Length);
+
+            byte[] xstz = new byte[System.BitConverter.ToInt16(cch, 0) * 2];
+            stream.Read(xstz, 0, xstz.Length);
+
             return Encoding.Unicode.GetString(xstz);
         }
 
