@@ -132,6 +132,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             Shape shape = (Shape)container.Children[0];
             List<ShapeOptions.OptionEntry> options = container.ExtractOptions();
+            string[] adjValues = new string[8];
+            int numberAdjValues = 0; 
 
             //write the shapeType
             if (shape.ShapeType != null)
@@ -143,7 +145,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             //append id
             _writer.WriteAttributeString("id", getShapeId(shape));
-
+            
+            
             //build the style
             StringBuilder style = null;
             if (_documentBase)
@@ -181,6 +184,47 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case ShapeOptions.PropertyId.rotation:
                         appendStyleProperty(style, "rotation", (entry.op / Math.Pow(2, 16)).ToString());
                         break;
+
+                    case ShapeOptions.PropertyId.adjustValue:
+                        adjValues[0] = (((int)entry.op).ToString());
+                        numberAdjValues++; 
+                        break;
+
+                    case ShapeOptions.PropertyId.adjust2Value:
+                        adjValues[1] = (((int)entry.op).ToString());
+                        numberAdjValues++;
+                        break;
+
+                    case ShapeOptions.PropertyId.adjust3Value:
+                        adjValues[2] = (((int)entry.op).ToString());
+                        numberAdjValues++;
+                        break;
+
+                    case ShapeOptions.PropertyId.adjust4Value:
+                        adjValues[3] = (((int)entry.op).ToString());
+                        numberAdjValues++;
+                        break;
+
+                    case ShapeOptions.PropertyId.adjust5Value:
+                        adjValues[4] = (((int)entry.op).ToString());
+                        numberAdjValues++;
+                        break;
+
+                    case ShapeOptions.PropertyId.adjust6Value:
+                        adjValues[5] = (((int)entry.op).ToString());
+                        numberAdjValues++;
+                        break;
+
+                    case ShapeOptions.PropertyId.adjust7Value:
+                        adjValues[6] = (((int)entry.op).ToString());
+                        numberAdjValues++;
+                        break;
+
+                    case ShapeOptions.PropertyId.adjust8Value:
+                        adjValues[7] = (((int)entry.op).ToString());
+                        numberAdjValues++;
+                        break;
+
 
                     // OUTLINE
 
@@ -285,6 +329,18 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             if (style != null)
             {
                 _writer.WriteAttributeString("style", style.ToString());
+            }
+
+            //write adj values 
+            if (numberAdjValues != 0)
+            {
+                string adjString = adjValues[0];
+                for (int i = 1; i < 8; i++)
+                {
+                    adjString += "," + adjValues[i];
+                }
+                _writer.WriteAttributeString("adj", adjString);
+                //string.Format("{0:x4}", adjValues);
             }
 
             //build shadow offset
