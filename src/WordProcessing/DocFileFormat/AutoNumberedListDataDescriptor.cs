@@ -103,7 +103,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             }
             else
             {
-                throw new ByteParseException("ANLD");
+                throw new ByteParseException(
+                    "Cannot parse the struct ANLD, the length of the struct doesn't match");
             }
         }
 

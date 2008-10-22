@@ -96,7 +96,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             }
             else
             {
-                throw new ByteParseException("ASUMYI");
+                throw new ByteParseException("Cannot parse the struct ASUMYI, the length of the struct doesn't match");
             }
         }
     }

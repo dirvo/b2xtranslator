@@ -68,7 +68,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             }
             else
             {
-                throw new ByteParseException("LSPD");
+                throw new ByteParseException("Cannot parse the struct LSPD, the length of the struct doesn't match");
             }
         }
 

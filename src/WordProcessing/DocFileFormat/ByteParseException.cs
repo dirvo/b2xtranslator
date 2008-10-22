@@ -37,7 +37,13 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         {
         }
 
-        public ByteParseException(string structname) : base("Cannot parse the struct " +structname+", the length of the struct doesn't match")
+        public ByteParseException(string message) 
+            : base(message)
+        {
+        }
+
+        public ByteParseException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
     }

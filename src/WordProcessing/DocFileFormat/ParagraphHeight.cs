@@ -135,7 +135,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             }
             else
             {
-                throw new ByteParseException("ParagraphHeight");
+                throw new ByteParseException("Cannot parse the struct ParagraphHeight, the length of the struct doesn't match");
             }
         }
 

@@ -215,6 +215,22 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.WordDocumentStream.Seek(fibFC, System.IO.SeekOrigin.Begin);
             this.FIB = new FileInformationBlock(new VirtualStreamReader(this.WordDocumentStream));
 
+            //check the file version
+            if ((int)FIB.nFib != 0)
+            {
+                if (this.FIB.nFib < FileInformationBlock.FibVersion.Fib1997)
+                {
+                    throw new ByteParseException("Could not parse the file because it was created by an unsupported application (Word 95 or older).");
+                }
+            }
+            else
+            {
+                if (this.FIB.nFibNew < FileInformationBlock.FibVersion.Fib1997)
+                {
+                    throw new ByteParseException("Could not parse the file because it was created by an unsupported application (Word 95 or older).");
+                }
+            }
+
             //get the streams
             if (this.FIB.fWhichTblStm)
             {

@@ -43,17 +43,24 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //zoom
             _writer.WriteStartElement("w", "zoom", OpenXmlNamespaces.WordprocessingML);
             _writer.WriteAttributeString("w", "percent", OpenXmlNamespaces.WordprocessingML, dop.wScaleSaved.ToString());
-            _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, ((ZoomType)dop.zkSaved).ToString());
+            ZoomType zoom = (ZoomType)dop.zkSaved;
+            if (zoom != ZoomType.none)
+            {
+                _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, zoom.ToString());
+            }
             _writer.WriteEndElement();
 
-            //default tab stop
-            _writer.WriteStartElement("w", "defaultTabStop", OpenXmlNamespaces.WordprocessingML);
-            _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, dop.dxaTab.ToString());
-            _writer.WriteEndElement();
+            //embed system fonts
+            if(!dop.fDoNotEmbedSystemFont)
+            {
+                _writer.WriteElementString("w", "embedSystemFonts", OpenXmlNamespaces.WordprocessingML, "");
+            }
 
             //evenAndOddHeaders 
             if (dop.fFacingPages)
+            {
                 _writer.WriteElementString("w", "evenAndOddHeaders", OpenXmlNamespaces.WordprocessingML, "");
+            }
 
             //proof state
             XmlElement proofState = _nodeFactory.CreateElement("w", "proofState", OpenXmlNamespaces.WordprocessingML);
@@ -61,6 +68,45 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 appendValueAttribute(proofState, "grammar", "clean");
             if (proofState.Attributes.Count > 0)
                 proofState.WriteTo(_writer);
+
+            //stylePaneFormatFilter
+            if (dop.grfFmtFilter != 0)
+            {
+                _writer.WriteStartElement("w", "stylePaneFormatFilter", OpenXmlNamespaces.WordprocessingML);
+                _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, String.Format("{0:x4}", dop.grfFmtFilter));
+                _writer.WriteEndElement();
+            }
+
+            //default tab stop
+            _writer.WriteStartElement("w", "defaultTabStop", OpenXmlNamespaces.WordprocessingML);
+            _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, dop.dxaTab.ToString());
+            _writer.WriteEndElement();
+
+            //drawing grid
+            if(dop.dogrid != null)
+            {
+                _writer.WriteStartElement("w", "displayHorizontalDrawingGridEvery", OpenXmlNamespaces.WordprocessingML);
+                _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, dop.dogrid.dxGridDisplay.ToString());
+                _writer.WriteEndElement();
+
+                _writer.WriteStartElement("w", "displayVerticalDrawingGridEvery", OpenXmlNamespaces.WordprocessingML);
+                _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, dop.dogrid.dyGridDisplay.ToString());
+                _writer.WriteEndElement();
+
+                if (dop.dogrid.fFollowMargins == false)
+                {
+                    _writer.WriteElementString("w", "doNotUseMarginsForDrawingGridOrigin", OpenXmlNamespaces.WordprocessingML, "");
+                }
+            }
+
+            //typography
+            if (dop.doptypography != null)
+            {
+                if (dop.doptypography.fKerningPunct == false)
+                {
+                    _writer.WriteElementString("w", "noPunctuationKerning", OpenXmlNamespaces.WordprocessingML, "");
+                }
+            }
 
             //footnote properties
             XmlElement footnotePr = _nodeFactory.CreateElement("w", "footnotePr", OpenXmlNamespaces.WordprocessingML);
@@ -73,7 +119,34 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             if (footnotePr.Attributes.Count > 0)
                 footnotePr.WriteTo(_writer);
 
-            //compatibility settings
+
+            writeCompatibilitySettings(dop);
+
+            writeRsidList();
+
+            //close w:settings
+            _writer.WriteEndElement();
+
+            _writer.Flush();
+        }
+
+        private void writeRsidList()
+        {
+            //convert the rsid list
+            _writer.WriteStartElement("w", "rsids", OpenXmlNamespaces.WordprocessingML);
+            _ctx.AllRsids.Sort();
+            foreach (string rsid in _ctx.AllRsids)
+            {
+                _writer.WriteStartElement("w", "rsid", OpenXmlNamespaces.WordprocessingML);
+                _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, rsid);
+                _writer.WriteEndElement();
+            }
+            _writer.WriteEndElement();
+        }
+
+        private void writeCompatibilitySettings(DocumentProperties dop)
+        {
+              //compatibility settings
             _writer.WriteStartElement("w", "compat", OpenXmlNamespaces.WordprocessingML);
 
             //some settings must always be written
@@ -177,118 +250,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 _writer.WriteElementString("w", "wpSpaceWidth", OpenXmlNamespaces.WordprocessingML, "");
             if(dop.fWrapTrailSpaces)
                 _writer.WriteElementString("w", "wrapTrailSpaces", OpenXmlNamespaces.WordprocessingML, "");
-            _writer.WriteEndElement();
-            
-            //convert the rsid list
-            _writer.WriteStartElement("w", "rsids", OpenXmlNamespaces.WordprocessingML);
-            _ctx.AllRsids.Sort();
-            foreach(string rsid in _ctx.AllRsids)
-            {
-                _writer.WriteStartElement("w", "rsid", OpenXmlNamespaces.WordprocessingML);
-                _writer.WriteAttributeString("w", "val", OpenXmlNamespaces.WordprocessingML, rsid);
-                _writer.WriteEndElement();
-            }
-            _writer.WriteEndElement();
 
-            //activeWritingStyle
-            //alignBordersAndEdges
-            //alwaysMergeEmptyNamespace
-            //alwaysShowPlaceholderText
-            //attachedSchema
-            //attachedTemplate
-            //autoFormatOverride
-            //autoHyphenation
-            //bookFoldPrinting
-            //bookFoldPrintingSheets
-            //bookFoldRevPrinting
-            //bordersDoNotSurroundFooter
-            //bordersDoNotSurroundHeader
-            //captions
-            //characterSpacingControl
-            //clickAndTypeStyle
-            //clrSchemeMapping
-            //consecutiveHyphenLimit
-            //decimalSymbol
-            //defaultTableStyle
-            //displayBackgroundShape
-            //displayHorizontalDrawingGridEvery
-            //displayVerticalDrawingGridEvery
-            //documentProtection
-            //documentType
-            //docVars
-            //doNotAutoCompressPictures
-            //doNotDemarcateInvalidXml
-            //doNotDisplayPageBoundaries
-            //doNotEmbedSmartTags
-            //doNotHyphenateCaps
-            //doNotIncludeSubdocsInStats
-            //doNotShadeFormData
-            //doNotTrackFormatting
-            //doNotTrackMoves
-            //doNotUseMarginsForDrawingGridOrigin
-            //doNotValidateAgainstSchema
-            //drawingGridHorizontalOrigin
-            //drawingGridHorizontalSpacing
-            //drawingGridVerticalOrigin
-            //drawingGridVerticalSpacing
-            //embedSystemFonts
-            //embedTrueTypeFonts
-            //endnotePr
-            //evenAndOddHeaders
-            //forceUpgrade
-            //formsDesign
-            //gutterAtTop
-            //hdrShapeDefaults
-            //hideGrammaticalErrors
-            //hideSpellingErrors
-            //hyphenationZone
-            //ignoreMixedContent
-            //linkStyles
-            //listSeparator
-            //mailMerge
-            //mathPr
-            //mirrorMargins
-            //noLineBreaksAfter
-            //noLineBreaksBefore
-            //noPunctuationKerning
-            //printFormsData
-            //printFractionalCharacterWidth
-            //printPostScriptOverText
-            //printTwoOnOne
-            //readModeInkLockDown
-            //removeDateAndTime
-            //removePersonalInformation
-            //revisionView
-            //rsids
-            //saveFormsData
-            //saveInvalidXml
-            //savePreviewPicture
-            //saveSubsetFonts
-            //saveThroughXslt
-            //saveXmlDataOnly
-            //schemaLibrary
-            //shapeDefaults
-            //showEnvelope
-            //showXMLTags
-            //smartTagType
-            //strictFirstAndLastChars
-            //styleLockQFSet
-            //styleLockTheme
-            //stylePaneFormatFilter
-            //stylePaneSortMethod
-            //summaryLength
-            //themeFontLang 
-            //trackRevisions
-            //uiCompat97To2003
-            //updateFields
-            //useXSLTWhenSaving
-            //view
-            //writeProtection
-
-            //close w:settings
             _writer.WriteEndElement();
-
-            _writer.Flush();
         }
     }
 }

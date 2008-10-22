@@ -152,7 +152,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             }
             else
             {
-                throw new ByteParseException("SHD");
+                throw new ByteParseException("Cannot parse the struct SHD, the length of the struct doesn't match");
             }
         }
 

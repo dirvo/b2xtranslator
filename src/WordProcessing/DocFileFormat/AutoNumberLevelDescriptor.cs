@@ -230,7 +230,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             }
             else
             {
-                throw new ByteParseException("AutoNumberLevelDescriptor");
+                throw new ByteParseException("Cannot parse the struct AutoNumberLevelDescriptor, the length of the struct doesn't match");
             }
         }
 

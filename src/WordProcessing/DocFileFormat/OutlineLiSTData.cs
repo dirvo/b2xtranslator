@@ -108,7 +108,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             }
             else
             {
-                throw new ByteParseException("OLST");
+                throw new ByteParseException("Cannot parse the struct OLST, the length of the struct doesn't match");
             }
         }
 

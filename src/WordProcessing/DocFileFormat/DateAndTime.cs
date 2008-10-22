@@ -100,7 +100,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             }
             else
             {
-                throw new ByteParseException("DTTM");
+                throw new ByteParseException("Cannot parse the struct DTTM, the length of the struct doesn't match");
             }
         }
         private void setDefaultValues()

@@ -102,7 +102,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             }
             else
             {
-                throw new ByteParseException("DOGRID");
+                throw new ByteParseException("Cannot parse the struct DOGRID, the length of the struct doesn't match");
             }
         }
 

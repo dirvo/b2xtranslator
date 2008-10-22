@@ -176,7 +176,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             }
             else
             {
-                throw new ByteParseException("BRC");
+                throw new ByteParseException("Cannot parse the struct BRC, the length of the struct doesn't match");
             }
         }
 
