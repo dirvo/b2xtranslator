@@ -18,7 +18,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private ConversionContext _ctx;
         private FileShapeAddress _fspa;
         private ContentPart _targetPart;
-        private XmlElement _fill, _stroke, _shadow, _imagedata;
+        private XmlElement _fill, _stroke, _shadow, _imagedata, _3dstyle;
         private bool _documentBase;
 
 
@@ -33,6 +33,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _fill = _nodeFactory.CreateElement("v", "fill", OpenXmlNamespaces.VectorML);
             _stroke = _nodeFactory.CreateElement("v", "stroke", OpenXmlNamespaces.VectorML);
             _shadow = _nodeFactory.CreateElement("v", "shadow", OpenXmlNamespaces.VectorML);
+            _3dstyle = _nodeFactory.CreateElement("o", "extrusion", OpenXmlNamespaces.Office);
 
             Record recBs = _ctx.Doc.OfficeArtContent.DrawingGroupData.FirstChildWithType<BlipStoreContainer>();
             if (recBs != null)
@@ -133,7 +134,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             Shape shape = (Shape)container.Children[0];
             List<ShapeOptions.OptionEntry> options = container.ExtractOptions();
             string[] adjValues = new string[8];
-            int numberAdjValues = 0; 
+            int numberAdjValues = 0;
+            bool has3DValues = false; 
 
             //write the shapeType
             if (shape.ShapeType != null)
@@ -316,6 +318,22 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         name = name.Substring(0, name.Length - 1);
                         appendValueAttribute(_imagedata, "o", "title", name, OpenXmlNamespaces.Office);
                         break;
+
+                    // 3D Object 
+
+                    case ShapeOptions.PropertyId.f3D:
+                    case ShapeOptions.PropertyId.fc3DFillHarsh:
+                    case ShapeOptions.PropertyId.fc3DLightFace: 
+                        has3DValues = true; 
+                        break;
+
+                    case ShapeOptions.PropertyId.c3DExtrudeBackward:
+                        EmuValue backwardValue = new EmuValue((int)entry.op);
+                        appendValueAttribute(_3dstyle, "backdepth", backwardValue.ToPoints().ToString());
+                        break; 
+
+
+
                 }
             }
 
@@ -366,6 +384,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 appendValueAttribute(_shadow, null, "on", "t", null);
                 _shadow.WriteTo(_writer);
+            }
+
+            //write 3d style 
+            if (_3dstyle.Attributes.Count > 0 || has3DValues == true )
+            {
+                appendValueAttribute(_3dstyle, "v", "ext", "view", OpenXmlNamespaces.VectorML);
+                appendValueAttribute(_3dstyle, null, "on", "t", null);
+
+                _3dstyle.WriteTo(_writer);
             }
 
             //write wrap

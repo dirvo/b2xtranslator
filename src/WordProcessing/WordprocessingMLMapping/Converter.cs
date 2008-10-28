@@ -20,7 +20,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             if (doc.FIB.fDot)
             {
                 //template
-                if (doc.CommandTable.MacroDatas != null)
+                if (doc.CommandTable.MacroDatas != null && doc.CommandTable.MacroDatas.Count > 0)
                 {
                     //macro enabled template
                     docx = WordprocessingDocument.Create( getOutputFilename(outputFilename, WordprocessingDocumentType.MacroEnabledTemplate), 
@@ -36,7 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             else
             {
                 //no template
-                if (doc.CommandTable.MacroDatas != null)
+                if (doc.CommandTable.MacroDatas != null && doc.CommandTable.MacroDatas.Count > 0)
                 {
                     //macro enabled document
                     docx = WordprocessingDocument.Create(getOutputFilename(outputFilename, WordprocessingDocumentType.MacroEnabledDocument), 
