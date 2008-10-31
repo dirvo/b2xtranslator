@@ -660,7 +660,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 {
                     //if it's a inserted run
                     _writer.WriteStartElement("w", "ins", OpenXmlNamespaces.WordprocessingML);
-                    _writer.WriteAttributeString("w", "author", OpenXmlNamespaces.WordprocessingML, _doc.AuthorTable.Strings[rev.Isbt]);
+                    _writer.WriteAttributeString("w", "author", OpenXmlNamespaces.WordprocessingML, _doc.RevisionAuthorTable.Strings[rev.Isbt]);
                     rev.Dttm.Convert(new DateMapping(_writer));
                 }
 

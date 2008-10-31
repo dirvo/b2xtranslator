@@ -91,7 +91,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                 //author
                 XmlAttribute author = _nodeFactory.CreateAttribute("w", "author", OpenXmlNamespaces.WordprocessingML);
-                author.Value = _doc.AuthorTable.Strings[_revisionData.Isbt];
+                author.Value = _doc.RevisionAuthorTable.Strings[_revisionData.Isbt];
                 rPrChange.Attributes.Append(author);
 
                 //convert revision stack

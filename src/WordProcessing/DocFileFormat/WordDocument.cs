@@ -71,7 +71,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// Contains the names of all author who revised something in the document
         /// </summary>
-        public StringTable AuthorTable;
+        public StringTable RevisionAuthorTable;
 
         /// <summary>
         /// The stream "WordDocument"
@@ -121,6 +121,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// A plex with all ATRDPre10 structs
         /// </summary>
         public Plex AnnotationsReferencePlex;
+
+        public AnnotationOwnerList AnnotationOwners;
 
         /// <summary>
         /// An array with all ATRDPost10 structs
@@ -250,7 +252,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             }
 
             //Read all needed STTBs
-            this.AuthorTable = new StringTable(typeof(String), this.TableStream, this.FIB.fcSttbfRMark, this.FIB.lcbSttbfRMark);
+            this.RevisionAuthorTable = new StringTable(typeof(String), this.TableStream, this.FIB.fcSttbfRMark, this.FIB.lcbSttbfRMark);
             this.FontTable = new StringTable(typeof(FontFamilyName), this.TableStream, this.FIB.fcSttbfFfn, this.FIB.lcbSttbfFfn);
             this.BookmarkNames = new StringTable(typeof(String), this.TableStream, this.FIB.fcSttbfBkmk, this.FIB.lcbSttbfBkmk);
             this.AutoTextNames = new StringTable(typeof(String), this.TableStream, this.FIB.fcSttbfGlsy, this.FIB.lcbSttbfGlsy);
@@ -279,6 +281,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.HeaderAndFooterTable = new HeaderAndFooterTable(this);
             this.AnnotationReferenceExtraTable = new AnnotationReferenceExtraTable(this.FIB, this.TableStream);
             this.CommandTable = new CommandTable(this.FIB, this.TableStream);
+            this.AnnotationOwners = new AnnotationOwnerList(this.FIB, this.TableStream);
 
             //parse the piece table and construct a list that contains all chars
             this.PieceTable = new PieceTable(this.FIB, this.TableStream);
