@@ -11,7 +11,7 @@ namespace UnitTests
             DocFileFormatTests test = new DocFileFormatTests();
             test.SetUp();
 
-            test.TestStyleCount();
+            test.TestCharacters();
 
             test.TearDown();
         }

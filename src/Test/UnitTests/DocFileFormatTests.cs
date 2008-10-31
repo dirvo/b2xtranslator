@@ -34,6 +34,7 @@ namespace UnitTests
         private Object originalFormat = Type.Missing;
         private Object routeDocument = Type.Missing;
 
+
         [TestFixtureSetUp]
         public void SetUp()
         {
@@ -54,6 +55,7 @@ namespace UnitTests
             this.word2007 = new Application();
         }
 
+
         [TestFixtureTearDown]
         public void TearDown()
         {
@@ -62,6 +64,195 @@ namespace UnitTests
                 ref originalFormat,
                 ref routeDocument);
         }
+
+
+        /// <summary>
+        /// Tests if the inputfile is parsable
+        /// </summary>
+        [Test]
+        public void TestParseability()
+        {
+            foreach (FileInfo inputFile in this.files)
+            {
+                try
+                {
+                    StructuredStorageReader reader = new StructuredStorageReader(inputFile.FullName);
+                    WordDocument doc = new WordDocument(reader);
+                    Console.WriteLine("PASSED TestParseability " + inputFile.FullName);
+                }
+                catch (Exception e)
+                {
+                    throw new AssertionException(e.Message + inputFile.FullName, e);
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [Test]
+        public void TestCharacters()
+        { 
+            foreach (FileInfo inputFile in this.files)
+            {
+                Document omDoc = loadDocument(inputFile.FullName);
+                WordDocument dffDoc = new WordDocument(new StructuredStorageReader(inputFile.FullName));
+                omDoc.Fields.ToggleShowCodes();
+
+                StringBuilder omText = new StringBuilder();
+                char[] omMainText = omDoc.StoryRanges[WdStoryType.wdMainTextStory].Text.ToCharArray();
+                foreach(char c in omMainText)
+                {
+                    if ((int)c > 0x20)
+                    {
+                        omText.Append(c);
+                    }
+                }
+
+                StringBuilder dffText = new StringBuilder();
+                List<char> dffMainText = dffDoc.Text.GetRange(0, dffDoc.FIB.ccpText);
+                foreach (char c in dffMainText)
+                {
+                    if ((int)c > 0x20)
+                    {
+                        dffText.Append(c);
+                    }
+                }
+
+                try
+                {
+                    Assert.AreEqual(omText.ToString(), dffText.ToString());
+
+                    Console.WriteLine("PASSED TestCharacters " + inputFile.FullName);
+                }
+                catch (AssertionException e)
+                {
+                    throw new AssertionException(e.Message + inputFile.FullName, e);
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Tests the count of bookmarks in the documents.
+        /// Also tests the start and the end position a randomly selected bookmark.
+        /// </summary>
+        [Test]
+        public void TestBookmarks()
+        {
+            foreach (FileInfo inputFile in this.files)
+            {
+                Document omDoc = loadDocument(inputFile.FullName);
+                WordDocument dffDoc = new WordDocument(new StructuredStorageReader(inputFile.FullName));
+                omDoc.Bookmarks.ShowHidden = true;
+
+                int omBookmarkCount = omDoc.Bookmarks.Count;
+                int dffBookmarkCount = dffDoc.BookmarkNames.Strings.Count;
+                int omBookmarkStart = 0;
+                int dffBookmarkStart = 0;
+                int omBookmarkEnd = 0;
+                int dffBookmarkEnd = 0;
+
+                if (omBookmarkCount > 0 && dffBookmarkCount > 0)
+                {
+                    //generate a randomly selected bookmark
+                    Random rand = new Random();
+                    object omIndex = rand.Next(0, dffBookmarkCount);
+
+                    //get the index's bookmark
+                    Bookmark omBookmark = omDoc.Bookmarks.get_Item(ref omIndex);
+                    omBookmarkStart = omBookmark.Start;
+                    omBookmarkEnd = omBookmark.End;
+
+                    //get the bookmark with the same name from DFF
+                    int dffIndex = 0;
+                    for (int i = 0; i < dffDoc.BookmarkNames.Strings.Count; i++)
+                    {
+                        if (dffDoc.BookmarkNames.Strings[i] == omBookmark.Name)
+                        {
+                            dffIndex = i;
+                            break;
+                        }
+                    }
+                    dffBookmarkStart = dffDoc.BookmarkStartPlex.CharacterPositions[dffIndex];
+                    dffBookmarkEnd = dffDoc.BookmarkEndPlex.CharacterPositions[dffIndex];
+                }
+
+                try
+                {
+                    //compare bookmark count
+                    Assert.AreEqual(omBookmarkCount, dffBookmarkCount);
+
+                    //compare bookmark start
+                    Assert.AreEqual(omBookmarkStart, dffBookmarkStart);
+
+                    //compare bookmark end
+                    Assert.AreEqual(omBookmarkEnd, dffBookmarkEnd);
+
+                    Console.WriteLine("PASSED TestBookmarks " + inputFile.FullName);
+                }
+                catch (AssertionException e)
+                {
+                    throw new AssertionException(e.Message + inputFile.FullName, e);
+                }
+            }
+        }
+        
+
+        /// <summary>
+        /// Tests the count of of comments in the documents.
+        /// Also compares the author of the first comment.
+        /// </summary>
+        [Test]
+        public void TestComments()
+        {
+            foreach (FileInfo inputFile in this.files)
+            {
+                Document omDoc = loadDocument(inputFile.FullName);
+                WordDocument dffDoc = new WordDocument(new StructuredStorageReader(inputFile.FullName));
+
+                int dffCommentCount = dffDoc.AnnotationsReferencePlex.Elements.Count;
+                int omCommentCount = omDoc.Comments.Count;
+                string omFirstCommentInitial = "";
+                string omFirstCommentAuthor = "";
+                string dffFirstCommentInitial = "";
+                string dffFirstCommentAuthor = "";
+
+                if (dffCommentCount > 0 && omCommentCount > 0)
+                {
+                    Comment omFirstComment = omDoc.Comments[1];
+                    AnnotationReferenceDescriptor dffFirstComment = (AnnotationReferenceDescriptor)dffDoc.AnnotationsReferencePlex.Elements[0];
+
+                    omFirstCommentInitial = omFirstComment.Initial;
+                    omFirstCommentAuthor = omFirstComment.Author;
+
+                    dffFirstCommentInitial = dffFirstComment.UserInitials;
+                    dffFirstCommentAuthor = dffDoc.AnnotationOwners[dffFirstComment.AuthorIndex];
+                }
+                
+                omDoc.Close(ref saveChanges, ref originalFormat, ref routeDocument);
+
+                try
+                {
+                    //compare comment count
+                    Assert.AreEqual(omCommentCount, dffCommentCount);
+
+                    //compare initials
+                    Assert.AreEqual(omFirstCommentInitial, dffFirstCommentInitial);
+
+                    //compate the author names
+                    Assert.AreEqual(omFirstCommentAuthor, dffFirstCommentAuthor);
+
+                    Console.WriteLine("PASSED TestComments " + inputFile.FullName);
+                }
+                catch (AssertionException e)
+                {
+                    throw new AssertionException(e.Message + inputFile.FullName, e);
+                }
+            }
+        }
+
 
         private Document loadDocument(Object filename)
         {
@@ -82,192 +273,6 @@ namespace UnitTests
                 ref openAndRepair,
                 ref documentDirection,
                 ref noEncodingDialog);
-        }
-
-        /// <summary>
-        /// Tests if the inputfile is parsable
-        /// </summary>
-        [Test]
-        public void TestParseability()
-        {
-            foreach (FileInfo inputFile in this.files)
-            {
-                try
-                {
-                    StructuredStorageReader reader = new StructuredStorageReader(inputFile.FullName);
-                    WordDocument doc = new WordDocument(reader);
-                    Console.WriteLine("TestParseability: \"" + inputFile.FullName + "\"");
-                }
-                catch (Exception)
-                {
-                    Console.Error.WriteLine("TestParseability: \"" + inputFile.FullName + "\"");
-                    Assert.Fail();
-                }
-            }
-        }
-
-        [Test]
-        public void TestComments()
-        {
-            foreach (FileInfo inputFile in this.files)
-            {
-                Document omDoc = loadDocument(inputFile.FullName);
-                WordDocument dffDoc = new WordDocument(new StructuredStorageReader(inputFile.FullName));
-
-                int dffCommentCount = dffDoc.AnnotationsReferencePlex.Elements.Count;
-                int omCommentCount = omDoc.Comments.Count;
-                Comment omFirstComment = null;
-                AnnotationReferenceDescriptor dffFirstComment = null;
-                AnnotationReferenceDescriptorExtra dffFirstCommentExtra = null;
-
-                if (dffCommentCount > 0 && omCommentCount > 0)
-                {
-                    omFirstComment = omDoc.Comments[1];
-                    dffFirstComment = (AnnotationReferenceDescriptor)dffDoc.AnnotationsReferencePlex.Elements[1];
-                    dffFirstCommentExtra = dffDoc.AnnotationReferenceExtraTable[1];
-                }
-                
-                omDoc.Close(ref saveChanges, ref originalFormat, ref routeDocument);
-
-                try
-                {
-                    //test comment count
-                    Assert.AreEqual(omCommentCount, dffCommentCount);
-
-                    //compare the first comments
-                    if (omFirstComment != null && dffFirstComment != null)
-                    {
-                        //compare initials
-                        Assert.AreEqual(omFirstComment.Initial, dffFirstComment.UserInitials);
-
-                        //compare dates
-                        if (dffFirstCommentExtra != null)
-                        {
-                            Assert.AreEqual(omFirstComment.Date.Day, dffFirstCommentExtra.Date.dom);
-                            Assert.AreEqual(omFirstComment.Date.Month, dffFirstCommentExtra.Date.mon);
-                            Assert.AreEqual(omFirstComment.Date.Year, dffFirstCommentExtra.Date.yr);
-                        }
-                    }
-                }
-                catch (AssertionException e)
-                {
-                    throw new AssertionException(e.Message + inputFile.FullName, e);
-                }
-            }
-        }
-
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        [Test]
-        public void TestStyleCount()
-        {
-            foreach (FileInfo inputFile in this.files)
-            {
-                Document omDoc = loadDocument(inputFile.FullName);
-                WordDocument dffDoc = new WordDocument(new StructuredStorageReader(inputFile.FullName));
-
-                //count the styles of the MS document
-                int omStyleCount = 0;
-                foreach (Style s in omDoc.Styles)
-                {
-                    if (s.InUse)
-                    {
-                        omStyleCount++;
-                    }
-                }
-
-                //count the styles of the DFF document
-                int dffStyleCount = 0;
-                foreach (StyleSheetDescription s in dffDoc.Styles.Styles)
-                {
-                    if (s != null && s.sti != StyleSheetDescription.StyleIdentifier.User)
-                    {
-                        dffStyleCount++;
-                    }
-                }
-
-
-                omDoc.Close(ref saveChanges, ref originalFormat, ref routeDocument);
-
-                try
-                {
-                    Assert.AreEqual(omStyleCount, dffStyleCount);
-                }
-                catch (AssertionException e)
-                {
-                    throw new AssertionException(e.Message + inputFile.FullName, e);
-                }
-            }
-        }
-
-        [Test]
-        public void TestMainText()
-        {
-            foreach (FileInfo inputFile in this.files)
-            {
-                Document word2007Doc = loadDocument(inputFile.FullName);
-                WordDocument dffDoc = new WordDocument(new StructuredStorageReader(inputFile.FullName));
-
-                //the text that is delivered by the object model and by DFF are always different 
-                //because the objetc model replaces some control characters.
-                //for this reason we remove all control characters
-
-                StringBuilder dffMainText = new StringBuilder();
-                foreach(char c in word2007Doc.StoryRanges[WdStoryType.wdMainTextStory].Text.ToCharArray())
-                {
-                    if((int)c >= 0x21)
-                    {
-                        dffMainText.Append(c);
-                    }
-                }
-
-                StringBuilder omMainText = new StringBuilder();
-                //dffDoc.Text.GetRange(0, dffDoc.FIB.ccpText)
-                foreach (char c in dffDoc.Text.ToArray())
-                {
-                    if((int)c >= 0x21)
-                    {
-                        omMainText.Append(c);
-                    }
-                }
-
-                word2007Doc.Close(ref saveChanges, ref originalFormat, ref routeDocument);
-
-                try
-                {
-                    Assert.AreEqual(omMainText.ToString(), dffMainText.ToString());
-                }
-                catch (AssertionException e)
-                {
-                    throw new AssertionException(e.Message + inputFile.FullName, e);
-                }
-            }
-        }
-
-        [Test]
-        public void TestCharacterCount()
-        {
-            foreach (FileInfo inputFile in this.files)
-            {
-                Document omDoc = loadDocument(inputFile.FullName);
-                WordDocument dffDoc = new WordDocument(new StructuredStorageReader(inputFile.FullName));
-
-                int omCount = omDoc.Characters.Count;
-                int dffCount = dffDoc.Text.GetRange(0, dffDoc.FIB.ccpText).Count;
-
-                omDoc.Close(ref saveChanges, ref originalFormat, ref routeDocument);
-
-                try
-                {
-                    Assert.AreEqual(omCount, dffCount);
-                }
-                catch (AssertionException e)
-                {
-                    throw new AssertionException(e.Message + inputFile.FullName, e);
-                }
-            }
         }
 
     }
