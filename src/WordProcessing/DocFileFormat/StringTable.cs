@@ -52,6 +52,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         public StringTable(Type dataType, VirtualStreamReader reader)
         {
+            this.Strings = new List<string>();
+            this.Data = new List<ByteStructure>();
+
             parse(dataType, reader, (UInt32)reader.BaseStream.Position);
         }
 
