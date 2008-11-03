@@ -7,6 +7,7 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using System.IO;
 using System.Xml;
 using Microsoft.Office.Interop.Word;
+using System.Reflection;
 
 namespace UnitTests
 {
@@ -30,9 +31,10 @@ namespace UnitTests
         private Object openAndRepair = Type.Missing;
         private Object documentDirection = Type.Missing;
         private Object noEncodingDialog = Type.Missing;
-        private Object saveChanges = Type.Missing;
-        private Object originalFormat = Type.Missing;
-        private Object routeDocument = Type.Missing;
+
+        private Object saveChanges = false;
+        private Object originalFormat = false;
+        private Object routeDocument = false;
 
 
         [TestFixtureSetUp]
@@ -88,10 +90,52 @@ namespace UnitTests
         }
 
 
+        [Test]
+        public void TestProperties()
+        {
+            foreach (FileInfo inputFile in this.files)
+            {
+                Document omDoc = loadDocument(inputFile.FullName);
+                WordDocument dffDoc = new WordDocument(new StructuredStorageReader(inputFile.FullName));
+
+                string dffRevisionNumber = dffDoc.DocumentProperties.nRevision.ToString();
+                string omRevisionNumber = (string)getDocumentProperty(omDoc, "Revision number");
+
+                object omCreationDate = (DateTime)getDocumentProperty(omDoc, "Creation date");
+                DateTime dffCreationDate = dffDoc.DocumentProperties.dttmCreated.ToDateTime();
+                
+                object omLastPrintedDate = getDocumentProperty(omDoc, "Last print date");
+                DateTime dffLastPrintedDate = dffDoc.DocumentProperties.dttmLastPrint.ToDateTime();
+
+                omDoc.Close(ref saveChanges, ref originalFormat, ref routeDocument);
+
+                try
+                {
+                    Assert.AreEqual(omRevisionNumber, dffRevisionNumber);
+
+                    if (omCreationDate != null && ((DateTime)omCreationDate).Year != 1601)
+                    {
+                        Assert.AreEqual((DateTime)omCreationDate, dffCreationDate);
+                    }
+
+                    if (omLastPrintedDate != null && ((DateTime)omLastPrintedDate).Year != 1601)
+                    {
+                        Assert.AreEqual((DateTime)omLastPrintedDate, dffLastPrintedDate);
+                    }
+
+                    Console.WriteLine("PASSED TestProperties " + inputFile.FullName);
+                }
+                catch (AssertionException e)
+                {
+                    throw new AssertionException(e.Message + inputFile.FullName, e);
+                }
+            }
+        }
+
+
         /// <summary>
         /// 
         /// </summary>
-        [Test]
         public void TestCharacters()
         { 
             foreach (FileInfo inputFile in this.files)
@@ -179,6 +223,8 @@ namespace UnitTests
                     dffBookmarkEnd = dffDoc.BookmarkEndPlex.CharacterPositions[dffIndex];
                 }
 
+                omDoc.Close(ref saveChanges, ref originalFormat, ref routeDocument);
+
                 try
                 {
                     //compare bookmark count
@@ -253,7 +299,6 @@ namespace UnitTests
             }
         }
 
-
         private Document loadDocument(Object filename)
         {
             return this.word2007.Documents.Open(
@@ -273,6 +318,26 @@ namespace UnitTests
                 ref openAndRepair,
                 ref documentDirection,
                 ref noEncodingDialog);
+        }
+
+        private object getDocumentProperty(Document document, string propertyName)
+        {
+            object propertyValue = null;
+            try
+            {
+                object builtInProperties = document.BuiltInDocumentProperties;
+                Type builtInPropertiesType = builtInProperties.GetType();
+
+                object property = builtInPropertiesType.InvokeMember("Item", BindingFlags.GetProperty, null, builtInProperties, new object[] { propertyName });
+                Type propertyType = property.GetType();
+
+                propertyValue = propertyType.InvokeMember("Value", BindingFlags.GetProperty, null, property, new object[] { });
+            }
+            catch (TargetInvocationException)
+            {
+            }
+
+            return propertyValue;
         }
 
     }
