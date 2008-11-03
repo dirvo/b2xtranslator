@@ -57,6 +57,9 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         public StringTable(Type dataType, VirtualStream tableStream, UInt32 fc, UInt32 lcb)
         {
+            this.Strings = new List<string>();
+            this.Data = new List<ByteStructure>();
+
             if (lcb > 0)
             {
                 tableStream.Seek((long)fc, System.IO.SeekOrigin.Begin);
@@ -101,8 +104,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.cbExtra = reader.ReadUInt16();
 
             //read the strings and extra datas
-            this.Strings = new List<string>();
-            this.Data = new List<ByteStructure>();
             for (int i = 0; i < this.cData; i++)
 			{   
                 int cchData = 0;

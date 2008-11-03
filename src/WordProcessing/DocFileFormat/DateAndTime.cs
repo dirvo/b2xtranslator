@@ -103,6 +103,19 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 throw new ByteParseException("Cannot parse the struct DTTM, the length of the struct doesn't match");
             }
         }
+
+        public DateTime ToDateTime()
+        {
+            if (this.yr == 1900 && this.mon == 0 && this.dom == 0 && this.hr == 0 && this.mint == 0)
+            {
+                return new DateTime(1900, 1, 1, 0, 0, 0);
+            }
+            else
+            {
+                return new DateTime(this.yr, this.mon, this.dom, this.hr, this.mint, 0);
+            } 
+        }
+
         private void setDefaultValues()
         {
             this.dom = 0;
