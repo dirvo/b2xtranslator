@@ -104,8 +104,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 {
                     doc.Convert(new MacroBinaryMapping(context));
                     doc.Convert(new MacroDataMapping(context));
-                    doc.CommandTable.Convert(new CommandTableMapping(context));
                 }
+
+                //convert the command table
+                doc.CommandTable.Convert(new CommandTableMapping(context));
 
                 //Write styles.xml
                 doc.Styles.Convert(new StyleSheetMapping(context, doc, docx.MainDocumentPart.StyleDefinitionsPart));

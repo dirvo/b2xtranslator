@@ -50,12 +50,17 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public CustomToolbar(VirtualStreamReader reader)
             : base(reader, ByteStructure.VARIABLE_LENGTH)
         {
-            this.name = Utils.ReadXstz(reader.BaseStream);
+            this.name = Utils.ReadXst(reader.BaseStream);
             this.cbTBData = reader.ReadInt32();
-            this.tb = reader.ReadBytes(this.cbTBData - 112);
+
+            //cbTBData specifies the size of this structure excluding the name, cCtls, and rTBC fields
+            //so it is the size of cbtb + tb + rVisualData + iWCTB + 4ignore bytes
+            //so we can retrieve the size of tb:
+            this.tb = reader.ReadBytes(this.cbTBData - 4 - 100 - 4 - 4);
             this.rVisualData = reader.ReadBytes(100);
             this.iWCTB = reader.ReadInt32();
             reader.ReadBytes(4);
+
             this.cCtls = reader.ReadInt32();
             this.rTBC = new List<ToolbarControl>();
             for (int i = 0; i < cCtls; i++)

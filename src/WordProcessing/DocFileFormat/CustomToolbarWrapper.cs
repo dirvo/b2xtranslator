@@ -28,7 +28,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// 
         /// </summary>
-        public List<ToolbarControl> rtbdc;
+        public List<ToolbarControl> rTBDC;
 
         /// <summary>
         /// 
@@ -46,12 +46,13 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.cCust = reader.ReadInt16();
             this.cbDTBC = reader.ReadInt32();
 
-            this.rtbdc = new List<ToolbarControl>();
-            int max = (int)(reader.BaseStream.Position + cbDTBC);
-            while (reader.BaseStream.Position < max)
+            this.rTBDC = new List<ToolbarControl>();
+            int rTbdcEndPos = (int)(reader.BaseStream.Position + cbDTBC);
+            while (reader.BaseStream.Position < rTbdcEndPos)
             {
-                this.rtbdc.Add(new ToolbarControl(reader));
+                this.rTBDC.Add(new ToolbarControl(reader));
             }
+            reader.BaseStream.Seek(rTbdcEndPos, System.IO.SeekOrigin.Begin);
 
             this.rCustomizations = new List<ToolbarCustomization>();
             for (int i = 0; i < cCust; i++)

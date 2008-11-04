@@ -99,7 +99,7 @@ namespace DIaLOGIKa.b2xtranslator.Tools
             return Encoding.Unicode.GetString(xstz);
         }
 
-        public static string ReadXstz(Stream stream)
+        public static string ReadXst(Stream stream)
         {
             byte[] cch = new byte[2];
             stream.Read(cch, 0, cch.Length);
@@ -108,6 +108,17 @@ namespace DIaLOGIKa.b2xtranslator.Tools
             stream.Read(xstz, 0, xstz.Length);
 
             return Encoding.Unicode.GetString(xstz);
+        }
+
+        public static string ReadXstz(Stream stream)
+        {
+            string xst = ReadXst(stream);
+            
+            //skip the termination
+            byte[] termiantion = new byte[2];
+            stream.Read(termiantion, 0, termiantion.Length);
+
+            return xst;
         }
 
         public static int ArraySum(byte[] values)

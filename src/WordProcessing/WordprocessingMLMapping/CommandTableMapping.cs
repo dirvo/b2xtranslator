@@ -35,9 +35,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _writer.WriteEndElement();
 
             //write the toolbars
-            _writer.WriteStartElement("wne", "toolbars", OpenXmlNamespaces.MicrosoftWordML);
-            writeToolbar(tcg.CustomToolbars);
-            _writer.WriteEndElement();
+            if (tcg.CustomToolbars != null)
+            {
+                _writer.WriteStartElement("wne", "toolbars", OpenXmlNamespaces.MicrosoftWordML);
+                writeToolbar(tcg.CustomToolbars);
+                _writer.WriteEndElement();
+            }
 
             _writer.WriteEndElement();
 

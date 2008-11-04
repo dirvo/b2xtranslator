@@ -182,7 +182,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public ToolbarControl(VirtualStreamReader reader)
             : base(reader, ByteStructure.VARIABLE_LENGTH)
         {
-            //header
+            //HEADER START
+
             this.bSignature = reader.ReadByte();
             this.bVersion = reader.ReadByte();
 
@@ -205,13 +206,16 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 this.height = reader.ReadUInt16();
             }
 
+            //HEADER END
+
             //cid
-            if (this.tct != ToolbarControlType.Button && (int)this.tct != 0x1051)
+            if (this.tcid != 0x01 && this.tcid != 0x1051)
             {
                 this.cid = reader.ReadBytes(4);
             }
 
-            //data
+            //DATA START
+
             if (this.tct != ToolbarControlType.ActiveX)
             {
                 //general control info 
