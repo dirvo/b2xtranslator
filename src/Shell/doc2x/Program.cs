@@ -46,7 +46,7 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
     public class Program
     {
         private static string inputFile;
-        private static string outputFile;
+        private static string choosenOutputFile;
         
         public static void Main(string[] args)
         {
@@ -65,31 +65,35 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                 ProcessingFile procFile = new ProcessingFile(inputFile);
 
                 //make output file name
-                if (outputFile == null)
+                if (choosenOutputFile == null)
                 {
                     if (inputFile.Contains("."))
                     {
-                        outputFile = inputFile.Remove(inputFile.LastIndexOf(".")) + ".docx";
+                        choosenOutputFile = inputFile.Remove(inputFile.LastIndexOf(".")) + ".docx";
                     }
                     else
                     {
-                        outputFile = inputFile + ".docx";
+                        choosenOutputFile = inputFile + ".docx";
                     }
                 }
-
-                TraceLogger.Info("Converting file {0} into {1}", inputFile, outputFile);
-
-                //start time
-                DateTime start = DateTime.Now;
 
                 //open the reader
                 using (StructuredStorageReader reader = new StructuredStorageReader(procFile.File.FullName))
                 {
-                    //parse the document
+                    //parse the input document
                     WordDocument doc = new WordDocument(reader);
 
+                    //prepare the output document
+                    WordprocessingDocumentType outType = Converter.DetectOutputType(doc);
+                    string conformOutputFile = Converter.GetConformFilename(choosenOutputFile, outType);
+                    WordprocessingDocument docx = WordprocessingDocument.Create(conformOutputFile, outType);
+
+                    //start time
+                    DateTime start = DateTime.Now;
+                    TraceLogger.Info("Converting file {0} into {1}", inputFile, conformOutputFile);
+
                     //convert the document
-                    Converter.Convert(doc, outputFile);
+                    Converter.Convert(doc, docx);
 
                     DateTime end = DateTime.Now;
                     TimeSpan diff = end.Subtract(start);
@@ -133,7 +137,7 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
             }
             catch (ZipCreationException ex)
             {
-                TraceLogger.Error("Could not create output file {0}.", outputFile);
+                TraceLogger.Error("Could not create output file {0}.", choosenOutputFile);
                 //TraceLogger.Error("Perhaps the specified outputfile was a directory or contained invalid characters.");
                 TraceLogger.Debug(ex.ToString());
             }
@@ -197,7 +201,7 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                     else if (args[i].ToLower() == "-o")
                     {
                         //parse output file name
-                        outputFile = args[i + 1];
+                        choosenOutputFile = args[i + 1];
                     }
                 }
             }

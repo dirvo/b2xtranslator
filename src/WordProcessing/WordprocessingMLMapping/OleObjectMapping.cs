@@ -107,7 +107,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //ObjectID
             _writer.WriteAttributeString("ObjectID", ole.ObjectId);
 
-
             _writer.WriteEndElement();
         }
 

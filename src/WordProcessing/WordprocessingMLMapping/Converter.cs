@@ -11,10 +11,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
     public class Converter
     {
-        public static void Convert(WordDocument doc, string outputFilename)
+        public static WordprocessingDocumentType DetectOutputType(WordDocument doc)
         {
-            ConversionContext context = new ConversionContext(doc);
-            WordprocessingDocument docx = null;
+            WordprocessingDocumentType returnType = WordprocessingDocumentType.Document;
 
             //detect the document type
             if (doc.FIB.fDot)
@@ -23,14 +22,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 if (doc.CommandTable.MacroDatas != null && doc.CommandTable.MacroDatas.Count > 0)
                 {
                     //macro enabled template
-                    docx = WordprocessingDocument.Create( getOutputFilename(outputFilename, WordprocessingDocumentType.MacroEnabledTemplate), 
-                        WordprocessingDocumentType.MacroEnabledTemplate);
+                    returnType = WordprocessingDocumentType.MacroEnabledTemplate;
                 }
                 else
                 {
                     //without macros
-                    docx = WordprocessingDocument.Create(getOutputFilename(outputFilename, WordprocessingDocumentType.Template), 
-                        WordprocessingDocumentType.Template);
+                    returnType = WordprocessingDocumentType.Template;
                 }
             }
             else
@@ -39,16 +36,55 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 if (doc.CommandTable.MacroDatas != null && doc.CommandTable.MacroDatas.Count > 0)
                 {
                     //macro enabled document
-                    docx = WordprocessingDocument.Create(getOutputFilename(outputFilename, WordprocessingDocumentType.MacroEnabledDocument), 
-                        WordprocessingDocumentType.MacroEnabledDocument);
+                    returnType = WordprocessingDocumentType.MacroEnabledDocument;
                 }
                 else
                 {
-                    docx = WordprocessingDocument.Create(getOutputFilename(outputFilename, WordprocessingDocumentType.Document), 
-                        WordprocessingDocumentType.Document);
+                    returnType = WordprocessingDocumentType.Document;
                 }
             }
 
+            return returnType;
+        }
+
+
+        public static string GetConformFilename(string choosenFilename, WordprocessingDocumentType outType)
+        {
+            string outExt = ".docx";
+            switch (outType)
+            {
+                case WordprocessingDocumentType.Document:
+                    outExt = ".docx";
+                    break;
+                case WordprocessingDocumentType.MacroEnabledDocument:
+                    outExt = ".docm";
+                    break;
+                case WordprocessingDocumentType.MacroEnabledTemplate:
+                    outExt = ".dotm";
+                    break;
+                case WordprocessingDocumentType.Template:
+                    outExt = ".dotx";
+                    break;
+                default:
+                    outExt = ".docx";
+                    break;
+            }
+
+            string inExt = Path.GetExtension(choosenFilename);
+            if (inExt != null)
+            {
+                return choosenFilename.Replace(inExt, outExt);
+            }
+            else
+            {
+                return choosenFilename + outExt;
+            }
+        }
+
+
+        public static void Convert(WordDocument doc, WordprocessingDocument docx)
+        {
+            ConversionContext context = new ConversionContext(doc);
             using (docx)
             {
                 //Setup the writer
@@ -102,39 +138,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //write settings.xml at last because of the rsid list
                     doc.Glossary.DocumentProperties.Convert(new SettingsMapping(context, docx.MainDocumentPart.GlossaryPart.SettingsPart));
                 }
-            }
-        }
-    
-        private static string getOutputFilename(string inputfilename, WordprocessingDocumentType doctype)
-        {
-            string outExt = ".docx";
-            switch (doctype)
-            {
-                case WordprocessingDocumentType.Document:
-                    outExt = ".docx";
-                    break;
-                case WordprocessingDocumentType.MacroEnabledDocument:
-                    outExt = ".docm";
-                    break;
-                case WordprocessingDocumentType.MacroEnabledTemplate:
-                    outExt = ".dotm";
-                    break;
-                case WordprocessingDocumentType.Template:
-                    outExt = ".dotx";
-                    break;
-                default:
-                    outExt = ".docx";
-                    break;
-            }
-
-            string inExt = Path.GetExtension(inputfilename);
-            if (inExt != null)
-            {
-                return inputfilename.Replace(inExt, outExt);
-            }
-            else
-            {
-                return inputfilename + outExt;
             }
         }
     }
