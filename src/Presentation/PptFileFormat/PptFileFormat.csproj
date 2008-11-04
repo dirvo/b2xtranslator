@@ -56,9 +56,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CharacterRun.cs" />
-    <Compile Include="ClientAnchor.cs" />
-    <Compile Include="ClientData.cs" />
-    <Compile Include="ClientTextbox.cs" />
+    <Compile Include="PowerpointClientAnchor.cs" />
+    <Compile Include="PowerpointClientData.cs" />
+    <Compile Include="PowerpointClientTextbox.cs" />
     <Compile Include="ColorMappingAtom.cs" />
     <Compile Include="CStringAtom.cs" />
     <Compile Include="CurrentUserAtom.cs" />

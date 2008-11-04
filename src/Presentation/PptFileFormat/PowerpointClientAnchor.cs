@@ -7,14 +7,14 @@ using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
     [OfficeRecordAttribute(0xF010)]
-    public class ClientAnchor : Record
+    public class PowerpointClientAnchor : Record
     {
         public int Top;
         public int Left;
         public int Right;
         public int Bottom;
 
-        public ClientAnchor(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+        public PowerpointClientAnchor(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {
             this.Top = this.Reader.ReadUInt16();

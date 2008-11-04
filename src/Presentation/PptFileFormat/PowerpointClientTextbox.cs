@@ -35,9 +35,9 @@ using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
     [OfficeRecordAttribute(0xF00D)]
-    public class ClientTextbox : RegularContainer
+    public class PowerpointClientTextbox : RegularContainer
     {
-        public ClientTextbox(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+        public PowerpointClientTextbox(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {
             TextHeaderAtom curThAtom = null;

@@ -34,9 +34,9 @@ using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
     [OfficeRecordAttribute(0xF011)]
-    public class ClientData : RegularContainer
+    public class PowerpointClientData : RegularContainer
     {
-        public ClientData(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+        public PowerpointClientData(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance) { }
     }
 }
