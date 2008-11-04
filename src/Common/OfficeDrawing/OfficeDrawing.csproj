@@ -38,6 +38,9 @@
     <Compile Include="BlipStoreContainer.cs" />
     <Compile Include="BlipStoreEntry.cs" />
     <Compile Include="ChildAnchor.cs" />
+    <Compile Include="ClientAnchor.cs" />
+    <Compile Include="ClientData.cs" />
+    <Compile Include="ClientTextbox.cs" />
     <Compile Include="DrawingContainer.cs" />
     <Compile Include="DrawingGroup.cs" />
     <Compile Include="DrawingGroupRecord.cs" />
