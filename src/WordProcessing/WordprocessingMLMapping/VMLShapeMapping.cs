@@ -20,6 +20,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private ContentPart _targetPart;
         private XmlElement _fill, _stroke, _shadow, _imagedata, _3dstyle;
         private bool _documentBase;
+        private bool _stroked = true;
+        private bool _filled = true;
 
 
         public VMLShapeMapping(XmlWriter writer, ContentPart targetPart, FileShapeAddress fspa, bool documentBase, ConversionContext ctx)
@@ -238,6 +240,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case ShapeOptions.PropertyId.lineWidth:
                         EmuValue lineWidth = new EmuValue((int)entry.op);
                         _writer.WriteAttributeString("strokeweight", lineWidth.ToPoints() + "pt");
+                        if (lineWidth.Value > 0)
+                        {
+                            _stroked = true;
+                        }
                         break;
 
                     case ShapeOptions.PropertyId.lineDashing:
@@ -331,9 +337,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         EmuValue backwardValue = new EmuValue((int)entry.op);
                         appendValueAttribute(_3dstyle, "backdepth", backwardValue.ToPoints().ToString());
                         break; 
-
-
-
                 }
             }
 
@@ -347,6 +350,16 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             if (style != null)
             {
                 _writer.WriteAttributeString("style", style.ToString());
+            }
+
+            //write filled/stroked attribute
+            if (!_stroked)
+            {
+                _writer.WriteAttributeString("stroked", "f");
+            }
+            if (!_filled)
+            {
+                _writer.WriteAttributeString("filled", "f");
             }
 
             //write adj values 

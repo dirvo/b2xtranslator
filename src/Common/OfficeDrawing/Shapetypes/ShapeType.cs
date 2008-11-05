@@ -94,7 +94,6 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
         /// </summary>
         public bool ShapeConcentricFill;
 
-
         /// <summary>
         /// Specifies what join style the shape has. <br/>
         /// Since there is no UI for changing the join style, 

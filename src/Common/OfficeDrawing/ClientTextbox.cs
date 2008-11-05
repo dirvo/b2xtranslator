@@ -30,9 +30,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
-using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 
-namespace DIaLOGIKa.b2xtranslator.DocFileFormat
+namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 {
     [OfficeRecordAttribute(0xF00D)]
     public class ClientTextbox : Record

@@ -39,7 +39,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             //The path
             if (shapeType.Path != null)
+            {
                 _writer.WriteAttributeString("path", shapeType.Path);
+            }
 
             //stroke
             _writer.WriteStartElement("v", "stroke", OpenXmlNamespaces.VectorML);

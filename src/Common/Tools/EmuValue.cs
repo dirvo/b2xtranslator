@@ -34,7 +34,7 @@ namespace DIaLOGIKa.b2xtranslator.Tools
 
     public class EmuValue
     {
-        private int value;
+        public int Value;
 
         /// <summary>
         /// Creates a new EmuValue for the given value.
@@ -42,7 +42,7 @@ namespace DIaLOGIKa.b2xtranslator.Tools
         /// <param name="value"></param>
         public EmuValue(int value)
         {
-            this.value = value;
+            this.Value = value;
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace DIaLOGIKa.b2xtranslator.Tools
         /// <returns></returns>
         public double ToPoints()
         {
-            return this.value / 12700;
+            return this.Value / 12700;
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace DIaLOGIKa.b2xtranslator.Tools
         /// <returns></returns>
         public double ToTwips()
         {
-            return this.value / 635;
+            return this.Value / 635;
         }
     }
 }

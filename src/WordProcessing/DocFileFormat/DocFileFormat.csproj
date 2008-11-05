@@ -106,8 +106,6 @@
     <Compile Include="BookmarkFirst.cs" />
     <Compile Include="BreakDescriptor.cs" />
     <Compile Include="CharacterProperties.cs" />
-    <Compile Include="ClientData.cs" />
-    <Compile Include="ClientTextbox.cs" />
     <Compile Include="AnnotationReferenceDescriptor.cs" />
     <Compile Include="CommandIdentifier.cs" />
     <Compile Include="CustomToolbar.cs" />
