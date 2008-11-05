@@ -12,7 +12,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 {
     class TextMapping :
         AbstractOpenXmlMapping,
-        IMapping<ClientTextbox>
+        IMapping<PowerpointClientTextbox>
     {
         protected ConversionContext _ctx;
 
@@ -70,7 +70,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             return null;
         }
 
-        public void Apply(ClientTextbox textbox)
+        public void Apply(PowerpointClientTextbox textbox)
         {
             TextHeaderAtom thAtom = textbox.FirstChildWithType<TextHeaderAtom>();
 

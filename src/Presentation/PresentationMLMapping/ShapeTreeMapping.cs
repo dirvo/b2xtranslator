@@ -72,7 +72,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteElementString("p", "cNvSpPr", OpenXmlNamespaces.PresentationML, "");
             _writer.WriteStartElement("p", "nvPr", OpenXmlNamespaces.PresentationML);
             
-            ClientData clientData = container.FirstChildWithType<ClientData>();
+            PowerpointClientData clientData = container.FirstChildWithType<PowerpointClientData>();
 
             if (clientData != null)
             {
@@ -106,7 +106,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             // Visible shape properties
             _writer.WriteStartElement("p", "spPr", OpenXmlNamespaces.PresentationML);
 
-            ClientAnchor anchor = container.FirstChildWithType<ClientAnchor>();
+            PowerpointClientAnchor anchor = container.FirstChildWithType<PowerpointClientAnchor>();
 
             if (anchor != null && anchor.Right >= anchor.Left && anchor.Bottom >= anchor.Top)
             {
@@ -136,7 +136,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement();
         }
 
-        public void Apply(ClientTextbox textbox)
+        public void Apply(PowerpointClientTextbox textbox)
         {
             _writer.WriteStartElement("p", "txBody", OpenXmlNamespaces.PresentationML);
 
