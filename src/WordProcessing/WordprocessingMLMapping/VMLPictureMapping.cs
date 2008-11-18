@@ -50,8 +50,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 double yScaling = pict.my / 1000.0;
                 TwipsValue width = new TwipsValue(pict.dxaGoal * xScaling);
                 TwipsValue height = new TwipsValue(pict.dyaGoal * yScaling);
-                style.Append("width:").Append(width.ToPoints()).Append("pt;");
-                style.Append("height:").Append(height.ToPoints()).Append("pt;");
+                string widthString = Convert.ToString(width.ToPoints(), CultureInfo.GetCultureInfo("en-US"));
+                string heightString = Convert.ToString(height.ToPoints(), CultureInfo.GetCultureInfo("en-US"));
+                style.Append("width:").Append(widthString).Append("pt;");
+                style.Append("height:").Append(heightString).Append("pt;");
                 _writer.WriteAttributeString("style", style.ToString());
 
                 _writer.WriteAttributeString("id", pict.ShapeContainer.GetHashCode().ToString());

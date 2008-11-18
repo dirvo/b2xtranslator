@@ -132,6 +132,7 @@
     <Compile Include="Shapetypes\MoonType.cs" />
     <Compile Include="Shapetypes\NoSmokingType.cs" />
     <Compile Include="Shapetypes\NotchedRightArrowType.cs" />
+    <Compile Include="Shapetypes\OvalType.cs" />
     <Compile Include="Shapetypes\PentagonType.cs" />
     <Compile Include="Shapetypes\PlaqueType.cs" />
     <Compile Include="Shapetypes\PlusType.cs" />

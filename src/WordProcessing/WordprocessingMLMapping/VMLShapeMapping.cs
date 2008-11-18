@@ -8,6 +8,7 @@ using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using System.IO;
 using DIaLOGIKa.b2xtranslator.DocFileFormat;
 using DIaLOGIKa.b2xtranslator.Tools;
+using System.Globalization;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
@@ -144,9 +145,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 shape.ShapeType.Convert(new VMLShapeTypeMapping(_writer));
             }
-
-            _writer.WriteStartElement("v", "shape", OpenXmlNamespaces.VectorML);
-
+            if (shape.ShapeType is DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes.OvalType)
+            {
+                _writer.WriteStartElement("v", "oval", OpenXmlNamespaces.VectorML);
+            }
+            else
+            {
+                _writer.WriteStartElement("v", "shape", OpenXmlNamespaces.VectorML);
+            }
             //append id
             _writer.WriteAttributeString("id", getShapeId(shape));
             
@@ -239,7 +245,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     case ShapeOptions.PropertyId.lineWidth:
                         EmuValue lineWidth = new EmuValue((int)entry.op);
-                        _writer.WriteAttributeString("strokeweight", lineWidth.ToPoints() + "pt");
+                        _writer.WriteAttributeString("strokeweight", lineWidth.ToString());
                         if (lineWidth.Value > 0)
                         {
                             _stroked = true;
@@ -620,10 +626,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             TwipsValue width = new TwipsValue(fspa.xaRight - fspa.xaLeft);
             TwipsValue height = new TwipsValue(fspa.yaBottom - fspa.yaTop);
             appendStyleProperty(style, "position", "absolute");
-            appendStyleProperty(style, "margin-left", left.ToPoints() + "pt");
-            appendStyleProperty(style, "margin-top", top.ToPoints() + "pt");
-            appendStyleProperty(style, "width", width.ToPoints() + "pt");
-            appendStyleProperty(style, "height", height.ToPoints() + "pt");
+            appendStyleProperty(style, "margin-left", Convert.ToString(left.ToPoints(), CultureInfo.GetCultureInfo("en-US")) + "pt");
+            appendStyleProperty(style, "margin-top", Convert.ToString(top.ToPoints(), CultureInfo.GetCultureInfo("en-US")) + "pt");
+            appendStyleProperty(style, "width", Convert.ToString(width.ToPoints(), CultureInfo.GetCultureInfo("en-US")) + "pt");
+            appendStyleProperty(style, "height", Convert.ToString(height.ToPoints(), CultureInfo.GetCultureInfo("en-US")) + "pt");
             appendStyleProperty(style, "mso-position-horizontal-relative", fspa.bx.ToString());
             appendStyleProperty(style, "mso-position-vertical-relative", fspa.by.ToString());
 

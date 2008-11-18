@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Globalization;
 
 namespace DIaLOGIKa.b2xtranslator.Tools
 {
@@ -61,6 +62,15 @@ namespace DIaLOGIKa.b2xtranslator.Tools
         public double ToTwips()
         {
             return this.Value / 635;
+        }
+
+        /// <summary>
+        /// returns the original value as string 
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return Convert.ToString(this.Value, CultureInfo.GetCultureInfo("en-US")); 
         }
     }
 }
