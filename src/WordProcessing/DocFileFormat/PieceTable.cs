@@ -145,6 +145,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 catch(Exception)
                 {
                     goon = false;
+                    
                 }
             }
         }

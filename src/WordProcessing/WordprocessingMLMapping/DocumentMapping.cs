@@ -601,8 +601,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                                     if (_doc.BookmarkStartPlex.CharacterPositions[b] == cp)
                                     {
                                         //then write a start and a end
-                                        writeBookmarkStart((BookmarkFirst)_doc.BookmarkStartPlex.Elements[b]);
-                                        writeBookmarkEnd((BookmarkFirst)_doc.BookmarkStartPlex.Elements[b]);
+                                        if (_doc.BookmarkStartPlex.Elements.Count > b)
+                                        {
+                                            writeBookmarkStart((BookmarkFirst)_doc.BookmarkStartPlex.Elements[b]);
+                                            writeBookmarkEnd((BookmarkFirst)_doc.BookmarkStartPlex.Elements[b]);
+                                        }
                                     }
                                     else
                                     {
@@ -997,7 +1000,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 {
                     if (_doc.BookmarkStartPlex.CharacterPositions[b] == cp)
                     {
-                        writeBookmarkStart((BookmarkFirst)_doc.BookmarkStartPlex.Elements[b]);
+                        if (_doc.BookmarkStartPlex.Elements.Count > b)
+                        {
+                            writeBookmarkStart((BookmarkFirst)_doc.BookmarkStartPlex.Elements[b]);
+                        }
                     }
                 }
             }
