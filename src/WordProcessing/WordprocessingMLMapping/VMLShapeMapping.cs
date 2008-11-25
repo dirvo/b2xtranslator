@@ -75,31 +75,39 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             _writer.WriteStartElement("v", "group", OpenXmlNamespaces.VectorML);
             _writer.WriteAttributeString("id", getShapeId(shape));
+
             _writer.WriteAttributeString("coordorigin", gsr.rcgBounds.Left + "," + gsr.rcgBounds.Top);
             _writer.WriteAttributeString("coordsize", gsr.rcgBounds.Width + "," + gsr.rcgBounds.Height);
 
+            StringBuilder style = new StringBuilder();
             if (_documentBase)
             {
                 //this group is placed directly in the document, 
                 //so use the FSPA to build the style
-                StringBuilder style = buildStyle(_fspa);
-
-                //write wrap coords
-                foreach (ShapeOptions.OptionEntry entry in options)
-                {
-                    switch (entry.pid)
-                    {
-                        case ShapeOptions.PropertyId.pWrapPolygonVertices:
-                            _writer.WriteAttributeString("wrapcoords", getWrapCoords(entry));
-                            break;
-                        case ShapeOptions.PropertyId.dhgt:
-                            appendStyleProperty(style, "z-index", entry.op.ToString());
-                            break;
-                    }
-                }
-
-                _writer.WriteAttributeString("style", style.ToString());
+                style = buildStyle(_fspa);
             }
+            else
+            {
+                ChildAnchor anchor = groupShape.FirstChildWithType<ChildAnchor>();
+                style = buildStyle(anchor);
+            }
+
+            //write wrap coords
+            foreach (ShapeOptions.OptionEntry entry in options)
+            {
+                switch (entry.pid)
+                {
+                    case ShapeOptions.PropertyId.pWrapPolygonVertices:
+                        _writer.WriteAttributeString("wrapcoords", getWrapCoords(entry));
+                        break;
+                    case ShapeOptions.PropertyId.dhgt:
+                        appendStyleProperty(style, "z-index", entry.op.ToString());
+                        break;
+                }
+            }
+
+            _writer.WriteAttributeString("style", style.ToString());
+
 
             //convert the shapes/groups in the group
             for (int i = 1; i < container.Children.Count; i++)
@@ -112,6 +120,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 else if (container.Children[i].GetType() == typeof(GroupContainer))
                 {
                     GroupContainer childGroup = (GroupContainer)container.Children[i];
+                    _documentBase = false;
                     convertGroup(childGroup);
                 }
             }
@@ -140,19 +149,22 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             int numberAdjValues = 0;
             bool has3DValues = false; 
 
-            //write the shapeType
-            if (shape.ShapeType != null)
-            {
-                shape.ShapeType.Convert(new VMLShapeTypeMapping(_writer));
-            }
+            
             if (shape.ShapeType is DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes.OvalType)
             {
+                //OVAL
                 _writer.WriteStartElement("v", "oval", OpenXmlNamespaces.VectorML);
             }
             else
             {
+                //SHAPE
+                if (shape.ShapeType != null)
+                {
+                    shape.ShapeType.Convert(new VMLShapeTypeMapping(_writer));
+                }
                 _writer.WriteStartElement("v", "shape", OpenXmlNamespaces.VectorML);
             }
+
             //append id
             _writer.WriteAttributeString("id", getShapeId(shape));
             
