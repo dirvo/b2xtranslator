@@ -37,6 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
     public abstract class OpenXmlPartContainer
     {
         protected const string REL_PREFIX = "rId";
+        protected const string EXT_PREFIX = "extId";
         protected const string REL_FOLDER = "_rels";
         protected const string REL_EXTENSION = ".rels";
 
@@ -145,7 +146,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 
         public ExternalRelationship AddExternalRelationship(string relationshipType, Uri externalUri)
         {
-            ExternalRelationship rel = new ExternalRelationship(REL_PREFIX + (_externalRelationships.Count + 1).ToString(), relationshipType, externalUri);
+            ExternalRelationship rel = new ExternalRelationship(EXT_PREFIX + (_externalRelationships.Count + 1).ToString(), relationshipType, externalUri);
             _externalRelationships.Add(rel);
             return rel;
         }
