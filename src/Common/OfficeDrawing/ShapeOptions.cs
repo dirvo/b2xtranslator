@@ -388,6 +388,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             fAllowOverlap=950,
             fReallyHidden=951,
             fScriptAnchor=952,
+            groupShapeBoolean = 959,
 
             //Unknown HTML
             wzLineId=1026,
@@ -468,6 +469,43 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             colSpan=1991
         }
         #endregion
+
+        public enum PositionHorizontal
+        {
+            msophAbs = 0x00000001,
+            msophLeft = 0x00000002,
+            msophCenter = 0x00000003,
+            msophRight = 0x00000004,
+            msophInside = 0x00000005,
+            msophOutside = 0x00000006
+        }
+
+        public enum PositionHorizontalRelative
+        {
+            msoprhMargin,
+            msoprhPage,
+            msoprhText,
+            msoprhChar
+        }
+
+        public enum PositionVertical
+        {
+            msopvAbs = 0x00000001,
+            msopvTop = 0x00000002,
+            msopvCenter = 0x00000003,
+            msopvBottom = 0x00000004,
+            msopvInside = 0x00000005,
+            msopvOutside = 0x00000006
+        }
+
+
+        public enum PositionVerticalRelative
+        {
+            msoprvMargin,
+            msoprvPage,
+            msoprvText,
+            msoprvLine
+        }
 
         public struct OptionEntry
         {

@@ -84,12 +84,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 //this group is placed directly in the document, 
                 //so use the FSPA to build the style
-                style = buildStyle(_fspa);
+                style = buildStyle(_fspa, options);
             }
             else
             {
                 ChildAnchor anchor = groupShape.FirstChildWithType<ChildAnchor>();
-                style = buildStyle(anchor);
+                style = buildStyle(anchor, options);
             }
 
             //write wrap coords
@@ -99,9 +99,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 {
                     case ShapeOptions.PropertyId.pWrapPolygonVertices:
                         _writer.WriteAttributeString("wrapcoords", getWrapCoords(entry));
-                        break;
-                    case ShapeOptions.PropertyId.dhgt:
-                        appendStyleProperty(style, "z-index", entry.op.ToString());
                         break;
                 }
             }
@@ -128,9 +125,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //write wrap
             if (_documentBase)
             {
-                _writer.WriteStartElement("w10", "wrap", OpenXmlNamespaces.OfficeWord);
-                _writer.WriteAttributeString("type", getWrapType(_fspa));
-                _writer.WriteEndElement();
+                string wrap = getWrapType(_fspa);
+                if(wrap != "through")
+                {
+                    _writer.WriteStartElement("w10", "wrap", OpenXmlNamespaces.OfficeWord);
+                    _writer.WriteAttributeString("type", wrap);
+                    _writer.WriteEndElement();
+                }
             }
 
             _writer.WriteEndElement();
@@ -145,10 +146,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             Shape shape = (Shape)container.Children[0];
             List<ShapeOptions.OptionEntry> options = container.ExtractOptions();
+            ChildAnchor anchor = container.FirstChildWithType<ChildAnchor>();
+            ClientAnchor clientAnchor = container.FirstChildWithType<ClientAnchor>();
+
             string[] adjValues = new string[8];
             int numberAdjValues = 0;
             bool has3DValues = false; 
-
             
             if (shape.ShapeType is DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes.OvalType)
             {
@@ -171,21 +174,16 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             
             //build the style
             StringBuilder style = null;
+
             if (_documentBase)
             {
                 //this shape is placed directly in the document, 
                 //so use the FSPA to build the style
-                style = buildStyle(_fspa);
+                style = buildStyle(_fspa, options);
             }
             else
             {
-                //use the anchor to build the style
-                Record recAnchor = container.FirstChildWithType<ChildAnchor>();
-                if (recAnchor != null)
-                {
-                    ChildAnchor anchor = (ChildAnchor)recAnchor;
-                    style = buildStyle(anchor);
-                }
+                style = buildStyle(anchor, options);
             }
 
             EmuValue shadowOffsetX = null;
@@ -429,9 +427,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //write wrap
             if (_documentBase)
             {
-                _writer.WriteStartElement("w10", "wrap", OpenXmlNamespaces.OfficeWord);
-                _writer.WriteAttributeString("type", getWrapType(_fspa));
-                _writer.WriteEndElement();
+                string wrap = getWrapType(_fspa);
+                if(wrap != "through")
+                {
+                    _writer.WriteStartElement("w10", "wrap", OpenXmlNamespaces.OfficeWord);
+                    _writer.WriteAttributeString("type", wrap);
+                    _writer.WriteEndElement();
+                }
             }
 
             //write stroke
@@ -627,31 +629,78 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         }
 
 
-        private StringBuilder buildStyle(FileShapeAddress fspa)
+        private StringBuilder buildStyle(FileShapeAddress fspa, List<ShapeOptions.OptionEntry> options)
         {
             //build style
             StringBuilder style = new StringBuilder();
+            bool fBehindDocument = false;
 
             //append size and position ...
             TwipsValue left = new TwipsValue(fspa.xaLeft);
             TwipsValue top = new TwipsValue(fspa.yaTop);
             TwipsValue width = new TwipsValue(fspa.xaRight - fspa.xaLeft);
             TwipsValue height = new TwipsValue(fspa.yaBottom - fspa.yaTop);
+
             appendStyleProperty(style, "position", "absolute");
             appendStyleProperty(style, "margin-left", Convert.ToString(left.ToPoints(), CultureInfo.GetCultureInfo("en-US")) + "pt");
             appendStyleProperty(style, "margin-top", Convert.ToString(top.ToPoints(), CultureInfo.GetCultureInfo("en-US")) + "pt");
             appendStyleProperty(style, "width", Convert.ToString(width.ToPoints(), CultureInfo.GetCultureInfo("en-US")) + "pt");
             appendStyleProperty(style, "height", Convert.ToString(height.ToPoints(), CultureInfo.GetCultureInfo("en-US")) + "pt");
-            appendStyleProperty(style, "mso-position-horizontal-relative", fspa.bx.ToString());
-            appendStyleProperty(style, "mso-position-vertical-relative", fspa.by.ToString());
+
+            foreach (ShapeOptions.OptionEntry entry in options)
+            {
+                switch (entry.pid)
+                {
+                    case ShapeOptions.PropertyId.posh:
+                        appendStyleProperty(
+                            style,
+                            "mso-position-horizontal",
+                            mapHorizontalPosition((ShapeOptions.PositionHorizontal)entry.op));
+                        break;
+                    case ShapeOptions.PropertyId.posrelh:
+                        appendStyleProperty(
+                            style,
+                            "mso-position-horizontal-relative",
+                            mapHorizontalPositionRelative((ShapeOptions.PositionHorizontalRelative)entry.op));
+                        break;
+                    case ShapeOptions.PropertyId.posv:
+                        appendStyleProperty(
+                            style,
+                            "mso-position-vertical",
+                            mapVerticalPosition((ShapeOptions.PositionVertical)entry.op));
+                        break;
+                    case ShapeOptions.PropertyId.posrelv:
+                        appendStyleProperty(
+                            style,
+                            "mso-position-vertical-relative",
+                            mapVerticalPositionRelative((ShapeOptions.PositionVerticalRelative)entry.op));
+                        break;
+                    case ShapeOptions.PropertyId.groupShapeBoolean:
+                        //TODO: unmask all bits 
+                        fBehindDocument = Utils.BitmaskToBool(entry.op, 0x20);
+                        break;
+                    case ShapeOptions.PropertyId.dhgt:
+                        if (fBehindDocument)
+                        {
+                            //TODO: take dhgt into account
+                            appendStyleProperty(style, "z-index", "-1");
+                        }
+                        else if (entry.op > 0)
+                        {
+                            appendStyleProperty(style, "z-index", entry.op.ToString());
+                        }
+                        break;
+                }
+            }
 
             return style;
         }
 
-        private StringBuilder buildStyle(ChildAnchor anchor)
+        private StringBuilder buildStyle(ChildAnchor anchor, List<ShapeOptions.OptionEntry> options)
         {
             //build style
             StringBuilder style = new StringBuilder();
+            bool fBehindDocument = false;
 
             //append size and position ...
             appendStyleProperty(style, "position", "absolute");
@@ -659,6 +708,52 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             appendStyleProperty(style, "top", anchor.rcgBounds.Top.ToString());
             appendStyleProperty(style, "width", anchor.rcgBounds.Width.ToString());
             appendStyleProperty(style, "height", anchor.rcgBounds.Height.ToString());
+
+            foreach (ShapeOptions.OptionEntry entry in options)
+            {
+                switch (entry.pid)
+                {
+                    case ShapeOptions.PropertyId.posh:
+                        appendStyleProperty(
+                            style,
+                            "mso-position-horizontal",
+                            mapHorizontalPosition((ShapeOptions.PositionHorizontal)entry.op));
+                        break;
+                    case ShapeOptions.PropertyId.posrelh:
+                        appendStyleProperty(
+                            style,
+                            "mso-position-horizontal-relative",
+                            mapHorizontalPositionRelative((ShapeOptions.PositionHorizontalRelative)entry.op));
+                        break;
+                    case ShapeOptions.PropertyId.posv:
+                        appendStyleProperty(
+                            style,
+                            "mso-position-vertical",
+                            mapVerticalPosition((ShapeOptions.PositionVertical)entry.op));
+                        break;
+                    case ShapeOptions.PropertyId.posrelv:
+                        appendStyleProperty(
+                            style,
+                            "mso-position-vertical-relative",
+                            mapVerticalPositionRelative((ShapeOptions.PositionVerticalRelative)entry.op));
+                        break;
+                    case ShapeOptions.PropertyId.groupShapeBoolean:
+                        //TODO: unmask all bits 
+                        fBehindDocument = Utils.BitmaskToBool(entry.op, 0x20);
+                        break;
+                    case ShapeOptions.PropertyId.dhgt:
+                        if (fBehindDocument)
+                        {
+                            //TODO: take dhgt into account
+                            appendStyleProperty(style, "z-index", "-1");
+                        }
+                        else if (entry.op > 0)
+                        {
+                            appendStyleProperty(style, "z-index", entry.op.ToString());
+                        }
+                        break;
+                }
+            }
 
             return style;
         }
@@ -741,6 +836,82 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
 
             return imgPart;
+        }
+
+        private string mapVerticalPosition(ShapeOptions.PositionVertical vPos)
+        {
+            switch (vPos)
+            {
+                case ShapeOptions.PositionVertical.msopvAbs:
+                    return "absolute";
+                case ShapeOptions.PositionVertical.msopvTop:
+                    return "top";
+                case ShapeOptions.PositionVertical.msopvCenter:
+                    return "center";
+                case ShapeOptions.PositionVertical.msopvBottom:
+                    return "bottom";
+                case ShapeOptions.PositionVertical.msopvInside:
+                    return "inside";
+                case ShapeOptions.PositionVertical.msopvOutside:
+                    return "outside";
+                default:
+                    return "absolute";
+            }
+        }
+
+        private string mapVerticalPositionRelative(ShapeOptions.PositionVerticalRelative vRel)
+        {
+            switch (vRel)
+            {
+                case ShapeOptions.PositionVerticalRelative.msoprvMargin:
+                    return "margin";
+                case ShapeOptions.PositionVerticalRelative.msoprvPage:
+                    return "page";
+                case ShapeOptions.PositionVerticalRelative.msoprvText:
+                    return "text";
+                case ShapeOptions.PositionVerticalRelative.msoprvLine:
+                    return "line";
+                default:
+                    return "margin";
+            }
+        }
+
+        private string mapHorizontalPosition(ShapeOptions.PositionHorizontal hPos)
+        {
+            switch (hPos)
+            {
+                case ShapeOptions.PositionHorizontal.msophAbs:
+                    return "absolute";
+                case ShapeOptions.PositionHorizontal.msophLeft:
+                    return "left";
+                case ShapeOptions.PositionHorizontal.msophCenter:
+                    return "center";
+                case ShapeOptions.PositionHorizontal.msophRight:
+                    return "right";
+                case ShapeOptions.PositionHorizontal.msophInside:
+                    return "inside";
+                case ShapeOptions.PositionHorizontal.msophOutside:
+                    return "outside";
+                default:
+                    return "absolute";
+            }
+        }
+
+        private string mapHorizontalPositionRelative(ShapeOptions.PositionHorizontalRelative hRel)
+        {
+            switch (hRel) 
+            {
+                case ShapeOptions.PositionHorizontalRelative.msoprhMargin:
+                    return "margin";
+                case ShapeOptions.PositionHorizontalRelative.msoprhPage:
+                    return "page";
+                case ShapeOptions.PositionHorizontalRelative.msoprhText:
+                    return "text";
+                case ShapeOptions.PositionHorizontalRelative.msoprhChar:
+                    return "char";
+                default:
+                    return "margin";
+            }
         }
     }
 }

@@ -169,8 +169,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //convert headers of this section
             if (_ctx.Doc.HeaderAndFooterTable.OddHeaders.Count > 0)
             {
+                //an empty header has two \r characters (one empty paragraph and a termination character)
+                //so we need to convert only those headers which have more than two characters
+
                 CharacterRange evenHdr = _ctx.Doc.HeaderAndFooterTable.EvenHeaders[_sectNr];
-                if (evenHdr != null && evenHdr.CharacterCount > 3)
+                if (evenHdr != null && evenHdr.CharacterCount > 2)
                 {
                     HeaderPart evenPart = _ctx.Docx.MainDocumentPart.AddHeaderPart();
                     _ctx.Doc.Convert(new HeaderMapping(_ctx, evenPart, evenHdr));
@@ -178,7 +181,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 }
 
                 CharacterRange oddHdr = _ctx.Doc.HeaderAndFooterTable.OddHeaders[_sectNr];
-                if (oddHdr != null && oddHdr.CharacterCount > 3)
+                if (oddHdr != null && oddHdr.CharacterCount > 2)
                 {
                     HeaderPart oddPart = _ctx.Docx.MainDocumentPart.AddHeaderPart();
                     _ctx.Doc.Convert(new HeaderMapping(_ctx, oddPart, oddHdr));
@@ -186,7 +189,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 }
 
                 CharacterRange firstHdr = _ctx.Doc.HeaderAndFooterTable.FirstHeaders[_sectNr];
-                if (firstHdr != null && firstHdr.CharacterCount > 3)
+                if (firstHdr != null && firstHdr.CharacterCount > 2)
                 {
                     HeaderPart firstPart = _ctx.Docx.MainDocumentPart.AddHeaderPart();
                     _ctx.Doc.Convert(new HeaderMapping(_ctx, firstPart, firstHdr));
