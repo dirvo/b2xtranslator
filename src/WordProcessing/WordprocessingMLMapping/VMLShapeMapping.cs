@@ -179,7 +179,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //append id
             _writer.WriteAttributeString("id", getShapeId(shape));
             
-            
             //build the style
             StringBuilder style = null;
 
@@ -207,6 +206,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 switch (entry.pid)
                 {
+                    case ShapeOptions.PropertyId.shapeBooleans:
+                        //TODO: unmask the booleans
+                        break;
+
                     case ShapeOptions.PropertyId.pWrapPolygonVertices:
                         _writer.WriteAttributeString("wrapcoords", getWrapCoords(entry));
                         break;

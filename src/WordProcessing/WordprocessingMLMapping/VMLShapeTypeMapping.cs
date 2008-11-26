@@ -89,10 +89,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 {
                     _writer.WriteAttributeString("o", "connectangles", OpenXmlNamespaces.Office, shapeType.ConnectorAngles);
                 }
-
-
                 _writer.WriteEndElement();
 
+                //Lock
+                //TODO: Find out when we need to write a lock 
+                //<o:lock v:ext="edit" aspectratio="t"/>
 
                 //Handles
                 if (shapeType.Handles != null && shapeType.Handles.Count > 0)

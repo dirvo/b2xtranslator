@@ -169,11 +169,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //convert headers of this section
             if (_ctx.Doc.HeaderAndFooterTable.OddHeaders.Count > 0)
             {
-                //an empty header has two \r characters (one empty paragraph and a termination character)
-                //so we need to convert only those headers which have more than two characters
-
                 CharacterRange evenHdr = _ctx.Doc.HeaderAndFooterTable.EvenHeaders[_sectNr];
-                if (evenHdr != null && evenHdr.CharacterCount > 2)
+                if (evenHdr != null)
                 {
                     HeaderPart evenPart = _ctx.Docx.MainDocumentPart.AddHeaderPart();
                     _ctx.Doc.Convert(new HeaderMapping(_ctx, evenPart, evenHdr));
@@ -181,7 +178,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 }
 
                 CharacterRange oddHdr = _ctx.Doc.HeaderAndFooterTable.OddHeaders[_sectNr];
-                if (oddHdr != null && oddHdr.CharacterCount > 2)
+                if (oddHdr != null)
                 {
                     HeaderPart oddPart = _ctx.Docx.MainDocumentPart.AddHeaderPart();
                     _ctx.Doc.Convert(new HeaderMapping(_ctx, oddPart, oddHdr));
@@ -189,7 +186,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 }
 
                 CharacterRange firstHdr = _ctx.Doc.HeaderAndFooterTable.FirstHeaders[_sectNr];
-                if (firstHdr != null && firstHdr.CharacterCount > 2)
+                if (firstHdr != null)
                 {
                     HeaderPart firstPart = _ctx.Docx.MainDocumentPart.AddHeaderPart();
                     _ctx.Doc.Convert(new HeaderMapping(_ctx, firstPart, firstHdr));
@@ -201,7 +198,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             if (_ctx.Doc.HeaderAndFooterTable.OddFooters.Count > 0)
             {
                 CharacterRange evenFtr = _ctx.Doc.HeaderAndFooterTable.EvenFooters[_sectNr];
-                if (evenFtr != null && evenFtr.CharacterCount > 3)
+                if (evenFtr != null)
                 {
                     FooterPart evenPart = _ctx.Docx.MainDocumentPart.AddFooterPart();
                     _ctx.Doc.Convert(new FooterMapping(_ctx, evenPart, evenFtr));
@@ -209,7 +206,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 }
 
                 CharacterRange oddFtr = _ctx.Doc.HeaderAndFooterTable.OddFooters[_sectNr];
-                if (oddFtr != null && oddFtr.CharacterCount > 3)
+                if (oddFtr != null)
                 {
                     FooterPart oddPart = _ctx.Docx.MainDocumentPart.AddFooterPart();
                     _ctx.Doc.Convert(new FooterMapping(_ctx, oddPart, oddFtr));
@@ -218,7 +215,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
 
                 CharacterRange firstFtr = _ctx.Doc.HeaderAndFooterTable.FirstFooters[_sectNr];
-                if (firstFtr != null && firstFtr.CharacterCount > 3)
+                if (firstFtr != null)
                 {
                     FooterPart firstPart = _ctx.Docx.MainDocumentPart.AddFooterPart();
                     _ctx.Doc.Convert(new FooterMapping(_ctx, firstPart, firstFtr));

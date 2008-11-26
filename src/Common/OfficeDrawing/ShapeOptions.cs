@@ -320,7 +320,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             fLockShapeType=828,
             fInitiator=829,
             fDeleteAttachedObject=830,
-            fBackground=831,
+            shapeBooleans=831,
 
             //Callout
             spcot=832,
