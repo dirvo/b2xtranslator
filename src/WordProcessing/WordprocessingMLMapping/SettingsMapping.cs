@@ -56,6 +56,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 _writer.WriteElementString("w", "embedSystemFonts", OpenXmlNamespaces.WordprocessingML, "");
             }
 
+            //mirror margins
+            if (dop.fMirrorMargins)
+            {
+                _writer.WriteElementString("w", "mirrorMargins", OpenXmlNamespaces.WordprocessingML, "");
+            }
+
             //evenAndOddHeaders 
             if (dop.fFacingPages)
             {
