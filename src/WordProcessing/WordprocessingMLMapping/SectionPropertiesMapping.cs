@@ -323,7 +323,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         break;
                     case SinglePropertyModifier.OperationCode.sprmSFpc:
                         //position code
-                        Int16 fpc = System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        Int16 fpc = 0;
+                        if(sprm.Arguments.Length == 2)
+                            fpc = System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        else
+                            fpc = (Int16)sprm.Arguments[0];
                         if(fpc == 2)
                             appendValueElement(footnotePr, "pos", "beneathText", true);
                         break;

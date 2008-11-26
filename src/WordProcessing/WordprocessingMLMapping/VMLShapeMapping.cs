@@ -9,6 +9,7 @@ using System.IO;
 using DIaLOGIKa.b2xtranslator.DocFileFormat;
 using DIaLOGIKa.b2xtranslator.Tools;
 using System.Globalization;
+using DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes;
 
 namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
@@ -149,14 +150,20 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             ChildAnchor anchor = container.FirstChildWithType<ChildAnchor>();
             ClientAnchor clientAnchor = container.FirstChildWithType<ClientAnchor>();
 
-            string[] adjValues = new string[8];
-            int numberAdjValues = 0;
-            bool has3DValues = false; 
-            
-            if (shape.ShapeType is DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes.OvalType)
+            if (shape.ShapeType is OvalType)
             {
                 //OVAL
                 _writer.WriteStartElement("v", "oval", OpenXmlNamespaces.VectorML);
+            }
+            else if (shape.ShapeType is RoundedRectangleType)
+            {
+                //ROUNDED RECT
+                _writer.WriteStartElement("v", "roundrect", OpenXmlNamespaces.VectorML);
+            }
+            else if (shape.ShapeType is RectangleType)
+            {
+                //RECT
+                _writer.WriteStartElement("v", "rect", OpenXmlNamespaces.VectorML);
             }
             else
             {
@@ -166,6 +173,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     shape.ShapeType.Convert(new VMLShapeTypeMapping(_writer));
                 }
                 _writer.WriteStartElement("v", "shape", OpenXmlNamespaces.VectorML);
+                _writer.WriteAttributeString("type", "#" + VMLShapeTypeMapping.GenerateTypeId(shape.ShapeType));
             }
 
             //append id
@@ -188,8 +196,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             EmuValue shadowOffsetX = null;
             EmuValue shadowOffsetY = null;
+            EmuValue secondShadowOffsetX = null;
+            EmuValue secondShadowOffsetY = null;
             double shadowOriginX = 0;
             double shadowOriginY = 0;
+            string[] adjValues = new string[8];
+            int numberAdjValues = 0;
 
             foreach (ShapeOptions.OptionEntry entry in options)
             {
@@ -310,8 +322,16 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         shadowOffsetX = new EmuValue((int)entry.op);
                         break;
 
+                    case ShapeOptions.PropertyId.shadowSecondOffsetX:
+                        secondShadowOffsetX = new EmuValue((int)entry.op);
+                        break;
+
                     case ShapeOptions.PropertyId.shadowOffsetY:
                         shadowOffsetY = new EmuValue((int)entry.op);
+                        break;
+
+                    case ShapeOptions.PropertyId.shadowSecondOffsetY:
+                        secondShadowOffsetY = new EmuValue((int)entry.op);
                         break;
 
                     case ShapeOptions.PropertyId.shadowOriginX:
@@ -341,25 +361,17 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         appendValueAttribute(_imagedata, "o", "title", name, OpenXmlNamespaces.Office);
                         break;
 
-                    // 3D Object 
+                    // 3D STYLE
 
                     case ShapeOptions.PropertyId.f3D:
                     case ShapeOptions.PropertyId.fc3DFillHarsh:
-                    case ShapeOptions.PropertyId.fc3DLightFace: 
-                        has3DValues = true; 
+                    case ShapeOptions.PropertyId.fc3DLightFace:
                         break;
-
                     case ShapeOptions.PropertyId.c3DExtrudeBackward:
                         EmuValue backwardValue = new EmuValue((int)entry.op);
                         appendValueAttribute(_3dstyle, "backdepth", backwardValue.ToPoints().ToString());
                         break; 
                 }
-            }
-
-            //write type
-            if (shape.ShapeType != null)
-            {
-                _writer.WriteAttributeString("type", "#" + VMLShapeTypeMapping.GenerateTypeId(shape.ShapeType));
             }
 
             //write the style
@@ -390,13 +402,38 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 //string.Format("{0:x4}", adjValues);
             }
 
-            //build shadow offset
-            if (shadowOffsetX != null && shadowOffsetY != null)
+            //build shadow offsets
+            StringBuilder offset = new StringBuilder();
+            if (shadowOffsetX != null)
             {
-                appendValueAttribute(
-                    _shadow, null, "offset", 
-                    shadowOffsetX.ToPoints() + "pt," + shadowOffsetY.ToPoints() + "pt", 
-                    null);
+                offset.Append(shadowOffsetX.ToPoints());
+                offset.Append("pt");
+            }
+            if (shadowOffsetY != null)
+            {
+                offset.Append(",");
+                offset.Append(shadowOffsetY.ToPoints());
+                offset.Append("pt");
+            }
+            if (offset.Length > 0)
+            {
+                appendValueAttribute(_shadow, null, "offset", offset.ToString(), null);
+            }
+            StringBuilder offset2 = new StringBuilder();
+            if (secondShadowOffsetX != null)
+            {
+                offset2.Append(secondShadowOffsetX.ToPoints());
+                offset2.Append("pt");
+            }
+            if (secondShadowOffsetY != null)
+            {
+                offset2.Append(",");
+                offset2.Append(secondShadowOffsetY.ToPoints());
+                offset2.Append("pt");
+            }
+            if (offset2.Length > 0)
+            {
+                appendValueAttribute(_shadow, null, "offset2", offset2.ToString(), null);
             }
 
             //build shadow origin
@@ -416,11 +453,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
 
             //write 3d style 
-            if (_3dstyle.Attributes.Count > 0 || has3DValues == true )
+            if (_3dstyle.Attributes.Count > 0)
             {
                 appendValueAttribute(_3dstyle, "v", "ext", "view", OpenXmlNamespaces.VectorML);
                 appendValueAttribute(_3dstyle, null, "on", "t", null);
-
                 _3dstyle.WriteTo(_writer);
             }
 

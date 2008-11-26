@@ -9,7 +9,12 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
     /// OOX uses an additional attribute: arcsize
     /// </summary>
     [OfficeShapeTypeAttribute(2)]
-    class RoundedRectangleType :RectangleType
+    public class RoundedRectangleType : RectangleType
     {
+        public RoundedRectangleType() : base()
+        {
+            this.Joins = JoinStyle.round;
+            this.AdjustmentValues = "5400";
+        }
     }
 }
