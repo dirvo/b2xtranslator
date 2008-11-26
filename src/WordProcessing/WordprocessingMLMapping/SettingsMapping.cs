@@ -50,6 +50,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
             _writer.WriteEndElement();
 
+            //doc protection
+            //<w:documentProtection w:edit="forms" w:enforcement="1"/>
+           
+
             //embed system fonts
             if(!dop.fDoNotEmbedSystemFont)
             {

@@ -117,6 +117,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         public StringTable AutoTextNames;
 
+        //public StringTable ProtectionUsers;
+
         /// <summary>
         /// A plex with all ATRDPre10 structs
         /// </summary>
@@ -256,6 +258,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.FontTable = new StringTable(typeof(FontFamilyName), this.TableStream, this.FIB.fcSttbfFfn, this.FIB.lcbSttbfFfn);
             this.BookmarkNames = new StringTable(typeof(String), this.TableStream, this.FIB.fcSttbfBkmk, this.FIB.lcbSttbfBkmk);
             this.AutoTextNames = new StringTable(typeof(String), this.TableStream, this.FIB.fcSttbfGlsy, this.FIB.lcbSttbfGlsy);
+            //this.ProtectionUsers = new StringTable(typeof(String), this.TableStream, this.FIB.fcSttbProtUser, this.FIB.lcbSttbProtUser);
 
             //Read all needed PLCFs
             this.AnnotationsReferencePlex = new Plex(typeof(AnnotationReferenceDescriptor), 30, this.TableStream, this.FIB.fcPlcfandRef, this.FIB.lcbPlcfandRef);

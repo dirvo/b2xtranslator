@@ -732,11 +732,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 textType = "instrText";
  
             //open a new w:t element
-            _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
-            if ((int)chars[0] == 32 || (int)chars[chars.Count - 1] == 32)
-            {
-                _writer.WriteAttributeString("xml", "space", "", "preserve");
-            }
+            writeTextStart(textType);
 
             //write text
             for (int i = 0; i < chars.Count; i++)
@@ -747,14 +743,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 {
                     _writer.WriteEndElement();
                     _writer.WriteElementString("w", "tab", OpenXmlNamespaces.WordprocessingML, "");
-                    _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
+                    writeTextStart(textType);
                 }
                 else if (c == TextMark.HardLineBreak)
                 {
                     //close previous w:t ...
                     _writer.WriteEndElement();
                     _writer.WriteElementString("w", "br", OpenXmlNamespaces.WordprocessingML, "");
-                    _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
+
+                    writeTextStart(textType);
                 }
                 else if (c == TextMark.ParagraphEnd)
                 {
@@ -772,7 +769,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         _writer.WriteAttributeString("w", "type", OpenXmlNamespaces.WordprocessingML, "page");
                         _writer.WriteEndElement();
 
-                        _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
+                        writeTextStart(textType);
                     }
                 }
                 else if (c == TextMark.ColumnBreak)
@@ -784,7 +781,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     _writer.WriteAttributeString("w", "type", OpenXmlNamespaces.WordprocessingML, "column");
                     _writer.WriteEndElement();
 
-                    _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
+                    writeTextStart(textType);
                 }
                 else if (c == TextMark.FieldBeginMark)
                 {
@@ -853,7 +850,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     _writeInstrText = true;
 
-                    _writer.WriteStartElement("w", "instrText", OpenXmlNamespaces.WordprocessingML);
+                    writeTextStart("instrText");
                 }
                 else if (c == TextMark.FieldSeperator)
                 {
@@ -864,7 +861,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     _writer.WriteAttributeString("w", "fldCharType", OpenXmlNamespaces.WordprocessingML, "separate");
                     _writer.WriteEndElement();
 
-                    _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
+                    writeTextStart(textType);
                 }
                 else if (c == TextMark.FieldEndMark)
                 {
@@ -877,7 +874,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     _writeInstrText = false;
 
-                    _writer.WriteStartElement("w", "t", OpenXmlNamespaces.WordprocessingML);
+                    writeTextStart("t");
                 }
                 else if (c == TextMark.Symbol && fSpec)
                 {
@@ -890,7 +887,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     _writer.WriteAttributeString("w", "char", OpenXmlNamespaces.WordprocessingML, s.HexValue);
                     _writer.WriteEndElement();
 
-                    _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
+                    writeTextStart(textType);
                 }
                 else if (c == TextMark.DrawnObject && fSpec)
                 {
@@ -916,7 +913,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                             shape.Convert(new VMLShapeMapping(_writer, _targetPart, fspa, true, _ctx));
 
                             _writer.WriteEndElement();
-                            _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
+                            writeTextStart(textType);
                         }
                     }
                 }
@@ -932,7 +929,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         pict.Convert(new VMLPictureMapping(_writer, _targetPart, false));
 
                         _writer.WriteEndElement();
-                        _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
+                        writeTextStart(textType);
                     }                   
                 }
                 else if (c == TextMark.AutoNumberedFootnoteReference && fSpec)
@@ -953,7 +950,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     _footnoteNr++;
 
-                    _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
+                    writeTextStart(textType);
                 }
                 else if (c == TextMark.AnnotationReference)
                 {
@@ -973,7 +970,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     _commentNr++;
 
-                    _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
+                    writeTextStart(textType);
                 }
                 else if ((int)c > 31 && (int)c != 0xFFFF)
                 {
@@ -987,6 +984,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _writer.WriteEndElement();
         }
 
+
+        protected void writeTextStart(string textType)
+        {
+            _writer.WriteStartElement("w", textType, OpenXmlNamespaces.WordprocessingML);
+            _writer.WriteAttributeString("xml", "space", "", "preserve");
+        }
 
         /// <summary>
         /// Writes a bookmark start element at the given position
