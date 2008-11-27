@@ -142,7 +142,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             fLineOK=380,
             fGtextOK=381,
             fFillShadeShapeOK=382,
-            fFillOK=383,
+            geometryBooleans=383,
 
             //Fill Style
             fillType=384,
@@ -213,7 +213,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             fLine=508,
             fHitTestLine=509,
             lineFillShape=510,
-            fNoLineDrawDash=511,
+            lineStyleBooleans=511,
 
             //Shadow Style
             shadowType=512,
@@ -388,7 +388,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             fAllowOverlap=950,
             fReallyHidden=951,
             fScriptAnchor=952,
-            groupShapeBoolean = 959,
+            groupShapeBooleans = 959,
 
             //Unknown HTML
             wzLineId=1026,

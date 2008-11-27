@@ -120,6 +120,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             koreanDigital
         }
 
+        private Int32 _colNumber;
         private Int16[] _colSpace;
         private Int16[] _colWidth;
         private Int16 _pgWidth, _marLeft, _marRight;
@@ -351,23 +352,28 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     //columns
                     case SinglePropertyModifier.OperationCode.sprmSCcolumns:
-                        Int32 colNum = System.BitConverter.ToInt16(sprm.Arguments,0) + 1;
-                        appendValueAttribute(cols, "num", colNum.ToString());
-                        _colSpace = new Int16[colNum];
-                        _colWidth = new Int16[colNum];
+                        _colNumber = (int)(System.BitConverter.ToInt16(sprm.Arguments, 0) + 1);
+                        _colSpace = new Int16[_colNumber];
+                        appendValueAttribute(cols, "num", _colNumber.ToString());
                         break;
                     case SinglePropertyModifier.OperationCode.sprmSDxaColumns:
                         //evenly spaced columns
                         appendValueAttribute(cols, "space", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString());
                         break;
                     case SinglePropertyModifier.OperationCode.sprmSDxaColWidth:
-                        //col width
+                        //there is at least one width set, so create the array
+                        if(_colWidth==null)
+                            _colWidth = new Int16[_colNumber];
+
                         byte index = sprm.Arguments[0];
                         Int16 w = System.BitConverter.ToInt16(sprm.Arguments, 1);
                         _colWidth[index] = w;
                         break;
                     case SinglePropertyModifier.OperationCode.sprmSDxaColSpacing:
-                        //not evenly spaced columns
+                        //there is at least one space set, so create the array
+                        if (_colSpace == null)
+                            _colSpace = new Int16[_colNumber];
+
                         _colSpace[sprm.Arguments[0]] = System.BitConverter.ToInt16(sprm.Arguments, 1);
                         break;
 

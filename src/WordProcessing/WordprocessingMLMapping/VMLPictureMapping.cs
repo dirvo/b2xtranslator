@@ -21,12 +21,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
     {
         ContentPart _targetPart;
         bool _olePreview;
+        private XmlElement _imageData = null;
 
         public VMLPictureMapping(XmlWriter writer, ContentPart targetPart, bool olePreview)
             : base(writer)
         {
             _targetPart = targetPart;
             _olePreview = olePreview;
+            _imageData = _nodeFactory.CreateElement("v", "imageData", OpenXmlNamespaces.VectorML);
         }
 
         public void Apply(PictureDescriptor pict)
@@ -67,6 +69,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 {
                     switch (entry.pid)
                     {
+                        //BORDERS
+
                         case ShapeOptions.PropertyId.borderBottomColor:
                             RGBColor bottomColor = new RGBColor((int)entry.op, RGBColor.ByteOrder.RedFirst);
                             _writer.WriteAttributeString("o", "borderbottomcolor", OpenXmlNamespaces.Office, "#" + bottomColor.SixDigitHexCode);
@@ -84,14 +88,35 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                             _writer.WriteAttributeString("o", "bordertopcolor", OpenXmlNamespaces.Office, "#" + topColor.SixDigitHexCode);
                             break;
 
+                        //CROPPING
+
+                        case ShapeOptions.PropertyId.cropFromBottom:
+                            //cast to signed integer
+                            int cropBottom = (int)entry.op;
+                            appendValueAttribute(_imageData, null, "cropbottom", cropBottom + "f", null);
+                            break;
+                        case ShapeOptions.PropertyId.cropFromLeft:
+                            //cast to signed integer
+                            int cropLeft = (int)entry.op;
+                            appendValueAttribute(_imageData, null, "cropleft", cropLeft + "f", null);
+                            break;
+                        case ShapeOptions.PropertyId.cropFromRight:
+                            //cast to signed integer
+                            int cropRight = (int)entry.op;
+                            appendValueAttribute(_imageData, null, "cropright", cropRight + "f", null);
+                            break;
+                        case ShapeOptions.PropertyId.cropFromTop:
+                            //cast to signed integer
+                            int cropTop = (int)entry.op;
+                            appendValueAttribute(_imageData, null, "croptop", cropTop + "f", null);
+                            break;
                     }
                 }
 
                 //v:imageData
-                _writer.WriteStartElement("v", "imageData", OpenXmlNamespaces.VectorML);
-                _writer.WriteAttributeString("r", "id", OpenXmlNamespaces.Relationships, imgPart.RelIdToString);
-                _writer.WriteAttributeString("o", "title", OpenXmlNamespaces.Office, "");
-                _writer.WriteEndElement();
+                appendValueAttribute(_imageData, "r", "id", imgPart.RelIdToString, OpenXmlNamespaces.Relationships);
+                appendValueAttribute(_imageData, "o", "title", "", OpenXmlNamespaces.Office);
+                _imageData.WriteTo(_writer);
 
                 //borders
                 writePictureBorder("bordertop", pict.brcTop);

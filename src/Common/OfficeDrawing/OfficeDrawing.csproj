@@ -46,8 +46,11 @@
     <Compile Include="DrawingGroupRecord.cs" />
     <Compile Include="DrawingRecord.cs" />
     <Compile Include="Exceptions.cs" />
+    <Compile Include="GeometryBooleans.cs" />
     <Compile Include="GroupContainer.cs" />
+    <Compile Include="GroupShapeBooleans.cs" />
     <Compile Include="GroupShapeRecord.cs" />
+    <Compile Include="LineStyleBooleans.cs" />
     <Compile Include="Shapetypes\AccentBorderCallout1Type.cs" />
     <Compile Include="Shapetypes\AccentBorderCallout2Type.cs" />
     <Compile Include="Shapetypes\AccentBorderCallout3Type.cs" />
@@ -142,7 +145,6 @@
     <Compile Include="MetafilePictBlip.cs" />
     <Compile Include="OfficeRecordAttribute.cs" />
     <Compile Include="OfficeShapeTypeAttribute.cs" />
-    <Compile Include="Shapetypes\NotPrimitiveType.cs" />
     <Compile Include="Shapetypes\OctagonType.cs" />
     <Compile Include="Shapetypes\ParallelogramType.cs" />
     <Compile Include="Shapetypes\PictureFrameType.cs" />

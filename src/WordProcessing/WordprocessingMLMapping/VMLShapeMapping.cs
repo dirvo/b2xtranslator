@@ -22,9 +22,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private ContentPart _targetPart;
         private XmlElement _fill, _stroke, _shadow, _imagedata, _3dstyle;
         private bool _documentBase;
-        private bool _stroked = true;
-        private bool _filled = true;
-
 
         public VMLShapeMapping(XmlWriter writer, ContentPart targetPart, FileShapeAddress fspa, bool documentBase, ConversionContext ctx)
             : base(writer)
@@ -73,26 +70,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             GroupShapeRecord gsr = (GroupShapeRecord)groupShape.Children[0];
             Shape shape = (Shape)groupShape.Children[1];
             List<ShapeOptions.OptionEntry> options = groupShape.ExtractOptions();
+            ChildAnchor anchor = groupShape.FirstChildWithType<ChildAnchor>();
 
             _writer.WriteStartElement("v", "group", OpenXmlNamespaces.VectorML);
             _writer.WriteAttributeString("id", getShapeId(shape));
-
+            _writer.WriteAttributeString("style", generateStyle(anchor, options).ToString());
             _writer.WriteAttributeString("coordorigin", gsr.rcgBounds.Left + "," + gsr.rcgBounds.Top);
             _writer.WriteAttributeString("coordsize", gsr.rcgBounds.Width + "," + gsr.rcgBounds.Height);
 
-            StringBuilder style = new StringBuilder();
-            if (_documentBase)
-            {
-                //this group is placed directly in the document, 
-                //so use the FSPA to build the style
-                style = buildStyle(_fspa, options);
-            }
-            else
-            {
-                ChildAnchor anchor = groupShape.FirstChildWithType<ChildAnchor>();
-                style = buildStyle(anchor, options);
-            }
-
+            
             //write wrap coords
             foreach (ShapeOptions.OptionEntry entry in options)
             {
@@ -103,9 +89,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         break;
                 }
             }
-
-            _writer.WriteAttributeString("style", style.ToString());
-
 
             //convert the shapes/groups in the group
             for (int i = 1; i < container.Children.Count; i++)
@@ -150,49 +133,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             ChildAnchor anchor = container.FirstChildWithType<ChildAnchor>();
             ClientAnchor clientAnchor = container.FirstChildWithType<ClientAnchor>();
 
-            if (shape.ShapeType is OvalType)
+            writeStartShapeElement(shape);
+            _writer.WriteAttributeString("id", getShapeId(shape));
+            if (shape.ShapeType != null)
             {
-                //OVAL
-                _writer.WriteStartElement("v", "oval", OpenXmlNamespaces.VectorML);
-            }
-            else if (shape.ShapeType is RoundedRectangleType)
-            {
-                //ROUNDED RECT
-                _writer.WriteStartElement("v", "roundrect", OpenXmlNamespaces.VectorML);
-            }
-            else if (shape.ShapeType is RectangleType)
-            {
-                //RECT
-                _writer.WriteStartElement("v", "rect", OpenXmlNamespaces.VectorML);
-            }
-            else
-            {
-                //SHAPE
-                if (shape.ShapeType != null)
-                {
-                    shape.ShapeType.Convert(new VMLShapeTypeMapping(_writer));
-                }
-                _writer.WriteStartElement("v", "shape", OpenXmlNamespaces.VectorML);
                 _writer.WriteAttributeString("type", "#" + VMLShapeTypeMapping.GenerateTypeId(shape.ShapeType));
             }
+            _writer.WriteAttributeString("style", generateStyle(anchor, options).ToString());
 
-            //append id
-            _writer.WriteAttributeString("id", getShapeId(shape));
-            
-            //build the style
-            StringBuilder style = null;
-
-            if (_documentBase)
-            {
-                //this shape is placed directly in the document, 
-                //so use the FSPA to build the style
-                style = buildStyle(_fspa, options);
-            }
-            else
-            {
-                style = buildStyle(anchor, options);
-            }
-
+            //temporary variables
             EmuValue shadowOffsetX = null;
             EmuValue shadowOffsetY = null;
             EmuValue secondShadowOffsetX = null;
@@ -201,24 +150,40 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             double shadowOriginY = 0;
             string[] adjValues = new string[8];
             int numberAdjValues = 0;
+            bool stroked = true;
+            bool filled = true;
 
             foreach (ShapeOptions.OptionEntry entry in options)
             {
                 switch (entry.pid)
                 {
-                    case ShapeOptions.PropertyId.shapeBooleans:
-                        //TODO: unmask the booleans
+                    //BOOLEANS
+
+                    case ShapeOptions.PropertyId.geometryBooleans:
+                        GeometryBooleans geometryBooleans = new GeometryBooleans(entry.op);
+
+                        if (!(geometryBooleans.fUsefLineOK && geometryBooleans.fLineOK))
+                        {
+                            stroked = false;
+                        }
+
+                        if (!(geometryBooleans.fUsefFillOK && geometryBooleans.fFillOK))
+                        {
+                            filled = false;
+                        }
                         break;
 
-                    case ShapeOptions.PropertyId.pWrapPolygonVertices:
-                        _writer.WriteAttributeString("wrapcoords", getWrapCoords(entry));
+                    case ShapeOptions.PropertyId.lineStyleBooleans:
+                        LineStyleBooleans lineBooleans = new LineStyleBooleans(entry.op);
+
+                        if (!(lineBooleans.fUsefLine && lineBooleans.fLine))
+                        {
+                            stroked = false;
+                        }
+
                         break;
 
                     // GEOMETRY
-
-                    case ShapeOptions.PropertyId.rotation:
-                        appendStyleProperty(style, "rotation", (entry.op / Math.Pow(2, 16)).ToString());
-                        break;
 
                     case ShapeOptions.PropertyId.adjustValue:
                         adjValues[0] = (((int)entry.op).ToString());
@@ -260,6 +225,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         numberAdjValues++;
                         break;
 
+                    case ShapeOptions.PropertyId.pWrapPolygonVertices:
+                        _writer.WriteAttributeString("wrapcoords", getWrapCoords(entry));
+                        break;
 
                     // OUTLINE
 
@@ -271,10 +239,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case ShapeOptions.PropertyId.lineWidth:
                         EmuValue lineWidth = new EmuValue((int)entry.op);
                         _writer.WriteAttributeString("strokeweight", lineWidth.ToString());
-                        if (lineWidth.Value > 0)
-                        {
-                            _stroked = true;
-                        }
                         break;
 
                     case ShapeOptions.PropertyId.lineDashing:
@@ -309,6 +273,18 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case ShapeOptions.PropertyId.fillType:
                         appendValueAttribute(_fill, null, "type", getFillType(entry.op), null);
                         break;
+
+                    case ShapeOptions.PropertyId.fillBlip:
+                        BlipStoreEntry fillBlip = (BlipStoreEntry)_blipStore.Children[(int)entry.op - 1];
+                        ImagePart fillBlipPart = copyPicture(fillBlip);
+                        appendValueAttribute(_fill, "r", "id", fillBlipPart.RelIdToString, OpenXmlNamespaces.Relationships);
+                        appendValueAttribute(_imagedata, "o", "title", "", OpenXmlNamespaces.Office);
+                        break;
+
+                    case ShapeOptions.PropertyId.fillOpacity:
+                        appendValueAttribute(_fill, null, "opacity", entry.op + "f" , null);
+                        break;
+
 
                     // SHADOW
 
@@ -377,20 +353,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 }
             }
 
-            //write the style
-            if (style != null)
-            {
-                _writer.WriteAttributeString("style", style.ToString());
-            }
-
-            //write filled/stroked attribute
-            if (!_stroked)
-            {
-                _writer.WriteAttributeString("stroked", "f");
-            }
-            if (!_filled)
+            if (!filled)
             {
                 _writer.WriteAttributeString("filled", "f");
+            }
+
+            if (!stroked)
+            {
+                _writer.WriteAttributeString("stroked", "f");
             }
 
             //write adj values 
@@ -506,6 +476,52 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _writer.Flush();
         }
 
+        private StringBuilder generateStyle(ChildAnchor anchor, List<ShapeOptions.OptionEntry> options)
+        {
+            StringBuilder style = new StringBuilder();
+            if (_documentBase)
+            {
+                //this shape is placed directly in the document, 
+                //so use the FSPA to build the style
+                appendDimensionToStyle(style, _fspa);
+            }
+            else
+            {
+                //the style is part of a group, 
+                //so use the anchor
+                appendDimensionToStyle(style, anchor);
+            }
+            appendOptionsToStyle(style, options);
+            return style;
+        }
+
+        private void writeStartShapeElement(Shape shape)
+        {
+            if (shape.ShapeType is OvalType)
+            {
+                //OVAL
+                _writer.WriteStartElement("v", "oval", OpenXmlNamespaces.VectorML);
+            }
+            else if (shape.ShapeType is RoundedRectangleType)
+            {
+                //ROUNDED RECT
+                _writer.WriteStartElement("v", "roundrect", OpenXmlNamespaces.VectorML);
+            }
+            else if (shape.ShapeType is RectangleType)
+            {
+                //RECT
+                _writer.WriteStartElement("v", "rect", OpenXmlNamespaces.VectorML);
+            }
+            else
+            {
+                //SHAPE
+                if (shape.ShapeType != null)
+                {
+                    shape.ShapeType.Convert(new VMLShapeTypeMapping(_writer));
+                }
+                _writer.WriteStartElement("v", "shape", OpenXmlNamespaces.VectorML);
+            }
+        }
 
         /// <summary>
         /// Returns the OpenXML fill type of a fill effect
@@ -536,7 +552,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     return "solid";
             }
         }
-
 
         private string getShadowType(uint p)
         {
@@ -596,7 +611,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
         }
 
-
         /// <summary>
         /// Returns the OpenXML wrap type of the shape
         /// </summary>
@@ -622,7 +636,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 	        }
         }
 
-
         /// <summary>
         /// Generates a string id for the given shape
         /// </summary>
@@ -635,7 +648,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             id.Append(shape.spid);
             return id.ToString();
         }
-
 
         /// <summary>
         /// Build the VML wrapcoords string for a given pWrapPolygonVertices
@@ -667,13 +679,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             return coords.ToString().Trim();
         }
 
-
-        private StringBuilder buildStyle(FileShapeAddress fspa, List<ShapeOptions.OptionEntry> options)
+        private void appendDimensionToStyle(StringBuilder style, FileShapeAddress fspa)
         {
-            //build style
-            StringBuilder style = new StringBuilder();
-            bool fBehindDocument = false;
-
             //append size and position ...
             TwipsValue left = new TwipsValue(fspa.xaLeft);
             TwipsValue top = new TwipsValue(fspa.yaTop);
@@ -685,73 +692,27 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             appendStyleProperty(style, "margin-top", Convert.ToString(top.ToPoints(), CultureInfo.GetCultureInfo("en-US")) + "pt");
             appendStyleProperty(style, "width", Convert.ToString(width.ToPoints(), CultureInfo.GetCultureInfo("en-US")) + "pt");
             appendStyleProperty(style, "height", Convert.ToString(height.ToPoints(), CultureInfo.GetCultureInfo("en-US")) + "pt");
-
-            foreach (ShapeOptions.OptionEntry entry in options)
-            {
-                switch (entry.pid)
-                {
-                    case ShapeOptions.PropertyId.posh:
-                        appendStyleProperty(
-                            style,
-                            "mso-position-horizontal",
-                            mapHorizontalPosition((ShapeOptions.PositionHorizontal)entry.op));
-                        break;
-                    case ShapeOptions.PropertyId.posrelh:
-                        appendStyleProperty(
-                            style,
-                            "mso-position-horizontal-relative",
-                            mapHorizontalPositionRelative((ShapeOptions.PositionHorizontalRelative)entry.op));
-                        break;
-                    case ShapeOptions.PropertyId.posv:
-                        appendStyleProperty(
-                            style,
-                            "mso-position-vertical",
-                            mapVerticalPosition((ShapeOptions.PositionVertical)entry.op));
-                        break;
-                    case ShapeOptions.PropertyId.posrelv:
-                        appendStyleProperty(
-                            style,
-                            "mso-position-vertical-relative",
-                            mapVerticalPositionRelative((ShapeOptions.PositionVerticalRelative)entry.op));
-                        break;
-                    case ShapeOptions.PropertyId.groupShapeBoolean:
-                        //TODO: unmask all bits 
-                        fBehindDocument = Utils.BitmaskToBool(entry.op, 0x20);
-                        break;
-                    case ShapeOptions.PropertyId.dhgt:
-                        if (fBehindDocument)
-                        {
-                            //TODO: take dhgt into account
-                            appendStyleProperty(style, "z-index", "-1");
-                        }
-                        else if (entry.op > 0)
-                        {
-                            appendStyleProperty(style, "z-index", entry.op.ToString());
-                        }
-                        break;
-                }
-            }
-
-            return style;
         }
 
-        private StringBuilder buildStyle(ChildAnchor anchor, List<ShapeOptions.OptionEntry> options)
+        private void appendDimensionToStyle(StringBuilder style, ChildAnchor anchor)
         {
-            //build style
-            StringBuilder style = new StringBuilder();
-            bool fBehindDocument = false;
-
             //append size and position ...
             appendStyleProperty(style, "position", "absolute");
             appendStyleProperty(style, "left", anchor.rcgBounds.Left.ToString());
             appendStyleProperty(style, "top", anchor.rcgBounds.Top.ToString());
             appendStyleProperty(style, "width", anchor.rcgBounds.Width.ToString());
             appendStyleProperty(style, "height", anchor.rcgBounds.Height.ToString());
+        }
 
+        private void appendOptionsToStyle(StringBuilder style, List<ShapeOptions.OptionEntry> options)
+        {
             foreach (ShapeOptions.OptionEntry entry in options)
             {
                 switch (entry.pid)
                 {
+
+                    //POSITIONING
+
                     case ShapeOptions.PropertyId.posh:
                         appendStyleProperty(
                             style,
@@ -776,27 +737,28 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                             "mso-position-vertical-relative",
                             mapVerticalPositionRelative((ShapeOptions.PositionVerticalRelative)entry.op));
                         break;
-                    case ShapeOptions.PropertyId.groupShapeBoolean:
-                        //TODO: unmask all bits 
-                        fBehindDocument = Utils.BitmaskToBool(entry.op, 0x20);
-                        break;
-                    case ShapeOptions.PropertyId.dhgt:
-                        if (fBehindDocument)
+
+                    //BOOLEANS
+
+                    case ShapeOptions.PropertyId.groupShapeBooleans:
+                        GroupShapeBooleans groupShapeBoolean = new GroupShapeBooleans(entry.op);
+
+                        if (groupShapeBoolean.fUsefBehindDocument && groupShapeBoolean.fBehindDocument)
                         {
-                            //TODO: take dhgt into account
+                            //The shape is behind the text, so the z-index must be negative.
                             appendStyleProperty(style, "z-index", "-1");
                         }
-                        else if (entry.op > 0)
-                        {
-                            appendStyleProperty(style, "z-index", entry.op.ToString());
-                        }
+
+                        break;
+
+                    // GEOMETRY
+
+                    case ShapeOptions.PropertyId.rotation:
+                        appendStyleProperty(style, "rotation", (entry.op / Math.Pow(2, 16)).ToString());
                         break;
                 }
             }
-
-            return style;
         }
-
 
         private void appendStyleProperty(StringBuilder b, string propName, string propValue)
         {
