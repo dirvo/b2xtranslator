@@ -24,6 +24,9 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
             this.Formulas.Add("sum @8 21600 0");
             this.Formulas.Add("prod @7 21600 pixelHeight");
             this.Formulas.Add("sum @10 21600 0");
+
+            this.Filled = false;
+            this.Stroked = false;
         }   
     }       
 }           

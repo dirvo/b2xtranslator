@@ -33,7 +33,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             fLockVertices=124,
             fLockText=125,
             fLockAdjustHandles=126,
-            fLockAgainstGrouping=127,
+            protectionBooleans=127,
 
             //Text
             lTxid=128,

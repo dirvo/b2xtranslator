@@ -112,6 +112,16 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
         /// </summary>
         public String ConnectorAngles;
 
+        /// <summary>
+        /// Specifies if a shape of this type is filled by default
+        /// </summary>
+        public bool Filled = true;
+
+        /// <summary>
+        /// Specifies if a shape of this type is stroked by default
+        /// </summary>
+        public bool Stroked = true;
+
         public UInt32 TypeCode
         {
             get 

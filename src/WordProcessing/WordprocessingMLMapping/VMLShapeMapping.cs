@@ -183,6 +183,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                         break;
 
+                    case ShapeOptions.PropertyId.protectionBooleans:
+                        ProtectionBooleans protBools = new ProtectionBooleans(entry.op);
+
+                        break;
+
                     // GEOMETRY
 
                     case ShapeOptions.PropertyId.adjustValue:

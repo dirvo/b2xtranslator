@@ -45,6 +45,16 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     _writer.WriteAttributeString("path", shapeType.Path);
                 }
 
+                //Default fill / stroke
+                if (shapeType.Filled == false)
+                {
+                    _writer.WriteAttributeString("filled", "f");
+                }
+                if (shapeType.Stroked == false)
+                {
+                    _writer.WriteAttributeString("stroked", "f");
+                }
+
                 //stroke
                 _writer.WriteStartElement("v", "stroke", OpenXmlNamespaces.VectorML);
                 _writer.WriteAttributeString("joinstyle", shapeType.Joins.ToString());
