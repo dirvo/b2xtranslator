@@ -55,8 +55,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
         private enum PageOrientation
         {
-            landscape = 1,
-            portrait
+            portrait = 1,
+            landscape
         }
 
         private enum DocGridType
