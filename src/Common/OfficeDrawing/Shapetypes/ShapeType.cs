@@ -122,6 +122,12 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
         /// </summary>
         public bool Stroked = true;
 
+        /// <summary>
+        /// Speicfies the locked properties of teh shape.
+        /// By default nothing is locked.
+        /// </summary>
+        public ProtectionBooleans Lock = new ProtectionBooleans(0);
+
         public UInt32 TypeCode
         {
             get 

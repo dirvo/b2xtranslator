@@ -41,6 +41,7 @@
     <Compile Include="ClientAnchor.cs" />
     <Compile Include="ClientData.cs" />
     <Compile Include="ClientTextbox.cs" />
+    <Compile Include="DiagramBooleans.cs" />
     <Compile Include="DrawingContainer.cs" />
     <Compile Include="DrawingGroup.cs" />
     <Compile Include="DrawingGroupRecord.cs" />

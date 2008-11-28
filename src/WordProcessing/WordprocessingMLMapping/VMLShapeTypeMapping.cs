@@ -12,10 +12,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
     public class VMLShapeTypeMapping : PropertiesMapping,
           IMapping<ShapeType>
     {
-        
+        private XmlElement _lock = null;
+
         public VMLShapeTypeMapping(XmlWriter writer)
             : base(writer)
         {
+            _lock = _nodeFactory.CreateElement("o", "lock", OpenXmlNamespaces.Office);
+            appendValueAttribute(_lock, "v", "ext", "edit", OpenXmlNamespaces.VectorML);
         }
 
         public void Apply(ShapeType shapeType)
@@ -102,8 +105,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 _writer.WriteEndElement();
 
                 //Lock
-                //TODO: Find out when we need to write a lock 
-                //<o:lock v:ext="edit" aspectratio="t"/>
+                if (shapeType.Lock.fUsefLockAspectRatio && shapeType.Lock.fLockAspectRatio)
+                {
+                    appendValueAttribute(_lock, null, "aspectratio", "t", null);
+                }
+                if (_lock.Attributes.Count > 1)
+                {
+                    _lock.WriteTo(_writer);
+                }
 
                 //Handles
                 if (shapeType.Handles != null && shapeType.Handles.Count > 0)
@@ -137,6 +146,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     _writer.WriteEndElement();
                 }
+
+
 
                 _writer.WriteEndElement();
 

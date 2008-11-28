@@ -77,7 +77,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _writer.WriteAttributeString("style", generateStyle(anchor, options).ToString());
             _writer.WriteAttributeString("coordorigin", gsr.rcgBounds.Left + "," + gsr.rcgBounds.Top);
             _writer.WriteAttributeString("coordsize", gsr.rcgBounds.Width + "," + gsr.rcgBounds.Height);
-
             
             //write wrap coords
             foreach (ShapeOptions.OptionEntry entry in options)
@@ -152,6 +151,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             int numberAdjValues = 0;
             bool stroked = true;
             bool filled = true;
+            bool hasTextbox = false;
 
             foreach (ShapeOptions.OptionEntry entry in options)
             {
@@ -185,6 +185,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     case ShapeOptions.PropertyId.protectionBooleans:
                         ProtectionBooleans protBools = new ProtectionBooleans(entry.op);
+
+                        break;
+
+                    case ShapeOptions.PropertyId.diagramBooleans:
+                        DiagramBooleans diaBools = new DiagramBooleans(entry.op);
 
                         break;
 
@@ -355,6 +360,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         EmuValue backwardValue = new EmuValue((int)entry.op);
                         appendValueAttribute(_3dstyle, "backdepth", backwardValue.ToPoints().ToString());
                         break; 
+
+                    // TEXTBOX
+
+                    case ShapeOptions.PropertyId.lTxid:
+                        hasTextbox = true;
+                        break;
                 }
             }
 
@@ -472,8 +483,25 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             Record recTextbox = container.FirstChildWithType<ClientTextbox>();
             if (recTextbox != null)
             {
-                ClientTextbox txbx = (ClientTextbox)recTextbox;
-                _ctx.Doc.Convert(new TextboxMapping(_ctx, txbx, _targetPart, _writer));
+                //Word text box
+
+                //Word appends a ClientTextbox record to the container. 
+                //This record stores the index of the textbox.
+
+                ClientTextbox box = (ClientTextbox)recTextbox;
+                Int16 textboxIndex = System.BitConverter.ToInt16(box.Bytes, 2);
+                textboxIndex--;
+                _ctx.Doc.Convert(new TextboxMapping(_ctx, textboxIndex, _targetPart, _writer));
+            }
+            else if(hasTextbox)
+            {
+                //Open Office textbox
+
+                //Open Office doesn't append a ClientTextbox record to the container.
+                //We don't know how Word gets the relation to the text, but we assume that the first textbox in the document
+                //get the index 0, the second textbox gets the index 1 (and so on).
+
+                _ctx.Doc.Convert(new TextboxMapping(_ctx, _targetPart, _writer));
             }
 
             //write the shape
@@ -641,6 +669,45 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 	        }
         }
 
+        private string getTextboxAnchor(uint anchor)
+        {
+            switch (anchor)
+            {
+                case 0:
+                    //msoanchorTop
+                    return "top";
+                case 1:
+                    //msoanchorMiddle
+                    return "middle";
+                case 2:
+                    //msoanchorBottom
+                    return "bottom";
+                case 3:
+                    //msoanchorTopCentered
+                    return "top-center";
+                case 4:
+                    //msoanchorMiddleCentered
+                    return "middle-center";
+                case 5:
+                    //msoanchorBottomCentered
+                    return "bottom-center";
+                case 6:
+                    //msoanchorTopBaseline
+                    return "top-baseline";
+                case 7:
+                    //msoanchorBottomBaseline
+                    return "bottom-baseline";
+                case 8:
+                    //msoanchorTopCenteredBaseline
+                    return "top-center-baseline";
+                case 9:
+                    //msoanchorBottomCenteredBaseline
+                    return "bottom-center-baseline";
+                default:
+                    return "top";
+            }
+        }
+
         /// <summary>
         /// Generates a string id for the given shape
         /// </summary>
@@ -760,6 +827,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     case ShapeOptions.PropertyId.rotation:
                         appendStyleProperty(style, "rotation", (entry.op / Math.Pow(2, 16)).ToString());
+                        break;
+
+                    //TEXTBOX
+
+                    case ShapeOptions.PropertyId.anchorText:
+                        appendStyleProperty(style, "v-text-anchor", getTextboxAnchor(entry.op));
                         break;
                 }
             }

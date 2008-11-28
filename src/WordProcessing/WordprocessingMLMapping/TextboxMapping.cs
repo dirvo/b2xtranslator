@@ -11,12 +11,21 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
     public class TextboxMapping : DocumentMapping
     {
-        private ClientTextbox _textbox;
+        public static int TextboxCount = 0;
+        private Int32 _textboxIndex;
 
-        public TextboxMapping(ConversionContext ctx, ClientTextbox textbox, ContentPart targetpart, XmlWriter writer)
+        public TextboxMapping(ConversionContext ctx, Int32 textboxIndex, ContentPart targetpart, XmlWriter writer)
             : base(ctx, targetpart, writer)
         {
-            _textbox = textbox;
+            TextboxCount++;
+            _textboxIndex = textboxIndex;
+        }
+
+        public TextboxMapping(ConversionContext ctx, ContentPart targetpart, XmlWriter writer)
+            : base(ctx, targetpart, writer)
+        {
+            TextboxCount++;
+            _textboxIndex = TextboxCount - 1;
         }
 
         public override void Apply(WordDocument doc)
@@ -26,9 +35,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _writer.WriteStartElement("v", "textbox", OpenXmlNamespaces.VectorML);
             _writer.WriteStartElement("w", "txbxContent", OpenXmlNamespaces.WordprocessingML);
 
-            Int16 index = System.BitConverter.ToInt16(_textbox.Bytes, 2);
-            index--;
-
             Int32 cp = 0;
             Int32 cpEnd = 0;
             BreakDescriptor bkd = null;
@@ -36,16 +42,16 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             if(_targetPart.GetType() == typeof(MainDocumentPart))
             {
-                cp = txtbxSubdocStart + doc.TextboxBreakPlex.CharacterPositions[index];
-                cpEnd = txtbxSubdocStart + doc.TextboxBreakPlex.CharacterPositions[index + 1];
-                bkd = (BreakDescriptor)doc.TextboxBreakPlex.Elements[index];
+                cp = txtbxSubdocStart + doc.TextboxBreakPlex.CharacterPositions[_textboxIndex];
+                cpEnd = txtbxSubdocStart + doc.TextboxBreakPlex.CharacterPositions[_textboxIndex + 1];
+                bkd = (BreakDescriptor)doc.TextboxBreakPlex.Elements[_textboxIndex];
             }
             if(_targetPart.GetType() == typeof(HeaderPart))
             {
                 txtbxSubdocStart += doc.FIB.ccpTxbx;
-                cp = txtbxSubdocStart + doc.TextboxBreakPlexHeader.CharacterPositions[index];
-                cpEnd = txtbxSubdocStart + doc.TextboxBreakPlexHeader.CharacterPositions[index + 1];
-                bkd = (BreakDescriptor)doc.TextboxBreakPlexHeader.Elements[index];
+                cp = txtbxSubdocStart + doc.TextboxBreakPlexHeader.CharacterPositions[_textboxIndex];
+                cpEnd = txtbxSubdocStart + doc.TextboxBreakPlexHeader.CharacterPositions[_textboxIndex + 1];
+                bkd = (BreakDescriptor)doc.TextboxBreakPlexHeader.Elements[_textboxIndex];
             }
 
             //convert the textbox text

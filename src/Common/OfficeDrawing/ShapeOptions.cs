@@ -421,7 +421,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             fDoFormat=1340,
             fReverse=1341,
             fDoLayout=1342,
-            fPseudoInline=1343,
+            diagramBooleans=1343,
 
             //Web Component
             webComponentWzHtml=1664,
@@ -472,12 +472,12 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 
         public enum PositionHorizontal
         {
-            msophAbs = 0x00000001,
-            msophLeft = 0x00000002,
-            msophCenter = 0x00000003,
-            msophRight = 0x00000004,
-            msophInside = 0x00000005,
-            msophOutside = 0x00000006
+            msophAbs = 0x1,
+            msophLeft = 0x2,
+            msophCenter = 0x3,
+            msophRight = 0x4,
+            msophInside = 0x5,
+            msophOutside = 0x6
         }
 
         public enum PositionHorizontalRelative
@@ -490,12 +490,12 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 
         public enum PositionVertical
         {
-            msopvAbs = 0x00000001,
-            msopvTop = 0x00000002,
-            msopvCenter = 0x00000003,
-            msopvBottom = 0x00000004,
-            msopvInside = 0x00000005,
-            msopvOutside = 0x00000006
+            msopvAbs = 0x1,
+            msopvTop = 0x2,
+            msopvCenter = 0x3,
+            msopvBottom = 0x4,
+            msopvInside = 0x5,
+            msopvOutside = 0x6
         }
 
 
