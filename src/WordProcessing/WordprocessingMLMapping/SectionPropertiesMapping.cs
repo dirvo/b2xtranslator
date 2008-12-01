@@ -43,6 +43,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private XmlElement _sectPr;
         private int _sectNr;
         private ConversionContext _ctx;
+       private SectionType _type = SectionType.nextPage;
 
         private enum SectionType
         {
@@ -394,7 +395,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     //type
                     case SinglePropertyModifier.OperationCode.sprmSBkc:
-                        appendValueElement(_sectPr, "type", ((SectionType)sprm.Arguments[0]).ToString(), true);
+                        _type = (SectionType)sprm.Arguments[0];
                         break;
 
                     //align
@@ -412,6 +413,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         break;
                 }
             }
+
 
             //build the columns
             if (_colWidth != null)
@@ -447,6 +449,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     cols.AppendChild(col);
                 }
             }
+
+            //append the section type
+            appendValueElement(_sectPr, "type", _type.ToString(), true);
 
             //append footnote properties
             if (footnotePr.ChildNodes.Count > 0)

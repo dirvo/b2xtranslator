@@ -429,6 +429,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         appendValueAttribute(_framePr, "vSpace", frameSpaceV.ToString());
                         break;
 
+                    //outline level
+                    case SinglePropertyModifier.OperationCode.sprmPOutLvl:
+                        appendValueElement(_pPr, "outlineLvl", sprm.Arguments[0].ToString(), false);
+                        break;
+
                     default:
                         break;
                 }

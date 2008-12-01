@@ -516,15 +516,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 //this shape is placed directly in the document, 
                 //so use the FSPA to build the style
-                appendDimensionToStyle(style, _fspa);
+                AppendDimensionToStyle(style, _fspa);
             }
             else
             {
                 //the style is part of a group, 
                 //so use the anchor
-                appendDimensionToStyle(style, anchor);
+                AppendDimensionToStyle(style, anchor);
             }
-            appendOptionsToStyle(style, options);
+            AppendOptionsToStyle(style, options);
             return style;
         }
 
@@ -669,57 +669,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 	        }
         }
 
-        private string getTextboxAnchor(uint anchor)
-        {
-            switch (anchor)
-            {
-                case 0:
-                    //msoanchorTop
-                    return "top";
-                case 1:
-                    //msoanchorMiddle
-                    return "middle";
-                case 2:
-                    //msoanchorBottom
-                    return "bottom";
-                case 3:
-                    //msoanchorTopCentered
-                    return "top-center";
-                case 4:
-                    //msoanchorMiddleCentered
-                    return "middle-center";
-                case 5:
-                    //msoanchorBottomCentered
-                    return "bottom-center";
-                case 6:
-                    //msoanchorTopBaseline
-                    return "top-baseline";
-                case 7:
-                    //msoanchorBottomBaseline
-                    return "bottom-baseline";
-                case 8:
-                    //msoanchorTopCenteredBaseline
-                    return "top-center-baseline";
-                case 9:
-                    //msoanchorBottomCenteredBaseline
-                    return "bottom-center-baseline";
-                default:
-                    return "top";
-            }
-        }
-
-        /// <summary>
-        /// Generates a string id for the given shape
-        /// </summary>
-        /// <param name="shape"></param>
-        /// <returns></returns>
-        private string getShapeId(Shape shape)
-        {
-            StringBuilder id = new StringBuilder();
-            id.Append("_x0000_s");
-            id.Append(shape.spid);
-            return id.ToString();
-        }
 
         /// <summary>
         /// Build the VML wrapcoords string for a given pWrapPolygonVertices
@@ -750,102 +699,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             return coords.ToString().Trim();
         }
-
-        private void appendDimensionToStyle(StringBuilder style, FileShapeAddress fspa)
-        {
-            //append size and position ...
-            TwipsValue left = new TwipsValue(fspa.xaLeft);
-            TwipsValue top = new TwipsValue(fspa.yaTop);
-            TwipsValue width = new TwipsValue(fspa.xaRight - fspa.xaLeft);
-            TwipsValue height = new TwipsValue(fspa.yaBottom - fspa.yaTop);
-
-            appendStyleProperty(style, "position", "absolute");
-            appendStyleProperty(style, "margin-left", Convert.ToString(left.ToPoints(), CultureInfo.GetCultureInfo("en-US")) + "pt");
-            appendStyleProperty(style, "margin-top", Convert.ToString(top.ToPoints(), CultureInfo.GetCultureInfo("en-US")) + "pt");
-            appendStyleProperty(style, "width", Convert.ToString(width.ToPoints(), CultureInfo.GetCultureInfo("en-US")) + "pt");
-            appendStyleProperty(style, "height", Convert.ToString(height.ToPoints(), CultureInfo.GetCultureInfo("en-US")) + "pt");
-        }
-
-        private void appendDimensionToStyle(StringBuilder style, ChildAnchor anchor)
-        {
-            //append size and position ...
-            appendStyleProperty(style, "position", "absolute");
-            appendStyleProperty(style, "left", anchor.rcgBounds.Left.ToString());
-            appendStyleProperty(style, "top", anchor.rcgBounds.Top.ToString());
-            appendStyleProperty(style, "width", anchor.rcgBounds.Width.ToString());
-            appendStyleProperty(style, "height", anchor.rcgBounds.Height.ToString());
-        }
-
-        private void appendOptionsToStyle(StringBuilder style, List<ShapeOptions.OptionEntry> options)
-        {
-            foreach (ShapeOptions.OptionEntry entry in options)
-            {
-                switch (entry.pid)
-                {
-
-                    //POSITIONING
-
-                    case ShapeOptions.PropertyId.posh:
-                        appendStyleProperty(
-                            style,
-                            "mso-position-horizontal",
-                            mapHorizontalPosition((ShapeOptions.PositionHorizontal)entry.op));
-                        break;
-                    case ShapeOptions.PropertyId.posrelh:
-                        appendStyleProperty(
-                            style,
-                            "mso-position-horizontal-relative",
-                            mapHorizontalPositionRelative((ShapeOptions.PositionHorizontalRelative)entry.op));
-                        break;
-                    case ShapeOptions.PropertyId.posv:
-                        appendStyleProperty(
-                            style,
-                            "mso-position-vertical",
-                            mapVerticalPosition((ShapeOptions.PositionVertical)entry.op));
-                        break;
-                    case ShapeOptions.PropertyId.posrelv:
-                        appendStyleProperty(
-                            style,
-                            "mso-position-vertical-relative",
-                            mapVerticalPositionRelative((ShapeOptions.PositionVerticalRelative)entry.op));
-                        break;
-
-                    //BOOLEANS
-
-                    case ShapeOptions.PropertyId.groupShapeBooleans:
-                        GroupShapeBooleans groupShapeBoolean = new GroupShapeBooleans(entry.op);
-
-                        if (groupShapeBoolean.fUsefBehindDocument && groupShapeBoolean.fBehindDocument)
-                        {
-                            //The shape is behind the text, so the z-index must be negative.
-                            appendStyleProperty(style, "z-index", "-1");
-                        }
-
-                        break;
-
-                    // GEOMETRY
-
-                    case ShapeOptions.PropertyId.rotation:
-                        appendStyleProperty(style, "rotation", (entry.op / Math.Pow(2, 16)).ToString());
-                        break;
-
-                    //TEXTBOX
-
-                    case ShapeOptions.PropertyId.anchorText:
-                        appendStyleProperty(style, "v-text-anchor", getTextboxAnchor(entry.op));
-                        break;
-                }
-            }
-        }
-
-        private void appendStyleProperty(StringBuilder b, string propName, string propValue)
-        {
-            b.Append(propName);
-            b.Append(":");
-            b.Append(propValue);
-            b.Append(";");
-        }
-
 
         /// <summary>
         /// Copies the picture from the binary stream to the zip archive 
@@ -917,7 +770,165 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             return imgPart;
         }
 
-        private string mapVerticalPosition(ShapeOptions.PositionVertical vPos)
+        //*******************************************************************
+        //                                                     STATIC METHODS
+        //*******************************************************************
+
+        public static void AppendDimensionToStyle(StringBuilder style, FileShapeAddress fspa)
+        {
+            //append size and position ...
+            TwipsValue left = new TwipsValue(fspa.xaLeft);
+            TwipsValue top = new TwipsValue(fspa.yaTop);
+            TwipsValue width = new TwipsValue(fspa.xaRight - fspa.xaLeft);
+            TwipsValue height = new TwipsValue(fspa.yaBottom - fspa.yaTop);
+
+            appendStyleProperty(style, "position", "absolute");
+            appendStyleProperty(style, "margin-left", Convert.ToString(left.ToPoints(), CultureInfo.GetCultureInfo("en-US")) + "pt");
+            appendStyleProperty(style, "margin-top", Convert.ToString(top.ToPoints(), CultureInfo.GetCultureInfo("en-US")) + "pt");
+            appendStyleProperty(style, "width", Convert.ToString(width.ToPoints(), CultureInfo.GetCultureInfo("en-US")) + "pt");
+            appendStyleProperty(style, "height", Convert.ToString(height.ToPoints(), CultureInfo.GetCultureInfo("en-US")) + "pt");
+        }
+
+        public static void AppendDimensionToStyle(StringBuilder style, ChildAnchor anchor)
+        {
+            //append size and position ...
+            appendStyleProperty(style, "position", "absolute");
+            appendStyleProperty(style, "left", anchor.rcgBounds.Left.ToString());
+            appendStyleProperty(style, "top", anchor.rcgBounds.Top.ToString());
+            appendStyleProperty(style, "width", anchor.rcgBounds.Width.ToString());
+            appendStyleProperty(style, "height", anchor.rcgBounds.Height.ToString());
+        }
+
+        public static void AppendOptionsToStyle(StringBuilder style, List<ShapeOptions.OptionEntry> options)
+        {
+            foreach (ShapeOptions.OptionEntry entry in options)
+            {
+                switch (entry.pid)
+                {
+
+                    //POSITIONING
+
+                    case ShapeOptions.PropertyId.posh:
+                        appendStyleProperty(
+                            style,
+                            "mso-position-horizontal",
+                            mapHorizontalPosition((ShapeOptions.PositionHorizontal)entry.op));
+                        break;
+                    case ShapeOptions.PropertyId.posrelh:
+                        appendStyleProperty(
+                            style,
+                            "mso-position-horizontal-relative",
+                            mapHorizontalPositionRelative((ShapeOptions.PositionHorizontalRelative)entry.op));
+                        break;
+                    case ShapeOptions.PropertyId.posv:
+                        appendStyleProperty(
+                            style,
+                            "mso-position-vertical",
+                            mapVerticalPosition((ShapeOptions.PositionVertical)entry.op));
+                        break;
+                    case ShapeOptions.PropertyId.posrelv:
+                        appendStyleProperty(
+                            style,
+                            "mso-position-vertical-relative",
+                            mapVerticalPositionRelative((ShapeOptions.PositionVerticalRelative)entry.op));
+                        break;
+
+                    //BOOLEANS
+
+                    case ShapeOptions.PropertyId.groupShapeBooleans:
+                        GroupShapeBooleans groupShapeBoolean = new GroupShapeBooleans(entry.op);
+
+                        if (groupShapeBoolean.fUsefBehindDocument && groupShapeBoolean.fBehindDocument)
+                        {
+                            //The shape is behind the text, so the z-index must be negative.
+                            appendStyleProperty(style, "z-index", "-1");
+                        }
+
+                        break;
+
+                    // GEOMETRY
+
+                    case ShapeOptions.PropertyId.rotation:
+                        appendStyleProperty(style, "rotation", (entry.op / Math.Pow(2, 16)).ToString());
+                        break;
+
+                    //TEXTBOX
+
+                    case ShapeOptions.PropertyId.anchorText:
+                        appendStyleProperty(style, "v-text-anchor", getTextboxAnchor(entry.op));
+                        break;
+
+                    //WRAP DISTANCE
+
+                    case ShapeOptions.PropertyId.dxWrapDistLeft:
+                        appendStyleProperty(style, "mso-wrap-distance-left", new EmuValue((int)entry.op).ToPoints() + "pt");
+                        break;
+
+                    case ShapeOptions.PropertyId.dxWrapDistRight:
+                        appendStyleProperty(style, "mso-wrap-distance-right", new EmuValue((int)entry.op).ToPoints() + "pt");
+                        break;
+
+                    case ShapeOptions.PropertyId.dyWrapDistBottom:
+                        appendStyleProperty(style, "mso-wrap-distance-bottom", new EmuValue((int)entry.op).ToPoints() + "pt");
+                        break;
+
+                    case ShapeOptions.PropertyId.dyWrapDistTop:
+                        appendStyleProperty(style, "mso-wrap-distance-top", new EmuValue((int)entry.op).ToPoints() + "pt");
+                        break;
+
+                }
+            }
+        }
+
+        private static void appendStyleProperty(StringBuilder b, string propName, string propValue)
+        {
+            b.Append(propName);
+            b.Append(":");
+            b.Append(propValue);
+            b.Append(";");
+        }
+
+
+        private static string getTextboxAnchor(uint anchor)
+        {
+            switch (anchor)
+            {
+                case 0:
+                    //msoanchorTop
+                    return "top";
+                case 1:
+                    //msoanchorMiddle
+                    return "middle";
+                case 2:
+                    //msoanchorBottom
+                    return "bottom";
+                case 3:
+                    //msoanchorTopCentered
+                    return "top-center";
+                case 4:
+                    //msoanchorMiddleCentered
+                    return "middle-center";
+                case 5:
+                    //msoanchorBottomCentered
+                    return "bottom-center";
+                case 6:
+                    //msoanchorTopBaseline
+                    return "top-baseline";
+                case 7:
+                    //msoanchorBottomBaseline
+                    return "bottom-baseline";
+                case 8:
+                    //msoanchorTopCenteredBaseline
+                    return "top-center-baseline";
+                case 9:
+                    //msoanchorBottomCenteredBaseline
+                    return "bottom-center-baseline";
+                default:
+                    return "top";
+            }
+        }
+
+        private static string mapVerticalPosition(ShapeOptions.PositionVertical vPos)
         {
             switch (vPos)
             {
@@ -938,7 +949,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
         }
 
-        private string mapVerticalPositionRelative(ShapeOptions.PositionVerticalRelative vRel)
+        private static string mapVerticalPositionRelative(ShapeOptions.PositionVerticalRelative vRel)
         {
             switch (vRel)
             {
@@ -955,7 +966,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
         }
 
-        private string mapHorizontalPosition(ShapeOptions.PositionHorizontal hPos)
+        private static string mapHorizontalPosition(ShapeOptions.PositionHorizontal hPos)
         {
             switch (hPos)
             {
@@ -976,7 +987,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
         }
 
-        private string mapHorizontalPositionRelative(ShapeOptions.PositionHorizontalRelative hRel)
+        private static string mapHorizontalPositionRelative(ShapeOptions.PositionHorizontalRelative hRel)
         {
             switch (hRel) 
             {
@@ -992,5 +1003,19 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     return "margin";
             }
         }
+
+        /// <summary>
+        /// Generates a string id for the given shape
+        /// </summary>
+        /// <param name="shape"></param>
+        /// <returns></returns>
+        private static string getShapeId(Shape shape)
+        {
+            StringBuilder id = new StringBuilder();
+            id.Append("_x0000_s");
+            id.Append(shape.spid);
+            return id.ToString();
+        }
+
     }
 }
