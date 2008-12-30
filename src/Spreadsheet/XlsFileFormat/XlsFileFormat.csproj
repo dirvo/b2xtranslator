@@ -295,10 +295,11 @@
     <Compile Include="DataContainer\BlankCell.cs" />
     <Compile Include="DataContainer\CRNData.cs" />
     <Compile Include="DataContainer\ExternSheetData.cs" />
-    <Compile Include="DataContainer\FormularCell.cs" />
+    <Compile Include="DataContainer\FormulaCell.cs" />
     <Compile Include="DataContainer\MergeCellData.cs" />
     <Compile Include="DataContainer\NumberCell.cs" />
     <Compile Include="DataContainer\RowData.cs" />
+    <Compile Include="DataContainer\SharedFormulaData.cs" />
     <Compile Include="DataContainer\SSTData.cs" />
     <Compile Include="DataContainer\StringCell.cs" />
     <Compile Include="DataContainer\StringFormatAssignment.cs" />
@@ -318,6 +319,7 @@
     <Compile Include="Ptg\PtgAdd.cs" />
     <Compile Include="Ptg\PtgArea.cs" />
     <Compile Include="Ptg\PtgArea3d.cs" />
+    <Compile Include="Ptg\PtgAreaN.cs" />
     <Compile Include="Ptg\PtgAttrChoose.cs" />
     <Compile Include="Ptg\PtgAttrGoto.cs" />
     <Compile Include="Ptg\PtgAttrIf.cs" />
@@ -350,6 +352,7 @@
     <Compile Include="Ptg\PtgPower.cs" />
     <Compile Include="Ptg\PtgRef.cs" />
     <Compile Include="Ptg\PtgRef3d.cs" />
+    <Compile Include="Ptg\PtgRefN.cs" />
     <Compile Include="Ptg\PtgStr.cs" />
     <Compile Include="Ptg\PtgSub.cs" />
     <Compile Include="Ptg\PtgUminus.cs" />

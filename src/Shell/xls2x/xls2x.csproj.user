@@ -1,5 +1,5 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <StartArguments>"C:\dev\examples\empty testfile.xls" -v 5</StartArguments>
+    <StartArguments>"C:\Tests\exceltests\SimpleFormulaValue2.xls" -v 5</StartArguments>
   </PropertyGroup>
 </Project>

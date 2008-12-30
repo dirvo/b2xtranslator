@@ -24,55 +24,69 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using DIaLOGIKa.b2xtranslator.Tools;
+using System.IO;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
-namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
+namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
 {
-    public class STRING : BiffRecord
+    /// <summary>
+    /// This class stores the data about cell with a reference to a value in the 
+    /// SharedStringTable 
+    /// </summary>
+    public class FormulaCell : AbstractCellData
     {
-        public const RecordNumber ID = RecordNumber.STRING;
+        /// <summary>
+        /// String which stores the index to the sharedstringtable 
+        /// </summary>
+        private String valueString;
 
-        public string value;
+        ///
 
-        public int cch;
-
-        public int grbit; 
-
-        public STRING(IStreamReader reader, RecordNumber id, UInt16 length)
-            : base(reader, id, length)
+        private Stack<AbstractPtg> ptgStack;
+        public Stack<AbstractPtg> PtgStack
         {
-            // assert that the correct record type is instantiated
-            Debug.Assert(this.Id == ID);
-
-            this.cch = reader.ReadUInt16();
-
-            this.grbit = reader.ReadByte();
-
-            if (grbit == 0)
-            {
-                for (int i = 0; i < cch; i++)
-                {
-                    this.value += (char)this.Reader.ReadByte();
-                }
-            }
-            else
-            {
-                for (int i = 0; i < cch; i++)
-                {
-                    this.value += System.BitConverter.ToChar(this.Reader.ReadBytes(2), 0);
-                }
-            }
-
-	
-
-            
-            // assert that the correct number of bytes has been read from the stream
-            // Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            get { return this.ptgStack; }
         }
-    }
+
+
+        public bool usesArrayRecord = false;
+
+        public bool isSharedFormula = false; 
+
+        /// <summary>
+        /// This method is used to get the Value from this cell 
+        /// </summary>
+        /// <returns></returns>
+        public override string getValue()
+        {
+            return this.valueString;
+        }
+
+        /// <summary>
+        /// This method is used to set the value of the cell
+        /// </summary>
+        /// <param name="obj"></param>
+        public override void setValue(object obj)
+        {
+            if (obj is Stack<AbstractPtg>)
+            {
+                this.ptgStack = (Stack<AbstractPtg>)obj; 
+            }
+        }
+
+
+        public object calculatedValue; 
+
+     }
 }

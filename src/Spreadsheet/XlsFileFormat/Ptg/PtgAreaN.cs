@@ -28,51 +28,47 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using DIaLOGIKa.b2xtranslator.Tools;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg;
 using System.Diagnostics;
+using DIaLOGIKa.b2xtranslator.Tools;
 
-namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
+namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg
 {
-    public class STRING : BiffRecord
+    public class PtgAreaN : AbstractPtg
     {
-        public const RecordNumber ID = RecordNumber.STRING;
+        public const PtgNumber ID = PtgNumber.PtgAreaN;
 
-        public string value;
+        public int rwFirst;
+        public int rwLast;
+        public int colFirst;
+        public int colLast;
 
-        public int cch;
+        public bool rwFirstRelative;
+        public bool rwLastRelative;
+        public bool colFirstRelative;
+        public bool colLastRelative;
 
-        public int grbit; 
-
-        public STRING(IStreamReader reader, RecordNumber id, UInt16 length)
-            : base(reader, id, length)
+        public PtgAreaN(IStreamReader reader, PtgNumber ptgid)
+            :
+            base(reader, ptgid)
         {
-            // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
+            this.Length = 9;
+            this.rwFirst = this.Reader.ReadInt16();
+            this.rwLast = this.Reader.ReadInt16();
+            this.colFirst = this.Reader.ReadInt16();
+            this.colLast = this.Reader.ReadInt16();
 
-            this.cch = reader.ReadUInt16();
+            this.colFirstRelative = Utils.BitmaskToBool(colFirst, 0x4000);
+            this.rwFirstRelative = Utils.BitmaskToBool(colFirst, 0x8000);
+            this.colLastRelative = Utils.BitmaskToBool(colLast, 0x4000);
+            this.rwLastRelative = Utils.BitmaskToBool(colLast, 0x8000);
 
-            this.grbit = reader.ReadByte();
+            this.colLast = (short)(colLast & 0x3FFF);
+            this.colFirst = (short)(colFirst & 0x3FFF);
 
-            if (grbit == 0)
-            {
-                for (int i = 0; i < cch; i++)
-                {
-                    this.value += (char)this.Reader.ReadByte();
-                }
-            }
-            else
-            {
-                for (int i = 0; i < cch; i++)
-                {
-                    this.value += System.BitConverter.ToChar(this.Reader.ReadBytes(2), 0);
-                }
-            }
-
-	
-
-            
-            // assert that the correct number of bytes has been read from the stream
-            // Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            this.type = PtgType.Operand;
+            this.popSize = 1;
         }
     }
 }

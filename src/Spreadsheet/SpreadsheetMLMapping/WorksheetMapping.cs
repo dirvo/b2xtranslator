@@ -87,25 +87,70 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     {
                         _writer.WriteAttributeString("t", "s");
                     }
-                    if (cell is FormularCell)
+                    if (cell is FormulaCell)
                     {
-                        FormularCell fcell = (FormularCell) cell; 
+                        FormulaCell fcell = (FormulaCell) cell; 
                         // <f>1</f> 
-                        String value = FormularInfixMapping.mapFormula(fcell.PtgStack,this.xlsContext);
                         _writer.WriteStartElement("f");
-                        
-                        if (fcell.usesArrayRecord)
+                        if (!fcell.isSharedFormula)
                         {
-                            _writer.WriteAttributeString("t", "array");
-                            _writer.WriteAttributeString("ref", ExcelHelperClass.intToABCString((int)cell.Col, (cell.Row + 1).ToString()));
+                            String value = FormulaInfixMapping.mapFormula(fcell.PtgStack, this.xlsContext);
+
+
+                            if (fcell.usesArrayRecord)
+                            {
+                                _writer.WriteAttributeString("t", "array");
+                                _writer.WriteAttributeString("ref", ExcelHelperClass.intToABCString((int)cell.Col, (cell.Row + 1).ToString()));
+                            }
+                            if (value.Equals(""))
+                            {
+                                TraceLogger.Debug("Formula Parse Error in Row {0}\t Column {1}\t", cell.Row.ToString(), cell.Col.ToString());
+                            }
+
+                            _writer.WriteString(value);
                         }
-                        if (value.Equals(""))
+                        /// If this cell is part of a shared formula 
+                        /// 
+                        else
                         {
-                            TraceLogger.Debug("Formula Parse Error in Row {0}\t Column {1}\t",cell.Row.ToString(), cell.Col.ToString());
+                            SharedFormulaData sfd = bsd.checkFormulaIsInShared(cell.Row, cell.Col);
+                            if (sfd != null)
+                            {
+                                // t="shared" 
+                                _writer.WriteAttributeString("t", "shared");
+                                //  <f t="shared" ref="C4:C11" si="0">H4+I4-J4</f> 
+                                _writer.WriteAttributeString("si", sfd.ID.ToString());
+                                if (sfd.RefCount == 0)
+                                {
+                                    /// Write value and reference 
+                                    _writer.WriteAttributeString("ref", sfd.getOXMLFormatedData());
+
+                                    String value = FormulaInfixMapping.mapFormula(sfd.PtgStack, this.xlsContext,sfd.rwFirst,sfd.colFirst);
+                                    _writer.WriteString(value);
+
+                                    sfd.RefCount++; 
+                                }
+                                
+                            }
+                            else
+                            {
+                                TraceLogger.Debug("Formula Parse Error in Row {0}\t Column {1}\t", cell.Row.ToString(), cell.Col.ToString());                          
+                            }
                         }
 
-                        _writer.WriteString(value);
                         _writer.WriteEndElement(); 
+                        /// write down calculated value from a formula
+                        /// 
+
+                        _writer.WriteStartElement("v");
+
+                        _writer.WriteString(((FormulaCell)cell).calculatedValue.ToString());
+
+
+
+                        _writer.WriteEndElement(); 
+
+
                     }
                     else
                     {// Data !!! 

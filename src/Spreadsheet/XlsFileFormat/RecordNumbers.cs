@@ -170,7 +170,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         MTRSETTINGS = 0x89A, 	// Multi-Threaded Calculation Settings
         MULBLANK = 0xBE, 	// Multiple Blank Cells
         MULRK = 0xBD, 	// Multiple RK Cells
-        NAME = 0x218, 	// Defined Name
+        NAME = 0x18, 	// Defined Name
         NAMECMT = 0x894, 	// Name Comment
         NAMEFNGRP12 = 0x899, 	// Extra Function Group
         NAMEPUBLISH = 0x893, 	// Publish to Excel Server Data for Name

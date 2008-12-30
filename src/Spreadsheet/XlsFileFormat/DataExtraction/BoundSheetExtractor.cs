@@ -114,6 +114,18 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                         ARRAY array = new ARRAY(this.StreamReader, bh.id, bh.length);
                         this.bsd.addARRAY(array); 
                     }
+                    else if (bh.id == RecordNumber.SHRFMLA)
+                    {
+                        SHRFMLA shrfmla = new SHRFMLA(this.StreamReader, bh.id, bh.length);
+                        this.bsd.addSharedFormula(shrfmla); 
+
+                    }
+                    else if (bh.id == RecordNumber.STRING)
+                    {
+                        STRING formulaString = new STRING(this.StreamReader, bh.id, bh.length);
+                        this.bsd.addFormulaString(formulaString.value); 
+
+                    }
                     else
                     {
                         // this else statement is used to read BiffRecords which aren't implemented 
@@ -126,6 +138,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             catch (Exception ex)
             {
                 TraceLogger.Error(ex.Message);
+                TraceLogger.Error(ex.StackTrace); 
                 TraceLogger.Debug(ex.ToString());
             }
         }

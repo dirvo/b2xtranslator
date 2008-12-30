@@ -212,6 +212,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                             case PtgNumber.PtgParen: ptg = new PtgParen(reader, ptgtype); break;
                             case PtgNumber.PtgNum: ptg = new PtgNum(reader, ptgtype); break;
                             case PtgNumber.PtgRef: ptg = new PtgRef(reader, ptgtype); break;
+                            case PtgNumber.PtgRefN: ptg = new PtgRefN(reader, ptgtype); break;
                             case PtgNumber.PtgPower: ptg = new PtgPower(reader, ptgtype); break;
                             case PtgNumber.PtgPercent: ptg = new PtgPercent(reader, ptgtype); break;
                             case PtgNumber.PtgBool: ptg = new PtgBool(reader, ptgtype); break;
@@ -229,6 +230,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                             case PtgNumber.PtgIsect: ptg = new PtgIsect(reader, ptgtype); break;
                             case PtgNumber.PtgMemErr: ptg = new PtgMemErr(reader, ptgtype); break;
                             case PtgNumber.PtgArea: ptg = new PtgArea(reader, ptgtype); break;
+                            case PtgNumber.PtgAreaN: ptg = new PtgAreaN(reader, ptgtype); break;
                             case PtgNumber.PtgFuncVar: ptg = new PtgFuncVar(reader, ptgtype); break;
                             case PtgNumber.PtgFunc: ptg = new PtgFunc(reader, ptgtype); break;
                             case PtgNumber.PtgExp: ptg = new PtgExp(reader, ptgtype); break;

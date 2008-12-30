@@ -64,6 +64,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public int worksheetId;
         public String worksheetRef;
         public SortedList<Int32, RowData> rowDataTable;
+        public List<SharedFormulaData> sharedFormulaDataTable;
+        public FormulaCell latestFormula; 
 
         public MERGECELLS MERGECELLSData;
 
@@ -81,6 +83,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             this.FORMULAList = new List<FORMULA>();
             this.ARRAYList = new List<ARRAY>(); 
             this.rowDataTable = new SortedList<int, RowData>();
+            this.sharedFormulaDataTable = new List<SharedFormulaData>(); 
             boundsheetRecord = null; 
 
         }
@@ -207,14 +210,42 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         {
             this.FORMULAList.Add(formula);
             RowData rowData = this.getSpecificRow(formula.rw);
-            FormularCell cell = new FormularCell();
+            FormulaCell cell = new FormulaCell();
 
 
             cell.setValue(formula.ptgStack);
             cell.Col = formula.col;
             cell.Row = formula.rw;
             cell.TemplateID = formula.ixfe;
+
+            if (formula.fShrFmla)
+            {
+                ((FormulaCell)cell).isSharedFormula = true; 
+            }
+
+            if (formula.calculatedValue != null)
+            {
+                cell.calculatedValue = formula.calculatedValue;
+            }
+            if (formula.boolValue != null)
+            {
+                cell.calculatedValue = formula.boolValue;
+            }
+            if (formula.errorValue != null)
+            {
+                cell.calculatedValue = formula.errorValue;
+            }
+            this.latestFormula = cell; 
             rowData.addCell(cell);
+        }
+
+        /// <summary>
+        /// Add a stringvalue to the formula 
+        /// </summary>
+        /// <param name="formulaString"></param>
+        public void addFormulaString(string formulaString)
+        {
+            this.latestFormula.calculatedValue = formulaString; 
         }
 
         /// <summary>
@@ -291,12 +322,46 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public void setFormulaUsesArray(UInt16 rw, UInt16 col)
         {
             AbstractCellData cell = this.getCellAtPosition(rw, col);
-            if (cell is FormularCell)
+            if (cell is FormulaCell)
             {
-                ((FormularCell)cell).usesArrayRecord = true; 
+                ((FormulaCell)cell).usesArrayRecord = true; 
             }
         }
 
+        /// <summary>
+        /// Add a shared formula to the internal list
+        /// </summary>
+        /// <param name="shrfmla"></param>
+        public void addSharedFormula(SHRFMLA shrfmla)
+        {
+            SharedFormulaData sfd = new SharedFormulaData();
+            sfd.colFirst = shrfmla.colFirst;
+            sfd.colLast = shrfmla.colLast;
+            sfd.rwFirst = shrfmla.rwFirst;
+            sfd.rwLast = shrfmla.rwLast;
+            sfd.setValue(shrfmla.ptgStack);
+            int ID = this.sharedFormulaDataTable.Count;
+            sfd.ID = ID; 
+            this.sharedFormulaDataTable.Add(sfd); 
+        }
+
+
+        /// <summary>
+        /// Checks if the formula cell with this coordinates is in the shared formula range 
+        /// </summary>
+        /// <param name="rw"></param>
+        /// <param name="col"></param>
+        /// <returns>Null if the cell isn't in a SharedFormula range
+        ///          The SharedFormulaData Objekt if the cell is in the range</returns>
+        public SharedFormulaData checkFormulaIsInShared(int rw, int col)
+        {
+            foreach (SharedFormulaData var in this.sharedFormulaDataTable)
+            {
+                if (var.checkFormulaIsInShared(rw, col))
+                    return var; 
+            }
+            return null; 
+        }
 
 
         #region IVisitable Members

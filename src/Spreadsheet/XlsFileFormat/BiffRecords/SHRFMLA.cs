@@ -30,6 +30,7 @@ using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Tools;
 using System.Diagnostics;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
@@ -37,17 +38,71 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     {
         public const RecordNumber ID = RecordNumber.SHRFMLA;
 
+        /// <summary>
+        /// Rownumber 
+        /// </summary>
+        public UInt16 rwFirst;
+
+        /// <summary>
+        /// Rownumber 
+        /// </summary>
+        public UInt16 rwLast;
+
+        /// <summary>
+        /// Colnumber 
+        /// </summary>
+        public UInt16 colFirst;
+
+        /// <summary>
+        /// Colnumber 
+        /// </summary>
+        public UInt16 colLast;
+
+
+        /// <summary>
+        /// length of the formular data !!
+        /// </summary>
+        public UInt16 cce;
+
+        /// <summary>
+        /// LinkedList with the Ptg records !!
+        /// </summary>
+        public Stack<AbstractPtg> ptgStack; 
+
         public SHRFMLA(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
 
-            // initialize class members from stream
-            // TODO: place code here
+            this.rwFirst = reader.ReadUInt16();
+            this.rwLast = reader.ReadUInt16();
+            this.colFirst = (UInt16)reader.ReadByte();
+            this.colLast = (UInt16)reader.ReadByte();
+
+            // read two unnessesary bytes 
+            reader.ReadUInt16();
+
+            this.cce = reader.ReadUInt16();
+            this.ptgStack = new Stack<AbstractPtg>();
+            // reader.ReadBytes(this.cce);
+
+            long oldStreamPosition = this.Reader.BaseStream.Position;
+            try
+            {
+                this.ptgStack = ExcelHelperClass.getFormulaStack(this.Reader, this.cce);
+            }
+            catch (Exception ex)
+            {
+                this.Reader.BaseStream.Seek(oldStreamPosition, System.IO.SeekOrigin.Begin);
+                this.Reader.BaseStream.Seek(this.cce, System.IO.SeekOrigin.Current);
+                TraceLogger.Error(ex.StackTrace); 
+
+            }
+
             
             // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            // Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
         }
     }
 }
