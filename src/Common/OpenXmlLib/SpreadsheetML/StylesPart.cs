@@ -27,38 +27,30 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using DIaLOGIKa.b2xtranslator.Tools;
-using System.Diagnostics;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
 
-namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
+namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
 {
-    public class STRING : BiffRecord
+    public class StylesPart : OpenXmlPart
     {
-        public const RecordNumber ID = RecordNumber.STRING;
-
-        public string value;
-
-        public int cch;
-
-        public int grbit; 
-
-        public STRING(IStreamReader reader, RecordNumber id, UInt16 length)
-            : base(reader, id, length)
+        public StylesPart(OpenXmlPartContainer parent)
+            : base(parent,0)
         {
-            // assert that the correct record type is instantiated
-            Debug.Assert(this.Id == ID);
-
-            this.cch = reader.ReadUInt16();
-
-            this.grbit = reader.ReadByte();
-
-            this.value = ExcelHelperClass.getStringFromBiffRecord(reader, this.cch, this.grbit); 
-	
-
-            
-            // assert that the correct number of bytes has been read from the stream
-            // Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
         }
+
+
+        public override string ContentType
+        {
+            get { return SpreadsheetMLContentTypes.Styles; }
+        }
+
+        public override string RelationshipType
+        {
+            get { return OpenXmlRelationshipTypes.Styles; }
+        }
+
+        public override string TargetName { get { return "styles"; } }
+        public override string TargetDirectory { get { return ""; } }
     }
 }

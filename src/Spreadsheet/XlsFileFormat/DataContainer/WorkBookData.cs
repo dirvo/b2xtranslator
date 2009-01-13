@@ -36,6 +36,7 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData; 
 
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
@@ -61,7 +62,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         public LinkedList<SupBookData> supBookDataList;
         public LinkedList<XTIData> xtiDataList;
 
-        public int refWorkBookNumber; 
+        public int refWorkBookNumber;
+
+        public StyleData.StyleData styleData; 
 
         /// <summary>
         /// Ctor 
@@ -72,7 +75,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
             this.externSheetDataList = new List<ExternSheetData>();
             this.supBookDataList = new LinkedList<SupBookData>();
             this.xtiDataList = new LinkedList<XTIData>();
-            refWorkBookNumber = 0; 
+            refWorkBookNumber = 0;
+
+            this.styleData = new StyleData.StyleData(); 
         }
 
         /// <summary>

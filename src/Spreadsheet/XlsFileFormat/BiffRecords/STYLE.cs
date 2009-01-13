@@ -80,12 +80,12 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         /// <summary>
         /// Length of the style name (for non-built-in styles only).
         /// </summary>
-        public byte cch;
+        public int cch;
 
         /// <summary>
         /// Style name (for non-built-in styles only).
         /// </summary>
-        public byte[] rgch;
+        public string rgch;
 
         /// <summary>
         /// A flag indicating whether this is a built-in style
@@ -113,12 +113,13 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
             }
             else
             {
-                cch = reader.ReadByte();
-                rgch = reader.ReadBytes(cch);
+                cch = reader.ReadUInt16();
+                int grbit = (int)reader.ReadByte();
+                rgch = ExcelHelperClass.getStringFromBiffRecord(reader, cch, grbit); 
             }
             
             // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            // Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
         }
     }
 }

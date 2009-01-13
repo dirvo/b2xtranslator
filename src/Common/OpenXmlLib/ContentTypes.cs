@@ -132,7 +132,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 
         // SpreadsheetML Namespaces
         public const string SharedStringML = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
-        public const string WorkBookML = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"; 
+        public const string WorkBookML = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        public const string StylesML = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"; 
 
         //Office
         public const string Office = "urn:schemas-microsoft-com:office:office";
@@ -181,6 +182,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string sharedStrings = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings";
         public const string externalLink = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLink";
         public const string externalLinkPath = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLinkPath";
+    
     }
 
     public static class MicrosoftWordRelationshipTypes

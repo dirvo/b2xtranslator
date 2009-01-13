@@ -38,6 +38,7 @@ using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer;
 using DIaLOGIKa.b2xtranslator.Tools;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData; 
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
@@ -218,6 +219,29 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                     {
                         EXTERNNAME externname = new EXTERNNAME(this.StreamReader, bh.id, bh.length);
                         this.workBookData.addEXTERNNAME(externname); 
+                    }
+                    else if (bh.id == RecordNumber.FORMAT)
+                    {
+                        FORMAT format = new FORMAT(this.StreamReader, bh.id, bh.length);
+                        this.workBookData.styleData.addFormatValue(format); 
+                    }
+                    else if (bh.id == RecordNumber.XF)
+                    {
+                        XF xf = new XF(this.StreamReader, bh.id, bh.length);
+                        this.workBookData.styleData.addXFDataValue(xf); 
+                       
+                    }
+
+                    else if (bh.id == RecordNumber.STYLE)
+                    {
+                        STYLE style = new STYLE(this.StreamReader, bh.id, bh.length);
+                        this.workBookData.styleData.addStyleValue(style); 
+                    }
+                    else if (bh.id == RecordNumber.FONT2)
+                    {
+                        FONT font = new FONT(this.StreamReader, bh.id, bh.length);
+                        this.workBookData.styleData.addFontData(font); 
+                        
                     }
                     else
                     {

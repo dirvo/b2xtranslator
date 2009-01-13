@@ -303,5 +303,32 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             path = path.Replace(" ", "%20");
             return path; 
         }
+
+        /// <summary>
+        /// This method reads x bytes from a IStreamReader to get a string from this
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="cch"></param>
+        /// <param name="grbit"></param>
+        /// <returns></returns>
+        public static string getStringFromBiffRecord(IStreamReader reader,int cch, int grbit)
+        {
+            string value = ""; 
+            if (grbit == 0)
+            {
+                for (int i = 0; i < cch; i++)
+                {
+                    value += (char)reader.ReadByte();
+                }
+            }
+            else
+            {
+                for (int i = 0; i < cch; i++)
+                {
+                    value += System.BitConverter.ToChar(reader.ReadBytes(2), 0);
+                }
+            }
+            return value; 
+        }
     }
 }

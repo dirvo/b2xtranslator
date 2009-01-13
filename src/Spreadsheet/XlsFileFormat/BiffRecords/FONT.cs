@@ -30,24 +30,10 @@ using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Tools;
 using System.Diagnostics;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    public enum SuperSubScriptStyle : ushort
-    {
-        None, 
-        Superscript, 
-        Subscript 
-    }
-
-    public enum UnderlineStyle : ushort
-    {
-        None =              0x00,
-        SingleLine =        0x01,
-        DoubleLine =        0x02,
-        SingleAccounting =  0x21,
-        DoubleAccounting =  0x22
-    }
     
     /// <summary>
     /// FONT: Font Description (231h)
@@ -64,7 +50,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// </summary>
     public class FONT : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.FONT;
+        public const RecordNumber ID = RecordNumber.FONT2;
 
         /// <summary>
         /// Height of the font (in units of 1/20th of a point). 
@@ -125,12 +111,12 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         /// <summary>
         /// Length of the font name.
         /// </summary>
-        public byte cch;	        
+        public int cch;	        
 
         /// <summary>
         /// Font name.
         /// </summary>
-        public byte[] rgch;	   
+        public string rgch;	   
  	
         // The grbit field contains the following font attributes:
         // Offset	Bits	Mask	Flag Name	Contents
@@ -159,8 +145,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
             fStrikeout = Utils.BitmaskToBool(grbit, 0x08);
             fOutline = Utils.BitmaskToBool(grbit, 0x10);	
             fShadow	= Utils.BitmaskToBool(grbit, 0x20);
-            fReserved2 = Utils.BitmaskToByte(grbit, 0xC0);
-            fUnused0	= Utils.BitmaskToByte(grbit, 0xFF00);  
+            // fReserved2 = Utils.BitmaskToByte(grbit, 0xC0);
+            // fUnused0	= Utils.BitmaskToByte(grbit, 0xFF00);  
 
             icv = reader.ReadUInt16();
             bls = reader.ReadUInt16();
@@ -169,11 +155,13 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
             bFamily = reader.ReadByte();
             bCharSet = reader.ReadByte();
             reserved0 = reader.ReadByte();
-            cch = reader.ReadByte();
-            rgch = reader.ReadBytes(cch);	 
+            
+            cch = (int)reader.ReadByte();
+            int grbit2 = (int)reader.ReadByte();
+            rgch = ExcelHelperClass.getStringFromBiffRecord(reader, cch, grbit2); 
             
             // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            // Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
         }
     }
 }

@@ -103,6 +103,11 @@ namespace xls2x
 
                         // Converts the sst data !!!
                         xlsDoc.workBookData.SstData.Convert(new SSTMapping(xlsContext));
+
+                        // creates the styles.xml
+                        xlsDoc.workBookData.styleData.Convert(new StylesMapping(xlsContext)); 
+
+                        // creates the Spreadsheets
                         foreach (BoundSheetData var in xlsDoc.workBookData.boundSheetDataList)
                         {
                             if (var.boundsheetRecord.sheetType == BOUNDSHEET.sheetTypes.worksheet)

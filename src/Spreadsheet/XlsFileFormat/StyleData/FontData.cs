@@ -24,41 +24,51 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using DIaLOGIKa.b2xtranslator.Tools;
+using System.IO;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg;
+using DIaLOGIKa.b2xtranslator.Tools;
 
-namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
+namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
 {
-    public class STRING : BiffRecord
+    public class FontData
     {
-        public const RecordNumber ID = RecordNumber.STRING;
 
-        public string value;
+        public string fontName;
+        public TwipsValue size;
+        public int fontFamily;
+        public byte charSet;
 
-        public int cch;
 
-        public int grbit; 
+        public bool isBold;
+        public bool isItalic;
+        public bool isStrike;
+        public bool isOutline;
+        public bool isShadow;
 
-        public STRING(IStreamReader reader, RecordNumber id, UInt16 length)
-            : base(reader, id, length)
+        public UnderlineStyle uStyle;
+        public SuperSubScriptStyle vertAlign;
+
+        public int color; 
+
+        public FontData()
         {
-            // assert that the correct record type is instantiated
-            Debug.Assert(this.Id == ID);
-
-            this.cch = reader.ReadUInt16();
-
-            this.grbit = reader.ReadByte();
-
-            this.value = ExcelHelperClass.getStringFromBiffRecord(reader, this.cch, this.grbit); 
-	
-
-            
-            // assert that the correct number of bytes has been read from the stream
-            // Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            isBold = false;
+            isItalic = false;
+            isStrike = false;
+            isOutline = false;
+            isShadow = false; 
         }
     }
 }

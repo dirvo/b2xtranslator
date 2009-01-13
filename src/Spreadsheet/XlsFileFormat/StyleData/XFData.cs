@@ -27,38 +27,29 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using DIaLOGIKa.b2xtranslator.Tools;
-using System.Diagnostics;
 
-namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
+
+namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
 {
-    public class STRING : BiffRecord
+
+    public class XFData
     {
-        public const RecordNumber ID = RecordNumber.STRING;
+        public int ifmt; 
+        public int ixfParent; 
+        public int fStyle; 
+        public int fillId;
+        public int fontId;
+        public int borderId; 
 
-        public string value;
-
-        public int cch;
-
-        public int grbit; 
-
-        public STRING(IStreamReader reader, RecordNumber id, UInt16 length)
-            : base(reader, id, length)
+        public XFData()
         {
-            // assert that the correct record type is instantiated
-            Debug.Assert(this.Id == ID);
-
-            this.cch = reader.ReadUInt16();
-
-            this.grbit = reader.ReadByte();
-
-            this.value = ExcelHelperClass.getStringFromBiffRecord(reader, this.cch, this.grbit); 
-	
-
-            
-            // assert that the correct number of bytes has been read from the stream
-            // Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            this.ifmt = 0;
+            this.ixfParent = 0;
+            this.fStyle = 0;
+            this.fillId = 0;
+            this.fontId = 0;
+            this.borderId = 0; 
         }
+
     }
 }

@@ -363,6 +363,14 @@
     <Compile Include="DataExtraction\BoundSheetExtractor.cs" />
     <Compile Include="DataExtraction\StreamExtractor.cs" />
     <Compile Include="DataExtraction\WorkbookExtractor.cs" />
+    <Compile Include="StyleData\BorderData.cs" />
+    <Compile Include="StyleData\BorderPartData.cs" />
+    <Compile Include="StyleData\FillData.cs" />
+    <Compile Include="StyleData\StyleEnum.cs" />
+    <Compile Include="StyleData\FontData.cs" />
+    <Compile Include="StyleData\FormatData.cs" />
+    <Compile Include="StyleData\StyleData.cs" />
+    <Compile Include="StyleData\XFData.cs" />
     <Compile Include="XlsDocument.cs" />
   </ItemGroup>
   <ItemGroup>

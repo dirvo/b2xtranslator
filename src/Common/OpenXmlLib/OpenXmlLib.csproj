@@ -47,6 +47,7 @@
     <Compile Include="PresentationML\SlidePart.cs" />
     <Compile Include="SpreadsheetML\ExternalLinkPart.cs" />
     <Compile Include="SpreadsheetML\SharedStringPart.cs" />
+    <Compile Include="SpreadsheetML\StylesPart.cs" />
     <Compile Include="SpreadsheetML\WorksheetPart.cs" />
     <Compile Include="VbaDataPart.cs" />
     <Compile Include="VbaProjectPart.cs" />

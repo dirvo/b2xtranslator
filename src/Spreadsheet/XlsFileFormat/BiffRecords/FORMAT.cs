@@ -69,7 +69,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// <summary>
         /// Array of string characters
         /// </summary>
-        public byte[] rgb;	
+        public string rgb;	
 
 
         public FORMAT(IStreamReader reader, RecordNumber id, UInt16 length)
@@ -85,10 +85,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             // TODO: place code for interpretation of grbit flag here
             // TODO: possibly define a wrapper class for Unicode strings
 
-            rgb = reader.ReadBytes(cch);
+            rgb = ExcelHelperClass.getStringFromBiffRecord(reader, cch, grbit); 
             
             // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            // Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
         }
     }
 }

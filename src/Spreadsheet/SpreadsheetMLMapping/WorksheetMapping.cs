@@ -83,6 +83,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     // Col 
                     _writer.WriteStartElement("c");
                     _writer.WriteAttributeString("r", ExcelHelperClass.intToABCString((int)cell.Col, (cell.Row + 1).ToString()));
+                    // _writer.WriteAttributeString("s", cell.TemplateID.ToString()); 
                     if (cell is StringCell)
                     {
                         _writer.WriteAttributeString("t", "s");

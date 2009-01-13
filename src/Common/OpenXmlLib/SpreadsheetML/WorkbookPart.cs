@@ -38,7 +38,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
         private UInt16 ExternalLinkNumber;
         protected WorksheetPart workSheetPart;
         protected SharedStringPart sharedStringPart;
-        protected ExternalLinkPart externalLinkPart; 
+        protected ExternalLinkPart externalLinkPart;
+        protected StylesPart stylesPart; 
 
         public WorkbookPart(OpenXmlPartContainer parent)
             : base(parent, 0)
@@ -110,6 +111,17 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
             this.sharedStringPart = new SharedStringPart(this);
             return this.AddPart(this.sharedStringPart);
         }
+
+        /// <summary>
+        /// returns the sharedstringtable part from the new excel document 
+        /// </summary>
+        /// <returns></returns>
+        public StylesPart AddStylesPart()
+        {
+            this.stylesPart = new StylesPart(this);
+            return this.AddPart(this.stylesPart);
+        }
+
     }
 }
 

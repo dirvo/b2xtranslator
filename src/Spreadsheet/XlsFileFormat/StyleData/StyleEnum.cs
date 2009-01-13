@@ -27,38 +27,72 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using DIaLOGIKa.b2xtranslator.Tools;
-using System.Diagnostics;
 
-namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
+namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
 {
-    public class STRING : BiffRecord
+    public enum StyleEnum : ushort
     {
-        public const RecordNumber ID = RecordNumber.STRING;
+        FLSNULL = 0x00,
+        FLSSOLID = 0x01, 
+        FLSMEDGRAY = 0x02,    
+        FLSDKGRAY = 0x03,
+        FLSLTGRAY = 0x04,
+        FLSDKHOR = 0x05,
+        FLSDKVER = 0x06,
+        FLSDKDOWN = 0x07,
+        FLSDKUP = 0x08,
+        FLSDKGRID = 0x09,
+        FLSDKTRELLIS = 0x0A,
+        FLSLTHOR = 0x0B,
+        FLSLTVER = 0x0C,
+        FLSLTDOWN = 0x0D,
+        FLSLTUP = 0x0E,
+        FLSLTGRID = 0x0F,
+        FLSLTTRELLIS = 0x10,
+        FLSGRAY125 = 0x11,
+        FLSGRAY0625 = 0x12        
+    }
 
-        public string value;
+    public enum SuperSubScriptStyle : ushort
+    {
+        none,
+        superscript,
+        subscript
+    }
 
-        public int cch;
+    public enum UnderlineStyle : ushort
+    {
+        none = 0x00,
+        singleLine = 0x01,
+        doubleLine = 0x02,
+        singleAccounting = 0x21,
+        doubleAccounting = 0x22
+    }
 
-        public int grbit; 
+    public enum BorderStyle : ushort
+    {
+        none = 0x0000, 
+        thin = 0x0001,
+        medium = 0x0002, 
+        dashed = 0x0003, 
+        dotted = 0x0004, 
+        thick = 0x0005,
+        Double = 0x0006, 
+        hair = 0x0007, 
+        mediumDashed  = 0x0008,
+        dashDot = 0x0009,
+        mediumDashDot = 0x000A,
+        dashDotDot = 0x000B,
+        mediumDashDotDot = 0x000C,
+        slantDashDot = 0x000D, 
+    }
 
-        public STRING(IStreamReader reader, RecordNumber id, UInt16 length)
-            : base(reader, id, length)
-        {
-            // assert that the correct record type is instantiated
-            Debug.Assert(this.Id == ID);
-
-            this.cch = reader.ReadUInt16();
-
-            this.grbit = reader.ReadByte();
-
-            this.value = ExcelHelperClass.getStringFromBiffRecord(reader, this.cch, this.grbit); 
-	
-
-            
-            // assert that the correct number of bytes has been read from the stream
-            // Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
-        }
+    public enum BorderPartType : ushort
+    {
+        bottom, 
+        top,
+        left,
+        right,
+        diagonal
     }
 }
