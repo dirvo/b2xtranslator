@@ -69,23 +69,6 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
         doubleAccounting = 0x22
     }
 
-    public enum BorderStyle : ushort
-    {
-        none = 0x0000, 
-        thin = 0x0001,
-        medium = 0x0002, 
-        dashed = 0x0003, 
-        dotted = 0x0004, 
-        thick = 0x0005,
-        Double = 0x0006, 
-        hair = 0x0007, 
-        mediumDashed  = 0x0008,
-        dashDot = 0x0009,
-        mediumDashDot = 0x000A,
-        dashDotDot = 0x000B,
-        mediumDashDotDot = 0x000C,
-        slantDashDot = 0x000D, 
-    }
 
     public enum BorderPartType : ushort
     {

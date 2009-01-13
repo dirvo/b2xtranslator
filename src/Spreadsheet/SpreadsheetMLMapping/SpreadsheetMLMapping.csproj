@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{7085D1EB-E797-4841-A564-68EF63688A24}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -41,7 +41,7 @@
     <Compile Include="ExcelContext.cs" />
     <Compile Include="ExcelMapping.cs" />
     <Compile Include="ExternalLinkMapping.cs" />
-    <Compile Include="FillStyleMapping.cs" />
+    <Compile Include="StyleMappingHelper.cs" />
     <Compile Include="FormulaMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SSTMapping.cs" />

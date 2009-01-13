@@ -44,25 +44,18 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
 {
     public class BorderData
     {
-        private List<BorderPartData> borderPartList;
-        public List<BorderPartData> BorderPartList
-        {
-            get { return borderPartList; }            
-        }
+        public BorderPartData top;
+        public BorderPartData bottom;
+        public BorderPartData left;
+        public BorderPartData right;
+        public BorderPartData diagonal;
 
         public ushort diagonalValue; 
 
         public BorderData()
         {
-            this.borderPartList = new List<BorderPartData>();
-            this.diagonalValue = 0; 
-        }
 
-        public void addBorderPart(BorderPartData bpd)
-        {
-            // todo check if some parts are doubled 
-            this.borderPartList.Add(bpd); 
-            
+            this.diagonalValue = 0; 
         }
 
         /// <summary>
@@ -84,9 +77,17 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
             {
                 return false;
             }
-            
-            // Return true if the fields match:
-            return (this.borderPartList.Equals(bd.BorderPartList) && (this.diagonalValue == bd.diagonalValue));
+
+            if (this.top.Equals(bd.top) && this.bottom.Equals(bd.bottom) && this.left.Equals(bd.left)
+                && this.right.Equals(bd.right) && this.diagonal.Equals(bd.diagonal) 
+                && this.diagonalValue == bd.diagonalValue)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -102,8 +103,16 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
                 return false;
             }
 
-            // Return true if the fields match:
-            return (this.borderPartList.Equals(bd.BorderPartList) && (this.diagonalValue == bd.diagonalValue));
+            if (this.top.Equals(bd.top) && this.bottom.Equals(bd.bottom) && this.left.Equals(bd.left)
+                && this.right.Equals(bd.right) && this.diagonal.Equals(bd.diagonal)
+                && this.diagonalValue == bd.diagonalValue)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
     }

@@ -67,16 +67,16 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             _writer.WriteStartDocument();
             _writer.WriteStartElement("styleSheet", OpenXmlNamespaces.StylesML);
 
-            
+
             // Format mapping 
             _writer.WriteStartElement("numFmts");
-            _writer.WriteAttributeString("count", sd.FormatDataList.Count.ToString()); 
+            _writer.WriteAttributeString("count", sd.FormatDataList.Count.ToString());
             foreach (FormatData format in sd.FormatDataList)
             {
                 _writer.WriteStartElement("numFmt");
                 _writer.WriteAttributeString("numFmtId", format.ifmt.ToString());
                 _writer.WriteAttributeString("formatCode", format.formatString);
-                _writer.WriteEndElement(); 
+                _writer.WriteEndElement();
             }
             _writer.WriteEndElement(); 
 
@@ -162,7 +162,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 }
 
                 // colormapping 
-                string color = FillStyleMapping.convertColorIdToRGB(font.color);
+                string color = StyleMappingHelper.convertColorIdToRGB(font.color);
                 if (color.Equals("Auto"))
                 {
                     _writer.WriteStartElement("color");
@@ -201,9 +201,9 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             {
                 _writer.WriteStartElement("fill");
                 _writer.WriteStartElement("patternFill");
-                _writer.WriteAttributeString("patternType", FillStyleMapping.getStringFromFillPatern(fd.Fillpatern));
+                _writer.WriteAttributeString("patternType", StyleMappingHelper.getStringFromFillPatern(fd.Fillpatern));
                // foreground color 
-                string foregroundclr = FillStyleMapping.convertColorIdToRGB(fd.IcvFore); 
+                string foregroundclr = StyleMappingHelper.convertColorIdToRGB(fd.IcvFore); 
                 if (foregroundclr.Equals("Auto"))
                 {
                     _writer.WriteStartElement("fgColor");
@@ -222,7 +222,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     _writer.WriteEndElement();
                 }
                 // background color 
-                string backgroundclr = FillStyleMapping.convertColorIdToRGB(fd.IcvBack);
+                string backgroundclr = StyleMappingHelper.convertColorIdToRGB(fd.IcvBack);
                 if (backgroundclr.Equals("Auto"))
                 {
                     _writer.WriteStartElement("bgColor");
@@ -246,8 +246,8 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
             _writer.WriteEndElement();
 
-             
-            
+
+
 
             /// Border Mapping 
             //<borders count="1">
@@ -260,19 +260,175 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             //  </border>
             //</borders>
             _writer.WriteStartElement("borders");
-            _writer.WriteAttributeString("count", "1");
-            _writer.WriteStartElement("border");
-            _writer.WriteStartElement("left");
-            _writer.WriteEndElement();
-            _writer.WriteStartElement("right");
-            _writer.WriteEndElement();
-            _writer.WriteStartElement("top");
-            _writer.WriteEndElement();
-            _writer.WriteStartElement("bottom");
-            _writer.WriteEndElement();
-            _writer.WriteStartElement("diagonal");
-            _writer.WriteEndElement();
-            _writer.WriteEndElement();
+            _writer.WriteAttributeString("count", sd.BorderDataList.Count.ToString());
+
+
+
+            foreach (BorderData borderData in sd.BorderDataList)
+            {
+                _writer.WriteStartElement("border");
+
+                // write diagonal settings 
+                if (borderData.diagonalValue == 1)
+                {
+                    _writer.WriteAttributeString("diagonalDown", "1");
+                }
+                else if (borderData.diagonalValue == 2)
+                {
+                    _writer.WriteAttributeString("diagonalUp", "1");
+                }
+                else if (borderData.diagonalValue == 3)
+                {
+                    _writer.WriteAttributeString("diagonalDown", "1");
+                    _writer.WriteAttributeString("diagonalUp", "1");
+                }
+                else
+                {
+                    // do nothing !
+                }
+
+                string borderColor = "";
+                string borderStyle = ""; 
+
+                // left border 
+                _writer.WriteStartElement("left");
+                borderStyle = StyleMappingHelper.convertBorderStyle(borderData.left.style); 
+                if (!borderStyle.Equals("none"))
+                {
+                    _writer.WriteAttributeString("style", borderStyle);
+                    borderColor = StyleMappingHelper.convertColorIdToRGB(borderData.left.colorId);
+                    if (borderColor.Equals("Auto"))
+                    {
+                        _writer.WriteStartElement("bgColor");
+                        _writer.WriteAttributeString("auto", "1");
+                        _writer.WriteEndElement();
+                    }
+                    else if (borderColor.Equals(""))
+                    {
+                        // do nothing 
+                    }
+                    else
+                    {
+                        // <bgColor rgb="FFFFFF00"/>
+                        _writer.WriteStartElement("color");
+                        _writer.WriteAttributeString("rgb", "FF" + borderColor);
+                        _writer.WriteEndElement();
+                    }
+                }
+                _writer.WriteEndElement();
+
+                // right border 
+                _writer.WriteStartElement("right");
+                borderStyle = StyleMappingHelper.convertBorderStyle(borderData.right.style);
+                if (!borderStyle.Equals("none"))
+                {
+                    _writer.WriteAttributeString("style", borderStyle);
+                    borderColor = StyleMappingHelper.convertColorIdToRGB(borderData.right.colorId);
+                    if (borderColor.Equals("Auto"))
+                    {
+                        _writer.WriteStartElement("bgColor");
+                        _writer.WriteAttributeString("auto", "1");
+                        _writer.WriteEndElement();
+                    }
+                    else if (borderColor.Equals(""))
+                    {
+                        // do nothing 
+                    }
+                    else
+                    {
+                        // <bgColor rgb="FFFFFF00"/>
+                        _writer.WriteStartElement("color");
+                        _writer.WriteAttributeString("rgb", "FF" + borderColor);
+                        _writer.WriteEndElement();
+                    }
+                }
+                _writer.WriteEndElement();
+
+                // top border 
+                _writer.WriteStartElement("top");
+                borderStyle = StyleMappingHelper.convertBorderStyle(borderData.top.style);
+                if (!borderStyle.Equals("none"))
+                {
+                    _writer.WriteAttributeString("style", borderStyle);
+                    borderColor = StyleMappingHelper.convertColorIdToRGB(borderData.top.colorId);
+                    if (borderColor.Equals("Auto"))
+                    {
+                        _writer.WriteStartElement("bgColor");
+                        _writer.WriteAttributeString("auto", "1");
+                        _writer.WriteEndElement();
+                    }
+                    else if (borderColor.Equals(""))
+                    {
+                        // do nothing 
+                    }
+                    else
+                    {
+                        // <bgColor rgb="FFFFFF00"/>
+                        _writer.WriteStartElement("color");
+                        _writer.WriteAttributeString("rgb", "FF" + borderColor);
+                        _writer.WriteEndElement();
+                    }
+                }
+                _writer.WriteEndElement();
+
+                // bottom border 
+                _writer.WriteStartElement("bottom");
+                borderStyle = StyleMappingHelper.convertBorderStyle(borderData.bottom.style);
+                if (!borderStyle.Equals("none"))
+                {
+                    _writer.WriteAttributeString("style", borderStyle);
+                    borderColor = StyleMappingHelper.convertColorIdToRGB(borderData.bottom.colorId);
+                    if (borderColor.Equals("Auto"))
+                    {
+                        _writer.WriteStartElement("bgColor");
+                        _writer.WriteAttributeString("auto", "1");
+                        _writer.WriteEndElement();
+                    }
+                    else if (borderColor.Equals(""))
+                    {
+                        // do nothing 
+                    }
+                    else
+                    {
+                        // <bgColor rgb="FFFFFF00"/>
+                        _writer.WriteStartElement("color");
+                        _writer.WriteAttributeString("rgb", "FF" + borderColor);
+                        _writer.WriteEndElement();
+                    }
+                }
+                _writer.WriteEndElement();
+
+                // diagonal border 
+                _writer.WriteStartElement("diagonal");
+                borderStyle = StyleMappingHelper.convertBorderStyle(borderData.diagonal.style);
+                if (!borderStyle.Equals("none"))
+                {
+                    _writer.WriteAttributeString("style", borderStyle);
+                    borderColor = StyleMappingHelper.convertColorIdToRGB(borderData.diagonal.colorId);
+                    if (borderColor.Equals("Auto"))
+                    {
+                        _writer.WriteStartElement("bgColor");
+                        _writer.WriteAttributeString("auto", "1");
+                        _writer.WriteEndElement();
+                    }
+                    else if (borderColor.Equals(""))
+                    {
+                        // do nothing 
+                    }
+                    else
+                    {
+                        // <bgColor rgb="FFFFFF00"/>
+                        _writer.WriteStartElement("color");
+                        _writer.WriteAttributeString("rgb", "FF" + borderColor);
+                        _writer.WriteEndElement();
+                    }
+                }
+                // end diagonal
+                _writer.WriteEndElement();
+                // end border 
+                _writer.WriteEndElement();
+            }
+            // end borders 
             _writer.WriteEndElement(); 
 
             ///<cellStyleXfs count="1">
@@ -280,7 +436,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             ///</cellStyleXfs> 
             // xfcellstyle mapping 
 
-           
+
 
             _writer.WriteStartElement("cellStyleXfs");
             _writer.WriteAttributeString("count", sd.XFCellStyleDataList.Count.ToString());
@@ -290,16 +446,16 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 _writer.WriteAttributeString("numFmtId", xfcellstyle.ifmt.ToString());
                 _writer.WriteAttributeString("fontId", xfcellstyle.fontId.ToString());
                 _writer.WriteAttributeString("fillId", xfcellstyle.fillId.ToString());
-                _writer.WriteAttributeString("borderId", "0"); 
-                
-                _writer.WriteEndElement();   
+                _writer.WriteAttributeString("borderId", xfcellstyle.borderId.ToString());
+
+                _writer.WriteEndElement();
             }
 
             _writer.WriteEndElement();
 
-            
-            
-            
+
+
+
             ///<cellXfs count="6">
             ///<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>
             // xfcell mapping 
@@ -310,11 +466,8 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 _writer.WriteStartElement("xf");
                 _writer.WriteAttributeString("numFmtId", xfcell.ifmt.ToString());
                 _writer.WriteAttributeString("fontId", xfcell.fontId.ToString());
-                // applyFill=  fillId="0"
                 _writer.WriteAttributeString("fillId", xfcell.fillId.ToString());
-                _writer.WriteAttributeString("borderId", "0");
-
-                
+                _writer.WriteAttributeString("borderId", xfcell.borderId.ToString());
                 _writer.WriteAttributeString("xfId", xfcell.ixfParent.ToString());
 
                 // applyNumberFormat="1"
@@ -334,36 +487,48 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 {
                     _writer.WriteAttributeString("applyFont", "1");
                 }
-                
+
 
                 _writer.WriteEndElement();
             }
 
             _writer.WriteEndElement(); 
 
-                      
-            /* 
-            
+
+
+
             /// write cell styles 
             /// <cellStyles count="1">
             /// <cellStyle name="Normal" xfId="0" builtinId="0"/>
             /// </cellStyles>
             /// 
             _writer.WriteStartElement("cellStyles");
-            _writer.WriteAttributeString("count", sd.StyleList.Count.ToString());
+            //_writer.WriteAttributeString("count", sd.StyleList.Count.ToString());
             foreach (STYLE style in sd.StyleList)
             {
                 _writer.WriteStartElement("cellStyle");
 
-                _writer.WriteAttributeString("name", style.rgch);
-                _writer.WriteAttributeString("xfId", style.ixfe.ToString());
+                if (style.rgch != null)
+                { 
+                    _writer.WriteAttributeString("name", style.rgch); 
+                }
+                // theres a bug with the zero based reading from the referenz id 
+                // so the style.ixfe value is reduzed by one
+                if (style.ixfe != 0)
+                {
+                    _writer.WriteAttributeString("xfId", (style.ixfe - 1).ToString());
+                }
+                else
+                {
+                    _writer.WriteAttributeString("xfId", (style.ixfe).ToString());
+                }
                 _writer.WriteAttributeString("builtinId", style.istyBuiltIn.ToString());
 
-                _writer.WriteEndElement(); 
+                _writer.WriteEndElement();
             }
 
             _writer.WriteEndElement(); 
-            */
+            
             // close tags 
             
             _writer.WriteEndElement();      // close 

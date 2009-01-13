@@ -44,13 +44,11 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
 {
     public class BorderPartData
     {
-        public BorderPartType type;
-        public BorderStyle style;
+        public ushort style;
         public int colorId;
 
-        public BorderPartData(BorderPartType type, BorderStyle style, int colorId)
+        public BorderPartData(ushort style, int colorId)
         {
-            this.type = type; 
             this.style = style; 
             this.colorId = colorId; 
         }
@@ -76,7 +74,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
             }
 
             // Return true if the fields match:
-            return (this.colorId == bpd.colorId) && (this.style == bpd.style) && (this.type == bpd.type);
+            return (this.colorId == bpd.colorId) && (this.style == bpd.style);
         }
 
         /// <summary>
@@ -93,7 +91,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
             }
 
             // Return true if the fields match:
-            return (this.colorId == bpd.colorId) && (this.style == bpd.style) && (this.type == bpd.type);
+            return (this.colorId == bpd.colorId) && (this.style == bpd.style);
         }
     }
 

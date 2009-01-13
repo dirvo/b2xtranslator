@@ -31,7 +31,7 @@ using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData;
 
 namespace ExcelprocessingMLMapping
 {
-    public class FillStyleMapping
+    public class StyleMappingHelper
     {
         /// <summary>
         /// This is the FillPatern mapping, it is used to convert the binary fillpatern to the open xml string
@@ -83,64 +83,72 @@ namespace ExcelprocessingMLMapping
                 case 0x0005: return "FFFF00";// Yellow
                 case 0x0006: return "FF00FF";// Magenta
                 case 0x0007: return "00FFFF";// Cyan
-                case 0x0008: return "00FFFF";
-                case 0x0009: return "00FFFF";
-                case 0x000A: return "00FFFF";
-                case 0x000B: return "00FFFF";
-                case 0x000C: return "00FFFF";
-                case 0x000D: return "00FFFF";
-                case 0x000E: return "00FFFF";
+                case 0x0008: return "000000";
+                case 0x0009: return "FFFFFF";
+                case 0x000A: return "FF0000";
+                case 0x000B: return "00FF00";
+                case 0x000C: return "0000FF";
+
+                case 0x000D: return "FFFF00";
+                case 0x000E: return "FF00FF";
                 case 0x000F: return "00FFFF";
 
-                case 0x0010: return "00FFFF";
-                case 0x0011: return "00FFFF";
-                case 0x0012: return "00FFFF";
-                case 0x0013: return "00FFFF";
-                case 0x0014: return "00FFFF";
-                case 0x0015: return "00FFFF";
-                case 0x0016: return "00FFFF";
-                case 0x0017: return "00FFFF";
-                case 0x0018: return "00FFFF";
-                case 0x0019: return "00FFFF";
-                case 0x001A: return "00FFFF";
-                case 0x001B: return "00FFFF";
-                case 0x001C: return "00FFFF";
-                case 0x001D: return "00FFFF";
-                case 0x001E: return "00FFFF";
+                case 0x0010: return "800000";
+                case 0x0011: return "008000";
+                case 0x0012: return "000080";
+                case 0x0013: return "808000";
+                case 0x0014: return "800080";
+                case 0x0015: return "008080";
+
+                case 0x0016: return "C0C0C0";
+                case 0x0017: return "808080";
+                case 0x0018: return "9999FF";
+                case 0x0019: return "993366";
+                case 0x001A: return "FFFFCC";
+
+                case 0x001B: return "CCFFFF";
+                case 0x001C: return "660066";
+                case 0x001D: return "FF8080";
+                case 0x001E: return "0066CC";
                 case 0x001F: return "CCCCFF";
 
-                case 0x0020: return "00FFFF";
-                case 0x0021: return "00FFFF";
-                case 0x0022: return "00FFFF";
+                case 0x0020: return "000080";
+                case 0x0021: return "FF00FF";
+                case 0x0022: return "FFFF00";
                 case 0x0023: return "00FFFF";
-                case 0x0024: return "00FFFF";
-                case 0x0025: return "00FFFF";
-                case 0x0026: return "00FFFF";
-                case 0x0027: return "00FFFF";
-                case 0x0028: return "00FFFF";
-                case 0x0029: return "00FFFF";
-                case 0x002A: return "00FFFF";
-                case 0x002B: return "00FFFF";
-                case 0x002C: return "00FFFF";
-                case 0x002D: return "00FFFF";
-                case 0x002E: return "00FFFF";
-                case 0x002F: return "00FFFF";
+                case 0x0024: return "800080";
 
-                case 0x0031: return "00FFFF";
-                case 0x0032: return "00FFFF";
-                case 0x0033: return "00FFFF";
-                case 0x0034: return "00FFFF";
-                case 0x0035: return "00FFFF";
-                case 0x0036: return "00FFFF";
-                case 0x0037: return "00FFFF";
-                case 0x0038: return "00FFFF";
-                case 0x0039: return "00FFFF";
-                case 0x003A: return "00FFFF";
-                case 0x003B: return "00FFFF";
-                case 0x003C: return "00FFFF";
-                case 0x003D: return "00FFFF";
-                case 0x003E: return "00FFFF";
-                case 0x003F: return "00FFFF";
+                case 0x0025: return "800000";
+                case 0x0026: return "008080";
+                case 0x0027: return "0000FF";
+                case 0x0028: return "00CCFF";
+                case 0x0029: return "CCFFFF";
+
+                case 0x002A: return "CCFFCC";
+                case 0x002B: return "FFFF99";
+                case 0x002C: return "99CCFF";
+                case 0x002D: return "FF99CC";
+                case 0x002E: return "CC99FF";
+
+                case 0x002F: return "FFCC99";
+                case 0x0030: return "3366FF";
+                case 0x0031: return "33CCCC";
+                case 0x0032: return "99CC00";
+                case 0x0033: return "FFCC00";
+
+                case 0x0034: return "FF9900";
+                case 0x0035: return "FF6600";
+                case 0x0036: return "666699";
+                case 0x0037: return "969696";
+                case 0x0038: return "003366";
+
+                case 0x0039: return "339966";
+                case 0x003A: return "003300";
+                case 0x003B: return "333300";
+                case 0x003C: return "993300";
+                case 0x003D: return "993366";
+                case 0x003E: return "333399";
+                case 0x003F: return "333333";
 
                 case 0x0040: return "";
                 case 0x0041: return "";
@@ -153,6 +161,27 @@ namespace ExcelprocessingMLMapping
             }
         }
 
+        public static string convertBorderStyle(ushort style)
+        {
+            switch (style)
+            {
+                case 0x0000: return "none";
+                case 0x0001: return "thin";
+                case 0x0002: return "medium";
+                case 0x0003: return "dashed";
+                case 0x0004: return "dotted";
+                case 0x0005: return "thick";
+                case 0x0006: return "double";
+                case 0x0007: return "hair";
+                case 0x0008: return "mediumDashed";
+                case 0x0009: return "dashDot";
+                case 0x000A: return "mediumDashDot";
+                case 0x000B: return "dashDotDot";
+                case 0x000C: return "mediumDashDotDot";
+                case 0x000D: return "slantDashDot";
+                default: return "none"; 
+            }
+        }        
     }
 
 }

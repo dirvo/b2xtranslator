@@ -161,7 +161,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
             buffer = reader.ReadUInt16();  
             this.icvLeft = (int)buffer & 0x0000007F;
             this.icvRight = (int)(buffer & 0x00003F80) >> 0x04;
-            this.grbitDiag = (int)(buffer & 0x0000C000) >> 0x04;
+            this.grbitDiag = (int)(buffer & 0x0000C000) >> 0x0E;
             
 
             /// 

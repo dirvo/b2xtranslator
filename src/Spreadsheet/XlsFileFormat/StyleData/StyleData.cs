@@ -80,8 +80,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
         {
             get { return fontDataList; }
         }
-	
-	
+
+        private List<BorderData> borderDataList;
+        public List<BorderData> BorderDataList { get { return this.borderDataList; } }
 
         /// <summary>
         /// This class stores every format from a document 
@@ -93,7 +94,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
             this.xfCellStyleDataList = new List<XFData>();
             this.styleList = new List<STYLE>();
             this.fillDataList = new List<FillData>();
-            this.fontDataList = new List<FontData>(); 
+            this.fontDataList = new List<FontData>();
+            this.borderDataList = new List<BorderData>(); 
             
         }
 
@@ -119,7 +121,17 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
             xfdata.fStyle = xf.fStyle;
             xfdata.ifmt = xf.ifmt;
             xfdata.ixfParent = xf.ixfParent;
-            xfdata.fontId = xf.ifnt; 
+
+            // the first three fontids are zero based 
+            // beginning with four the fontids are one based 
+            if (xf.ifnt > 4)
+            {
+                xfdata.fontId = xf.ifnt - 1;
+            }
+            else
+            {
+                xfdata.fontId = xf.ifnt;
+            }
 
             if (xf.fStyle == 1)
             {
@@ -133,9 +145,32 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
             FillData fd = new FillData((StyleEnum)xf.fls, xf.icvFore, xf.icvBack);
             int fillDataId = this.addFillDataValue(fd);
             TraceLogger.DebugInternal(fd.ToString() + " -- Number XF " + countxf.ToString() + " -- Number FillData: " + this.fillDataList.Count); 
+            xfdata.fillId = fillDataId;
 
+            // add border data 
+            BorderData borderData = new BorderData();
+            // diagonal value 
+            borderData.diagonalValue = (ushort)xf.grbitDiag; 
+            // create and add borderparts 
+            BorderPartData top = new BorderPartData((ushort)xf.dgTop, xf.icvTop);
+            borderData.top = top;
 
-            xfdata.fillId = fillDataId; 
+            BorderPartData bottom = new BorderPartData((ushort)xf.dgBottom, xf.icvBottom);
+            borderData.bottom = bottom;
+
+            BorderPartData left = new BorderPartData((ushort)xf.dgLeft, xf.icvLeft);
+            borderData.left = left;
+
+            BorderPartData right = new BorderPartData((ushort)xf.dgRight, xf.icvRight);
+            borderData.right = right;
+
+            BorderPartData diagonal = new BorderPartData((ushort)xf.dgDiag, xf.icvDiag);
+            borderData.diagonal = diagonal;
+
+            int borderId = this.addBorderDataValue(borderData);
+            xfdata.borderId = borderId; 
+
+             
         }
 
         /// <summary>
@@ -144,10 +179,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
         /// <param name="formatbiffrec"></param>
         public void addStyleValue(STYLE stylebiff)
         {
-            if (!stylebiff.fBuiltin)
-            {
+
                 this.styleList.Add(stylebiff);
-            }
+
         }
 
         /// <summary>
@@ -169,6 +203,25 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
                 return listId; 
             }
             
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bd"></param>
+        /// <returns></returns>
+        public int addBorderDataValue(BorderData bd)
+        {
+            int listId = this.borderDataList.IndexOf(bd);
+            if (listId < 0)
+            {
+                this.borderDataList.Add(bd);
+                return this.borderDataList.Count - 1;
+            }
+            else
+            {
+                return listId;
+            }
         }
 
 
