@@ -142,6 +142,8 @@ namespace DIaLOGIKa.b2xtranslator.ppt2x
                 TraceLogger.Error("Conversion of file {0} failed.", inputFile);
                 TraceLogger.Debug(ex.ToString());
             }
+
+            TraceLogger.Info("End of program");
         }
 
         /// <summary>

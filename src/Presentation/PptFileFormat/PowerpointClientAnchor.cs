@@ -6,7 +6,7 @@ using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
-    [OfficeRecordAttribute(0xF010)]
+    //[OfficeRecordAttribute(0xF010)]
     public class PowerpointClientAnchor : Record
     {
         public int Top;
