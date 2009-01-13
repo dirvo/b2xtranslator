@@ -43,7 +43,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Common
         public UInt32 Sid
         {
             get { return _sid; }
-            protected set { _sid = value; }
+            internal set { _sid = value; }
         }
 
         protected string _path;
@@ -107,7 +107,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Common
         public DirectoryEntryColor Color
         {
             get { return _color; }
-            protected set
+            internal set
             {
                 if ((int)value < 0 || (int)value > 1)
                 {
@@ -123,7 +123,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Common
         public UInt32 LeftSiblingSid
         {
             get { return _leftSiblingSid; }
-            protected set { _leftSiblingSid = value; }
+            internal set { _leftSiblingSid = value; }
         }
 
 
@@ -132,7 +132,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Common
         public UInt32 RightSiblingSid
         {
             get { return _rightSiblingSid; }
-            protected set { _rightSiblingSid = value; }
+            internal set { _rightSiblingSid = value; }
         }
 
 
