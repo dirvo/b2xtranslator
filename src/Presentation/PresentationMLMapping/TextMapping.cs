@@ -1,3 +1,30 @@
+/*
+ * Copyright (c) 2008, DIaLOGIKa
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *        notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of DIaLOGIKa nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY DIaLOGIKa ''AS IS'' AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL DIaLOGIKa BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,7 +39,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 {
     class TextMapping :
         AbstractOpenXmlMapping,
-        IMapping<PowerpointClientTextbox>
+        IMapping<ClientTextbox>
     {
         protected ConversionContext _ctx;
 
@@ -70,26 +97,53 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             return null;
         }
 
-        public void Apply(PowerpointClientTextbox textbox)
+        public void Apply(ClientTextbox textbox)
         {
-            TextHeaderAtom thAtom = textbox.FirstChildWithType<TextHeaderAtom>();
+            System.IO.MemoryStream ms = new System.IO.MemoryStream(textbox.Bytes);
+            Record rec = Record.ReadRecord(ms, 0);
+            TextHeaderAtom thAtom = null;
+            TextStyleAtom style = null;
+            string text = "";
 
-            if (thAtom == null)
+            switch (rec.TypeCode)
             {
-                OutlineTextRefAtom otrAtom = textbox.FirstChildWithType<OutlineTextRefAtom>();
-                SlideListWithText slideListWithText = _ctx.Ppt.DocumentRecord.RegularSlideListWithText;
-                thAtom = slideListWithText.FindTextHeaderForOutlineTextRef(otrAtom);
+                case 3999:
+                    thAtom = (TextHeaderAtom)rec;
+                    rec = Record.ReadRecord(ms, 0);
+                    if (rec is TextAtom)
+                    {
+                        text = ((TextAtom)rec).Text;
+                    }
+                    else if (rec is TextStyleAtom)
+                    {
+                        //TODO
+                        style = (TextStyleAtom)rec;
+                    }
+                    else
+                    {
+                        TextAtom textAtom = thAtom.TextAtom;
+                        text = (textAtom == null) ? "" : textAtom.Text;
+                        style = thAtom.TextStyleAtom;
+                    }
+                    break;
+                case 3998:
+                    OutlineTextRefAtom otrAtom = (OutlineTextRefAtom)rec;
+                    SlideListWithText slideListWithText = _ctx.Ppt.DocumentRecord.RegularSlideListWithText;
+                                  
+                    List<TextHeaderAtom> thAtoms = slideListWithText.SlideToPlaceholderTextHeaders[textbox.FirstAncestorWithType<Slide>().PersistAtom];
+                    thAtom = thAtoms[otrAtom.Index];
+
+                    text = thAtom.TextAtom.Text;
+                    style = thAtom.TextStyleAtom;
+
+                    break;
+                default:
+                    throw new NotSupportedException("Can't find text for ClientTextbox without TextHeaderAtom and OutlineTextRefAtom");
             }
 
-            if (thAtom == null)
-            {
-                throw new NotSupportedException("Can't find text for ClientTextbox without TextHeaderAtom and OutlineTextRefAtom");
-            }
             
-            TextAtom textAtom = thAtom.TextAtom;
-            string text = (textAtom == null) ? "" : textAtom.Text;
 
-            TextStyleAtom style = thAtom.TextStyleAtom;
+            
 
             TraceLogger.DebugInternal("TextMapping: text = {0}", Tools.Utils.StringInspect(text));
 
@@ -105,6 +159,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 TraceLogger.DebugInternal("Paragraph run from {0} to {1}", idx, pEndIdx);
 
                 _writer.WriteStartElement("a", "p", OpenXmlNamespaces.DrawingML);
+
+                // TODO: paragraph properties
 
                 while (idx < pEndIdx)
                 {
@@ -156,8 +212,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         if (line.Length > 0)
                         {
                             _writer.WriteStartElement("a", "r", OpenXmlNamespaces.DrawingML);
-                            /*if (r != null)
-                                new CharacterRunPropsMapping(_ctx, _writer).Apply(r);*/
+                            if (r != null) new CharacterRunPropsMapping(_ctx, _writer).Apply(r);
 
                             _writer.WriteStartElement("a", "t", OpenXmlNamespaces.DrawingML);
                             _writer.WriteValue(line);

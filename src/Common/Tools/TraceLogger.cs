@@ -58,7 +58,14 @@ namespace DIaLOGIKa.b2xtranslator.Tools
         {
             if (_logLevel >= level && EnableTimeStamp)
             {
-                System.Diagnostics.Trace.WriteLine(string.Format("{0} " + msg, System.DateTime.Now));
+                try
+                {
+                    System.Diagnostics.Trace.WriteLine(string.Format("{0} " + msg, System.DateTime.Now));
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Trace.WriteLine("The tracing of the folloging message throw an error: " + msg);
+                }
             }
             else if (_logLevel >= level)
             {
