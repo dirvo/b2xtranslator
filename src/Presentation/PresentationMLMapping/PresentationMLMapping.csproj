@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CharacterRunPropsMapping.cs" />
+    <Compile Include="ColorSchemeMapping.cs" />
     <Compile Include="ConversionContext.cs" />
     <Compile Include="MasterMapping.cs" />
     <Compile Include="PresentationMapping.cs" />

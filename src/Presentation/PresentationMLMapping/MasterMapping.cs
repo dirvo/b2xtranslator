@@ -156,15 +156,25 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             if (theme != null)
             {
                 xmlDoc = theme.XmlDocumentElement;
+                xmlDoc.WriteTo(themePart.XmlWriter);
             }
             else
             {
-                // In absence of Theme record use default theme
-                xmlDoc = Utils.GetDefaultDocument("theme");
+                List<ColorSchemeAtom> schemes = this.Master.AllChildrenWithType<ColorSchemeAtom>();
+                if (schemes.Count > 0)
+                {
+                    new ColorSchemeMapping(_ctx, themePart.XmlWriter).Apply(schemes);                    
+                }
+                else
+                {
+                    // In absence of Theme record use default theme
+                    xmlDoc = Utils.GetDefaultDocument("theme");
+                    xmlDoc.WriteTo(themePart.XmlWriter);
+                }
             }
 
-            xmlDoc.WriteTo(themePart.XmlWriter);
             themePart.XmlWriter.Flush();
+           
 
             this.MasterPart.ReferencePart(themePart);
             
