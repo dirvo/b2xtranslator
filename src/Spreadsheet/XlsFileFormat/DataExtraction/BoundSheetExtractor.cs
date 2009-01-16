@@ -126,6 +126,12 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                         this.bsd.addFormulaString(formulaString.value); 
 
                     }
+                    else if (bh.id == RecordNumber.ROW)
+                    {
+                        ROW row = new ROW(this.StreamReader, bh.id, bh.length);
+                        this.bsd.addRowData(row); 
+
+                    }
                     else
                     {
                         // this else statement is used to read BiffRecords which aren't implemented 

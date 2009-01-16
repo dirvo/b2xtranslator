@@ -192,9 +192,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             //<fills count="2">
             //<fill>
             //<patternFill patternType="none"/>
-            //</fill>
-
-            
+            //</fill>           
             _writer.WriteStartElement("fills");
             _writer.WriteAttributeString("count", sd.FillDataList.Count.ToString());
             foreach (FillData fd in sd.FillDataList)
@@ -247,8 +245,6 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             _writer.WriteEndElement();
 
 
-
-
             /// Border Mapping 
             //<borders count="1">
             //  <border>
@@ -261,9 +257,6 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             //</borders>
             _writer.WriteStartElement("borders");
             _writer.WriteAttributeString("count", sd.BorderDataList.Count.ToString());
-
-
-
             foreach (BorderData borderData in sd.BorderDataList)
             {
                 _writer.WriteStartElement("border");
@@ -435,9 +428,6 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             ///<xf numFmtId="0" fontId="0" fillId="0" borderId="0"/>
             ///</cellStyleXfs> 
             // xfcellstyle mapping 
-
-
-
             _writer.WriteStartElement("cellStyleXfs");
             _writer.WriteAttributeString("count", sd.XFCellStyleDataList.Count.ToString());
             foreach (XFData xfcellstyle in sd.XFCellStyleDataList)

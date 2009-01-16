@@ -38,6 +38,7 @@ using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg;
+using DIaLOGIKa.b2xtranslator.Tools; 
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
@@ -363,6 +364,25 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             return null; 
         }
 
+
+        public void addRowData(ROW row)
+        {
+             RowData rowData = this.getSpecificRow(row.rw);
+
+             rowData.height = new  TwipsValue(row.miyRw);
+             rowData.hidden = row.fDyZero;
+             rowData.outlineLevel = row.iOutLevel;
+             rowData.collapsed = row.fCollapsed;
+            
+            rowData.customFormat = row.fGhostDirty;
+            rowData.style = row.ixfe_val;
+
+            rowData.thickBot = row.fExDes;
+            rowData.thickTop = row.fExAsc;
+
+            rowData.maxSpan = row.colMac;
+            rowData.minSpan = row.colMic; 
+        }
 
         #region IVisitable Members
 

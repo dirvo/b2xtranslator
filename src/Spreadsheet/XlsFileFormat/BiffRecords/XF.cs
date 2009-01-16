@@ -170,9 +170,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
             this.icvTop = (int)buffer & 0x0000007F;
             this.icvBottom = (int)(buffer & 0x00003F80) >> 0x04;
             this.icvDiag = (int)(buffer & 0x001FC000) >> 0x0C;
-            this.dgDiag = (int)(buffer & 0x01E00000) >> 0x14;
+            this.dgDiag = (int)(buffer & 0x01E00000) >> 0x15;
             this.fHasXFExt = (int)(buffer & 0x02000000) >> 0x18;
-            this.fls = (int)(buffer & 0xFC000000) >> 0x18;
+            this.fls = (int)(buffer & 0xFC000000) >> 0x1A;
 
             /// 
             /// Offset 22

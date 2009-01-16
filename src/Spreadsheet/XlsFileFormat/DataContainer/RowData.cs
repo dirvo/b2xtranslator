@@ -36,6 +36,7 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
+using DIaLOGIKa.b2xtranslator.Tools; 
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
 {
@@ -53,7 +54,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
             get { return row; }
             set { row = value; }
         }
-
+        
         /// <summary>
         /// Collection of cellobjects 
         /// </summary>
@@ -64,13 +65,26 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
             set { cells = value; }
         }
 
+        public TwipsValue height;
+        public bool hidden;
+        public int outlineLevel;
+        public bool collapsed;
+        public bool customFormat;
+        public int style;
+        public bool thickBot;
+        public bool thickTop;
 
+        public int minSpan;
+        public int maxSpan; 
         /// <summary>
         /// Ctor 
         /// </summary>
         public RowData()
             : this(0)
         {
+            this.outlineLevel = -1;
+            this.minSpan = -1;
+            this.maxSpan = -1; 
         }
 
         /// <summary>

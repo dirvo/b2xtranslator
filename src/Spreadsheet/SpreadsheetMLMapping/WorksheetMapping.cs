@@ -37,6 +37,7 @@ using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
 using DIaLOGIKa.b2xtranslator.Tools;
+using System.Globalization;
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
@@ -76,7 +77,43 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 // write row start tag
                 // Row 
                 _writer.WriteStartElement("row");
+                // the rowindex from the binary format is zero based, the ooxml format is one based 
                 _writer.WriteAttributeString("r", (row.Row +1).ToString());
+                if (row.height != null)
+                {
+                    _writer.WriteAttributeString("ht", Convert.ToString(row.height.ToPoints(), CultureInfo.GetCultureInfo("en-US")));
+                    _writer.WriteAttributeString("customHeight", "1"); 
+                }
+                if (row.hidden)
+                {
+                    _writer.WriteAttributeString("hidden", "1"); 
+                }
+                if (row.outlineLevel > -1)
+                {
+                    _writer.WriteAttributeString("outlineLevel", row.outlineLevel.ToString());
+                }
+                if (row.collapsed)
+                {
+                    _writer.WriteAttributeString("collapsed", "1");
+                }
+                if (row.customFormat)
+                {
+                    _writer.WriteAttributeString("customFormat", "1");
+                    _writer.WriteAttributeString("s", (row.style - this.xlsContext.XlsDoc.workBookData.styleData.XFCellStyleDataList.Count).ToString());
+                }
+                if (row.thickBot)
+                {
+                    _writer.WriteAttributeString("thickBot", "1");
+                }
+                if (row.thickTop)
+                {
+                    _writer.WriteAttributeString("thickTop", "1");
+                }
+                if (row.minSpan > 0 && row.maxSpan > 0)
+                {
+                    _writer.WriteAttributeString("spans", row.minSpan.ToString() + ":" + row.maxSpan.ToString());
+                }
+
                 row.Cells.Sort(); 
                 foreach (AbstractCellData cell in row.Cells)
                 {
