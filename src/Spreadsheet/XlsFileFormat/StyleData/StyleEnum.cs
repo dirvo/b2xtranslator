@@ -78,4 +78,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
         right,
         diagonal
     }
+
+    public enum FontElementType : ushort
+    {
+        String,
+        NormalStyle
+    }
 }

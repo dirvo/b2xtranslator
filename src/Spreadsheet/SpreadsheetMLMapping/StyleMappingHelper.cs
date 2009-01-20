@@ -28,6 +28,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData;
+using System.Xml;
+using System.Globalization;
 
 namespace ExcelprocessingMLMapping
 {
@@ -181,7 +183,111 @@ namespace ExcelprocessingMLMapping
                 case 0x000D: return "slantDashDot";
                 default: return "none"; 
             }
-        }        
+        }
+
+
+
+        public static void addFontElement(XmlWriter _writer, FontData font, FontElementType type)
+        {
+
+            // begin font element 
+            if (type == FontElementType.NormalStyle)
+                _writer.WriteStartElement("font");
+            else if (type == FontElementType.String)
+                _writer.WriteStartElement("rPr"); 
+
+            // font size 
+            _writer.WriteStartElement("sz");
+            _writer.WriteAttributeString("val", Convert.ToString(font.size.ToPoints(), CultureInfo.GetCultureInfo("en-US")));
+            _writer.WriteEndElement();
+            // font name 
+            if (type == FontElementType.NormalStyle)
+                _writer.WriteStartElement("name");
+            else if (type == FontElementType.String)
+                _writer.WriteStartElement("rFont"); 
+            _writer.WriteAttributeString("val", font.fontName);
+            _writer.WriteEndElement();
+            // font family 
+            if (font.fontFamily != 0)
+            {
+                _writer.WriteStartElement("family");
+                _writer.WriteAttributeString("val", font.fontFamily.ToString());
+                _writer.WriteEndElement();
+            }
+            // font charset 
+            if (font.charSet != 0)
+            {
+                _writer.WriteStartElement("charset");
+                _writer.WriteAttributeString("val", font.charSet.ToString());
+                _writer.WriteEndElement();
+            }
+
+            // bool values 
+            if (font.isBold)
+                _writer.WriteElementString("b", "");
+
+            if (font.isItalic)
+                _writer.WriteElementString("i", "");
+
+            if (font.isOutline)
+                _writer.WriteElementString("outline", "");
+
+            if (font.isShadow)
+                _writer.WriteElementString("shadow", "");
+
+            if (font.isStrike)
+                _writer.WriteElementString("strike", "");
+
+            // underline style mapping 
+            if (font.uStyle != UnderlineStyle.none)
+            {
+                _writer.WriteStartElement("u");
+                if (font.uStyle == UnderlineStyle.singleLine)
+                {
+                    _writer.WriteAttributeString("val", "single");
+                }
+                else if (font.uStyle == UnderlineStyle.doubleLine)
+                {
+                    _writer.WriteAttributeString("val", "double");
+                }
+                else
+                {
+                    _writer.WriteAttributeString("val", font.uStyle.ToString());
+                }
+                _writer.WriteEndElement();
+            }
+
+            if (font.vertAlign != SuperSubScriptStyle.none)
+            {
+                _writer.WriteStartElement("vertAlign");
+                _writer.WriteAttributeString("val", font.vertAlign.ToString());
+                _writer.WriteEndElement();
+            }
+
+            // colormapping 
+            string color = StyleMappingHelper.convertColorIdToRGB(font.color);
+            if (color.Equals("Auto"))
+            {
+                _writer.WriteStartElement("color");
+                _writer.WriteAttributeString("auto", "1");
+                _writer.WriteEndElement();
+            }
+            else if (color.Equals(""))
+            {
+                // do nothing 
+            }
+            else
+            {
+                // <bgColor rgb="FFFFFF00"/>
+                _writer.WriteStartElement("color");
+                _writer.WriteAttributeString("rgb", "FF" + color);
+                _writer.WriteEndElement();
+            }
+
+
+            // end font element 
+            _writer.WriteEndElement(); 
+        }
     }
 
 }

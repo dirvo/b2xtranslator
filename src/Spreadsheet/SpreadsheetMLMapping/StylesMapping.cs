@@ -187,7 +187,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             }
             // write fonts end element 
             _writer.WriteEndElement(); 
-
+            
             /// Fill Mapping 
             //<fills count="2">
             //<fill>

@@ -74,6 +74,20 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
             this.cstUnique = sst.cstUnique; 
         }
 
+        public List<StringFormatAssignment> getFormatingRuns(int stringNumber)
+        {
+            List<StringFormatAssignment> returnList = new List<StringFormatAssignment>();
+            foreach (StringFormatAssignment item in this.FormatList)
+            {
+                if (item.StringNumber == stringNumber)
+                {
+                    returnList.Add(item); 
+                }
+                
+            }
+            return returnList; 
+        }
+
         #region IVisitable Members
 
         public void Convert<T>(T mapping)

@@ -268,7 +268,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
                             // switch to next stream !! 
                             this.switchStream();
                             // read compressed/uncompressed byte value 
-                            this.Reader.ReadByte();
+                            // this.Reader.ReadByte();
                         }
                         // get formating data 
                         for (int j = 0; j < countFormatingRuns; j++)
