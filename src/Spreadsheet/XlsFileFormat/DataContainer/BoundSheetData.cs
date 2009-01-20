@@ -38,7 +38,7 @@ using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg;
-using DIaLOGIKa.b2xtranslator.Tools; 
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
@@ -57,16 +57,17 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public List<BLANK> BLANKList;
         public List<MULBLANK> MULBLANKList;
         public List<FORMULA> FORMULAList;
-        public List<ARRAY> ARRAYList; 
-        public BOUNDSHEET boundsheetRecord; 
+        public List<ARRAY> ARRAYList;
+        public BOUNDSHEET boundsheetRecord;
 
 
         public String worksheetName;
         public int worksheetId;
         public String worksheetRef;
         public SortedList<Int32, RowData> rowDataTable;
+        public List<ColumnInfoData> colInfoDataTable;
         public List<SharedFormulaData> sharedFormulaDataTable;
-        public FormulaCell latestFormula; 
+        public FormulaCell latestFormula;
 
         public MERGECELLS MERGECELLSData;
 
@@ -82,10 +83,11 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             this.MULBLANKList = new List<MULBLANK>();
             this.BLANKList = new List<BLANK>();
             this.FORMULAList = new List<FORMULA>();
-            this.ARRAYList = new List<ARRAY>(); 
+            this.ARRAYList = new List<ARRAY>();
             this.rowDataTable = new SortedList<int, RowData>();
-            this.sharedFormulaDataTable = new List<SharedFormulaData>(); 
-            boundsheetRecord = null; 
+            this.sharedFormulaDataTable = new List<SharedFormulaData>();
+            this.colInfoDataTable = new List<ColumnInfoData>();
+            boundsheetRecord = null;
 
         }
 
@@ -221,7 +223,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
             if (formula.fShrFmla)
             {
-                ((FormulaCell)cell).isSharedFormula = true; 
+                ((FormulaCell)cell).isSharedFormula = true;
             }
 
             if (formula.calculatedValue != null)
@@ -236,7 +238,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             {
                 cell.calculatedValue = formula.errorValue;
             }
-            this.latestFormula = cell; 
+            this.latestFormula = cell;
             rowData.addCell(cell);
         }
 
@@ -246,7 +248,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// <param name="formulaString"></param>
         public void addFormulaString(string formulaString)
         {
-            this.latestFormula.calculatedValue = formulaString; 
+            this.latestFormula.calculatedValue = formulaString;
         }
 
         /// <summary>
@@ -255,7 +257,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// <param name="array"></param>
         public void addARRAY(ARRAY array)
         {
-            this.ARRAYList.Add(array); 
+            this.ARRAYList.Add(array);
         }
 
         /// <summary>
@@ -286,15 +288,15 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// <returns></returns>
         public Stack<AbstractPtg> getArrayData(UInt16 rw, UInt16 col)
         {
-            Stack<AbstractPtg> stack = new Stack<AbstractPtg>(); 
+            Stack<AbstractPtg> stack = new Stack<AbstractPtg>();
             foreach (ARRAY array in this.ARRAYList)
             {
                 if (array.colFirst == col && array.rwFirst == rw)
                 {
-                    stack = array.ptgStack; 
+                    stack = array.ptgStack;
                 }
             }
-            return stack; 
+            return stack;
         }
 
         /// <summary>
@@ -310,9 +312,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             foreach (AbstractCellData cell in rd.Cells)
             {
                 if (cell.Row == rw && cell.Col == col)
-                    scell = cell; 
+                    scell = cell;
             }
-            return scell; 
+            return scell;
         }
 
         /// <summary>
@@ -325,7 +327,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             AbstractCellData cell = this.getCellAtPosition(rw, col);
             if (cell is FormulaCell)
             {
-                ((FormulaCell)cell).usesArrayRecord = true; 
+                ((FormulaCell)cell).usesArrayRecord = true;
             }
         }
 
@@ -342,8 +344,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             sfd.rwLast = shrfmla.rwLast;
             sfd.setValue(shrfmla.ptgStack);
             int ID = this.sharedFormulaDataTable.Count;
-            sfd.ID = ID; 
-            this.sharedFormulaDataTable.Add(sfd); 
+            sfd.ID = ID;
+            this.sharedFormulaDataTable.Add(sfd);
         }
 
 
@@ -359,21 +361,24 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             foreach (SharedFormulaData var in this.sharedFormulaDataTable)
             {
                 if (var.checkFormulaIsInShared(rw, col))
-                    return var; 
+                    return var;
             }
-            return null; 
+            return null;
         }
 
-
+        /// <summary>
+        /// Add the rowdata to the rowdataobject 
+        /// </summary>
+        /// <param name="row">ROW Biff Record</param>
         public void addRowData(ROW row)
         {
-             RowData rowData = this.getSpecificRow(row.rw);
+            RowData rowData = this.getSpecificRow(row.rw);
 
-             rowData.height = new  TwipsValue(row.miyRw);
-             rowData.hidden = row.fDyZero;
-             rowData.outlineLevel = row.iOutLevel;
-             rowData.collapsed = row.fCollapsed;
-            
+            rowData.height = new TwipsValue(row.miyRw);
+            rowData.hidden = row.fDyZero;
+            rowData.outlineLevel = row.iOutLevel;
+            rowData.collapsed = row.fCollapsed;
+
             rowData.customFormat = row.fGhostDirty;
             rowData.style = row.ixfe_val;
 
@@ -381,7 +386,30 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             rowData.thickTop = row.fExAsc;
 
             rowData.maxSpan = row.colMac;
-            rowData.minSpan = row.colMic; 
+            rowData.minSpan = row.colMic;
+        }
+
+        /// <summary>
+        /// Add the colinfo to the data object model 
+        /// </summary>
+        /// <param name="colinfo">COLINFO BIFF Record</param>
+        public void addColData(COLINFO colinfo)
+        {
+            ColumnInfoData colinfoData = new ColumnInfoData();
+            colinfoData.min = colinfo.colFirst;
+            colinfoData.max = colinfo.colLast;
+
+            colinfoData.widht = colinfo.coldx;
+            colinfoData.customWidth = colinfo.fUserSet;
+
+            colinfoData.hidden = colinfo.fHidden;
+            colinfoData.bestFit = colinfo.fBestFit;
+            colinfoData.phonetic = colinfo.fPhonetic;
+            colinfoData.outlineLevel = colinfo.iOutLevel;
+            colinfoData.collapsed = colinfo.fCollapsed;
+            colinfoData.style = colinfo.ixfe;
+
+            this.colInfoDataTable.Add(colinfoData); 
         }
 
         #region IVisitable Members

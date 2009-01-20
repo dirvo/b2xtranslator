@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{92295756-46BB-4D1F-B0FD-CA7DF03F6C65}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -35,6 +35,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -298,6 +300,7 @@
     <Compile Include="BiffString.cs" />
     <Compile Include="DataContainer\AbstractCellData.cs" />
     <Compile Include="DataContainer\BlankCell.cs" />
+    <Compile Include="DataContainer\ColumnInfoData.cs" />
     <Compile Include="DataContainer\CRNData.cs" />
     <Compile Include="DataContainer\ExternSheetData.cs" />
     <Compile Include="DataContainer\FormulaCell.cs" />

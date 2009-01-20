@@ -66,11 +66,61 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             xlsContext.CurrentSheet = bsd; 
             _writer.WriteStartDocument();
             _writer.WriteStartElement("worksheet", OpenXmlNamespaces.WorkBookML);
+
+
+
+            // Col info 
+            if (bsd.colInfoDataTable.Count > 0)
+            {
+                _writer.WriteStartElement("cols");
+                foreach (ColumnInfoData col in bsd.colInfoDataTable)
+                {
+                    _writer.WriteStartElement("col");
+                    // write min and max 
+                    // booth values are 0 based in the binary format and 1 based in the oxml format 
+                    // so you have to add 1 to the value!
+
+                        _writer.WriteAttributeString("min", (col.min + 1).ToString());
+                        _writer.WriteAttributeString("max", (col.max + 1).ToString());
+
+                    if (col.widht != 0)
+                        _writer.WriteAttributeString("width", Convert.ToString((double)(col.widht / 256), CultureInfo.GetCultureInfo("en-US")));
+
+                    if (col.hidden)
+                        _writer.WriteAttributeString("hidden", "1");
+
+                    if (col.outlineLevel > 0)
+                        _writer.WriteAttributeString("outlineLevel", col.outlineLevel.ToString());
+
+                    if (col.customWidth)
+                        _writer.WriteAttributeString("customWidth", "1");
+
+                    if (col.bestFit)
+                        _writer.WriteAttributeString("bestFit", "1");
+
+                    if (col.phonetic)
+                        _writer.WriteAttributeString("phonetic", "1");
+
+                    if (col.style > 15)
+                    {
+                        
+                        _writer.WriteAttributeString("style", Convert.ToString(col.style - this.xlsContext.XlsDoc.workBookData.styleData.XFCellStyleDataList.Count, CultureInfo.GetCultureInfo("en-US")));
+                    }
+
+                    _writer.WriteEndElement();
+                }
+
+
+                _writer.WriteEndElement();
+            }
+
+
+            // End col info 
+
+
+
             _writer.WriteStartElement("sheetData");
            //  bsd.rowDataTable.Values
-
-
-
             foreach (RowData row in bsd.rowDataTable.Values)
             {
 
@@ -88,7 +138,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 {
                     _writer.WriteAttributeString("hidden", "1"); 
                 }
-                if (row.outlineLevel > -1)
+                if (row.outlineLevel > 0)
                 {
                     _writer.WriteAttributeString("outlineLevel", row.outlineLevel.ToString());
                 }
@@ -99,7 +149,10 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 if (row.customFormat)
                 {
                     _writer.WriteAttributeString("customFormat", "1");
-                    _writer.WriteAttributeString("s", (row.style - this.xlsContext.XlsDoc.workBookData.styleData.XFCellStyleDataList.Count).ToString());
+                    if (row.style > 15)
+                    {
+                        _writer.WriteAttributeString("s", (row.style - this.xlsContext.XlsDoc.workBookData.styleData.XFCellStyleDataList.Count).ToString());
+                    }
                 }
                 if (row.thickBot)
                 {
@@ -120,11 +173,12 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     // Col 
                     _writer.WriteStartElement("c");
                     _writer.WriteAttributeString("r", ExcelHelperClass.intToABCString((int)cell.Col, (cell.Row + 1).ToString()));
-                    if (cell.TemplateID != 0 && cell.TemplateID > 15)
+
+                    if (cell.TemplateID > 15)
                     {
-                        _writer.WriteAttributeString("s", (cell.TemplateID-this.xlsContext.XlsDoc.workBookData.styleData.XFCellStyleDataList.Count).ToString()); 
+                        _writer.WriteAttributeString("s", (cell.TemplateID - this.xlsContext.XlsDoc.workBookData.styleData.XFCellStyleDataList.Count).ToString());
                     }
-                    
+
                     if (cell is StringCell)
                     {
                         _writer.WriteAttributeString("t", "s");
@@ -229,6 +283,8 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 // close mergeCells Tag 
                 _writer.WriteEndElement(); 
             }
+
+
 
 
 

@@ -132,6 +132,11 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                         this.bsd.addRowData(row); 
 
                     }
+                    else if (bh.id == RecordNumber.COLINFO)
+                    {
+                        COLINFO colinfo = new COLINFO(this.StreamReader, bh.id, bh.length);
+                        this.bsd.addColData(colinfo); 
+                    }
                     else
                     {
                         // this else statement is used to read BiffRecords which aren't implemented 
