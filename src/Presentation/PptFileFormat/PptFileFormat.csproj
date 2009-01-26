@@ -76,6 +76,7 @@
     <Compile Include="ParagraphRun.cs" />
     <Compile Include="PersistDirectoryAtom.cs" />
     <Compile Include="PersistDirectoryEntry.cs" />
+    <Compile Include="Pictures.cs" />
     <Compile Include="PowerpointDocument.cs" />
     <Compile Include="PPDrawing.cs" />
     <Compile Include="PPDrawingGroup.cs" />

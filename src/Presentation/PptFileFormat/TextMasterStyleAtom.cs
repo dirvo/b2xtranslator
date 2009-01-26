@@ -18,32 +18,38 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             : base(_reader, size, typeCode, version, instance)
         {
             this.Bytes = this.Reader.ReadBytes((int)this.BodySize);
+            this.Reader.BaseStream.Position = 0;
 
-            //System.IO.MemoryStream ms = new System.IO.MemoryStream(Bytes);
+            this.IndentLevelCount = System.BitConverter.ToUInt16(this.Reader.ReadBytes(2), 0); // System.BitConverter.ToUInt16(this.Bytes, 0);
 
-            this.IndentLevelCount = System.BitConverter.ToUInt16(this.Bytes, 0);
+            for (int i = 0; i < this.IndentLevelCount; i++)
+            {
+                long pos = this.Reader.BaseStream.Position;
 
-            //for (int i = 0; i < this.IndentLevelCount; i++)
-            //{
-            //    
-            //    long pos = ms.Position;
+                if (this.Instance >= 5 && this.Instance < this.IndentLevelCount)
+                {
+                    UInt16 level = System.BitConverter.ToUInt16(this.Reader.ReadBytes(2), (int)pos);
+                }                
+             
+                this.PRuns.Add(new ParagraphRun(this.Reader, true));
 
-            //    this.PRuns[i] = new ParagraphRun(ms, true);
+                TraceLogger.DebugInternal("Read paragraph run. Before pos = {0}, after pos = {1} of {2}: {3}",
+                        pos, this.Reader.BaseStream.Position, this.Reader.BaseStream.Length,
+                        this.PRuns[i].ToString());
 
-            //    TraceLogger.DebugInternal("Read paragraph run. Before pos = {0}, after pos = {1} of {2}: {3}",
-            //        pos, this.Reader.BaseStream.Position, this.Reader.BaseStream.Length,
-            //        this.PRuns[i]);
+                pos = this.Reader.BaseStream.Position;
+                this.CRuns.Add(new CharacterRun(this.Reader));
 
-            //    pos = this.Reader.BaseStream.Position;
-            //    this.CRuns[i] = new CharacterRun(this.Reader);
-
-            //    TraceLogger.DebugInternal("Read character run. Before pos = {0}, after pos = {1} of {2}: {3}",
-            //        pos, this.Reader.BaseStream.Position, this.Reader.BaseStream.Length,
-            //        this.CRuns[i]);
-            //}
+                TraceLogger.DebugInternal("Read character run. Before pos = {0}, after pos = {1} of {2}: {3}",
+                    pos, this.Reader.BaseStream.Position, this.Reader.BaseStream.Length,
+                    this.CRuns[i].ToString());
+            }
 
             //// XXX: I'm not sure why but in some cases there is trailing garbage -- flgr
-            //this.Reader.BaseStream.Position = this.Reader.BaseStream.Length;
+            if (this.Reader.BaseStream.Position != this.Reader.BaseStream.Length)
+            {
+                this.Reader.BaseStream.Position = this.Reader.BaseStream.Length;
+            }
         }
 
         public ParagraphRun ParagraphRunForIndentLevel(int level)

@@ -84,11 +84,11 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             if (this.SizePresent)
                 this.Size = reader.ReadUInt16();
 
-            if (this.PositionPresent)
-                this.Position = reader.ReadUInt16();
-
             if (this.ColorPresent)
                 this.Color = new GrColorAtom(reader);
+
+            if (this.PositionPresent)
+                this.Position = reader.ReadUInt16();            
         }
 
         public string ToString(uint depth)
@@ -171,7 +171,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         None = 0,
 
         // Bit 0 - 15 are used for marking style flag presence
-        StyleFlagsFieldPresent = 0xFFFF,
+        StyleFlagsFieldPresent = 0x3C0000, // 0xFFFF,
 
         TypefacePresent = 1 << 16,
         SizePresent = 1 << 17,

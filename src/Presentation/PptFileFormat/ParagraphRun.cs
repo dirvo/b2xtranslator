@@ -185,15 +185,6 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             if (this.DefaultTabSizePresent)
                 this.DefaultTabSize = reader.ReadInt16();
 
-            if (this.FontAlignPresent)
-                this.FontAlign = reader.ReadUInt16();
-
-            if (this.LineBreakFlagsFieldPresent)
-                this.LineBreakFlags = reader.ReadUInt16();
-
-            if (this.TextDirectionPresent)
-                this.TextDirection = reader.ReadUInt16();
-
             if (this.TabStopsPresent)
             {
                 UInt16 tabStopsCount = reader.ReadUInt16();
@@ -204,6 +195,26 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
                     this.TabStops[i] = new TabStop(reader);
                 }
             }
+
+            if (this.FontAlignPresent)
+                this.FontAlign = reader.ReadUInt16();
+
+            if (this.LineBreakFlagsFieldPresent)
+                this.LineBreakFlags = reader.ReadUInt16();
+
+            if (this.TextDirectionPresent)
+                this.TextDirection = reader.ReadUInt16();
+
+            //if (this.TabStopsPresent)
+            //{
+            //    UInt16 tabStopsCount = reader.ReadUInt16();
+            //    this.TabStops = new TabStop[tabStopsCount];
+
+            //    for (int i = 0; i < tabStopsCount; i++)
+            //    {
+            //        this.TabStops[i] = new TabStop(reader);
+            //    }
+            //}
         }
 
         public string ToString(uint depth)
@@ -259,7 +270,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
                 result.AppendFormat("\n{0}DefaultTabSize = {1}", indent, this.DefaultTabSize);
 
             if (this.FontAlign != null)
-                result.AppendFormat("\n{0FontAlign = {1}", indent, this.FontAlign);
+                result.AppendFormat("\n{0}FontAlign = {1}", indent, this.FontAlign);
 
             if (this.LineBreakFlags != null)
                 result.AppendFormat("\n{0}LineBreakFlags = {1}", indent, this.LineBreakFlags);

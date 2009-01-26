@@ -58,6 +58,16 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         public CurrentUserAtom CurrentUserAtom;
 
         /// <summary>
+        /// The stream "Pictures"
+        /// </summary>
+        public VirtualStream PicturesStream;
+
+        /// <summary>
+        /// Container containing all media elements inside the Pictures stream.
+        /// </summary>
+        public Pictures PicturesContainer;
+
+        /// <summary>
         /// The last edit done to this document.
         /// </summary>
         public UserEditAtom LastUserEdit;
@@ -103,6 +113,20 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             catch (InvalidRecordException e)
             {
                 throw new InvalidStreamException("Current user stream is not valid", e);
+            }
+
+            // Optional 'Pictures' stream
+            if (file.FullNameOfAllStreamEntries.Contains("\\Pictures"))
+            {
+                try
+                {
+                    this.PicturesStream = file.GetStream("Pictures");
+                    this.PicturesContainer = new Pictures(new BinaryReader(this.PicturesStream), (uint)this.PicturesStream.Length, 0, 0, 0);
+                }
+                catch (InvalidRecordException e)
+                {
+                    throw new InvalidStreamException("Pictures stream is not valid", e);
+                }
             }
 
             this.PowerpointDocumentStream = file.GetStream("PowerPoint Document");
