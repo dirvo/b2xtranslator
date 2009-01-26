@@ -69,7 +69,10 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
             get 
             { 
                 return ""; 
-            } 
+            }
+            set
+            {
+            }
         }
 
         public virtual string TargetDirectoryAbsolute
@@ -84,6 +87,10 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
                     path = Path.Combine(part.TargetDirectory, path);
                     part = part.Parent;
                 }
+                if (path == "ppt\\slides\\media") return "ppt\\media";
+                if (path == "ppt\\slideMasters\\..\\slideLayouts") return "ppt\\slideLayouts";
+                if (path == "ppt\\slides\\..\\media") return "ppt\\media";
+                if (path == "ppt\\slideMasters\\..\\media") return "ppt\\media";
                 return path;
             }
         }

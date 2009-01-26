@@ -11,6 +11,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML
         protected static int _slideMasterCounter = 0;
         protected static int _slideCounter = 0;
         protected static int _themeCounter = 0;
+        protected static int _mediaCounter = 0;
         
         public PresentationPart(OpenXmlPartContainer parent)
             : base(parent, 0)
@@ -45,6 +46,11 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML
         public ThemePart AddThemePart()
         {
             return this.AddPart(new ThemePart(this, ++_themeCounter));
+        }
+
+        public MediaPart AddMediaPart()
+        {
+            return this.AddPart(new MediaPart(this, ++_mediaCounter));
         }
     }
 }

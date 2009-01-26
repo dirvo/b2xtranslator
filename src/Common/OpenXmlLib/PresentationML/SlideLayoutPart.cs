@@ -22,7 +22,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML
         }
 
         public override string TargetName { get { return "slideLayout" + this.PartIndex; } }
-        public override string TargetDirectory { get { return "slideLayouts"; } }
+        public override string TargetDirectory { get { return "..\\slideLayouts"; } }
 
     }
 }
