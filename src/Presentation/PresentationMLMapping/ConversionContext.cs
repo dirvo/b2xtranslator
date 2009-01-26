@@ -42,6 +42,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         private PowerpointDocument _ppt;
 
         private Dictionary<UInt32, MasterMapping> MasterIdToMapping = new Dictionary<UInt32, MasterMapping>();
+        public Dictionary<long, string> AddedImages = new Dictionary<long, string>();
+        public int lastImageID = 0;
 
         /// <summary>
         /// The source of the conversion.

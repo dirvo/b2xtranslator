@@ -113,7 +113,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             //TODO: write background properties (p:bg)
 
             _writer.WriteStartElement("p", "spTree", OpenXmlNamespaces.PresentationML);
-            new ShapeTreeMapping(_ctx, _writer).Apply(slide.FirstChildWithType<PPDrawing>());
+
+            ShapeTreeMapping stm = new ShapeTreeMapping(_ctx, _writer);
+            stm.parentSlideMapping = this;
+            stm.Apply(slide.FirstChildWithType<PPDrawing>());
             _writer.WriteEndElement();
             _writer.WriteEndElement();
 

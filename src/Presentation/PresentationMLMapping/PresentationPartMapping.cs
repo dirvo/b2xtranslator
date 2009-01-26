@@ -39,6 +39,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
     {
         private List<SlideMapping> SlideMappings = new List<SlideMapping>();
 
+
         public PresentationPartMapping(ConversionContext ctx)
             : base(ctx, ctx.Pptx.PresentationPart)
         {
@@ -57,6 +58,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             CreateMainMasters(ppt);
             CreateSlides(ppt, documentRecord);
+            //CreatePictures(ppt, documentRecord);
 
             WriteMainMasters(ppt);
             WriteSlides(ppt, documentRecord);
@@ -111,7 +113,34 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         }
 
-        private void CreateSlides(PowerpointDocument ppt, DocumentContainer documentRecord)
+        //private void CreatePictures(PowerpointDocument ppt, DocumentContainer documentRecord)
+        //{
+        //    foreach (Record rec in ppt.PicturesContainer._pictures.Values)
+        //    {
+        //        switch (rec.TypeCode)
+        //        {
+
+        //            case 0xF01D:
+        //            case 0xF01E:
+        //            case 0xF01F:
+        //            case 0xF020:
+        //            case 0xF021:
+        //                BitmapBlip b = (BitmapBlip)rec;
+        //                ImagePart imgPart = null;
+        //                imgPart = this.targetPart.AddImagePart(ImagePart.ImageType.Png);
+        //                System.IO.Stream outStream = imgPart.GetStream();
+        //                outStream.Write(b.m_pvBits, 0, b.m_pvBits.Length);
+
+        //                break;
+
+        //            default:
+        //                break;
+        //        }
+        //    }
+        //}
+
+        
+       private void CreateSlides(PowerpointDocument ppt, DocumentContainer documentRecord)
         {
             foreach (Slide slide in ppt.SlideRecords)
             {

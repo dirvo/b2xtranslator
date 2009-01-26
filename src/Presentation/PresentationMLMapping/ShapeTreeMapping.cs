@@ -46,6 +46,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         protected int _idCnt;
         protected ConversionContext _ctx;
 
+        public PresentationMapping<Slide> parentSlideMapping = null;
+
         public ShapeTreeMapping(ConversionContext ctx, XmlWriter writer)
             : base(writer)
         {
@@ -90,54 +92,199 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         public void Apply(ShapeContainer container)
         {
-            _writer.WriteStartElement("p", "sp", OpenXmlNamespaces.PresentationML);
-
-            _writer.WriteStartElement("p", "nvSpPr", OpenXmlNamespaces.PresentationML);
-
-            WriteCNvPr("");
-
-            _writer.WriteElementString("p", "cNvSpPr", OpenXmlNamespaces.PresentationML, "");
-            _writer.WriteStartElement("p", "nvPr", OpenXmlNamespaces.PresentationML);
-            
             ClientData clientData = container.FirstChildWithType<ClientData>();
 
-            if (clientData != null)
+            bool pictureWritten = false;
+
+
+            Shape sh = container.FirstChildWithType<Shape>();
+            ShapeOptions so = container.FirstChildWithType<ShapeOptions>();
+            if (clientData == null)
             {
-               
-                System.IO.MemoryStream ms = new System.IO.MemoryStream(clientData.bytes);
-                Record rec = Record.ReadRecord(ms, 0);
-                OEPlaceHolderAtom placeholder = (OEPlaceHolderAtom)rec; // clientData.FirstChildWithType<OEPlaceHolderAtom>();
-
-                if (placeholder != null)
+                foreach (ShapeOptions.OptionEntry en in so.Options)
                 {
-
-                    _writer.WriteStartElement("p", "ph", OpenXmlNamespaces.PresentationML);
-
-                    if (!placeholder.IsObjectPlaceholder())
+                    if (en.pid == ShapeOptions.PropertyId.Pib)
                     {
-                        string typeValue = Utils.PlaceholderIdToXMLValue(placeholder.PlacementId);
-                        _writer.WriteAttributeString("type", typeValue);
+                        if (en.opComplex != null)
+                        {
+                            //TODO
+                        }
+                        else
+                        {
+                            writePic(container);
+                            pictureWritten = true;
+                        }
                     }
-
-                    if (placeholder.Position != -1)
-                    {
-                        _writer.WriteAttributeString("idx", placeholder.Position.ToString());
-                    }
-
-                    _writer.WriteEndElement();
                 }
             }
 
-            _writer.WriteEndElement();
+            if (!pictureWritten)
+            {
 
-            _writer.WriteEndElement();
+                _writer.WriteStartElement("p", "sp", OpenXmlNamespaces.PresentationML);
 
+                _writer.WriteStartElement("p", "nvSpPr", OpenXmlNamespaces.PresentationML);
+
+                WriteCNvPr("");
+
+                _writer.WriteElementString("p", "cNvSpPr", OpenXmlNamespaces.PresentationML, "");
+                _writer.WriteStartElement("p", "nvPr", OpenXmlNamespaces.PresentationML);
+
+
+
+                if (clientData != null)
+                {
+
+                    System.IO.MemoryStream ms = new System.IO.MemoryStream(clientData.bytes);
+                    Record rec = Record.ReadRecord(ms, 0);
+                    OEPlaceHolderAtom placeholder = (OEPlaceHolderAtom)rec; // clientData.FirstChildWithType<OEPlaceHolderAtom>();
+
+                    if (placeholder != null)
+                    {
+
+                        _writer.WriteStartElement("p", "ph", OpenXmlNamespaces.PresentationML);
+
+                        if (!placeholder.IsObjectPlaceholder())
+                        {
+                            string typeValue = Utils.PlaceholderIdToXMLValue(placeholder.PlacementId);
+                            _writer.WriteAttributeString("type", typeValue);
+                        }
+
+                        if (placeholder.Position != -1)
+                        {
+                            _writer.WriteAttributeString("idx", placeholder.Position.ToString());
+                        }
+
+                        _writer.WriteEndElement();
+                    }
+                }
+
+                _writer.WriteEndElement();
+
+                _writer.WriteEndElement();
+
+
+                // Visible shape properties
+                _writer.WriteStartElement("p", "spPr", OpenXmlNamespaces.PresentationML);
+
+                ClientAnchor anchor = container.FirstChildWithType<ClientAnchor>();
+
+                if (anchor != null && anchor.Right >= anchor.Left && anchor.Bottom >= anchor.Top)
+                {
+                    _writer.WriteStartElement("a", "xfrm", OpenXmlNamespaces.DrawingML);
+
+                    _writer.WriteStartElement("a", "off", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteAttributeString("x", Utils.MasterCoordToEMU(anchor.Left).ToString());
+                    _writer.WriteAttributeString("y", Utils.MasterCoordToEMU(anchor.Top).ToString());
+                    _writer.WriteEndElement();
+
+                    _writer.WriteStartElement("a", "ext", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteAttributeString("cx", Utils.MasterCoordToEMU(anchor.Right - anchor.Left).ToString());
+                    _writer.WriteAttributeString("cy", Utils.MasterCoordToEMU(anchor.Bottom - anchor.Top).ToString());
+                    _writer.WriteEndElement();
+
+                    _writer.WriteEndElement();
+                }
+
+                _writer.WriteEndElement();
+
+                // Descend into unsupported records
+                foreach (Record record in container.Children)
+                {
+                    DynamicApply(record);
+                }
+
+                _writer.WriteEndElement();
+            }
+        }
+
+        private void writePic(ShapeContainer container)
+        {
+            Shape sh = container.FirstChildWithType<Shape>();
+            ShapeOptions so = container.FirstChildWithType<ShapeOptions>();
+
+            uint indexOfPicture = 0;
+            //TODO: read these infos from so
+            ++_ctx.lastImageID;
+            string id = _ctx.lastImageID.ToString(); // "213";
+            string name = "";
+            string descr = "";
+            string rId = "";
+            foreach (ShapeOptions.OptionEntry en in so.Options)
+            {
+
+                switch (en.pid)
+                {
+                    case ShapeOptions.PropertyId.Pib:
+                        indexOfPicture = en.op - 1;
+                        break;
+                    case ShapeOptions.PropertyId.pibName:
+                        name = Encoding.Unicode.GetString(en.opComplex);
+                        name = name.Substring(0, name.Length - 1);
+                        break;
+                    case ShapeOptions.PropertyId.pibPrintName:
+                        id = en.op.ToString();
+                        break;
+
+                }
+            }
+
+            DrawingGroup gr = (DrawingGroup)this._ctx.Ppt.DocumentRecord.FirstChildWithType<PPDrawingGroup>().Children[0];
+            BlipStoreEntry bse = (BlipStoreEntry)gr.FirstChildWithType<BlipStoreContainer>().Children[(int)indexOfPicture];
+
+            //if (this.parentSlideMapping is MasterMapping) return;
+            
+            if (this._ctx.AddedImages.ContainsKey(bse.foDelay))
+            {
+                rId = this._ctx.AddedImages[bse.foDelay];
+            } else {
+                BitmapBlip b = (BitmapBlip)_ctx.Ppt.PicturesContainer._pictures[bse.foDelay];
+
+                ImagePart imgPart = null;
+                imgPart = parentSlideMapping.targetPart.AddImagePart(getImageType(b.TypeCode));
+                //imgPart.TargetDirectory = "..\\media";
+                System.IO.Stream outStream = imgPart.GetStream();
+                outStream.Write(b.m_pvBits, 0, b.m_pvBits.Length);
+
+                rId = imgPart.RelIdToString;
+                this._ctx.AddedImages.Add(bse.foDelay, rId);
+            }
+
+
+            _writer.WriteStartElement("p", "pic", OpenXmlNamespaces.PresentationML);
+
+            _writer.WriteStartElement("p", "nvPicPr", OpenXmlNamespaces.PresentationML);
+
+            _writer.WriteStartElement("p", "cNvPr", OpenXmlNamespaces.PresentationML);
+            _writer.WriteAttributeString("id", id);
+            _writer.WriteAttributeString("name", name);
+            _writer.WriteAttributeString("descr", descr);
+            _writer.WriteEndElement(); //p:cNvPr
+
+            _writer.WriteStartElement("p", "cNvPicPr", OpenXmlNamespaces.PresentationML);
+            _writer.WriteStartElement("a", "picLocks", OpenXmlNamespaces.DrawingML);
+            _writer.WriteAttributeString("noChangeAspect", "1");
+            _writer.WriteAttributeString("noChangeArrowheads", "1");
+            _writer.WriteEndElement(); //a:picLocks
+            _writer.WriteEndElement(); //p:cNvPicPr
+
+            _writer.WriteElementString("p", "nvPr", OpenXmlNamespaces.PresentationML, "");
+
+            _writer.WriteEndElement(); //p:nvPicPr
+
+            _writer.WriteStartElement("p", "blipFill", OpenXmlNamespaces.PresentationML);
+            _writer.WriteStartElement("a", "blip", OpenXmlNamespaces.DrawingML);
+            _writer.WriteAttributeString("embed", OpenXmlNamespaces.Relationships, rId);
+            _writer.WriteEndElement(); //a:blip
+            _writer.WriteElementString("a", "srcRect", OpenXmlNamespaces.DrawingML, "");
+            _writer.WriteStartElement("a", "stretch", OpenXmlNamespaces.DrawingML);
+            _writer.WriteElementString("a", "fillRect", OpenXmlNamespaces.DrawingML, "");
+            _writer.WriteEndElement(); //a:stretch
+            _writer.WriteEndElement(); //p:blipFill
 
             // Visible shape properties
             _writer.WriteStartElement("p", "spPr", OpenXmlNamespaces.PresentationML);
-
             ClientAnchor anchor = container.FirstChildWithType<ClientAnchor>();
-
             if (anchor != null && anchor.Right >= anchor.Left && anchor.Bottom >= anchor.Top)
             {
                 _writer.WriteStartElement("a", "xfrm", OpenXmlNamespaces.DrawingML);
@@ -155,15 +302,17 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 _writer.WriteEndElement();
             }
 
-            _writer.WriteEndElement();
+            _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
+            _writer.WriteAttributeString("prst", "rect");
+            _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
+            _writer.WriteEndElement(); //a:prstGeom
+            _writer.WriteElementString("a", "noFill", OpenXmlNamespaces.DrawingML, "");
 
-            // Descend into unsupported records
-            foreach (Record record in container.Children)
-            {
-                DynamicApply(record);
-            }
+            _writer.WriteEndElement(); //p:spPr
 
-            _writer.WriteEndElement();
+            
+
+            _writer.WriteEndElement(); //p:pic
         }
 
         public void Apply(ClientTextbox textbox)
@@ -181,6 +330,31 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             new TextMapping(_ctx, _writer).Apply(textbox);
 
             _writer.WriteEndElement();
+        }
+
+        private ImagePart.ImageType getImageType(uint TypeCode)
+        {
+            switch (TypeCode)
+            {
+                case 0xF01A:
+                    return ImagePart.ImageType.Emf;
+                    break;
+                case 0xF01B:
+                    return ImagePart.ImageType.Wmf;
+                    break;
+                case 0xF01D:
+                    return ImagePart.ImageType.Jpeg;
+                    break;
+                case 0xF01E:
+                    return ImagePart.ImageType.Png;
+                    break;
+                case 0xF020:
+                    return ImagePart.ImageType.Tiff;
+                    break;
+                default:
+                    return ImagePart.ImageType.Png;
+                    break;
+            }
         }
 
 
