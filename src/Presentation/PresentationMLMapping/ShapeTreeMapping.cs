@@ -242,12 +242,12 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                 ImagePart imgPart = null;
                 imgPart = parentSlideMapping.targetPart.AddImagePart(getImageType(b.TypeCode));
-                //imgPart.TargetDirectory = "..\\media";
+                imgPart.TargetDirectory = "..\\media";
                 System.IO.Stream outStream = imgPart.GetStream();
                 outStream.Write(b.m_pvBits, 0, b.m_pvBits.Length);
 
                 rId = imgPart.RelIdToString;
-                this._ctx.AddedImages.Add(bse.foDelay, rId);
+                //this._ctx.AddedImages.Add(bse.foDelay, rId);
             }
 
 

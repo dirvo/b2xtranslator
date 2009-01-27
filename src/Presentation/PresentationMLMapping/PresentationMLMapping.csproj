@@ -63,6 +63,7 @@
     <Compile Include="ShapeTreeMapping.cs" />
     <Compile Include="SlideMapping.cs" />
     <Compile Include="TextMapping.cs" />
+    <Compile Include="TextMasterStyleMapping.cs" />
     <Compile Include="TitleMasterMapping.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

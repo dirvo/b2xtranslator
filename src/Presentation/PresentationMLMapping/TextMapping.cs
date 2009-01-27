@@ -212,7 +212,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         if (line.Length > 0)
                         {
                             _writer.WriteStartElement("a", "r", OpenXmlNamespaces.DrawingML);
-                            if (r != null) new CharacterRunPropsMapping(_ctx, _writer).Apply(r);
+                            if (r != null) new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", textbox.FirstAncestorWithType<Slide>());
 
                             _writer.WriteStartElement("a", "t", OpenXmlNamespaces.DrawingML);
                             _writer.WriteValue(line);

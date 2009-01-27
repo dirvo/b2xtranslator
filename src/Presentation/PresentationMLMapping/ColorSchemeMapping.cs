@@ -143,6 +143,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             //TODO: verify the mappings; at leat accent4 - 6 are wrong
 
             _writer.WriteStartElement("a", "clrScheme", OpenXmlNamespaces.DrawingML);
+            
             _writer.WriteAttributeString("name", "dummyScheme");
 
             _writer.WriteStartElement("a", "dk1", OpenXmlNamespaces.DrawingML);

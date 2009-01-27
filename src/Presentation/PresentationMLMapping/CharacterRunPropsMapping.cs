@@ -48,9 +48,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _ctx = ctx;
         }
 
-        public void Apply(CharacterRun run)
+        public void Apply(CharacterRun run, string startElement, Slide slide)
         {
-            _writer.WriteStartElement("a", "rPr", OpenXmlNamespaces.DrawingML);
+            //_writer.WriteStartElement("a", "rPr", OpenXmlNamespaces.DrawingML);
+            _writer.WriteStartElement("a", startElement, OpenXmlNamespaces.DrawingML);
 
             if (run.SizePresent)
             {
@@ -66,9 +67,61 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 if (run.ColorPresent)
                 {
                     _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("val", run.Color.Red.ToString("X").PadLeft(2, '0') + run.Color.Green.ToString("X").PadLeft(2, '0') + run.Color.Blue.ToString("X").PadLeft(2, '0'));
-                    _writer.WriteEndElement();
+
+                    if (run.Color.IsSchemeColor) //TODO: to be fully implemented
+                    {
+                        //_writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
+
+                       
+                        List<ColorSchemeAtom> colors = slide.AllChildrenWithType<ColorSchemeAtom>();
+                        ColorSchemeAtom MasterScheme = null;
+                        foreach (ColorSchemeAtom color in colors)
+                        {
+                            if (color.Instance == 1) MasterScheme = color;
+                        }
+
+                        _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);                                
+                        switch(run.Color.Index)
+                        {
+                            case 0x00: //background
+                                _writer.WriteAttributeString("val", new RGBColor(MasterScheme.Background, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);                                
+                                break;
+                            case 0x01: //text
+                                _writer.WriteAttributeString("val", new RGBColor(MasterScheme.TextAndLines, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);        
+                                break;
+                            case 0x02: //shadow
+                                _writer.WriteAttributeString("val", new RGBColor(MasterScheme.Shadows, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
+                                break;
+                            case 0x03: //title
+                                _writer.WriteAttributeString("val", new RGBColor(MasterScheme.TitleText, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
+                                break;
+                            case 0x04: //fill
+                                _writer.WriteAttributeString("val", new RGBColor(MasterScheme.Fills, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
+                                break;
+                            case 0x05: //accent1
+                                _writer.WriteAttributeString("val", new RGBColor(MasterScheme.Accent, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
+                                break;
+                            case 0x06: //accent2
+                                _writer.WriteAttributeString("val", new RGBColor(MasterScheme.AccentAndHyperlink, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
+                                break;
+                            case 0x07: //accent3
+                                _writer.WriteAttributeString("val", new RGBColor(MasterScheme.AccentAndFollowedHyperlink, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
+                                break;
+                            case 0xFE: //sRGB
+                                _writer.WriteAttributeString("val", run.Color.Red.ToString("X").PadLeft(2, '0') + run.Color.Green.ToString("X").PadLeft(2, '0') + run.Color.Blue.ToString("X").PadLeft(2, '0'));
+                                break;    
+                            case 0xFF: //undefined
+                                break;
+                        }
+                        _writer.WriteEndElement();
+                        //_writer.WriteEndElement();
+                    }
+                    else
+                    {
+                        _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("val", run.Color.Red.ToString("X").PadLeft(2, '0') + run.Color.Green.ToString("X").PadLeft(2, '0') + run.Color.Blue.ToString("X").PadLeft(2, '0'));
+                        _writer.WriteEndElement();
+                    }
                     _writer.WriteEndElement();
                 }      
 
@@ -142,6 +195,31 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             //run.PositionPresent
             //run.SymbolTypefacePresent
             //run.TypefacePresent
+
+            if (run.TypefacePresent)
+            {
+                //List<ColorSchemeAtom> colors = slide.AllChildrenWithType<ColorSchemeAtom>();
+                //ColorSchemeAtom MasterScheme = null;
+                //foreach (ColorSchemeAtom color in colors)
+                //{
+                //    if (color.Instance == 1) MasterScheme = color;
+                //}
+
+
+                _writer.WriteStartElement("a", "latin", OpenXmlNamespaces.DrawingML);
+                try
+                {
+                    FontCollection fonts = _ctx.Ppt.DocumentRecord.FirstChildWithType<DIaLOGIKa.b2xtranslator.PptFileFormat.Environment>().FirstChildWithType<FontCollection>();
+                    FontEntityAtom entity = fonts.entities[(int)run.TypefaceIdx];
+                    _writer.WriteAttributeString("typeface", entity.TypeFace);
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+               
+                _writer.WriteEndElement();
+            }
 
             _writer.WriteEndElement();
         }

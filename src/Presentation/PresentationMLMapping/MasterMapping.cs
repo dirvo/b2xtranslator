@@ -140,9 +140,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             else
             {
                 //throw new NotImplementedException("Write txStyles in case of PPT without roundTripTxStyles"); // TODO (pre PP2007)
-                XmlDocument slideLayoutDoc = Utils.GetDefaultDocument("txStyles");
-                slideLayoutDoc.WriteTo(_writer);
+                
+                //XmlDocument slideLayoutDoc = Utils.GetDefaultDocument("txStyles");
+                //slideLayoutDoc.WriteTo(_writer);
 
+                new TextMasterStyleMapping(_ctx, _writer).Apply(this.Master);
             }
 
             // Write theme
