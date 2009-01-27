@@ -30,42 +30,24 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
-using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
-    //[OfficeRecordAttribute(XXXX)]
-    public class Pictures : Record
+    [OfficeRecordAttribute(2005)]
+    public class FontCollection : RegularContainer
     {
-        public Dictionary<long, Record> _pictures = new Dictionary<long, Record>();
+        public List<FontEntityAtom> entities = new List<FontEntityAtom>();
 
-        public Pictures(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
-            : base(_reader, size, typeCode, version, instance)
-        {
-            this.Reader.BaseStream.Position = 0;
-            long pos;
-            while (this.Reader.BaseStream.Position < this.Reader.BaseStream.Length)
-            {
-                pos = this.Reader.BaseStream.Position;
-                Record r = Record.ReadRecord(this.Reader, 0);
-                switch (r.TypeCode)
+        public FontCollection(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance) {
+
+                foreach (Record rec in Children)
                 {
-                    case 0:
-                        this.Reader.BaseStream.Position = this.Reader.BaseStream.Length;
-                        break;
-                    case 0xF01D:
-                    case 0xF01E:
-                    case 0xF01F:
-                    case 0xF020:
-                    case 0xF021:
-                        BitmapBlip b = (BitmapBlip)r;
-                        _pictures.Add(pos, b);
-                        break;
-                    default:
-                        break;
+                    entities.Add((FontEntityAtom)rec);
                 }
-                
-            }
+
+                return;
         }
     }
+
 }

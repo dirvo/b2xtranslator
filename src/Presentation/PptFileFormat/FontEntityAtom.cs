@@ -34,38 +34,27 @@ using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
-    //[OfficeRecordAttribute(XXXX)]
-    public class Pictures : Record
+    [OfficeRecordAttribute(4023)]
+    public class FontEntityAtom : Record
     {
-        public Dictionary<long, Record> _pictures = new Dictionary<long, Record>();
+        public string TypeFace = "";
 
-        public Pictures(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+        public FontEntityAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {
-            this.Reader.BaseStream.Position = 0;
-            long pos;
-            while (this.Reader.BaseStream.Position < this.Reader.BaseStream.Length)
-            {
-                pos = this.Reader.BaseStream.Position;
-                Record r = Record.ReadRecord(this.Reader, 0);
-                switch (r.TypeCode)
-                {
-                    case 0:
-                        this.Reader.BaseStream.Position = this.Reader.BaseStream.Length;
-                        break;
-                    case 0xF01D:
-                    case 0xF01E:
-                    case 0xF01F:
-                    case 0xF020:
-                    case 0xF021:
-                        BitmapBlip b = (BitmapBlip)r;
-                        _pictures.Add(pos, b);
-                        break;
-                    default:
-                        break;
-                }
-                
-            }
+                        
+            byte[] facename = this.Reader.ReadBytes(64);
+            TypeFace = Encoding.Unicode.GetString(facename);
+            TypeFace = TypeFace.Substring(0, TypeFace.IndexOf("\0"));
+
+            //TODO: read other flags
+
+            byte lfCharSet = this.Reader.ReadByte();
+            byte firstbyte = this.Reader.ReadByte();
+            byte secondbyte = this.Reader.ReadByte();
+            byte lfPitchAndFamily = this.Reader.ReadByte();           
         }
+
     }
 }
+

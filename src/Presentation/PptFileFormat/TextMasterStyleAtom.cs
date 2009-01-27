@@ -8,7 +8,7 @@ using DIaLOGIKa.b2xtranslator.Tools;
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
     [OfficeRecordAttribute(4003)]
-    class TextMasterStyleAtom : TextStyleAtom
+    public class TextMasterStyleAtom : TextStyleAtom
     {
         public UInt16 IndentLevelCount;
 

@@ -63,6 +63,8 @@
     <Compile Include="DocumentAtom.cs" />
     <Compile Include="EndDocument.cs" />
     <Compile Include="Environment.cs" />
+    <Compile Include="FontCollection.cs" />
+    <Compile Include="FontEntityAtom.cs" />
     <Compile Include="GPointAtom.cs" />
     <Compile Include="GRatioAtom.cs" />
     <Compile Include="GrColorAtom.cs" />
