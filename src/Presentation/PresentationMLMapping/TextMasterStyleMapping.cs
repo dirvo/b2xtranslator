@@ -56,7 +56,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _Master = Master;
 
-            List<TextMasterStyleAtom> docinfoatoms = _ctx.Ppt.DocumentRecord.FirstChildWithType<DIaLOGIKa.b2xtranslator.PptFileFormat.Environment>().AllChildrenWithType<TextMasterStyleAtom>();
             List<TextMasterStyleAtom> atoms = Master.AllChildrenWithType<TextMasterStyleAtom>();
 
             List<TextMasterStyleAtom> titleAtoms = new List<TextMasterStyleAtom>();
@@ -133,6 +132,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         private void writepPr(CharacterRun cr, ParagraphRun pr, ParagraphRun9 pr9, int IndentLevel)
         {
+          
             _writer.WriteStartElement("a", "lvl" + (IndentLevel+1).ToString() + "pPr", OpenXmlNamespaces.DrawingML);
 
             if (pr.AlignmentPresent)
@@ -162,6 +162,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         break;
                 }
             }
+
+            if (pr.IndentLevel > 0) _writer.WriteAttributeString("lvl", pr.IndentLevel.ToString());
+            if (pr.LeftMarginPresent) _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU((int)pr.LeftMargin).ToString());
+            if (pr.IndentPresent) _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(pr.LeftMargin-pr.Indent)))).ToString());
 
             if (pr.TextDirectionPresent)
             {
@@ -198,7 +202,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         break;
                 }                
             }
-
+            
             if (pr.SpaceBeforePresent)
             {
                 _writer.WriteStartElement("a", "spcBef", OpenXmlNamespaces.DrawingML);               

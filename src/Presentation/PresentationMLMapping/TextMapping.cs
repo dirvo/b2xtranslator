@@ -141,10 +141,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     throw new NotSupportedException("Can't find text for ClientTextbox without TextHeaderAtom and OutlineTextRefAtom");
             }
 
-            
-
-            
-
             TraceLogger.DebugInternal("TextMapping: text = {0}", Tools.Utils.StringInspect(text));
 
             uint idx = 0;
@@ -157,23 +153,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 uint pEndIdx = (p != null) ? (uint)Math.Min(idx + p.Length, text.Length) : (uint)text.Length;
 
                 TraceLogger.DebugInternal("Paragraph run from {0} to {1}", idx, pEndIdx);
-
-                _writer.WriteStartElement("a", "p", OpenXmlNamespaces.DrawingML);
-
-                // TODO: paragraph properties
-                _writer.WriteStartElement("a", "pPr", OpenXmlNamespaces.DrawingML);
-                if (!(p == null))
-                {
-                    if (p.IndentLevel > 0) _writer.WriteAttributeString("lvl", p.IndentLevel.ToString());
-                    if (p.IndentPresent) _writer.WriteAttributeString("indent", p.Indent.ToString());
-                    if (p.BulletCharPresent)
-                    {
-                        _writer.WriteStartElement("a", "buChar", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("char", p.BulletChar.ToString());
-                        _writer.WriteEndElement(); //buChar
-                    }
-                }
-                _writer.WriteEndElement(); //pPr
 
                 while (idx < pEndIdx)
                 {
@@ -212,13 +191,31 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                     foreach (String line in lines)
                     {
-                        if (!isFirstLine)
+                        _writer.WriteStartElement("a", "p", OpenXmlNamespaces.DrawingML);
+
+                        // TODO: paragraph properties
+                        _writer.WriteStartElement("a", "pPr", OpenXmlNamespaces.DrawingML);
+                        if (!(p == null))
                         {
-                            TraceLogger.DebugInternal("  <br />");
-                            _writer.WriteStartElement("a", "br", OpenXmlNamespaces.DrawingML);
-                            // TODO: Write rPr
-                            _writer.WriteEndElement();
+                            if (p.IndentLevel > 0) _writer.WriteAttributeString("lvl", p.IndentLevel.ToString());
+                            if (p.IndentPresent) _writer.WriteAttributeString("indent", p.Indent.ToString());
+                            if (p.BulletCharPresent)
+                            {
+                                _writer.WriteStartElement("a", "buChar", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("char", p.BulletChar.ToString());
+                                _writer.WriteEndElement(); //buChar
+                            }
+                            
                         }
+                        _writer.WriteEndElement(); //pPr
+
+                        //if (!isFirstLine)
+                        //{
+                            //TraceLogger.DebugInternal("  <br />");
+                            //_writer.WriteStartElement("a", "br", OpenXmlNamespaces.DrawingML);
+                            //// TODO: Write rPr
+                            //_writer.WriteEndElement();
+                        //}
 
                         TraceLogger.DebugInternal("  {0}", Tools.Utils.StringInspect(line));
 
@@ -236,16 +233,18 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                         lineIdx += line.Length + 1;
                         isFirstLine = false;
+
+                        _writer.WriteStartElement("a", "endParaRPr", OpenXmlNamespaces.DrawingML);
+                        // TODO...
+                        _writer.WriteEndElement();
+
+                        _writer.WriteEndElement();
                     }
 
                     idx += rlen;
                 }
 
-                _writer.WriteStartElement("a", "endParaRPr", OpenXmlNamespaces.DrawingML);
-                // TODO...
-                _writer.WriteEndElement();
-
-                _writer.WriteEndElement();
+               
 
                 idx = pEndIdx;
 
