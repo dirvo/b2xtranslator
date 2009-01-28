@@ -182,6 +182,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
         FEOldTypefacePresent = 1 << 21,
         ANSITypefacePresent = 1 << 22,
-        SymbolTypefacePresent = 1 << 23
+        SymbolTypefacePresent = 1 << 23,
+        pp11ext = 1 << 26
     }
 }

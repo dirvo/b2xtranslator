@@ -236,7 +236,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             
             if (this._ctx.AddedImages.ContainsKey(bse.foDelay))
             {
-                rId = this._ctx.AddedImages[bse.foDelay];
+                rId = this._ctx.AddedImages[bse.foDelay]; 
             } else {
                 BitmapBlip b = (BitmapBlip)_ctx.Ppt.PicturesContainer._pictures[bse.foDelay];
 
@@ -249,7 +249,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 rId = imgPart.RelIdToString;
                 //this._ctx.AddedImages.Add(bse.foDelay, rId);
             }
-
 
             _writer.WriteStartElement("p", "pic", OpenXmlNamespaces.PresentationML);
 
@@ -332,7 +331,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement();
         }
 
-        private ImagePart.ImageType getImageType(uint TypeCode)
+        public static ImagePart.ImageType getImageType(uint TypeCode)
         {
             switch (TypeCode)
             {

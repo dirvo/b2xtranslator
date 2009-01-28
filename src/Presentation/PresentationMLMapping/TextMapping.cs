@@ -161,6 +161,19 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 _writer.WriteStartElement("a", "p", OpenXmlNamespaces.DrawingML);
 
                 // TODO: paragraph properties
+                _writer.WriteStartElement("a", "pPr", OpenXmlNamespaces.DrawingML);
+                if (!(p == null))
+                {
+                    if (p.IndentLevel > 0) _writer.WriteAttributeString("lvl", p.IndentLevel.ToString());
+                    if (p.IndentPresent) _writer.WriteAttributeString("indent", p.Indent.ToString());
+                    if (p.BulletCharPresent)
+                    {
+                        _writer.WriteStartElement("a", "buChar", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("char", p.BulletChar.ToString());
+                        _writer.WriteEndElement(); //buChar
+                    }
+                }
+                _writer.WriteEndElement(); //pPr
 
                 while (idx < pEndIdx)
                 {

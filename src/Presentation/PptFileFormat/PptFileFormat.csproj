@@ -58,6 +58,9 @@
     <Compile Include="CharacterRun.cs" />
     <Compile Include="ColorMappingAtom.cs" />
     <Compile Include="ColorSchemeAtom.cs" />
+    <Compile Include="BlipCollection9Container.cs" />
+    <Compile Include="ProgBinaryTagDataBlob.cs" />
+    <Compile Include="TextMasterStyle9Atom.cs" />
     <Compile Include="CStringAtom.cs" />
     <Compile Include="CurrentUserAtom.cs" />
     <Compile Include="DocumentAtom.cs" />

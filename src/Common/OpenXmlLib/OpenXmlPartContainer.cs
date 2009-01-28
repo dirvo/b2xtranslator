@@ -146,7 +146,9 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
             }
             else
             {
-                part.Package.AddContentTypeOverride("/" + part.TargetFullName.Replace('\\', '/'), part.ContentType);
+                string path = "/" + part.TargetFullName.Replace('\\', '/');
+                path = path.Replace("/ppt/slideMasters/media/", "/ppt/media/").Replace("/ppt/slideMasters/../slideLayouts/media/", "/ppt/media/");
+                part.Package.AddContentTypeOverride(path , part.ContentType);
             }
 
             return part;

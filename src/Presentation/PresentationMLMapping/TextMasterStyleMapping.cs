@@ -42,11 +42,13 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
     {
         protected ConversionContext _ctx;
         Slide _Master;
+        public PresentationMapping<Slide> _parentSlideMapping = null;
 
-        public TextMasterStyleMapping(ConversionContext ctx, XmlWriter writer)
+        public TextMasterStyleMapping(ConversionContext ctx, XmlWriter writer, PresentationMapping<Slide> parentSlideMapping)
             : base(writer)
         {
             _ctx = ctx;
+            _parentSlideMapping = parentSlideMapping;
         }
 
         public void Apply(Slide Master)
@@ -58,16 +60,28 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             List<TextMasterStyleAtom> atoms = Master.AllChildrenWithType<TextMasterStyleAtom>();
 
             List<TextMasterStyleAtom> titleAtoms = new List<TextMasterStyleAtom>();
-           
 
-            foreach (TextMasterStyleAtom atom in atoms)
-            {
-                if (atom.Instance == 0) titleAtoms.Add(atom);                
-            }
+            List<TextMasterStyle9Atom> body9atoms = new List<TextMasterStyle9Atom>();
+            List<TextMasterStyle9Atom> title9atoms = new List<TextMasterStyle9Atom>();
+            foreach (ProgTags progtags in Master.AllChildrenWithType<ProgTags>())
+	        {
+        		foreach (ProgBinaryTag progbinarytag in progtags.AllChildrenWithType<ProgBinaryTag>())
+	            {
+                    foreach (ProgBinaryTagDataBlob blob in progbinarytag.AllChildrenWithType<ProgBinaryTagDataBlob>())
+                    {
+                        foreach (TextMasterStyle9Atom atom in blob.AllChildrenWithType<TextMasterStyle9Atom>())
+                        {
+                            if (atom.Instance == 0) title9atoms.Add(atom);
+                            if (atom.Instance == 1) body9atoms.Add(atom);
+                        }
+                    }            		
+	            }
+	        }
 
             List<TextMasterStyleAtom> bodyAtoms = new List<TextMasterStyleAtom>();
             foreach (TextMasterStyleAtom atom in atoms)
             {
+                if (atom.Instance == 0) titleAtoms.Add(atom);   
                 if (atom.Instance == 1) bodyAtoms.Add(atom);
             }
             
@@ -75,15 +89,20 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteStartElement("p", "titleStyle", OpenXmlNamespaces.PresentationML);
 
+            ParagraphRun9 pr9 = null;
             foreach (TextMasterStyleAtom atom in titleAtoms)
             {
                 for (int i = 0; i < atom.IndentLevelCount; i++)
                 {
-                    writepPr(atom.CRuns[i], atom.PRuns[i], i);
+                    pr9 = null;
+                    if (title9atoms.Count > 0 && title9atoms[0].pruns.Count > i) pr9 = title9atoms[0].pruns[i];
+                    writepPr(atom.CRuns[i], atom.PRuns[i], pr9, i);
                 }
                 for (int i = atom.IndentLevelCount; i < 9; i++)
                 {
-                    writepPr(atom.CRuns[0], atom.PRuns[0], i);
+                    pr9 = null;
+                    if (title9atoms.Count > 0 && title9atoms[0].pruns.Count > i) pr9 = title9atoms[0].pruns[i];
+                    writepPr(atom.CRuns[0], atom.PRuns[0], pr9, i);
                 }
             }
 
@@ -95,11 +114,15 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             {
                 for (int i = 0; i < atom.IndentLevelCount; i++)
                 {
-                    writepPr(atom.CRuns[i], atom.PRuns[i], i);
+                    pr9 = null;
+                    if (body9atoms.Count > 0 && body9atoms[0].pruns.Count > i) pr9 = body9atoms[0].pruns[i];
+                    writepPr(atom.CRuns[i], atom.PRuns[i], pr9, i);
                 }
                 for (int i = atom.IndentLevelCount; i < 9; i++)
                 {
-                    writepPr(atom.CRuns[0], atom.PRuns[0], i);
+                    pr9 = null;
+                    if (body9atoms.Count > 0 && body9atoms[0].pruns.Count > i) pr9 = body9atoms[0].pruns[i];
+                    writepPr(atom.CRuns[0], atom.PRuns[0],pr9, i);
                 }
             }
 
@@ -108,7 +131,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement(); //txStyles
         }
 
-        private void writepPr(CharacterRun cr, ParagraphRun pr, int IndentLevel)
+        private void writepPr(CharacterRun cr, ParagraphRun pr, ParagraphRun9 pr9, int IndentLevel)
         {
             _writer.WriteStartElement("a", "lvl" + (IndentLevel+1).ToString() + "pPr", OpenXmlNamespaces.DrawingML);
 
@@ -210,6 +233,40 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteEndElement(); //spcPct
                 }
                 _writer.WriteEndElement(); //spcAft
+            }
+
+            if (pr9 != null)
+            if (pr9.BulletBlipReferencePresent)
+            {
+                foreach (ProgTags progtags in _ctx.Ppt.DocumentRecord.FirstChildWithType<List>().AllChildrenWithType<ProgTags>())
+                {
+                    foreach (ProgBinaryTag bintags in progtags.AllChildrenWithType<ProgBinaryTag>())
+                    {
+                        foreach (ProgBinaryTagDataBlob data in bintags.AllChildrenWithType<ProgBinaryTagDataBlob>())
+                        {
+                            foreach (BlipCollection9Container blips in data.AllChildrenWithType<BlipCollection9Container>())
+                            {
+                                if (blips.Children.Count > pr9.bulletblipref)
+                                {
+                                    BitmapBlip b = ((BlipEntityAtom)blips.Children[pr9.bulletblipref]).blip;
+                                    ImagePart imgPart = null;
+                                    imgPart = _parentSlideMapping.targetPart.AddImagePart(ShapeTreeMapping.getImageType(b.TypeCode));
+                                    imgPart.TargetDirectory = "..\\media";
+                                    System.IO.Stream outStream = imgPart.GetStream();
+                                    outStream.Write(b.m_pvBits, 0, b.m_pvBits.Length);
+
+                                    _writer.WriteStartElement("a", "buBlip", OpenXmlNamespaces.DrawingML);
+                                    _writer.WriteStartElement("a", "blip", OpenXmlNamespaces.DrawingML);
+                                    _writer.WriteAttributeString("r", "embed", OpenXmlNamespaces.Relationships, imgPart.RelIdToString);
+                                    _writer.WriteEndElement(); //blip
+                                    _writer.WriteEndElement(); //buBlip
+                                }
+                            }
+                        }
+                    }
+                }
+
+                
             }
 
             new CharacterRunPropsMapping(_ctx, _writer).Apply(cr, "defRPr", _Master);                    

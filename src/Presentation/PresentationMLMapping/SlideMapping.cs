@@ -93,8 +93,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             // Pre-PPT2007 SSlideLayoutAtom primitive SlideLayoutType layout
             else
             {
-                layoutPart = layoutManager.GetOrCreateLayoutPartByLayoutType(
-                    slideAtom.Layout.Geom, slideAtom.Layout.PlaceholderTypes);
+                layoutPart = layoutManager.GetOrCreateLayoutPartByLayoutType(slideAtom.Layout.Geom, slideAtom.Layout.PlaceholderTypes);
             }
 
             this.targetPart.ReferencePart(layoutPart);

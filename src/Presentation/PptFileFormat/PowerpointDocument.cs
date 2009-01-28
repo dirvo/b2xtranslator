@@ -129,6 +129,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
                 }
             }
 
+            
             this.PowerpointDocumentStream = file.GetStream("PowerPoint Document");
             this.PowerpointDocumentStream.Seek(this.CurrentUserAtom.OffsetToCurrentEdit, SeekOrigin.Begin);
 

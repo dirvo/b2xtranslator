@@ -66,6 +66,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
                 }
                 
             }
+            pos = 1;
         }
     }
 }

@@ -115,7 +115,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             List<SlideLayoutPart> layoutParts = this.LayoutManager.GetAllLayoutParts();
 
-            // Maser must have at least one SlideLayout or RepairDialog will appear
+            // Master must have at least one SlideLayout or RepairDialog will appear
             if (layoutParts.Count == 0)
             {
                 SlideLayoutPart layoutPart = this.LayoutManager.GetOrCreateLayoutPartByLayoutType(0, null);
@@ -144,7 +144,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 //XmlDocument slideLayoutDoc = Utils.GetDefaultDocument("txStyles");
                 //slideLayoutDoc.WriteTo(_writer);
 
-                new TextMasterStyleMapping(_ctx, _writer).Apply(this.Master);
+                new TextMasterStyleMapping(_ctx, _writer, this).Apply(this.Master);
             }
 
             // Write theme
