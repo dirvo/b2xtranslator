@@ -95,13 +95,13 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 {
                     pr9 = null;
                     if (title9atoms.Count > 0 && title9atoms[0].pruns.Count > i) pr9 = title9atoms[0].pruns[i];
-                    writepPr(atom.CRuns[i], atom.PRuns[i], pr9, i);
+                    writepPr(atom.CRuns[i], atom.PRuns[i], pr9, i, true);
                 }
                 for (int i = atom.IndentLevelCount; i < 9; i++)
                 {
                     pr9 = null;
                     if (title9atoms.Count > 0 && title9atoms[0].pruns.Count > i) pr9 = title9atoms[0].pruns[i];
-                    writepPr(atom.CRuns[0], atom.PRuns[0], pr9, i);
+                    writepPr(atom.CRuns[0], atom.PRuns[0], pr9, i, true);
                 }
             }
 
@@ -115,13 +115,13 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 {
                     pr9 = null;
                     if (body9atoms.Count > 0 && body9atoms[0].pruns.Count > i) pr9 = body9atoms[0].pruns[i];
-                    writepPr(atom.CRuns[i], atom.PRuns[i], pr9, i);
+                    writepPr(atom.CRuns[i], atom.PRuns[i], pr9, i, false);
                 }
                 for (int i = atom.IndentLevelCount; i < 9; i++)
                 {
                     pr9 = null;
                     if (body9atoms.Count > 0 && body9atoms[0].pruns.Count > i) pr9 = body9atoms[0].pruns[i];
-                    writepPr(atom.CRuns[0], atom.PRuns[0],pr9, i);
+                    writepPr(atom.CRuns[0], atom.PRuns[0],pr9, i, false);
                 }
             }
 
@@ -130,7 +130,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement(); //txStyles
         }
 
-        private void writepPr(CharacterRun cr, ParagraphRun pr, ParagraphRun9 pr9, int IndentLevel)
+        private void writepPr(CharacterRun cr, ParagraphRun pr, ParagraphRun9 pr9, int IndentLevel, bool isTitle)
         {
           
             _writer.WriteStartElement("a", "lvl" + (IndentLevel+1).ToString() + "pPr", OpenXmlNamespaces.DrawingML);
@@ -240,8 +240,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
 
             if (pr9 != null)
-            if (pr9.BulletBlipReferencePresent)
             {
+                if (pr9.BulletBlipReferencePresent)
                 foreach (ProgTags progtags in _ctx.Ppt.DocumentRecord.FirstChildWithType<List>().AllChildrenWithType<ProgTags>())
                 {
                     foreach (ProgBinaryTag bintags in progtags.AllChildrenWithType<ProgBinaryTag>())
@@ -269,9 +269,19 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         }
                     }
                 }
+            }
+            else
+            {
+                if (!isTitle & pr.BulletCharPresent)
+                {
+                    _writer.WriteStartElement("a", "buChar", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteAttributeString("char", pr.BulletChar.ToString());
+                    _writer.WriteEndElement(); //buChar
+                }
+            }
 
                 
-            }
+            
 
             new CharacterRunPropsMapping(_ctx, _writer).Apply(cr, "defRPr", _Master);                    
 

@@ -133,8 +133,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     List<TextHeaderAtom> thAtoms = slideListWithText.SlideToPlaceholderTextHeaders[textbox.FirstAncestorWithType<Slide>().PersistAtom];
                     thAtom = thAtoms[otrAtom.Index];
 
-                    text = thAtom.TextAtom.Text;
-                    style = thAtom.TextStyleAtom;
+                    if (thAtom.TextAtom != null) text = thAtom.TextAtom.Text;
+                    if (thAtom.TextStyleAtom != null) style = thAtom.TextStyleAtom;
 
                     break;
                 default:
@@ -153,6 +153,15 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 uint pEndIdx = (p != null) ? (uint)Math.Min(idx + p.Length, text.Length) : (uint)text.Length;
 
                 TraceLogger.DebugInternal("Paragraph run from {0} to {1}", idx, pEndIdx);
+
+                if (idx == pEndIdx)
+                {
+                    _writer.WriteStartElement("a", "p", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteStartElement("a", "endParaRPr", OpenXmlNamespaces.DrawingML);
+                    // TODO...
+                    _writer.WriteEndElement();
+                    _writer.WriteEndElement();
+                }
 
                 while (idx < pEndIdx)
                 {
