@@ -139,18 +139,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                         while (bh2.id == RecordNumber.CONTINUE)
                         {
                             bh2.length = (UInt16)(this.StreamReader.ReadUInt16());
-                            //byte grbit = this.StreamReader.ReadByte();
-                            // if grbit is greater then 1, it must be a part of the string 
-                            // the binary continue biffrecord description is not correct enought 
-                            //if (grbit > 1)
-                            //{
-                            //    length++;
-                            //    buffer = new byte[1];
-                            //    buffer[0] = grbit;
-                            //    byteArrayList.Add(buffer);
-                            //}
+
                             buffer = new byte[bh2.length];
-                            //length += bh2.length;
+
                             // create a buffer with the bytes from the records and put that array into the 
                             // list 
                             buffer = this.StreamReader.ReadBytes((int)bh2.length);
@@ -168,20 +159,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                         // set the old position of the stream 
                         this.StreamReader.BaseStream.Position = this.oldOffset;
 
-                        /* 
-                         * Following lines are used to create an big array of bytes and convert that into 
-                         * a memory stream, after that a VirtualStreamReader will be created. This stream reader 
-                         * is used by the SST parsing class
-                        // * */
-                        //int nextIndex = 0;
-                        //buffer = new byte[length];
-                        //foreach (byte[] bufferpart in byteArrayList)
-                        //{
-                        //    Array.Copy(bufferpart, 0, buffer, nextIndex, bufferpart.Length);
-                        //    nextIndex += bufferpart.Length;
-                        //}
-
                         sst = new SST(binreader, bh.id, length, vsrList);
+                        this.StreamReader.BaseStream.Position = this.oldOffset + bh.length;
                         this.workBookData.SstData = new SSTData(sst);
                         
                     }

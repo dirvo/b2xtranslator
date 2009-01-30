@@ -350,6 +350,7 @@
     <Compile Include="Ptg\PtgMemErr.cs" />
     <Compile Include="Ptg\PtgMissArg.cs" />
     <Compile Include="Ptg\PtgMul.cs" />
+    <Compile Include="Ptg\PtgName.cs" />
     <Compile Include="Ptg\PtgNameX.cs" />
     <Compile Include="Ptg\PtgNe.cs" />
     <Compile Include="Ptg\PtgNotDocumented.cs" />

@@ -229,6 +229,12 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 }
                 else if (backgroundclr.Equals(""))
                 {
+                    if (!foregroundclr.Equals(""))
+                    {
+                        _writer.WriteStartElement("bgColor");
+                        _writer.WriteAttributeString("auto", "1");
+                        _writer.WriteEndElement();
+                    }
                     // do nothing 
                 }
                 else

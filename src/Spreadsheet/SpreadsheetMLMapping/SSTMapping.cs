@@ -32,11 +32,11 @@ using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat; 
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer;
 using ExcelprocessingMLMapping;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData; 
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData;
 
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
@@ -52,7 +52,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         /// </summary>
         /// <param name="xlsContext">The excel context object</param>
         public SSTMapping(ExcelContext xlsContext)
-            :base(XmlWriter.Create(xlsContext.SpreadDoc.WorkbookPart.AddSharedStringPart().GetStream(), xlsContext.WriterSettings) )
+            : base(XmlWriter.Create(xlsContext.SpreadDoc.WorkbookPart.AddSharedStringPart().GetStream(), xlsContext.WriterSettings))
         {
             this.xlsContext = xlsContext;
         }
@@ -64,26 +64,27 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         /// <param name="SSTData">SharedStringData Object</param>
         public void Apply(SSTData sstData)
         {
-             
+
             _writer.WriteStartDocument();
-            _writer.WriteStartElement("sst",OpenXmlNamespaces.SharedStringML);
+            _writer.WriteStartElement("sst", OpenXmlNamespaces.SharedStringML);
             // count="x" uniqueCount="y" 
             _writer.WriteAttributeString("count", sstData.cstTotal.ToString());
             _writer.WriteAttributeString("uniqueCount", sstData.cstUnique.ToString());
 
 
 
-            int count = 0; 
+            int count = 0;
             // create the string _entries 
             foreach (String var in sstData.StringList)
             {
+                count++;
                 _writer.WriteStartElement("si");
                 List<StringFormatAssignment> list = sstData.getFormatingRuns(count);
                 if (list.Count == 0)
                 {
-                    _writer.WriteStartElement("r"); 
+                    _writer.WriteStartElement("r");
                     _writer.WriteElementString("t", var);
-                    _writer.WriteEndElement(); 
+                    _writer.WriteEndElement();
                 }
                 else
                 {
@@ -92,30 +93,34 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     if (list[0].CharNumber != 0)
                     {
                         // no formating for the first letters 
-                        _writer.WriteStartElement("r"); 
-                        _writer.WriteElementString("t",var.Substring(0,list[0].CharNumber)); 
-                        _writer.WriteEndElement(); 
+                        _writer.WriteStartElement("r");
+                        _writer.WriteElementString("t", var.Substring(0, list[0].CharNumber));
+                        _writer.WriteEndElement();
                     }
 
                     FontData fd;
-                        for (int i = 0; i <= list.Count - 2; i++)
-                        {
-                            _writer.WriteStartElement("r"); 
-                            fd = this.xlsContext.XlsDoc.workBookData.styleData.FontDataList[list[i].FontRecord-1];
-                            StyleMappingHelper.addFontElement(_writer, fd, FontElementType.String);
-                            _writer.WriteElementString("t", var.Substring(list[i].CharNumber, list[i + 1].CharNumber-list[i].CharNumber));
-                            _writer.WriteEndElement(); 
-                        }
-                        _writer.WriteStartElement("r"); 
-                        fd = this.xlsContext.XlsDoc.workBookData.styleData.FontDataList[list[list.Count - 1].FontRecord-1];
+                    for (int i = 0; i <= list.Count - 2; i++)
+                    {
+                        _writer.WriteStartElement("r");
+
+                        fd = this.xlsContext.XlsDoc.workBookData.styleData.FontDataList[list[i].FontRecord];
                         StyleMappingHelper.addFontElement(_writer, fd, FontElementType.String);
-                        _writer.WriteElementString("t", var.Substring(list[list.Count-1].CharNumber));
-                        _writer.WriteEndElement(); 
+
+                        _writer.WriteElementString("t", var.Substring(list[i].CharNumber, list[i + 1].CharNumber - list[i].CharNumber));
+                        _writer.WriteEndElement();
+                    }
+                    _writer.WriteStartElement("r");
+
+                    fd = this.xlsContext.XlsDoc.workBookData.styleData.FontDataList[list[list.Count - 1].FontRecord];
+                    StyleMappingHelper.addFontElement(_writer, fd, FontElementType.String);
+
+                    _writer.WriteElementString("t", var.Substring(list[list.Count - 1].CharNumber));
+                    _writer.WriteEndElement();
                 }
 
                 _writer.WriteEndElement();
-                count++; 
-            }            
+
+            }
 
             // close tags 
             _writer.WriteEndElement();

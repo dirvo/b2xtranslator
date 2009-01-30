@@ -237,6 +237,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                             case PtgNumber.PtgRef3d: ptg = new PtgRef3d(reader, ptgtype); break;
                             case PtgNumber.PtgArea3d: ptg = new PtgArea3d(reader, ptgtype); break;
                             case PtgNumber.PtgNameX: ptg = new PtgNameX(reader, ptgtype); break;
+                            case PtgNumber.PtgName: ptg = new PtgName(reader, ptgtype); break; 
                             case PtgNumber.PtgMissArg: ptg = new PtgMissArg(reader, ptgtype); break;
 
 
