@@ -57,6 +57,7 @@
     <Compile Include="CharacterRunPropsMapping.cs" />
     <Compile Include="ColorSchemeMapping.cs" />
     <Compile Include="ConversionContext.cs" />
+    <Compile Include="AnimationMapping.cs" />
     <Compile Include="MasterMapping.cs" />
     <Compile Include="PresentationMapping.cs" />
     <Compile Include="PresentationPartMapping.cs" />
@@ -160,6 +161,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Defaults\animations\EntranceBlinds.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

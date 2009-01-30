@@ -62,7 +62,7 @@ namespace DIaLOGIKa.b2xtranslator.Tools
                 {
                     System.Diagnostics.Trace.WriteLine(string.Format("{0} " + msg, System.DateTime.Now));
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     System.Diagnostics.Trace.WriteLine("The tracing of the folloging message throw an error: " + msg);
                 }

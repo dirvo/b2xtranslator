@@ -193,7 +193,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                     String[] lines = runText.Split(new char[] { '\v', '\r' });
 
-                    bool isFirstLine = true;
+                    //bool isFirstLine = true;
                     int lineIdx = 0;
 
                     TraceLogger.DebugInternal("Split runtext {0} into these lines:", Tools.Utils.StringInspect(runText));
@@ -241,7 +241,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         }
 
                         lineIdx += line.Length + 1;
-                        isFirstLine = false;
+                        //isFirstLine = false;
 
                         _writer.WriteStartElement("a", "endParaRPr", OpenXmlNamespaces.DrawingML);
                         // TODO...

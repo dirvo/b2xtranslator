@@ -44,6 +44,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         Slide _Master;
         public PresentationMapping<Slide> _parentSlideMapping = null;
 
+        private int lastSpaceBefore = 0;
+
         public TextMasterStyleMapping(ConversionContext ctx, XmlWriter writer, PresentationMapping<Slide> parentSlideMapping)
             : base(writer)
         {
@@ -91,6 +93,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             ParagraphRun9 pr9 = null;
             foreach (TextMasterStyleAtom atom in titleAtoms)
             {
+                lastSpaceBefore = 0;
                 for (int i = 0; i < atom.IndentLevelCount; i++)
                 {
                     pr9 = null;
@@ -111,6 +114,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             foreach (TextMasterStyleAtom atom in bodyAtoms)
             {
+                lastSpaceBefore = 0;
                 for (int i = 0; i < atom.IndentLevelCount; i++)
                 {
                     pr9 = null;
@@ -133,6 +137,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         private void writepPr(CharacterRun cr, ParagraphRun pr, ParagraphRun9 pr9, int IndentLevel, bool isTitle)
         {
           
+            TextMasterStyleAtom defaultStyle = _ctx.Ppt.DocumentRecord.FirstChildWithType<DIaLOGIKa.b2xtranslator.PptFileFormat.Environment>().FirstChildWithType<TextMasterStyleAtom>();
+
             _writer.WriteStartElement("a", "lvl" + (IndentLevel+1).ToString() + "pPr", OpenXmlNamespaces.DrawingML);
 
             if (pr.AlignmentPresent)
@@ -202,10 +208,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         break;
                 }                
             }
-            
+
             if (pr.SpaceBeforePresent)
             {
-                _writer.WriteStartElement("a", "spcBef", OpenXmlNamespaces.DrawingML);               
+                _writer.WriteStartElement("a", "spcBef", OpenXmlNamespaces.DrawingML);
                 if (pr.SpaceBefore < 0)
                 {
                     _writer.WriteStartElement("a", "spcPts", OpenXmlNamespaces.DrawingML);
@@ -219,6 +225,27 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteEndElement(); //spcPct
                 }
                 _writer.WriteEndElement(); //spcBef
+                lastSpaceBefore = (int)pr.SpaceBefore;
+            }
+            else
+            {
+                if (lastSpaceBefore != 0)
+                {
+                    _writer.WriteStartElement("a", "spcBef", OpenXmlNamespaces.DrawingML);
+                    if (lastSpaceBefore < 0)
+                    {
+                        _writer.WriteStartElement("a", "spcPts", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("val", (-1 * 1000 * lastSpaceBefore).ToString()); //TODO: this has to be verified!
+                        _writer.WriteEndElement(); //spcPct
+                    }
+                    else
+                    {
+                        _writer.WriteStartElement("a", "spcPct", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("val", (1000 * lastSpaceBefore).ToString());
+                        _writer.WriteEndElement(); //spcPct
+                    }
+                    _writer.WriteEndElement(); //spcBef
+                }
             }
 
             if (pr.SpaceAfterPresent)

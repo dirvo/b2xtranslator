@@ -59,6 +59,7 @@
     <Compile Include="ColorMappingAtom.cs" />
     <Compile Include="ColorSchemeAtom.cs" />
     <Compile Include="BlipCollection9Container.cs" />
+    <Compile Include="AnimationInfoContainer.cs" />
     <Compile Include="ProgBinaryTagDataBlob.cs" />
     <Compile Include="TextMasterStyle9Atom.cs" />
     <Compile Include="CStringAtom.cs" />

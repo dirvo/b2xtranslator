@@ -116,13 +116,15 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             ShapeTreeMapping stm = new ShapeTreeMapping(_ctx, _writer);
             stm.parentSlideMapping = this;
             stm.Apply(slide.FirstChildWithType<PPDrawing>());
-            _writer.WriteEndElement();
-            _writer.WriteEndElement();
+            _writer.WriteEndElement(); //spTree
+            _writer.WriteEndElement(); //cSld
 
             // TODO: Write clrMapOvr
 
+            if (stm.animinfos.Count > 0) new AnimationMapping(_ctx, _writer).Apply(stm.animinfos);
+
             // End the document
-            _writer.WriteEndElement();
+            _writer.WriteEndElement(); //sld
             _writer.WriteEndDocument();
 
             _writer.Flush();

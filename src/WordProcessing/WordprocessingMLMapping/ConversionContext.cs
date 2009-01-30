@@ -12,8 +12,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
     public class ConversionContext
     {
         private WordprocessingDocument _docx;
-        private Dictionary<Int32, SectionPropertyExceptions> _allSepx;
-        private Dictionary<Int32, ParagraphPropertyExceptions> _allPapx;
+        //private Dictionary<Int32, SectionPropertyExceptions> _allSepx;
+        //private Dictionary<Int32, ParagraphPropertyExceptions> _allPapx;
         private XmlWriterSettings _writerSettings;
         private WordDocument _doc;
 

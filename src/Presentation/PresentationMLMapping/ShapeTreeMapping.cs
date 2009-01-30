@@ -47,6 +47,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         protected ConversionContext _ctx;
 
         public PresentationMapping<Slide> parentSlideMapping = null;
+        public Dictionary<AnimationInfoContainer, int> animinfos = new Dictionary<AnimationInfoContainer, int>();
 
         public ShapeTreeMapping(ConversionContext ctx, XmlWriter writer)
             : base(writer)
@@ -90,6 +91,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 DynamicApply(iter.Current);
         }
 
+        private ShapeOptions so = null;
         public void Apply(ShapeContainer container)
         {
             ClientData clientData = container.FirstChildWithType<ClientData>();
@@ -98,7 +100,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
 
             Shape sh = container.FirstChildWithType<Shape>();
-            ShapeOptions so = container.FirstChildWithType<ShapeOptions>();
+            so = container.FirstChildWithType<ShapeOptions>();
             if (clientData == null)
             {
                 foreach (ShapeOptions.OptionEntry en in so.Options)
@@ -137,25 +139,43 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                     System.IO.MemoryStream ms = new System.IO.MemoryStream(clientData.bytes);
                     Record rec = Record.ReadRecord(ms, 0);
-                    OEPlaceHolderAtom placeholder = (OEPlaceHolderAtom)rec; // clientData.FirstChildWithType<OEPlaceHolderAtom>();
 
-                    if (placeholder != null)
+                    if (rec.TypeCode == 4116)
                     {
+                        AnimationInfoContainer animinfo = (AnimationInfoContainer)rec;
+                        animinfos.Add(animinfo, _idCnt);
+                        rec = Record.ReadRecord(ms, 1);
+                    }
 
-                        _writer.WriteStartElement("p", "ph", OpenXmlNamespaces.PresentationML);
+                    switch (rec.TypeCode)
+                    {
+                        case 3011:
+                            OEPlaceHolderAtom placeholder = (OEPlaceHolderAtom)rec; // clientData.FirstChildWithType<OEPlaceHolderAtom>();
 
-                        if (!placeholder.IsObjectPlaceholder())
-                        {
-                            string typeValue = Utils.PlaceholderIdToXMLValue(placeholder.PlacementId);
-                            _writer.WriteAttributeString("type", typeValue);
-                        }
+                            if (placeholder != null)
+                            {
 
-                        if (placeholder.Position != -1)
-                        {
-                            _writer.WriteAttributeString("idx", placeholder.Position.ToString());
-                        }
+                                _writer.WriteStartElement("p", "ph", OpenXmlNamespaces.PresentationML);
 
-                        _writer.WriteEndElement();
+                                if (!placeholder.IsObjectPlaceholder())
+                                {
+                                    string typeValue = Utils.PlaceholderIdToXMLValue(placeholder.PlacementId);
+                                    _writer.WriteAttributeString("type", typeValue);
+                                }
+
+                                if (placeholder.Position != -1)
+                                {
+                                    _writer.WriteAttributeString("idx", placeholder.Position.ToString());
+                                }
+
+                                _writer.WriteEndElement();
+                            }
+                            break;
+                        case 4116:
+                            AnimationInfoContainer animinfo = (AnimationInfoContainer)rec;
+                            animinfos.Add(animinfo, _idCnt);
+                            //new AnimationMapping(_ctx, _writer).Apply(animinfo);
+                            break;
                     }
                 }
 
@@ -319,7 +339,42 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteStartElement("p", "txBody", OpenXmlNamespaces.PresentationML);
 
             _writer.WriteStartElement("a", "bodyPr", OpenXmlNamespaces.DrawingML);
-            // TODO...
+
+            string s = "";
+            foreach (ShapeOptions.OptionEntry en in so.Options)
+            {
+                switch(en.pid)
+                {
+                    case ShapeOptions.PropertyId.anchorText:
+                        
+                        switch (en.op)
+                        {
+                            case 0: //Top
+                                _writer.WriteAttributeString("anchor", "t");
+                                break;
+                            case 1: //Middle
+                                _writer.WriteAttributeString("anchor","ctr");
+                                break;
+                            case 2: //Bottom
+                                _writer.WriteAttributeString("anchor", "b");
+                                break;
+                            case 3: //TopCentered
+                            case 4: //MiddleCentered
+                            case 5: //BottomCentered
+                            case 6: //TopBaseline
+                            case 7: //BottomBaseline
+                            case 8: //TopCenteredBaseline
+                            case 9: //BottomCenteredBaseline
+                                //TODO
+                                break;
+                        }
+                        break;
+                    default:
+                        s += en.pid.ToString() + " ";
+                        break;
+                }
+            }
+            
             _writer.WriteEndElement();
 
             _writer.WriteStartElement("a", "lstStyle", OpenXmlNamespaces.DrawingML);
@@ -337,22 +392,16 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             {
                 case 0xF01A:
                     return ImagePart.ImageType.Emf;
-                    break;
                 case 0xF01B:
                     return ImagePart.ImageType.Wmf;
-                    break;
                 case 0xF01D:
                     return ImagePart.ImageType.Jpeg;
-                    break;
                 case 0xF01E:
                     return ImagePart.ImageType.Png;
-                    break;
                 case 0xF020:
                     return ImagePart.ImageType.Tiff;
-                    break;
                 default:
                     return ImagePart.ImageType.Png;
-                    break;
             }
         }
 
