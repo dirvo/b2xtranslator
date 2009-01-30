@@ -41,7 +41,6 @@
     <Compile Include="AppPropertiesPart.cs" />
     <Compile Include="ContentPart.cs" />
     <Compile Include="ExternalRelationship.cs" />
-    <Compile Include="PresentationML\MediaPart.cs" />
     <Compile Include="PresentationML\PresentationPart.cs" />
     <Compile Include="PresentationML\SlideLayoutPart.cs" />
     <Compile Include="PresentationML\SlideMasterPart.cs" />

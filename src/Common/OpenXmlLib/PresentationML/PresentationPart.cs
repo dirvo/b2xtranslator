@@ -48,9 +48,9 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML
             return this.AddPart(new ThemePart(this, ++_themeCounter));
         }
 
-        public MediaPart AddMediaPart()
-        {
-            return this.AddPart(new MediaPart(this, ++_mediaCounter));
-        }
+        //public MediaPart AddMediaPart()
+        //{
+        //    return this.AddPart(new MediaPart(this, ++_mediaCounter));
+        //}
     }
 }

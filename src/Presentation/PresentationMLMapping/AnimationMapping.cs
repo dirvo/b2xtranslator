@@ -51,49 +51,15 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         public void Apply(Dictionary<AnimationInfoContainer, int> animations)
         {
-            Dictionary<AnimationInfoAtom, int> blindAtoms = new Dictionary<AnimationInfoAtom, int>();
+            Dictionary<AnimationInfoAtom, int> animAtoms = new Dictionary<AnimationInfoAtom, int>();
             foreach (AnimationInfoContainer container in animations.Keys)
 	        {
         		AnimationInfoAtom anim = container.FirstChildWithType<AnimationInfoAtom>();
-	        
-                switch (anim.animEffect)
-                {
-                    case 0x00:
-                    case 0x01:
-                    case 0x02: //Blinds animation
-                        blindAtoms.Add(anim, animations[container]);
-                        //writeTiming(animations[container].ToString());
-                        break;
-                    case 0x03:
-                    case 0x04:
-                    case 0x05:
-                    case 0x06:
-                    case 0x07:
-                    case 0x08:
-                    case 0x09:
-                    case 0x0a:
-                    case 0x0b:
-                    case 0x0c:
-                    case 0x0d:
-                    case 0x0e:
-                    case 0x0f:
-                    case 0x11:
-                    case 0x12:
-                    case 0x13:
-                    case 0x14:
-                    case 0x15:
-                    case 0x16:
-                    case 0x17:
-                    case 0x18:
-                    case 0x19:
-                    case 0x1a:
-                    case 0x1b:
-                        break;
-                }
 
-                //break;
+                animAtoms.Add(anim, animations[container]);
+                
             }
-            writeTiming(blindAtoms);
+            writeTiming(animAtoms);
         }
 
         private int lastID = 0;
@@ -128,7 +94,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             foreach (AnimationInfoAtom animinfo in blindAtoms.Keys)
             {
-                writePar(blindAtoms[animinfo].ToString());
+                writePar(animinfo, blindAtoms[animinfo].ToString());
             }
             //writePar(ShapeID);
 
@@ -194,7 +160,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         }
 
 
-        private void writePar(string ShapeID)
+        private void writePar(AnimationInfoAtom animinfo, string ShapeID)
         {
             _writer.WriteStartElement("p", "par", OpenXmlNamespaces.PresentationML);
 
@@ -308,7 +274,245 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteStartElement("p", "animEffect", OpenXmlNamespaces.PresentationML);
             _writer.WriteAttributeString("transition", "in");
-            _writer.WriteAttributeString("filter", "blinds(horizontal)");
+
+            switch (animinfo.animEffect)
+            {
+                case 0x00: //Cut
+                    switch (animinfo.animEffectDirection)
+                    {
+                        case 0x00: //not through black
+                        case 0x02: //same as 0x00
+                            _writer.WriteAttributeString("filter", "cut(false)");
+                            break;
+                        case 0x01: //through black
+                            _writer.WriteAttributeString("filter", "cut(true)");
+                            break;
+                    }
+                    break;
+                case 0x01: //Random
+                    _writer.WriteAttributeString("filter", "random");
+                    break;
+                case 0x02: //Blinds
+                    if (animinfo.animEffectDirection == 0x01)
+                    {
+                        _writer.WriteAttributeString("filter", "blinds(horizontal)");
+                    }
+                    else
+                    {
+                        _writer.WriteAttributeString("filter", "blinds(vertical)");
+                    }
+                    break;
+                case 0x03: //Checker
+                    if (animinfo.animEffectDirection == 0x01)
+                    {
+                        _writer.WriteAttributeString("filter", "checker(horz)");
+                    }
+                    else
+                    {
+                        _writer.WriteAttributeString("filter", "checker(vert)");
+                    }
+                    break;                   
+                case 0x04: //Cover
+                    switch (animinfo.animEffectDirection)
+                    {
+                        case 0x00: //r->l
+                            _writer.WriteAttributeString("filter", "cover(l)");
+                            break;
+                        case 0x01: //b->t
+                            _writer.WriteAttributeString("filter", "cover(u)");
+                            break;
+                        case 0x02: //l->r
+                            _writer.WriteAttributeString("filter", "cover(r)");
+                            break;
+                        case 0x03: //t->b
+                            _writer.WriteAttributeString("filter", "cover(d)");
+                            break;
+                        case 0x04: //br->tl
+                            _writer.WriteAttributeString("filter", "cover(lu)");
+                            break;
+                        case 0x05: //bl->tr
+                            _writer.WriteAttributeString("filter", "cover(ru)");
+                            break;
+                        case 0x06: //tr->bl
+                            _writer.WriteAttributeString("filter", "cover(ld)");
+                            break;
+                        case 0x07: //tl->br
+                            _writer.WriteAttributeString("filter", "cover(rd)");
+                            break;
+                    }
+                    break;
+                case 0x05: //Dissolve
+                    _writer.WriteAttributeString("filter", "dissolve");
+                    break;
+                case 0x06: //Fade
+                    _writer.WriteAttributeString("filter", "fade");
+                    break;
+                case 0x07: //Pull
+                    switch (animinfo.animEffectDirection)
+                    {
+                        case 0x00: //r->l
+                            _writer.WriteAttributeString("filter", "pull(l)");
+                            break;
+                        case 0x01: //b->t
+                            _writer.WriteAttributeString("filter", "pull(u)");
+                            break;
+                        case 0x02: //l->r
+                            _writer.WriteAttributeString("filter", "pull(r)");
+                            break;
+                        case 0x03: //t->b
+                            _writer.WriteAttributeString("filter", "pull(d)");
+                            break;
+                        case 0x04: //br->tl
+                            _writer.WriteAttributeString("filter", "pull(lu)");
+                            break;
+                        case 0x05: //bl->tr
+                            _writer.WriteAttributeString("filter", "pull(ru)");
+                            break;
+                        case 0x06: //tr->bl
+                            _writer.WriteAttributeString("filter", "pull(ld)");
+                            break;
+                        case 0x07: //tl->br
+                            _writer.WriteAttributeString("filter", "pull(rd)");
+                            break;
+                    }
+                    break;
+                case 0x08: //Random bar
+                    if (animinfo.animEffectDirection == 0x01)
+                    {
+                        _writer.WriteAttributeString("filter", "randomBar(horz)");
+                    }
+                    else
+                    {
+                        _writer.WriteAttributeString("filter", "randomBar(vert)");
+                    }
+                    break;          
+                case 0x09: //Strips
+                    switch (animinfo.animEffectDirection)
+                    {
+                        case 0x04: //br->tl
+                            _writer.WriteAttributeString("filter", "strips(lu)");
+                            break;
+                        case 0x05: //bl->tr
+                            _writer.WriteAttributeString("filter", "strips(ru)");
+                            break;
+                        case 0x06: //tr->bl
+                            _writer.WriteAttributeString("filter", "strips(ld)");
+                            break;
+                        case 0x07: //tl->br
+                            _writer.WriteAttributeString("filter", "strips(rd)");
+                            break;
+                    }
+                    break;
+                case 0x0a: //Wipe
+                    switch (animinfo.animEffectDirection)
+                    {
+                        case 0x00: //r->l
+                            _writer.WriteAttributeString("filter", "wipe(l)");
+                            break;
+                        case 0x01: //b->t
+                            _writer.WriteAttributeString("filter", "wipe(u)");
+                            break;
+                        case 0x02: //l->r
+                            _writer.WriteAttributeString("filter", "wipe(r)");
+                            break;
+                        case 0x03: //t->b
+                            _writer.WriteAttributeString("filter", "wipe(d)");
+                            break;
+                    }
+                    break;
+                case 0x0b: //Zoom (box)
+                    if (animinfo.animEffectDirection == 0x00)
+                    {
+                        _writer.WriteAttributeString("filter", "box(out)");
+                    }
+                    else
+                    {
+                        _writer.WriteAttributeString("filter", "box(in)");
+                    }
+                    break;
+                case 0x0c: //Fly
+                    switch (animinfo.animEffectDirection)
+                    {
+                        case 0x00: //from left
+                            _writer.WriteAttributeString("filter", "fly(l)");
+                            break;
+                        case 0x01: //from top
+                            _writer.WriteAttributeString("filter", "fly(u)");
+                            break;
+                        case 0x02: //from right
+                            _writer.WriteAttributeString("filter", "fly(r)");
+                            break;
+                        case 0x03: //from bottom
+                            _writer.WriteAttributeString("filter", "fly(d)");
+                            break;
+                        case 0x04: //from top left
+                            _writer.WriteAttributeString("filter", "fly(lu)");
+                            break;
+                        case 0x05: //from top right
+                            _writer.WriteAttributeString("filter", "fly(ru)");
+                            break;
+                        case 0x06: //from bottom left
+                            _writer.WriteAttributeString("filter", "fly(ld)");
+                            break;
+                        case 0x07: //from bottom right
+                            _writer.WriteAttributeString("filter", "fly(rd)");
+                            break;
+                        case 0x08: //from left edge of shape / text
+                            _writer.WriteAttributeString("filter", "fly(l)");
+                            break;
+                        case 0x09: //from bottom edge of shape / text
+                            _writer.WriteAttributeString("filter", "fly(u)");
+                            break;
+                        case 0x0a: //from right edge of shape / text
+                            _writer.WriteAttributeString("filter", "fly(r)");
+                            break;
+                        case 0x0b: //from top edge of shape / text
+                            _writer.WriteAttributeString("filter", "fly(d)");
+                            break;
+                        case 0x0c: //crawl from left
+                            _writer.WriteAttributeString("filter", "fly(lu)");
+                            break;
+                        case 0x0d: //crawl from top 
+                            _writer.WriteAttributeString("filter", "fly(ru)");
+                            break;
+                        case 0x0e: //crawl from right
+                            _writer.WriteAttributeString("filter", "fly(ld)");
+                            break;
+                        case 0x0f: //crawl from bottom
+                            _writer.WriteAttributeString("filter", "fly(rd)");
+                            break;
+                        case 0x10: //zoom 0 -> 1
+                            _writer.WriteAttributeString("filter", "fly(rd)");
+                            break;
+                        //case 0x0f: //crawl from bottom
+                        //    _writer.WriteAttributeString("filter", "fly(rd)");
+                        //    break;
+                        //case 0x0f: //crawl from bottom
+                        //    _writer.WriteAttributeString("filter", "fly(rd)");
+                        //    break;
+                        //case 0x0f: //crawl from bottom
+                        //    _writer.WriteAttributeString("filter", "fly(rd)");
+                        //    break;
+                    }
+                    break;
+                case 0x0d: //Split
+                case 0x0e: //Flash
+                case 0x0f:
+                case 0x11: //Diamond
+                case 0x12: //Plus
+                case 0x13: //Wedge
+                case 0x14:
+                case 0x15:
+                case 0x16:
+                case 0x17:
+                case 0x18:
+                case 0x19:
+                case 0x1a: //Wheel
+                case 0x1b: //Circle
+                default:
+                    _writer.WriteAttributeString("filter", "blinds(horizontal)");
+                    break;
+            }
 
             _writer.WriteStartElement("p", "cBhvr", OpenXmlNamespaces.PresentationML);
 
