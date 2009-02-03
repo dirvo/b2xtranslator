@@ -49,7 +49,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
             if (this.Reader.BaseStream.Position != this.Reader.BaseStream.Length)
             {
-                //this.Reader.BaseStream.Position = this.Reader.BaseStream.Length;
+                this.Reader.BaseStream.Position = this.Reader.BaseStream.Length;
             }
         }
 

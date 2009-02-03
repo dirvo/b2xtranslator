@@ -102,6 +102,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             Shape sh = container.FirstChildWithType<Shape>();
             so = container.FirstChildWithType<ShapeOptions>();
             if (clientData == null)
+            if (so != null)
             {
                 foreach (ShapeOptions.OptionEntry en in so.Options)
                 {
@@ -144,7 +145,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     {
                         AnimationInfoContainer animinfo = (AnimationInfoContainer)rec;
                         animinfos.Add(animinfo, _idCnt);
-                        rec = Record.ReadRecord(ms, 1);
+                        if (ms.Position < ms.Length) rec = Record.ReadRecord(ms, 1);
                     }
 
                     switch (rec.TypeCode)
@@ -172,8 +173,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             }
                             break;
                         case 4116:
-                            AnimationInfoContainer animinfo = (AnimationInfoContainer)rec;
-                            animinfos.Add(animinfo, _idCnt);
+                            //AnimationInfoContainer animinfo = (AnimationInfoContainer)rec;
+                            //animinfos.Add(animinfo, _idCnt);
                             //new AnimationMapping(_ctx, _writer).Apply(animinfo);
                             break;
                     }
@@ -258,6 +259,12 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             {
                 rId = this._ctx.AddedImages[bse.foDelay]; 
             } else {
+
+                if (!_ctx.Ppt.PicturesContainer._pictures.ContainsKey(bse.foDelay))
+                {
+                    return;
+                }
+
                 BitmapBlip b = (BitmapBlip)_ctx.Ppt.PicturesContainer._pictures[bse.foDelay];
 
                 ImagePart imgPart = null;
@@ -378,7 +385,55 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement();
 
             _writer.WriteStartElement("a", "lstStyle", OpenXmlNamespaces.DrawingML);
-            // TODO...
+            //////////////////////////////////////////// TODO...
+
+            ShapeOptions sos = textbox.FirstAncestorWithType<ShapeContainer>().FirstChildWithType<ShapeOptions>();
+            System.IO.MemoryStream ms = new System.IO.MemoryStream(textbox.Bytes);
+            TextHeaderAtom thAtom = null;
+            while (ms.Position < ms.Length)
+            {
+                Record rec = Record.ReadRecord(ms, 0);
+
+                switch (rec.TypeCode)
+                {
+                    case 0xf9e: //OutlineTextRefAtom
+                        break;
+                    case 0xf9f: //TextHeaderAtom
+                        thAtom = (TextHeaderAtom)rec;
+                        break;
+                    case 0xfa0: //TextCharsAtom
+                        break;
+                    case 0xfa1: //StyleTextPropAtom
+                        break;
+                    case 0xfa2: //MasterTextPropAtom
+                        MasterTextPropAtom m = (MasterTextPropAtom)rec;
+                        foreach(MasterTextPropRun r in m.MasterTextPropRuns)
+                        {
+                            if (thAtom.TextType == TextType.CenterTitle || thAtom.TextType == TextType.CenterBody)
+                            {
+                                _writer.WriteStartElement("a", "lvl" + (r.indentLevel + 1) + "pPr", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("algn", "ctr");
+                                _writer.WriteEndElement();
+                            }
+                        }
+                        break;
+                    case 0xfa8: //TextBytesAtom
+                        break;
+                    case 0xfaa: //TextSpecialInfoAtom
+                        break;
+                    case 0xfd8: //SlideNumberMCAtom
+                        break;
+                    case 0xff8: //GenericDateMCAtom
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+           
+
+            //////////////////////////
+
             _writer.WriteEndElement();
 
             new TextMapping(_ctx, _writer).Apply(textbox);

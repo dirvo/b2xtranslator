@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.PptFileFormat;
+using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML;
@@ -83,6 +84,88 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteAttributeString("xmlns", "r", null, OpenXmlNamespaces.Relationships);
 
             _writer.WriteStartElement("p", "cSld", OpenXmlNamespaces.PresentationML);
+
+            //TODO: write p:bg
+            ShapeContainer sc = this.Master.FirstChildWithType<PPDrawing>().FirstChildWithType<DrawingContainer>().FirstChildWithType<ShapeContainer>();
+            if (sc != null)
+            {
+                Shape sh = sc.FirstChildWithType<Shape>();
+                ShapeOptions so = sc.FirstChildWithType<ShapeOptions>();
+                int indexOfPicture = -1;
+                string name;
+                if (so != null)
+                {
+                    foreach (ShapeOptions.OptionEntry en in so.Options)
+                    {
+                        switch (en.pid)
+                        {
+                            case ShapeOptions.PropertyId.fillBlip:
+                                indexOfPicture = ((int)en.op) - 1;
+                                break;
+                            case ShapeOptions.PropertyId.fillBlipName:
+                                name = Encoding.Unicode.GetString(en.opComplex);
+                                name = name.Substring(0, name.Length - 1);
+                                break;
+                            default:
+                                break;
+
+                        }
+                    }
+                }
+                if (indexOfPicture > -1)
+                {
+                    DrawingGroup gr = (DrawingGroup)this._ctx.Ppt.DocumentRecord.FirstChildWithType<PPDrawingGroup>().Children[0];
+                    BlipStoreEntry bse = (BlipStoreEntry)gr.FirstChildWithType<BlipStoreContainer>().Children[(int)indexOfPicture];
+                    string rId;
+
+                    //if (this.parentSlideMapping is MasterMapping) return;
+
+                    if (this._ctx.AddedImages.ContainsKey(bse.foDelay))
+                    {
+                        rId = this._ctx.AddedImages[bse.foDelay];
+                    }
+                    else
+                    {
+
+                        if (!_ctx.Ppt.PicturesContainer._pictures.ContainsKey(bse.foDelay))
+                        {
+                            return;
+                        }
+
+                        BitmapBlip b = (BitmapBlip)_ctx.Ppt.PicturesContainer._pictures[bse.foDelay];
+
+                        ImagePart imgPart = null;
+                        imgPart = this.targetPart.AddImagePart(ShapeTreeMapping.getImageType(b.TypeCode));
+                        imgPart.TargetDirectory = "..\\media";
+                        System.IO.Stream outStream = imgPart.GetStream();
+                        outStream.Write(b.m_pvBits, 0, b.m_pvBits.Length);
+
+                        rId = imgPart.RelIdToString;
+                        //this._ctx.AddedImages.Add(bse.foDelay, rId);
+                    }
+
+                    _writer.WriteStartElement("p", "bg", OpenXmlNamespaces.PresentationML);
+
+                    _writer.WriteStartElement("p", "bgPr", OpenXmlNamespaces.PresentationML);
+
+                    _writer.WriteStartElement("a", "blipFill", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteStartElement("a", "blip", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteAttributeString("embed", OpenXmlNamespaces.Relationships, rId);
+                    _writer.WriteEndElement(); //a:blip
+                    _writer.WriteElementString("a", "srcRect", OpenXmlNamespaces.DrawingML, "");
+                    _writer.WriteStartElement("a", "stretch", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteElementString("a", "fillRect", OpenXmlNamespaces.DrawingML, "");
+                    _writer.WriteEndElement(); //a:stretch
+                    _writer.WriteEndElement(); //p:blipFill
+
+                    _writer.WriteElementString("a", "effectLst", OpenXmlNamespaces.DrawingML, "");
+
+                    _writer.WriteEndElement(); //p:bgPr
+
+                    _writer.WriteEndElement(); //p:bg
+                }
+            }
+
             _writer.WriteStartElement("p", "spTree", OpenXmlNamespaces.PresentationML);
             ShapeTreeMapping stm = new ShapeTreeMapping(_ctx, _writer);
             stm.parentSlideMapping = this;

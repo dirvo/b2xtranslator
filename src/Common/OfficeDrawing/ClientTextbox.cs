@@ -44,5 +44,4 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             this.Bytes = this.Reader.ReadBytes((int)this.BodySize);
         }
     }
-
 }

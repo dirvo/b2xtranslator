@@ -36,7 +36,7 @@ using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
-{    
+{
     class CharacterRunPropsMapping :
         AbstractOpenXmlMapping
     {
@@ -63,78 +63,81 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 if ((run.Style & StyleMask.IsBold) == StyleMask.IsBold) _writer.WriteAttributeString("b", "1");
                 if ((run.Style & StyleMask.IsItalic) == StyleMask.IsItalic) _writer.WriteAttributeString("i", "1");
                 if ((run.Style & StyleMask.IsUnderlined) == StyleMask.IsUnderlined) _writer.WriteAttributeString("u", "sng");
+            }
+            if (run.ColorPresent)
+            {
+                _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
 
-                if (run.ColorPresent)
+                if (run.Color.IsSchemeColor) //TODO: to be fully implemented
                 {
-                    _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
+                    //_writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
 
-                    if (run.Color.IsSchemeColor) //TODO: to be fully implemented
+
+                    List<ColorSchemeAtom> colors = slide.AllChildrenWithType<ColorSchemeAtom>();
+                    ColorSchemeAtom MasterScheme = null;
+                    foreach (ColorSchemeAtom color in colors)
                     {
-                        //_writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
-
-                       
-                        List<ColorSchemeAtom> colors = slide.AllChildrenWithType<ColorSchemeAtom>();
-                        ColorSchemeAtom MasterScheme = null;
-                        foreach (ColorSchemeAtom color in colors)
-                        {
-                            if (color.Instance == 1) MasterScheme = color;
-                        }
-
-                        _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);                                
-                        switch(run.Color.Index)
-                        {
-                            case 0x00: //background
-                                _writer.WriteAttributeString("val", new RGBColor(MasterScheme.Background, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);                                
-                                break;
-                            case 0x01: //text
-                                _writer.WriteAttributeString("val", new RGBColor(MasterScheme.TextAndLines, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);        
-                                break;
-                            case 0x02: //shadow
-                                _writer.WriteAttributeString("val", new RGBColor(MasterScheme.Shadows, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
-                                break;
-                            case 0x03: //title
-                                _writer.WriteAttributeString("val", new RGBColor(MasterScheme.TitleText, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
-                                break;
-                            case 0x04: //fill
-                                _writer.WriteAttributeString("val", new RGBColor(MasterScheme.Fills, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
-                                break;
-                            case 0x05: //accent1
-                                _writer.WriteAttributeString("val", new RGBColor(MasterScheme.Accent, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
-                                break;
-                            case 0x06: //accent2
-                                _writer.WriteAttributeString("val", new RGBColor(MasterScheme.AccentAndHyperlink, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
-                                break;
-                            case 0x07: //accent3
-                                _writer.WriteAttributeString("val", new RGBColor(MasterScheme.AccentAndFollowedHyperlink, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
-                                break;
-                            case 0xFE: //sRGB
-                                _writer.WriteAttributeString("val", run.Color.Red.ToString("X").PadLeft(2, '0') + run.Color.Green.ToString("X").PadLeft(2, '0') + run.Color.Blue.ToString("X").PadLeft(2, '0'));
-                                break;    
-                            case 0xFF: //undefined
-                                break;
-                        }
-                        _writer.WriteEndElement();
-                        //_writer.WriteEndElement();
+                        if (color.Instance == 1) MasterScheme = color;
                     }
-                    else
+
+                    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                    switch (run.Color.Index)
                     {
-                        _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("val", run.Color.Red.ToString("X").PadLeft(2, '0') + run.Color.Green.ToString("X").PadLeft(2, '0') + run.Color.Blue.ToString("X").PadLeft(2, '0'));
-                        _writer.WriteEndElement();
+                        case 0x00: //background
+                            _writer.WriteAttributeString("val", new RGBColor(MasterScheme.Background, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
+                            break;
+                        case 0x01: //text
+                            _writer.WriteAttributeString("val", new RGBColor(MasterScheme.TextAndLines, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
+                            break;
+                        case 0x02: //shadow
+                            _writer.WriteAttributeString("val", new RGBColor(MasterScheme.Shadows, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
+                            break;
+                        case 0x03: //title
+                            _writer.WriteAttributeString("val", new RGBColor(MasterScheme.TitleText, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
+                            break;
+                        case 0x04: //fill
+                            _writer.WriteAttributeString("val", new RGBColor(MasterScheme.Fills, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
+                            break;
+                        case 0x05: //accent1
+                            _writer.WriteAttributeString("val", new RGBColor(MasterScheme.Accent, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
+                            break;
+                        case 0x06: //accent2
+                            _writer.WriteAttributeString("val", new RGBColor(MasterScheme.AccentAndHyperlink, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
+                            break;
+                        case 0x07: //accent3
+                            _writer.WriteAttributeString("val", new RGBColor(MasterScheme.AccentAndFollowedHyperlink, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
+                            break;
+                        case 0xFE: //sRGB
+                            _writer.WriteAttributeString("val", run.Color.Red.ToString("X").PadLeft(2, '0') + run.Color.Green.ToString("X").PadLeft(2, '0') + run.Color.Blue.ToString("X").PadLeft(2, '0'));
+                            break;
+                        case 0xFF: //undefined
+                            break;
                     }
                     _writer.WriteEndElement();
-                }      
+                    //_writer.WriteEndElement();
+                }
+                else
+                {
+                    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteAttributeString("val", run.Color.Red.ToString("X").PadLeft(2, '0') + run.Color.Green.ToString("X").PadLeft(2, '0') + run.Color.Blue.ToString("X").PadLeft(2, '0'));
+                    _writer.WriteEndElement();
+                }
+                _writer.WriteEndElement();
+            }
 
+
+            if (run.StyleFlagsFieldPresent)
+            {
                 if ((run.Style & StyleMask.HasShadow) == StyleMask.HasShadow)
                 {
                     //TODO: these values are default and have to be replaced
-                    _writer.WriteStartElement("a","effectLst",OpenXmlNamespaces.DrawingML);
-                    _writer.WriteStartElement("a","outerShdw",OpenXmlNamespaces.DrawingML);
+                    _writer.WriteStartElement("a", "effectLst", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteStartElement("a", "outerShdw", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("blurRad", "38100");
                     _writer.WriteAttributeString("dist", "38100");
                     _writer.WriteAttributeString("dir", "2700000");
                     _writer.WriteAttributeString("algn", "tl");
-                    _writer.WriteStartElement("a","srgbClr",OpenXmlNamespaces.DrawingML);
+                    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("val", "C0C0C0");
                     _writer.WriteEndElement();
                     _writer.WriteEndElement();
@@ -144,44 +147,44 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 if ((run.Style & StyleMask.IsEmbossed) == StyleMask.IsEmbossed)
                 {
                     //TODO: these values are default and have to be replaced
-                    _writer.WriteStartElement("a","effectDag",OpenXmlNamespaces.DrawingML); 
+                    _writer.WriteStartElement("a", "effectDag", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("name", "");
-                    _writer.WriteStartElement("a","cont",OpenXmlNamespaces.DrawingML); 
+                    _writer.WriteStartElement("a", "cont", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("type", "tree");
                     _writer.WriteAttributeString("name", "");
-                    _writer.WriteStartElement("a","effect",OpenXmlNamespaces.DrawingML); 
+                    _writer.WriteStartElement("a", "effect", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("ref", "fillLine");
                     _writer.WriteEndElement();
-                    _writer.WriteStartElement("a","outerShdw",OpenXmlNamespaces.DrawingML); 
+                    _writer.WriteStartElement("a", "outerShdw", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("dist", "38100");
                     _writer.WriteAttributeString("dir", "13500000");
                     _writer.WriteAttributeString("algn", "br");
-                    _writer.WriteStartElement("a","srgbClr",OpenXmlNamespaces.DrawingML); 
+                    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("val", "FFFFFF");
                     _writer.WriteEndElement();
                     _writer.WriteEndElement();
                     _writer.WriteEndElement();
-                    _writer.WriteStartElement("a","cont",OpenXmlNamespaces.DrawingML); 
+                    _writer.WriteStartElement("a", "cont", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("type", "tree");
                     _writer.WriteAttributeString("name", "");
-                    _writer.WriteStartElement("a","effect",OpenXmlNamespaces.DrawingML); 
+                    _writer.WriteStartElement("a", "effect", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("ref", "fillLine");
                     _writer.WriteEndElement();
-                    _writer.WriteStartElement("a","outerShdw",OpenXmlNamespaces.DrawingML); 
+                    _writer.WriteStartElement("a", "outerShdw", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("dist", "38100");
                     _writer.WriteAttributeString("dir", "2700000");
                     _writer.WriteAttributeString("algn", "tl");
-                    _writer.WriteStartElement("a","srgbClr",OpenXmlNamespaces.DrawingML); 
+                    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("val", "999999");
                     _writer.WriteEndElement();
                     _writer.WriteEndElement();
                     _writer.WriteEndElement();
-                    _writer.WriteStartElement("a","effect",OpenXmlNamespaces.DrawingML); 
+                    _writer.WriteStartElement("a", "effect", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("ref", "fillLine");
                     _writer.WriteEndElement();
                     _writer.WriteEndElement();
                 }
-       
+
                 //TODOS
                 //HasAsianSmartQuotes 
                 //HasHorizonNumRendering 
@@ -217,7 +220,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 {
                     throw;
                 }
-               
+
                 _writer.WriteEndElement();
             }
 

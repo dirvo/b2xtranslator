@@ -45,20 +45,6 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
                     this.CRuns[i].ToString());
             }
 
-            //while (this.Reader.BaseStream.Position != this.Reader.BaseStream.Length)
-            //{
-            //    Record rec = Record.ReadRecord(this.Reader, 0);
-            //    switch (rec.TypeCode)
-            //    {
-            //        case 0x480:
-            //            break;
-            //        case 0x901:
-            //            break;
-            //        default:
-            //            break;
-            //    }
-            //}
-
             //// XXX: I'm not sure why but in some cases there is trailing garbage -- flgr
             if (this.Reader.BaseStream.Position != this.Reader.BaseStream.Length)
             {

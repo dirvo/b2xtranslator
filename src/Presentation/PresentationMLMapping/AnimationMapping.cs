@@ -305,11 +305,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 case 0x03: //Checker
                     if (animinfo.animEffectDirection == 0x01)
                     {
-                        _writer.WriteAttributeString("filter", "checker(horz)");
+                        _writer.WriteAttributeString("filter", "checkerboard(across)");
                     }
                     else
                     {
-                        _writer.WriteAttributeString("filter", "checker(vert)");
+                        _writer.WriteAttributeString("filter", "checkerboard(down)");
                     }
                     break;                   
                 case 0x04: //Cover
@@ -434,73 +434,73 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     switch (animinfo.animEffectDirection)
                     {
                         case 0x00: //from left
-                            _writer.WriteAttributeString("filter", "fly(l)");
-                            break;
                         case 0x01: //from top
-                            _writer.WriteAttributeString("filter", "fly(u)");
-                            break;
                         case 0x02: //from right
-                            _writer.WriteAttributeString("filter", "fly(r)");
-                            break;
                         case 0x03: //from bottom
-                            _writer.WriteAttributeString("filter", "fly(d)");
-                            break;
                         case 0x04: //from top left
-                            _writer.WriteAttributeString("filter", "fly(lu)");
-                            break;
                         case 0x05: //from top right
-                            _writer.WriteAttributeString("filter", "fly(ru)");
-                            break;
                         case 0x06: //from bottom left
-                            _writer.WriteAttributeString("filter", "fly(ld)");
-                            break;
                         case 0x07: //from bottom right
-                            _writer.WriteAttributeString("filter", "fly(rd)");
-                            break;
                         case 0x08: //from left edge of shape / text
-                            _writer.WriteAttributeString("filter", "fly(l)");
-                            break;
                         case 0x09: //from bottom edge of shape / text
-                            _writer.WriteAttributeString("filter", "fly(u)");
-                            break;
                         case 0x0a: //from right edge of shape / text
-                            _writer.WriteAttributeString("filter", "fly(r)");
-                            break;
                         case 0x0b: //from top edge of shape / text
-                            _writer.WriteAttributeString("filter", "fly(d)");
-                            break;
                         case 0x0c: //crawl from left
-                            _writer.WriteAttributeString("filter", "fly(lu)");
-                            break;
                         case 0x0d: //crawl from top 
-                            _writer.WriteAttributeString("filter", "fly(ru)");
-                            break;
                         case 0x0e: //crawl from right
-                            _writer.WriteAttributeString("filter", "fly(ld)");
-                            break;
                         case 0x0f: //crawl from bottom
-                            _writer.WriteAttributeString("filter", "fly(rd)");
-                            break;
                         case 0x10: //zoom 0 -> 1
-                            _writer.WriteAttributeString("filter", "fly(rd)");
-                            break;
-                        //case 0x0f: //crawl from bottom
-                        //    _writer.WriteAttributeString("filter", "fly(rd)");
-                        //    break;
-                        //case 0x0f: //crawl from bottom
-                        //    _writer.WriteAttributeString("filter", "fly(rd)");
-                        //    break;
-                        //case 0x0f: //crawl from bottom
-                        //    _writer.WriteAttributeString("filter", "fly(rd)");
-                        //    break;
+                        case 0x11: //zoom 0.5 -> 1
+                        case 0x12: //zoom 4 -> 1
+                        case 0x13: //zoom 1.5 -> 1
+                        case 0x14: //zoom 0 -> 1; screen center -> actual center
+                        case 0x15: //zoom 4 -> 1; bottom -> actual position
+                        case 0x16: //stretch center -> l & r
+                        case 0x17: //stretch l -> r
+                        case 0x18: //stretch t -> b
+                        case 0x19: //stretch r -> l
+                        case 0x1a: //stretch b -> t
+                        case 0x1b: //rotate around vertical axis that passes through its center
+                        case 0x1c: //flies in a spiral
+                             break;
                     }
                     break;
                 case 0x0d: //Split
+                    switch (animinfo.animEffectDirection)
+                    {
+                        case 0x00: //horz m -> tb
+                            _writer.WriteAttributeString("filter", "split(outHorizontal)");
+                            break;
+                        case 0x01: //horz tb -> m
+                            _writer.WriteAttributeString("filter", "split(inHorizontal)");
+                            break;
+                        case 0x02: //vert m -> lr
+                            _writer.WriteAttributeString("filter", "split(outVertical)");
+                            break;
+                        case 0x03: //vert
+                            _writer.WriteAttributeString("filter", "split(inVertical)");
+                            break;
+                    }
+                    break;
                 case 0x0e: //Flash
+                    switch (animinfo.animEffectDirection)
+                    {
+                        case 0x00: //after short time
+                        case 0x01: //after medium time
+                        case 0x02: //after long time
+                            break;
+                    }
+                    break;
                 case 0x0f:
                 case 0x11: //Diamond
+                    _writer.WriteAttributeString("filter", "diamond(out)");
+                    break;
                 case 0x12: //Plus
+                    _writer.WriteAttributeString("filter", "plus");
+                    break;
                 case 0x13: //Wedge
+                    _writer.WriteAttributeString("filter", "wedge");
+                    break;
                 case 0x14:
                 case 0x15:
                 case 0x16:
@@ -508,7 +508,28 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 case 0x18:
                 case 0x19:
                 case 0x1a: //Wheel
+                    switch (animinfo.animEffectDirection)
+                    {
+                        case 0x01: //1 spoke
+                            _writer.WriteAttributeString("filter", "wheel(1)");
+                            break;
+                        case 0x02: //2 spokes
+                            _writer.WriteAttributeString("filter", "wheel(2)");
+                            break;
+                        case 0x03: //3 spokes
+                            _writer.WriteAttributeString("filter", "wheel(3)");
+                            break;
+                        case 0x04: //4 spokes
+                            _writer.WriteAttributeString("filter", "wheel(4)");
+                            break;
+                        case 0x08: //8 spokes
+                            _writer.WriteAttributeString("filter", "wheel(8)");
+                            break;
+                    }
+                    break;
                 case 0x1b: //Circle
+                    _writer.WriteAttributeString("filter", "circle");
+                    break;
                 default:
                     _writer.WriteAttributeString("filter", "blinds(horizontal)");
                     break;

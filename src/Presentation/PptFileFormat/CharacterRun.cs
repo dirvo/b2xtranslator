@@ -64,31 +64,40 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
         public CharacterRun(BinaryReader reader)
         {
-            this.Mask = (CharacterMask)reader.ReadUInt32();
+            try
+            {
+                this.Mask = (CharacterMask)reader.ReadUInt32();
 
-            if (this.StyleFlagsFieldPresent)
-                this.Style = (StyleMask)reader.ReadUInt16();
+                if (this.StyleFlagsFieldPresent)
+                    this.Style = (StyleMask)reader.ReadUInt16();
 
-            if (this.TypefacePresent)
-                this.TypefaceIdx = reader.ReadUInt16();
+                if (this.TypefacePresent)
+                    this.TypefaceIdx = reader.ReadUInt16();
 
-            if (this.FEOldTypefacePresent)
-                this.FEOldTypefaceIdx = reader.ReadUInt16();
+                if (this.FEOldTypefacePresent)
+                    this.FEOldTypefaceIdx = reader.ReadUInt16();
 
-            if (this.ANSITypefacePresent)
-                this.ANSITypefaceIdx = reader.ReadUInt16();
+                if (this.ANSITypefacePresent)
+                    this.ANSITypefaceIdx = reader.ReadUInt16();
 
-            if (this.SymbolTypefacePresent)
-                this.SymbolTypefaceIdx = reader.ReadUInt16();
+                if (this.SymbolTypefacePresent)
+                    this.SymbolTypefaceIdx = reader.ReadUInt16();
 
-            if (this.SizePresent)
-                this.Size = reader.ReadUInt16();
+                if (this.SizePresent)
+                    this.Size = reader.ReadUInt16();
 
-            if (this.ColorPresent)
-                this.Color = new GrColorAtom(reader);
+                if (this.ColorPresent)
+                    this.Color = new GrColorAtom(reader);
 
-            if (this.PositionPresent)
-                this.Position = reader.ReadUInt16();            
+                if (this.PositionPresent)
+                    this.Position = reader.ReadUInt16();        
+            }
+            catch (EndOfStreamException e)
+            {
+                string s = e.ToString();
+                //ignore
+            }
+               
         }
 
         public string ToString(uint depth)
@@ -171,7 +180,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         None = 0,
 
         // Bit 0 - 15 are used for marking style flag presence
-        StyleFlagsFieldPresent = 0x3C0000, // 0xFFFF,
+        StyleFlagsFieldPresent = 0xFFFF,
 
         TypefacePresent = 1 << 16,
         SizePresent = 1 << 17,
