@@ -387,9 +387,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteStartElement("a", "lstStyle", OpenXmlNamespaces.DrawingML);
             //////////////////////////////////////////// TODO...
 
-            ShapeOptions sos = textbox.FirstAncestorWithType<ShapeContainer>().FirstChildWithType<ShapeOptions>();
+            //ShapeOptions sos = textbox.FirstAncestorWithType<ShapeContainer>().FirstChildWithType<ShapeOptions>();
             System.IO.MemoryStream ms = new System.IO.MemoryStream(textbox.Bytes);
             TextHeaderAtom thAtom = null;
+            TextStyleAtom style = null;
             while (ms.Position < ms.Length)
             {
                 Record rec = Record.ReadRecord(ms, 0);
@@ -397,27 +398,47 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 switch (rec.TypeCode)
                 {
                     case 0xf9e: //OutlineTextRefAtom
+                        OutlineTextRefAtom otrAtom = (OutlineTextRefAtom)rec;
+                        SlideListWithText slideListWithText = _ctx.Ppt.DocumentRecord.RegularSlideListWithText;
+
+                        List<TextHeaderAtom> thAtoms = slideListWithText.SlideToPlaceholderTextHeaders[textbox.FirstAncestorWithType<Slide>().PersistAtom];
+                        thAtom = thAtoms[otrAtom.Index];
+
+                        //if (thAtom.TextAtom != null) text = thAtom.TextAtom.Text;
+                        if (thAtom.TextStyleAtom != null) style = thAtom.TextStyleAtom;
+
                         break;
                     case 0xf9f: //TextHeaderAtom
                         thAtom = (TextHeaderAtom)rec;
                         break;
                     case 0xfa0: //TextCharsAtom
+                        thAtom.TextAtom = (TextAtom)rec;
                         break;
                     case 0xfa1: //StyleTextPropAtom
+                        style = (TextStyleAtom)rec;
+                        style.TextHeaderAtom = thAtom;
                         break;
                     case 0xfa2: //MasterTextPropAtom
                         MasterTextPropAtom m = (MasterTextPropAtom)rec;
                         foreach(MasterTextPropRun r in m.MasterTextPropRuns)
                         {
+
+                            _writer.WriteStartElement("a", "lvl" + (r.indentLevel + 1) + "pPr", OpenXmlNamespaces.DrawingML);
+
                             if (thAtom.TextType == TextType.CenterTitle || thAtom.TextType == TextType.CenterBody)
                             {
-                                _writer.WriteStartElement("a", "lvl" + (r.indentLevel + 1) + "pPr", OpenXmlNamespaces.DrawingML);
-                                _writer.WriteAttributeString("algn", "ctr");
-                                _writer.WriteEndElement();
+                                _writer.WriteAttributeString("algn", "ctr");                                                                
                             }
+
+                            //_writer.WriteElementString("a", "buNone", OpenXmlNamespaces.DrawingML, "");
+
+                            _writer.WriteEndElement();
+                            
                         }
                         break;
                     case 0xfa8: //TextBytesAtom
+                        //text = ((TextBytesAtom)rec).Text;
+                        thAtom.TextAtom = (TextAtom)rec;
                         break;
                     case 0xfaa: //TextSpecialInfoAtom
                         break;

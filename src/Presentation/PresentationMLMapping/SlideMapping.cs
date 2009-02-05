@@ -116,6 +116,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             ShapeTreeMapping stm = new ShapeTreeMapping(_ctx, _writer);
             stm.parentSlideMapping = this;
             stm.Apply(slide.FirstChildWithType<PPDrawing>());
+
+            checkHeaderFooter(stm);
+            
             _writer.WriteEndElement(); //spTree
             _writer.WriteEndElement(); //cSld
 
@@ -128,6 +131,64 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndDocument();
 
             _writer.Flush();
+        }
+
+        private void checkHeaderFooter(ShapeTreeMapping stm)
+        {
+            SlideAtom slideAtom = this.Slide.FirstChildWithType<SlideAtom>();
+
+            bool footer = false;
+            bool header = false;
+            
+            foreach (SlideHeadersFootersContainer c in this._ctx.Ppt.DocumentRecord.AllChildrenWithType<SlideHeadersFootersContainer>())
+            {
+                switch (c.Instance)
+                {
+                    case 0: //PerSlideHeadersFootersContainer
+                        break;
+                    case 3: //SlideHeadersFootersContainer
+                        foreach (HeadersFootersAtom a in c.AllChildrenWithType<HeadersFootersAtom>())
+                        {
+                            if (a.fHasFooter) footer = true;
+                            if (a.fHasHeader) header = true;
+                        }
+                        break;
+                    case 4: //NotesHeadersFootersContainer
+                        break;
+                }
+
+            }
+
+            if (footer)
+            foreach (Slide master in this._ctx.Ppt.TitleMasterRecords)
+            {
+                if (master.PersistAtom.SlideId == slideAtom.MasterId)
+                {
+                    List<OfficeDrawing.ShapeContainer> shapes = master.AllChildrenWithType<PPDrawing>()[0].AllChildrenWithType<OfficeDrawing.DrawingContainer>()[0].AllChildrenWithType<OfficeDrawing.GroupContainer>()[0].AllChildrenWithType<OfficeDrawing.ShapeContainer>();
+                    foreach (OfficeDrawing.ShapeContainer shapecontainer in shapes)
+                    {
+                        foreach (OfficeDrawing.ClientData data in shapecontainer.AllChildrenWithType<OfficeDrawing.ClientData>())
+                        {
+                            System.IO.MemoryStream ms = new System.IO.MemoryStream(data.bytes);
+                            OfficeDrawing.Record rec = OfficeDrawing.Record.ReadRecord(ms, 0);
+
+                            if (rec.TypeCode == 3011)
+                            {
+                                OEPlaceHolderAtom placeholder = (OEPlaceHolderAtom)rec;
+
+                                if (placeholder != null)
+                                {
+                                    if (placeholder.PlacementId == PlaceholderEnum.MasterFooter)
+                                    {
+                                        stm.Apply(shapecontainer);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
         }
     }
 }

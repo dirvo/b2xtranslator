@@ -53,6 +53,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _parentSlideMapping = parentSlideMapping;
         }
 
+        public List<TextMasterStyleAtom> titleAtoms = new List<TextMasterStyleAtom>();
+        public List<TextMasterStyleAtom> bodyAtoms = new List<TextMasterStyleAtom>();
+        public List<TextMasterStyleAtom> CenterBodyAtoms = new List<TextMasterStyleAtom>();
+        public List<TextMasterStyleAtom> CenterTitleAtoms = new List<TextMasterStyleAtom>();
         public void Apply(Slide Master)
         {
 
@@ -60,7 +64,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             List<TextMasterStyleAtom> atoms = Master.AllChildrenWithType<TextMasterStyleAtom>();
 
-            List<TextMasterStyleAtom> titleAtoms = new List<TextMasterStyleAtom>();
+            
 
             List<TextMasterStyle9Atom> body9atoms = new List<TextMasterStyle9Atom>();
             List<TextMasterStyle9Atom> title9atoms = new List<TextMasterStyle9Atom>();
@@ -78,12 +82,13 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     }            		
 	            }
 	        }
-
-            List<TextMasterStyleAtom> bodyAtoms = new List<TextMasterStyleAtom>();
+            
             foreach (TextMasterStyleAtom atom in atoms)
             {
                 if (atom.Instance == 0) titleAtoms.Add(atom);   
                 if (atom.Instance == 1) bodyAtoms.Add(atom);
+                if (atom.Instance == 5) CenterBodyAtoms.Add(atom);
+                if (atom.Instance == 6) CenterTitleAtoms.Add(atom);
             }
             
             _writer.WriteStartElement("p", "txStyles", OpenXmlNamespaces.PresentationML);
@@ -138,7 +143,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         {
           
             //TextMasterStyleAtom defaultStyle = _ctx.Ppt.DocumentRecord.FirstChildWithType<DIaLOGIKa.b2xtranslator.PptFileFormat.Environment>().FirstChildWithType<TextMasterStyleAtom>();
-
+            
             _writer.WriteStartElement("a", "lvl" + (IndentLevel+1).ToString() + "pPr", OpenXmlNamespaces.DrawingML);
 
             if (pr.AlignmentPresent)

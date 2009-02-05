@@ -117,6 +117,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         switch (rec.TypeCode)
                         {
                             case 0xfa0: //TextCharsAtom
+                                text = ((TextCharsAtom)rec).Text;
+                                thAtom.TextAtom = (TextAtom)rec;
                                 break;
                             case 0xfa1: //TextRunStyleAtom
                                 style = (TextStyleAtom)rec;
@@ -131,6 +133,15 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 break;
                             case 0xfa2: //MasterTextPropAtom
                                 masterTextProp = (MasterTextPropAtom)rec;
+                                break;
+                            case 0xfd8: //SlideNumberMCAtom
+                                SlideNumberMCAtom snmca = (SlideNumberMCAtom)rec;
+                                break;
+                            case 0xffa: //FooterMCAtom
+                                FooterMCAtom mca = (FooterMCAtom)rec;
+                                break;
+                            case 0xff8: //GenericDateMCAtom
+                                GenericDateMCAtom gdmca = (GenericDateMCAtom)rec;
                                 break;
                             default:
                                 TextAtom textAtom = thAtom.TextAtom;
@@ -218,116 +229,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             }
 
-
-            //TraceLogger.DebugInternal("TextMapping: text = {0}", Tools.Utils.StringInspect(text));            
-
-            //// Special case: always write out at least one paragraph (even if idx == text.Length == 0)
-            //while (idx < text.Length || text.Length == 0)
-            //{
-            //    ParagraphRun p = GetParagraphRun(style, idx);
-
-            //    uint pEndIdx = (p != null) ? (uint)Math.Min(idx + p.Length, text.Length) : (uint)text.Length;
-
-            //    TraceLogger.DebugInternal("Paragraph run from {0} to {1}", idx, pEndIdx);
-
-            //    if (idx == pEndIdx)
-            //    {
-            //        _writer.WriteStartElement("a", "p", OpenXmlNamespaces.DrawingML);
-            //        _writer.WriteStartElement("a", "endParaRPr", OpenXmlNamespaces.DrawingML);
-            //        // TODO...
-            //        _writer.WriteEndElement();
-            //        _writer.WriteEndElement();
-            //    }
-
-            //    bool startNewParagraph = true;
-            //    writeP(p);
-
-            //    while (idx < pEndIdx)
-            //    {
-            //        CharacterRun r = GetCharacterRun(style, idx);
-            //        // Current run length or remaining text length if no run available
-            //        uint rlen = (r != null) ? r.Length : (uint)(text.Length - idx);
-
-            //        // Remaining paragraph length
-            //        uint plen = pEndIdx - idx;
-
-            //        // Remaining text length
-            //        uint tlen = (uint)(text.Length - idx);
-
-            //        // Length of extracted runText can't go beyond character run,
-            //        // remaining paragraph run and remaining text length so limit it.
-            //        uint slen = rlen;
-            //        if (slen > tlen)
-            //            slen = tlen;
-            //        if (slen > plen)
-            //            slen = plen;
-
-            //        String runText = text.Substring((int)idx, (int)slen);
-            //        //bool isLastRunOfParagraph = idx + slen == pEndIdx;
-            //        //if (isLastRunOfParagraph)
-            //            //runText = runText.TrimEnd(new char[] { '\v', '\r', '\n' });
-            //        if (runText.EndsWith("\r") | runText.EndsWith("\v") | runText.EndsWith("\n"))
-            //        {
-            //            //runText = runText.Substring(0, runText.Length - 1);
-            //            //startNewParagraph = true;
-            //        }
-
-            //        TraceLogger.DebugInternal("Character run from {0} to {1} ({3}): {2}",
-            //            idx, idx + rlen, Tools.Utils.StringInspect(runText), slen);
-
-            //        String[] lines = new String[1];
-            //        if (runText.Length > 1) { lines = runText.Split(new char[] { '\v', '\r' }); } else { lines[0] = runText.TrimEnd(new char[] { '\v', '\r' }); };
-
-            //        //bool isFirstLine = true;
-            //        int lineIdx = 0;
-
-            //        TraceLogger.DebugInternal("Split runtext {0} into these lines:", Tools.Utils.StringInspect(runText));
-
-            //        foreach (String line in lines)
-            //        {                        
-            //            TraceLogger.DebugInternal("  {0}", Tools.Utils.StringInspect(line));
-
-            //            if (startNewParagraph)
-            //            {
-            //                _writer.WriteStartElement("a", "endParaRPr", OpenXmlNamespaces.DrawingML);
-            //                _writer.WriteEndElement();
-            //                _writer.WriteEndElement();      
-
-            //                p = GetParagraphRun(style, idx);
-            //                writeP(p);
-            //            }
-
-            //            if (line.Length > 0)
-            //            {
-            //                _writer.WriteStartElement("a", "r", OpenXmlNamespaces.DrawingML);
-            //                if (r != null) new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", textbox.FirstAncestorWithType<Slide>());
-
-            //                _writer.WriteStartElement("a", "t", OpenXmlNamespaces.DrawingML);
-            //                _writer.WriteValue(line);
-            //                _writer.WriteEndElement();
-
-            //                _writer.WriteEndElement();
-                                                        
-            //            }
-
-            //            lineIdx += line.Length + 1;
-            //            //isFirstLine = false;
-                        
-            //        }
-
-            //        idx += rlen;
-            //    }
-
-            //    _writer.WriteStartElement("a", "endParaRPr", OpenXmlNamespaces.DrawingML);
-            //    _writer.WriteEndElement();
-            //    _writer.WriteEndElement();               
-
-            //    idx = pEndIdx;
-
-            //    /* Didn't move so stop looping */
-            //    if (text.Length == 0)
-            //        break;
-            //}
         }
 
         private void writeP(ParagraphRun p)
@@ -338,14 +239,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             if (!(p == null))
             {
                 if (p.IndentLevel > 0) _writer.WriteAttributeString("lvl", p.IndentLevel.ToString());
-                if (p.IndentPresent) _writer.WriteAttributeString("indent", p.Indent.ToString());
-                if (p.BulletCharPresent)
-                {
-                   
-                    //_writer.WriteStartElement("a", "buChar", OpenXmlNamespaces.DrawingML);
-                    //_writer.WriteAttributeString("char", p.BulletChar.ToString());
-                    //_writer.WriteEndElement(); //buChar
-                }
+                if (p.LeftMarginPresent) _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU((int)p.LeftMargin).ToString());
+                if (p.IndentPresent) _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(p.LeftMargin - p.Indent)))).ToString());
+
                 if (p.LineSpacingPresent)
                 {
                     _writer.WriteStartElement("a", "lnSpc", OpenXmlNamespaces.DrawingML);
@@ -354,7 +250,65 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteEndElement(); //spcPct
                     _writer.WriteEndElement(); //lnSpc
                 }
+                if (p.SpaceBeforePresent)
+                {
+                    _writer.WriteStartElement("a", "spcBef", OpenXmlNamespaces.DrawingML);
+                    if (p.SpaceBefore < 0)
+                    {
+                        _writer.WriteStartElement("a", "spcPts", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("val", (-1 * 1000 * p.SpaceBefore).ToString()); //TODO: this has to be verified!
+                        _writer.WriteEndElement(); //spcPct
+                    }
+                    else
+                    {
+                        _writer.WriteStartElement("a", "spcPct", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("val", (1000 * p.SpaceBefore).ToString());
+                        _writer.WriteEndElement(); //spcPct
+                    }
+                    _writer.WriteEndElement(); //spcBef
+                }
+                
+                if (p.SpaceAfterPresent)
+                {
+                    _writer.WriteStartElement("a", "spcAft", OpenXmlNamespaces.DrawingML);
+                    if (p.SpaceAfter < 0)
+                    {
+                        _writer.WriteStartElement("a", "spcPts", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("val", (-1 * p.SpaceAfter).ToString()); //TODO: this has to be verified!
+                        _writer.WriteEndElement(); //spcPct
+                    }
+                    else
+                    {
+                        _writer.WriteStartElement("a", "spcPct", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("val", p.SpaceAfter.ToString());
+                        _writer.WriteEndElement(); //spcPct
+                    }
+                    _writer.WriteEndElement(); //spcAft
+                }
 
+                if (p.BulletFlagsFieldPresent)
+                {
+                    if ((p.BulletFlags & (ushort)ParagraphMask.HasBullet) == 0)
+                    {
+                        _writer.WriteElementString("a", "buNone", OpenXmlNamespaces.DrawingML, "");
+                    }
+                    else
+                    {
+                        if (p.BulletCharPresent)
+                        {
+                            _writer.WriteStartElement("a", "buChar", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("char", p.BulletChar.ToString());
+                            _writer.WriteEndElement(); //buChar
+                        }
+                    }
+                }
+
+                //if (p.BulletCharPresent)
+                //{
+                //    _writer.WriteStartElement("a", "buChar", OpenXmlNamespaces.DrawingML);
+                //    _writer.WriteAttributeString("char", p.BulletChar.ToString());
+                //    _writer.WriteEndElement(); //buChar
+                //}
             }
             _writer.WriteEndElement(); //pPr
         }
