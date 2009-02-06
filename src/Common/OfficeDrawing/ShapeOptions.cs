@@ -517,6 +517,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
         }
 
         public OptionEntry[] Options;
+        public Dictionary<PropertyId, OptionEntry> OptionsByID = new Dictionary<PropertyId, OptionEntry>();
 
         public ShapeOptions(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
@@ -537,6 +538,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
                 entry.op = this.Reader.ReadUInt32();
 
                 this.Options[i] = entry;
+                OptionsByID.Add(entry.pid, entry);
             }
 
             //parse the complex values

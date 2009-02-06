@@ -32,6 +32,7 @@ using DIaLOGIKa.b2xtranslator.PptFileFormat;
 using System.IO;
 using System.Xml;
 using System.Reflection;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 {
@@ -295,6 +296,52 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 default:
                     throw new NotImplementedException("Don't know how to map slide layout type " + type); 
             }
+        }
+
+        public static string getRGBColorFromOfficeArtCOLORREF(uint value, Slide slide)
+        {
+            byte[] bytes = BitConverter.GetBytes(value);
+            bool fPaletteIndex = (bytes[3] & 1) != 0;
+            bool fPaletteRGB = (bytes[3] & (1 << 1)) != 0;
+            bool fSystemRGB = (bytes[3] & (1 << 2)) != 0;
+            bool fSchemeIndex = (bytes[3] & (1 << 3)) != 0;
+            bool fSysIndex = (bytes[3] & (1 << 4)) != 0;
+
+            if (fSchemeIndex)
+            {
+                //red is the index to the color scheme
+                List<ColorSchemeAtom> colors = slide.AllChildrenWithType<ColorSchemeAtom>();
+                ColorSchemeAtom MasterScheme = null;
+                foreach (ColorSchemeAtom color in colors)
+                {
+                    if (color.Instance == 1) MasterScheme = color;
+                }
+
+                switch (bytes[0])
+                {
+                    case 0x00: //background
+                        return new RGBColor(MasterScheme.Background, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
+                    case 0x01: //text
+                        return new RGBColor(MasterScheme.TextAndLines, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
+                    case 0x02: //shadow
+                        return new RGBColor(MasterScheme.Shadows, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
+                    case 0x03: //title
+                        return new RGBColor(MasterScheme.TitleText, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
+                    case 0x04: //fill
+                        return new RGBColor(MasterScheme.Fills, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
+                    case 0x05: //accent1
+                        return new RGBColor(MasterScheme.Accent, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
+                    case 0x06: //accent2
+                        return new RGBColor(MasterScheme.AccentAndHyperlink, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
+                    case 0x07: //accent3
+                        return new RGBColor(MasterScheme.AccentAndFollowedHyperlink, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
+                    case 0xFE: //sRGB
+                        return bytes[0].ToString("X").PadLeft(2, '0') + bytes[1].ToString("X").PadLeft(2, '0') + bytes[3].ToString("X").PadLeft(2, '0');
+                    case 0xFF: //undefined
+                        break;
+                }                
+            }
+            return "";
         }
     }
 }

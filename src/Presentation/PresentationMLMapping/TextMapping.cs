@@ -242,6 +242,34 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 if (p.LeftMarginPresent) _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU((int)p.LeftMargin).ToString());
                 if (p.IndentPresent) _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(p.LeftMargin - p.Indent)))).ToString());
 
+                if (p.AlignmentPresent)
+                {
+                    switch (p.Alignment)
+                    {
+                        case 0x0000: //Left
+                            _writer.WriteAttributeString("algn", "l");
+                            break;
+                        case 0x0001: //Center
+                            _writer.WriteAttributeString("algn", "ctr");
+                            break;
+                        case 0x0002: //Right
+                            _writer.WriteAttributeString("algn", "r");
+                            break;
+                        case 0x0003: //Justify
+                            _writer.WriteAttributeString("algn", "just");
+                            break;
+                        case 0x0004: //Distributed
+                            _writer.WriteAttributeString("algn", "dist");
+                            break;
+                        case 0x0005: //ThaiDistributed
+                            _writer.WriteAttributeString("algn", "thaiDist");
+                            break;
+                        case 0x0006: //JustifyLow
+                            _writer.WriteAttributeString("algn", "justLow");
+                            break;
+                    }
+                }
+
                 if (p.LineSpacingPresent)
                 {
                     _writer.WriteStartElement("a", "lnSpc", OpenXmlNamespaces.DrawingML);
