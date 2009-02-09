@@ -552,7 +552,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             if (pSegmentInfo != null && pVertices.Length != null)
             {
                 PathParser parser = new PathParser(pSegmentInfo, pVertices);
-                path = parser.VmlPath.ToString();
+                path = parser.BuildVmlPath();
             }
             return path;
         }

@@ -2,39 +2,50 @@
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.Tools;
+using System.Drawing;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 {
     public class PathParser
     {
-        public Int16[] Values { get; set; }
+        public List<Point> Values { get; set; }
 
         public List<PathSegment> Segments { get; set; }
 
-        public StringBuilder VmlPath { get; set; }
-
         public PathParser(byte[] pSegmentInfo, byte[] pVertices)
         {
-            //parse the segments
-            byte[] segmentValues = readMsoArray(pSegmentInfo);
+            // parse the segments
             this.Segments = new List<PathSegment>();
-            for (int i = 0; i < segmentValues.Length; i += 2)
+            UInt16 nElemsSeg = System.BitConverter.ToUInt16(pSegmentInfo, 0);
+            UInt16 nElemsAllocSeg = System.BitConverter.ToUInt16(pSegmentInfo, 2);
+            UInt16 cbElemSeg = System.BitConverter.ToUInt16(pSegmentInfo, 4);
+            for (int i = 6; i < pSegmentInfo.Length; i += 2)
             {
-                this.Segments.Add(new PathSegment(System.BitConverter.ToUInt16(segmentValues, i)));
+                this.Segments.Add(
+                    new PathSegment(
+                        System.BitConverter.ToUInt16(pSegmentInfo, i)
+                ));
             }
 
-            //parse the values
-            byte[] verticeValues = readMsoArray(pVertices);
-            this.Values = new Int16[(verticeValues.Length / 2)];
-            int j = 0;
-            for (int i = 0; i < verticeValues.Length; i += 2)
+            // parse the values
+            this.Values = new List<Point>();
+            UInt16 nElemsVert = System.BitConverter.ToUInt16(pVertices, 0);
+            UInt16 nElemsAllocVert = System.BitConverter.ToUInt16(pVertices, 2);
+            UInt16 cbElemVert = System.BitConverter.ToUInt16(pVertices, 4);
+            for (int i = 6; i < pVertices.Length; i += 4)
             {
-                this.Values[j] = System.BitConverter.ToInt16(verticeValues, i);
-                j++;
+                this.Values.Add(
+                    new Point(
+                        System.BitConverter.ToInt16(pVertices, i),
+                        System.BitConverter.ToInt16(pVertices, i + 2)
+                ));
             }
+        }
 
-            // build the path
-            this.VmlPath = new StringBuilder();
+        public string BuildVmlPath()
+        {
+            // build the VML Path
+            StringBuilder VmlPath = new StringBuilder();
             int valuePointer = 0; 
             foreach (PathSegment seg in this.Segments)
             {
@@ -43,31 +54,26 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
                     switch (seg.Type)
                     {
                         case PathSegment.SegmentType.msopathCurveTo:
-                            this.VmlPath.Append("c");
-                            this.VmlPath.Append(this.Values[valuePointer]);
-                            this.VmlPath.Append(",");
-                            valuePointer++;
-                            this.VmlPath.Append(this.Values[valuePointer]);
-                            this.VmlPath.Append(",");
-                            valuePointer++;
-                            this.VmlPath.Append(this.Values[valuePointer]);
-                            this.VmlPath.Append(",");
-                            valuePointer++;
-                            this.VmlPath.Append(this.Values[valuePointer]);
-                            this.VmlPath.Append(",");
-                            valuePointer++;
-                            this.VmlPath.Append(this.Values[valuePointer]);
-                            this.VmlPath.Append(",");
-                            valuePointer++;
-                            this.VmlPath.Append(this.Values[valuePointer]);
-                            valuePointer++;
+                            VmlPath.Append("c");
+                            VmlPath.Append(this.Values[valuePointer].X);
+                            VmlPath.Append(",");
+                            VmlPath.Append(this.Values[valuePointer].Y);
+                            VmlPath.Append(",");
+                            VmlPath.Append(this.Values[valuePointer+1].X);
+                            VmlPath.Append(",");
+                            VmlPath.Append(this.Values[valuePointer+1].Y);
+                            VmlPath.Append(",");
+                            VmlPath.Append(this.Values[valuePointer + 2].X);
+                            VmlPath.Append(",");
+                            VmlPath.Append(this.Values[valuePointer + 2].Y);
+                            valuePointer += 3;
                             break;
                         case PathSegment.SegmentType.msopathMoveTo:
-                            this.VmlPath.Append("m");
-                            this.VmlPath.Append(this.Values[valuePointer]);
-                            this.VmlPath.Append(",");
-                            this.VmlPath.Append(this.Values[valuePointer + 1]);
-                            valuePointer += 2;
+                            VmlPath.Append("m");
+                            VmlPath.Append(this.Values[valuePointer].X);
+                            VmlPath.Append(",");
+                            VmlPath.Append(this.Values[valuePointer].Y);
+                            valuePointer += 1;
                             break;
                     }
                 }
@@ -80,26 +86,9 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             }
 
             // end the path
-            this.VmlPath.Append("e");
-        }
+            VmlPath.Append("e");
 
-        private byte[] readMsoArray(byte[] array)
-        {
-            UInt16 nElems = System.BitConverter.ToUInt16(array, 0);
-            UInt16 nElemsAlloc = System.BitConverter.ToUInt16(array, 2);
-            UInt16 cbElem = System.BitConverter.ToUInt16(array, 4);
-            if (cbElem == 0xFFF0)
-            {
-                cbElem = 4;
-            }
-            byte[] data = new byte[cbElem * nElems];
-
-            for (int i = 0; i < nElems; i++)
-            {
-                data[i] = array[6 + (i * cbElem)];
-            }
-
-            return data;
+            return VmlPath.ToString();
         }
     }
 }
