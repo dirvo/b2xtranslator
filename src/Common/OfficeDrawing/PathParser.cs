@@ -16,28 +16,26 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
         public PathParser(byte[] pSegmentInfo, byte[] pVertices)
         {
             //parse the segments
+            byte[] segmentValues = readMsoArray(pSegmentInfo);
             this.Segments = new List<PathSegment>();
-            for (int i = 0; i < pSegmentInfo.Length; i+=2)
+            for (int i = 0; i < segmentValues.Length; i += 2)
             {
-                this.Segments.Add(new PathSegment(System.BitConverter.ToUInt16(pSegmentInfo, i)));
+                this.Segments.Add(new PathSegment(System.BitConverter.ToUInt16(segmentValues, i)));
             }
 
             //parse the values
-            this.Values = new Int16[(pVertices.Length / 2)];
+            byte[] verticeValues = readMsoArray(pVertices);
+            this.Values = new Int16[(verticeValues.Length / 2)];
             int j = 0;
-            for (int i = 0; i < pVertices.Length; i += 2)
+            for (int i = 0; i < verticeValues.Length; i += 2)
             {
-                this.Values[j] = System.BitConverter.ToInt16(pVertices, i);
+                this.Values[j] = System.BitConverter.ToInt16(verticeValues, i);
                 j++;
             }
 
             // build the path
             this.VmlPath = new StringBuilder();
-
-            // Skip the first 3 values
-            // The first 3 values are always 2 positive integers and one negative integer.
-            // I don't know the real meaning of these 3 values, but the path starts always with the 4th value.
-            int valuePointer = 3; 
+            int valuePointer = 0; 
             foreach (PathSegment seg in this.Segments)
             {
                 try
@@ -83,6 +81,25 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 
             // end the path
             this.VmlPath.Append("e");
+        }
+
+        private byte[] readMsoArray(byte[] array)
+        {
+            UInt16 nElems = System.BitConverter.ToUInt16(array, 0);
+            UInt16 nElemsAlloc = System.BitConverter.ToUInt16(array, 2);
+            UInt16 cbElem = System.BitConverter.ToUInt16(array, 4);
+            if (cbElem == 0xFFF0)
+            {
+                cbElem = 4;
+            }
+            byte[] data = new byte[cbElem * nElems];
+
+            for (int i = 0; i < nElems; i++)
+            {
+                data[i] = array[6 + (i * cbElem)];
+            }
+
+            return data;
         }
     }
 }
