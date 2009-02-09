@@ -96,16 +96,17 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         {
             long startPos = _reader.BaseStream.Position;
 
-            int b1 = (int)_reader.ReadByte();
+            //FFID
+            int ffid = (int)_reader.ReadByte();
 
-            int req = b1;
+            int req = ffid;
             req = req << 6;
             req = req >> 6;
             this.prq = (byte)req;
 
-            this.fTrueType = Utils.BitmaskToBool(b1, 0x04);
+            this.fTrueType = Utils.BitmaskToBool(ffid, 0x04);
 
-            int family = b1;
+            int family = ffid;
             family = family << 1;
             family = family >> 4;
             this.ff = (byte)family;

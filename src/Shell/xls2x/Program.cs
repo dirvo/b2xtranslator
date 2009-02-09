@@ -42,7 +42,6 @@ using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
 using System.Reflection;
 
-
 namespace xls2x
 {
     class Program
@@ -79,7 +78,7 @@ namespace xls2x
                     }
                 }
 
-               TraceLogger.Info("Converting file {0} into {1}", inputFile, outputFile);
+                TraceLogger.Info("Converting file {0} into {1}", inputFile, outputFile);
 
                 //start time
                 DateTime start = DateTime.Now;

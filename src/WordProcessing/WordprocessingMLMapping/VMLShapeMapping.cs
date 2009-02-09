@@ -22,6 +22,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private ContentPart _targetPart;
         private XmlElement _fill, _stroke, _shadow, _imagedata, _3dstyle;
         private bool _documentBase;
+        private List<byte> pSegmentInfo = new List<byte>();
+        private List<byte> pVertices = new List<byte>();
 
         public VMLShapeMapping(XmlWriter writer, ContentPart targetPart, FileShapeAddress fspa, bool documentBase, ConversionContext ctx)
             : base(writer)
@@ -149,6 +151,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             double shadowOriginY = 0;
             string[] adjValues = new string[8];
             int numberAdjValues = 0;
+            uint xCoord = 0;
+            uint yCoord = 0;
             bool stroked = true;
             bool filled = true;
             bool hasTextbox = false;
@@ -239,6 +243,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         _writer.WriteAttributeString("wrapcoords", getWrapCoords(entry));
                         break;
 
+                    case ShapeOptions.PropertyId.geoRight:
+                        xCoord = entry.op;
+                        break;
+
+                    case ShapeOptions.PropertyId.geoBottom:
+                        yCoord = entry.op;
+                        break;
+
                     // OUTLINE
 
                     case ShapeOptions.PropertyId.lineColor:
@@ -294,7 +306,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case ShapeOptions.PropertyId.fillOpacity:
                         appendValueAttribute(_fill, null, "opacity", entry.op + "f" , null);
                         break;
-
 
                     // SHADOW
 
@@ -366,6 +377,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case ShapeOptions.PropertyId.lTxid:
                         hasTextbox = true;
                         break;
+
+                    // PATH
+                    case ShapeOptions.PropertyId.shapePath:
+                        //
+                        _writer.WriteAttributeString("path", parsePath(options));
+                        break;
                 }
             }
 
@@ -377,6 +394,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             if (!stroked)
             {
                 _writer.WriteAttributeString("stroked", "f");
+            }
+
+            if (xCoord > 0 && yCoord > 0)
+            {
+                _writer.WriteAttributeString("coordsize", xCoord + "," + yCoord);
             }
 
             //write adj values 
@@ -507,6 +529,32 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //write the shape
             _writer.WriteEndElement();
             _writer.Flush();
+        }
+
+        private string parsePath(List<ShapeOptions.OptionEntry> options)
+        {
+            string path = "";
+            byte[] pVertices = null;
+            byte[] pSegmentInfo = null;
+
+            foreach (ShapeOptions.OptionEntry e in options)
+            {
+                if (e.pid == ShapeOptions.PropertyId.pVertices)
+                {
+                    pVertices = e.opComplex;
+                }
+                else if (e.pid == ShapeOptions.PropertyId.pSegmentInfo)
+                {
+                    pSegmentInfo = e.opComplex;
+                }
+            }
+
+            if (pSegmentInfo != null && pVertices.Length != null)
+            {
+                PathParser parser = new PathParser(pSegmentInfo, pVertices);
+                path = parser.VmlPath.ToString();
+            }
+            return path;
         }
 
         private StringBuilder generateStyle(ChildAnchor anchor, List<ShapeOptions.OptionEntry> options)
