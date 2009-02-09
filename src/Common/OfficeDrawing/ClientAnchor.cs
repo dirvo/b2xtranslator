@@ -38,22 +38,42 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
     public class ClientAnchor : Record
     {
         public byte[] Bytes;
-        public int Top;
-        public int Left;
-        public int Right;
-        public int Bottom;
 
         public ClientAnchor(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance) 
         {
             this.Bytes = this.Reader.ReadBytes((int)this.BodySize);
+        }
 
-            //this.Top = System.BitConverter.ToInt16(this.Bytes, 0); // this.Reader.ReadUInt16();
-            //this.Left = System.BitConverter.ToInt16(this.Bytes, 2); //this.Reader.ReadUInt16();
-            //this.Right = System.BitConverter.ToInt16(this.Bytes, 4); //this.Reader.ReadUInt16();
-            //this.Bottom = System.BitConverter.ToInt16(this.Bytes, 6); //this.Reader.ReadUInt16();
-        }        
-
+        //these are only valid for Powerpoint
+        public int Top
+        {
+            get
+            {
+                return System.BitConverter.ToInt16(this.Bytes, 0);
+            }
+        }
+        public int Left
+        {
+            get
+            {
+                return System.BitConverter.ToInt16(this.Bytes, 2);
+            }
+        }
+        public int Right
+        {
+            get
+            {
+                return System.BitConverter.ToInt16(this.Bytes, 4);
+            }
+        }
+        public int Bottom
+        {
+            get
+            {
+                return System.BitConverter.ToInt16(this.Bytes, 6);
+            }
+        }
     }
 
 }

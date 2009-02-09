@@ -507,6 +507,18 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             msoprvLine
         }
 
+        public enum LineEnd
+        {
+            NoEnd = 0,
+            ArrowEnd,
+            ArrowStealthEnd,
+            ArrowDiamondEnd,
+            ArrowOvalEnd,
+            ArrowOpenEnd,
+            ArrowChevronEnd,
+            ArrowDoubleChevronEnd
+        }
+
         public struct OptionEntry
         {
             public PropertyId pid;

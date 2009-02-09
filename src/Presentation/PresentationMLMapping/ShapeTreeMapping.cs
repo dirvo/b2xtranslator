@@ -103,33 +103,93 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             if (clientData == null)
             if (so != null)
             {
-                foreach (ShapeOptions.OptionEntry en in so.Options)
+                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.Pib))
                 {
-                    if (en.pid == ShapeOptions.PropertyId.Pib)
-                    {
-                        if (en.opComplex != null)
-                        {
-                            //TODO
-                        }
-                        else
-                        {
-                            writePic(container);
-                            pictureWritten = true;
-                        }
-                    }
+                    writePic(container);
+                    pictureWritten = true;
                 }
+
+                //foreach (ShapeOptions.OptionEntry en in so.Options)
+                //{
+                //    if (en.pid == ShapeOptions.PropertyId.Pib)
+                //    {
+                //        if (en.opComplex != null)
+                //        {
+                //            //TODO
+                //        }
+                //        else
+                //        {
+                //            writePic(container);
+                //            pictureWritten = true;
+                //        }
+                //    }
+                //}
             }
 
             if (!pictureWritten)
             {
+                //bool isConnector = false;
+                //switch (sh.Instance)
+                //{
+                //    case 0x20:
+                //    case 0x21:
+                //    case 0x22:
+                //    case 0x23:
+                //    case 0x24:
+                //    case 0x25:
+                //    case 0x26:
+                //    case 0x27:
+                //    case 0x28:
+                //        isConnector = true;
+                //        break;
+                //    default:
+                //        break;
+                //}
 
-                _writer.WriteStartElement("p", "sp", OpenXmlNamespaces.PresentationML);
+                if (sh.fConnector)
+                {
+                    string idStart = "";
+                    string idEnd = "";
+                    string idxStart = "0";
+                    string idxEnd = "0";
+                    foreach (FConnectorRule rule in container.FirstAncestorWithType<DrawingContainer>().FirstChildWithType<SolverContainer>().AllChildrenWithType<FConnectorRule>())
+                    {
+                        if (rule.spidC == sh.spid) //spidC marks the connector shape
+                        {
+                            idStart = spidToId[(int)rule.spidA].ToString(); //spidA marks the start shape
+                            idEnd = spidToId[(int)rule.spidB].ToString(); //spidB marks the end shape
+                            idxStart = rule.cptiA.ToString();
+                            idxEnd = rule.cptiB.ToString();
+                        }
+                    }
 
-                _writer.WriteStartElement("p", "nvSpPr", OpenXmlNamespaces.PresentationML);
+                    _writer.WriteStartElement("p", "cxnSp", OpenXmlNamespaces.PresentationML);
+                    _writer.WriteStartElement("p", "nvCxnSpPr", OpenXmlNamespaces.PresentationML);
+                    WriteCNvPr(sh.spid, "");
 
-                WriteCNvPr("");
+                    _writer.WriteStartElement("p", "cNvCxnSpPr", OpenXmlNamespaces.PresentationML);
 
-                _writer.WriteElementString("p", "cNvSpPr", OpenXmlNamespaces.PresentationML, "");
+                    _writer.WriteStartElement("a", "stCxn", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteAttributeString("id", idStart);
+                    _writer.WriteAttributeString("idx", idxStart);
+                    _writer.WriteEndElement(); //stCxn
+
+                    _writer.WriteStartElement("a", "endCxn", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteAttributeString("id", idEnd);
+                    _writer.WriteAttributeString("idx", idxEnd);
+                    _writer.WriteEndElement(); //endCxn
+
+                    _writer.WriteEndElement(); //cNvCxnSpPr
+                }
+                else
+                {
+                    _writer.WriteStartElement("p", "sp", OpenXmlNamespaces.PresentationML);
+                    _writer.WriteStartElement("p", "nvSpPr", OpenXmlNamespaces.PresentationML);
+                    WriteCNvPr(sh.spid, "");
+
+                    _writer.WriteElementString("p", "cNvSpPr", OpenXmlNamespaces.PresentationML, "");
+                }               
+               
                 _writer.WriteStartElement("p", "nvPr", OpenXmlNamespaces.PresentationML);
 
 
@@ -218,17 +278,85 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteEndElement();
                 }
 
+                _writer.WriteStartElement("a", "ln", OpenXmlNamespaces.DrawingML);
+
                 if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineColor))
                 {
                     string colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.lineColor].op, container.FirstAncestorWithType<Slide>());
-                    _writer.WriteStartElement("a", "ln", OpenXmlNamespaces.DrawingML);
                     _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
                     _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("val", colorval);
                     _writer.WriteEndElement();
                     _writer.WriteEndElement();
-                    _writer.WriteEndElement();
                 }
+                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineStartArrowhead))
+                {
+                    ShapeOptions.LineEnd val = (ShapeOptions.LineEnd)so.OptionsByID[ShapeOptions.PropertyId.lineStartArrowhead].op;
+                    if (val != ShapeOptions.LineEnd.NoEnd)
+                    {
+                            _writer.WriteStartElement("a", "headEnd", OpenXmlNamespaces.DrawingML);
+                            switch (val)
+                            {
+                                case ShapeOptions.LineEnd.ArrowEnd:
+                                    _writer.WriteAttributeString("type", "triangle");
+                                    break;
+                                case ShapeOptions.LineEnd.ArrowStealthEnd:
+                                    _writer.WriteAttributeString("type", "stealth");
+                                    break;
+                                case ShapeOptions.LineEnd.ArrowDiamondEnd:
+                                    _writer.WriteAttributeString("type", "diamond");
+                                    break;
+                                case ShapeOptions.LineEnd.ArrowOvalEnd:
+                                    _writer.WriteAttributeString("type", "oval");
+                                    break;
+                                case ShapeOptions.LineEnd.ArrowOpenEnd:
+                                    _writer.WriteAttributeString("type", "arrow");
+                                    break;
+                                case ShapeOptions.LineEnd.ArrowChevronEnd: //this should be ignored
+                                case ShapeOptions.LineEnd.ArrowDoubleChevronEnd:
+                                    _writer.WriteAttributeString("type", "triangle");
+                                    break;
+                            }
+                            _writer.WriteAttributeString("w", "med");
+                            _writer.WriteAttributeString("len", "med");
+                            _writer.WriteEndElement(); //headEnd
+                        }
+                }
+
+                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineEndArrowhead))
+                {
+                    ShapeOptions.LineEnd val = (ShapeOptions.LineEnd)so.OptionsByID[ShapeOptions.PropertyId.lineEndArrowhead].op;
+                    if (val != ShapeOptions.LineEnd.NoEnd)
+                    {
+                        _writer.WriteStartElement("a", "tailEnd", OpenXmlNamespaces.DrawingML);
+                        switch (val)
+                        {
+                            case ShapeOptions.LineEnd.ArrowEnd:
+                                _writer.WriteAttributeString("type", "triangle");
+                                break;
+                            case ShapeOptions.LineEnd.ArrowStealthEnd:
+                                _writer.WriteAttributeString("type", "stealth");
+                                break;
+                            case ShapeOptions.LineEnd.ArrowDiamondEnd:
+                                _writer.WriteAttributeString("type", "diamond");
+                                break;
+                            case ShapeOptions.LineEnd.ArrowOvalEnd:
+                                _writer.WriteAttributeString("type", "oval");
+                                break;
+                            case ShapeOptions.LineEnd.ArrowOpenEnd:
+                                _writer.WriteAttributeString("type", "arrow");
+                                break;
+                            case ShapeOptions.LineEnd.ArrowChevronEnd: //this should be ignored
+                            case ShapeOptions.LineEnd.ArrowDoubleChevronEnd:
+                                _writer.WriteAttributeString("type", "triangle");
+                                break;
+                        }
+                        _writer.WriteAttributeString("w", "med");
+                        _writer.WriteAttributeString("len", "med");
+                        _writer.WriteEndElement(); //tailnd
+                    }
+                }
+                _writer.WriteEndElement(); //ln
 
                 _writer.WriteEndElement();
 
@@ -241,7 +369,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     if (record is ClientTextbox) TextBoxFound = true;
                 }
 
-                if (!TextBoxFound)
+                if (!TextBoxFound & !sh.fConnector)
                 {
                     //write dummy
                     _writer.WriteStartElement("p", "txBody", OpenXmlNamespaces.PresentationML);
@@ -537,7 +665,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteStartElement("p", "nvGrpSpPr", OpenXmlNamespaces.PresentationML);
 
             // Non-visible Canvas Properties
-            WriteCNvPr("");
+            WriteCNvPr(-1, "");
 
             _writer.WriteElementString("p", "cNvGrpSpPr", OpenXmlNamespaces.PresentationML, "");
             _writer.WriteElementString("p", "nvPr", OpenXmlNamespaces.PresentationML, "");
@@ -1518,12 +1646,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
         }
 
-        private void WriteCNvPr(string name)
+        private Dictionary<int, int> spidToId = new Dictionary<int, int>();
+        private void WriteCNvPr(int spid, string name)
         {
             _writer.WriteStartElement("p", "cNvPr", OpenXmlNamespaces.PresentationML);
             _writer.WriteAttributeString("id", (++_idCnt).ToString());
             _writer.WriteAttributeString("name", name);
             _writer.WriteEndElement();
+            if (!spidToId.ContainsKey(spid)) spidToId.Add(spid, _idCnt);
         }
 
         private void WriteXFrm(XmlWriter _writer, Rectangle rect)
