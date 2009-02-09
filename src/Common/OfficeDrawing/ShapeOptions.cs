@@ -547,10 +547,9 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
                 entry.pid = (PropertyId)Utils.BitmaskToInt(flag, 0x3FFF);
                 entry.fBid = Utils.BitmaskToBool(flag, 0x4000);
                 entry.fComplex = Utils.BitmaskToBool(flag, 0x8000);
-                entry.op = this.Reader.ReadUInt32();
+                entry.op = (uint)this.Reader.ReadInt32();
 
                 this.Options[i] = entry;
-                OptionsByID.Add(entry.pid, entry);
             }
 
             //parse the complex values
@@ -560,8 +559,9 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             {
                 if (this.Options[i].fComplex)
                 {
-                    this.Options[i].opComplex = this.Reader.ReadBytes((int)this.Options[i].op);
+                    this.Options[i].opComplex = this.Reader.ReadBytes((int)this.Options[i].op + 6);
                 }
+                OptionsByID.Add(this.Options[i].pid, this.Options[i]);
             }
 
             this.Reader.BaseStream.Seek(pos + size, SeekOrigin.Begin);
