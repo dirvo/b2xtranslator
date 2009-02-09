@@ -549,12 +549,61 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 }
             }
 
-            if (pSegmentInfo != null && pVertices.Length != null)
+            if (pSegmentInfo != null && pVertices != null)
             {
                 PathParser parser = new PathParser(pSegmentInfo, pVertices);
-                path = parser.BuildVmlPath();
+                path = buildVmlPath(parser);
             }
             return path;
+        }
+
+        private string buildVmlPath(PathParser parser)
+        {
+            // build the VML Path
+            StringBuilder VmlPath = new StringBuilder();
+            int valuePointer = 0;
+            foreach (PathSegment seg in parser.Segments)
+            {
+                try
+                {
+                    switch (seg.Type)
+                    {
+                        case PathSegment.SegmentType.msopathCurveTo:
+                            VmlPath.Append("c");
+                            VmlPath.Append(parser.Values[valuePointer].X);
+                            VmlPath.Append(",");
+                            VmlPath.Append(parser.Values[valuePointer].Y);
+                            VmlPath.Append(",");
+                            VmlPath.Append(parser.Values[valuePointer + 1].X);
+                            VmlPath.Append(",");
+                            VmlPath.Append(parser.Values[valuePointer + 1].Y);
+                            VmlPath.Append(",");
+                            VmlPath.Append(parser.Values[valuePointer + 2].X);
+                            VmlPath.Append(",");
+                            VmlPath.Append(parser.Values[valuePointer + 2].Y);
+                            valuePointer += 3;
+                            break;
+                        case PathSegment.SegmentType.msopathMoveTo:
+                            VmlPath.Append("m");
+                            VmlPath.Append(parser.Values[valuePointer].X);
+                            VmlPath.Append(",");
+                            VmlPath.Append(parser.Values[valuePointer].Y);
+                            valuePointer += 1;
+                            break;
+                    }
+                }
+                catch (IndexOutOfRangeException ex)
+                {
+                    // Sometimes there are more Segments than available Values.
+                    // Accordingly to the spec this should never happen :)
+                    break;
+                }
+            }
+
+            // end the path
+            VmlPath.Append("e");
+
+            return VmlPath.ToString();
         }
 
         private StringBuilder generateStyle(ChildAnchor anchor, List<ShapeOptions.OptionEntry> options)
