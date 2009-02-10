@@ -166,7 +166,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case ShapeOptions.PropertyId.geometryBooleans:
                         GeometryBooleans geometryBooleans = new GeometryBooleans(entry.op);
 
-                        if (!(geometryBooleans.fUsefLineOK && geometryBooleans.fLineOK))
+                        if (geometryBooleans.fUsefLineOK && geometryBooleans.fLineOK==false)
                         {
                             stroked = false;
                         }
@@ -180,7 +180,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case ShapeOptions.PropertyId.lineStyleBooleans:
                         LineStyleBooleans lineBooleans = new LineStyleBooleans(entry.op);
 
-                        if (!(lineBooleans.fUsefLine && lineBooleans.fLine))
+                        if (lineBooleans.fUsefLine && lineBooleans.fLine == false)
                         {
                             stroked = false;
                         }
@@ -380,7 +380,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     // PATH
                     case ShapeOptions.PropertyId.shapePath:
-                        //
                         _writer.WriteAttributeString("path", parsePath(options));
                         break;
                 }
@@ -568,6 +567,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 {
                     switch (seg.Type)
                     {
+                        case PathSegment.SegmentType.msopathLineTo:
+                            VmlPath.Append("l");
+                            VmlPath.Append(parser.Values[valuePointer].X);
+                            VmlPath.Append(",");
+                            VmlPath.Append(parser.Values[valuePointer].Y);
+                            valuePointer += 1;
+                            break;
                         case PathSegment.SegmentType.msopathCurveTo:
                             VmlPath.Append("c");
                             VmlPath.Append(parser.Values[valuePointer].X);
@@ -590,6 +596,18 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                             VmlPath.Append(parser.Values[valuePointer].Y);
                             valuePointer += 1;
                             break;
+                        case PathSegment.SegmentType.msopathClose:
+                            VmlPath.Append("x");
+                            break;
+                        case PathSegment.SegmentType.msopathEnd:
+                            VmlPath.Append("e");
+                            break;
+                        case PathSegment.SegmentType.msopathEscape:
+                        case PathSegment.SegmentType.msopathClientEscape:
+                        case PathSegment.SegmentType.msopathInvalid:
+                            //ignore escape segments and invalid segments
+                            break;
+
                     }
                 }
                 catch (IndexOutOfRangeException ex)
@@ -601,7 +619,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
 
             // end the path
-            VmlPath.Append("e");
+            if (VmlPath[VmlPath.Length-1] != 'e')
+            {
+                VmlPath.Append("e");
+            }
 
             return VmlPath.ToString();
         }
