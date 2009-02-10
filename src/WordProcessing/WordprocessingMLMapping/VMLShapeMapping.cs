@@ -76,7 +76,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             _writer.WriteStartElement("v", "group", OpenXmlNamespaces.VectorML);
             _writer.WriteAttributeString("id", getShapeId(shape));
-            _writer.WriteAttributeString("style", generateStyle(anchor, options).ToString());
+            _writer.WriteAttributeString("style", buildStyle(shape, anchor, options).ToString());
             _writer.WriteAttributeString("coordorigin", gsr.rcgBounds.Left + "," + gsr.rcgBounds.Top);
             _writer.WriteAttributeString("coordsize", gsr.rcgBounds.Width + "," + gsr.rcgBounds.Height);
             
@@ -140,7 +140,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 _writer.WriteAttributeString("type", "#" + VMLShapeTypeMapping.GenerateTypeId(shape.ShapeType));
             }
-            _writer.WriteAttributeString("style", generateStyle(anchor, options).ToString());
+            _writer.WriteAttributeString("style", buildStyle(shape, anchor, options).ToString());
+            if (shape.ShapeType is LineType)
+            {
+                //append "from" and  "to" attributes
+                _writer.WriteAttributeString("from", getCoordinateFrom(anchor));
+                _writer.WriteAttributeString("to", getCoordinateTo(anchor));
+            }
+
 
             //temporary variables
             EmuValue shadowOffsetX = null;
@@ -272,6 +279,31 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         appendValueAttribute(_stroke, null, "linestyle", getLineStyle(entry.op), null);
                         break;
 
+                    case ShapeOptions.PropertyId.lineEndArrowhead:
+                        appendValueAttribute(_stroke, null, "endarrow", getArrowStyle(entry.op), null);
+                        break;
+
+                    case ShapeOptions.PropertyId.lineEndArrowLength:
+                        appendValueAttribute(_stroke, null, "endarrowlength", getArrowLength(entry.op), null);
+                        break;
+
+                    case ShapeOptions.PropertyId.lineEndArrowWidth:
+                        appendValueAttribute(_stroke, null, "endarrowwidth", getArrowWidth(entry.op), null);
+                        break;
+
+                    case ShapeOptions.PropertyId.lineStartArrowhead:
+                        appendValueAttribute(_stroke, null, "startarrow", getArrowStyle(entry.op), null);
+                        break;
+
+                    case ShapeOptions.PropertyId.lineStartArrowLength:
+                        appendValueAttribute(_stroke, null, "startarrowlength", getArrowLength(entry.op), null);
+                        break;
+
+                    case ShapeOptions.PropertyId.lineStartArrowWidth:
+                        appendValueAttribute(_stroke, null, "startarrowwidth", getArrowWidth(entry.op), null);
+                        break;
+
+
                     // FILL
 
                     case ShapeOptions.PropertyId.fillColor:
@@ -380,7 +412,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     // PATH
                     case ShapeOptions.PropertyId.shapePath:
-                        _writer.WriteAttributeString("path", parsePath(options));
+                        string path = parsePath(options);
+                        if(!string.IsNullOrEmpty(path))
+                        {
+                        _writer.WriteAttributeString("path", path);
+                        }
                         break;
                 }
             }
@@ -627,22 +663,86 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             return VmlPath.ToString();
         }
 
-        private StringBuilder generateStyle(ChildAnchor anchor, List<ShapeOptions.OptionEntry> options)
+        private string getCoordinateFrom(ChildAnchor anchor)
         {
-            StringBuilder style = new StringBuilder();
+            StringBuilder from = new StringBuilder();
             if (_documentBase)
             {
-                //this shape is placed directly in the document, 
-                //so use the FSPA to build the style
-                AppendDimensionToStyle(style, _fspa);
+                TwipsValue left = new TwipsValue(_fspa.xaLeft);
+                TwipsValue top = new TwipsValue(_fspa.yaTop);
+
+                from.Append(left.ToPoints().ToString(CultureInfo.GetCultureInfo("en-US")));
+                from.Append("pt,");
+                from.Append(top.ToPoints().ToString(CultureInfo.GetCultureInfo("en-US")));
+                from.Append("pt");
             }
             else
             {
-                //the style is part of a group, 
-                //so use the anchor
-                AppendDimensionToStyle(style, anchor);
+                from.Append(anchor.rcgBounds.Left);
+                from.Append("pt,");
+                from.Append(anchor.rcgBounds.Top);
+                from.Append("pt");
             }
+            return from.ToString();
+        }
+
+        private string getCoordinateTo(ChildAnchor anchor)
+        {
+            StringBuilder from = new StringBuilder();
+            if (_documentBase)
+            {
+                TwipsValue right = new TwipsValue(_fspa.xaRight);
+                TwipsValue bottom = new TwipsValue(_fspa.yaBottom);
+
+                from.Append(right.ToPoints().ToString(CultureInfo.GetCultureInfo("en-US")));
+                from.Append("pt,");
+                from.Append(bottom.ToPoints().ToString(CultureInfo.GetCultureInfo("en-US")));
+                from.Append("pt");
+            }
+            else
+            {
+                from.Append(anchor.rcgBounds.Right);
+                from.Append("pt,");
+                from.Append(anchor.rcgBounds.Bottom);
+                from.Append("pt");
+            }
+            return from.ToString();
+        }
+
+        private StringBuilder buildStyle(Shape shape, ChildAnchor anchor, List<ShapeOptions.OptionEntry> options)
+        {
+            StringBuilder style = new StringBuilder();
+            appendStyleProperty(style, "position", "absolute");
+
+            //don't append the dimension info to lines, 
+            // because they have "from" and "to" attributes to decline the dimension
+            if(!(shape.ShapeType is LineType))
+            {
+                if (_documentBase)
+                {
+                    //this shape is placed directly in the document, 
+                    //so use the FSPA to build the style
+                    AppendDimensionToStyle(style, _fspa);
+                }
+                else
+                {
+                    //the style is part of a group, 
+                    //so use the anchor
+                    AppendDimensionToStyle(style, anchor);
+                }
+            }
+
+            if (shape.fFlipH)
+            {
+                appendStyleProperty(style, "flip", "x");
+            }
+            if (shape.fFlipV)
+            {
+                appendStyleProperty(style, "flip", "y");
+            }
+
             AppendOptionsToStyle(style, options);
+
             return style;
         }
 
@@ -662,6 +762,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 //RECT
                 _writer.WriteStartElement("v", "rect", OpenXmlNamespaces.VectorML);
+            }
+            else if (shape.ShapeType is LineType)
+            {
+                //LINE
+                _writer.WriteStartElement("v", "line", OpenXmlNamespaces.VectorML);
             }
             else
             {
@@ -787,6 +892,62 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 	        }
         }
 
+        private string getArrowWidth(uint op)
+        {
+            switch (op)
+            {
+                default:
+                    //msolineNarrowArrow
+                    return "narrow";
+                case 1:
+                    //msolineMediumWidthArrow
+                    return "medium";
+                case 2:
+                    //msolineWideArrow
+                    return "wide";
+            }
+        }
+
+        private string getArrowLength(uint op)
+        {
+            switch (op)
+            {
+                default:
+                    //msolineShortArrow
+                    return "short";
+                case 1:
+                    //msolineMediumLengthArrow
+                    return "medium";
+                case 2:
+                    //msolineLongArrow
+                    return "long";
+            }
+        }
+
+        private string getArrowStyle(uint op)
+        {
+            switch (op)
+            {
+                default:
+                    //msolineNoEnd
+                    return "none";
+                case 1:
+                    //msolineArrowEnd
+                    return "block";
+                case 2:
+                    //msolineArrowStealthEnd
+                    return "classic";
+                case 3:
+                    //msolineArrowDiamondEnd
+                    return "diamond";
+                case 4:
+                    //msolineArrowOvalEnd
+                    return "oval";
+                case 5:
+                    //msolineArrowOpenEnd
+                    return "open";
+            }
+        }
 
         /// <summary>
         /// Build the VML wrapcoords string for a given pWrapPolygonVertices
@@ -900,7 +1061,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             TwipsValue width = new TwipsValue(fspa.xaRight - fspa.xaLeft);
             TwipsValue height = new TwipsValue(fspa.yaBottom - fspa.yaTop);
 
-            appendStyleProperty(style, "position", "absolute");
             appendStyleProperty(style, "margin-left", Convert.ToString(left.ToPoints(), CultureInfo.GetCultureInfo("en-US")) + "pt");
             appendStyleProperty(style, "margin-top", Convert.ToString(top.ToPoints(), CultureInfo.GetCultureInfo("en-US")) + "pt");
             appendStyleProperty(style, "width", Convert.ToString(width.ToPoints(), CultureInfo.GetCultureInfo("en-US")) + "pt");
