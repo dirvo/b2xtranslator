@@ -519,6 +519,21 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             ArrowDoubleChevronEnd
         }
 
+        public enum LineDashing
+        {
+            Solid = 0,
+            DashSys,
+            DotSys,
+            DashDotSys,
+            DashDotDotSys,
+            DotGEL,
+            DashGEL,
+            LongDashGEL,
+            DashDotGEL,
+            LongDashDotGEL,
+            LongDashDotDotGEL
+        }
+
         public struct OptionEntry
         {
             public PropertyId pid;

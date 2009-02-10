@@ -341,7 +341,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         break;
                 }                
             }
-            return "";
+            return bytes[0].ToString("X").PadLeft(2, '0') + bytes[1].ToString("X").PadLeft(2, '0') + bytes[3].ToString("X").PadLeft(2, '0');
         }
     }
 }
