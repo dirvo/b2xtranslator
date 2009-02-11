@@ -272,10 +272,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             case 0x0: //solid
                                 break;
                             case 0x1: //pattern
-                                string blipNamePattern = Encoding.UTF8.GetString(so.OptionsByID[ShapeOptions.PropertyId.fillBlipName].opComplex).Replace("\0", "").ToLower();
+                                uint blipIndex1 = so.OptionsByID[ShapeOptions.PropertyId.fillBlip].op;
+                                DrawingGroup gr1 = (DrawingGroup)this._ctx.Ppt.DocumentRecord.FirstChildWithType<PPDrawingGroup>().Children[0];
+                                BlipStoreEntry bse1 = (BlipStoreEntry)gr1.FirstChildWithType<BlipStoreContainer>().Children[(int)blipIndex1 - 1];
+                                BitmapBlip b1 = (BitmapBlip)_ctx.Ppt.PicturesContainer._pictures[bse1.foDelay];
+
                                 _writer.WriteStartElement("a", "pattFill", OpenXmlNamespaces.DrawingML);
 
-                                _writer.WriteAttributeString("prst", Utils.getPrstForPattern(blipNamePattern));
+                                _writer.WriteAttributeString("prst", Utils.getPrstForPatternCode(b1.m_bTag)); //Utils.getPrstForPattern(blipNamePattern));
 
                                 _writer.WriteStartElement("a", "fgClr", OpenXmlNamespaces.DrawingML);
                                 _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
@@ -562,7 +566,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 }
                 if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineEndCapStyle))
                 {
-                    switch(so.OptionsByID[ShapeOptions.PropertyId.lineEndCapStyle].op)
+                    switch (so.OptionsByID[ShapeOptions.PropertyId.lineEndCapStyle].op)
                     {
                         case 0: //round
                             _writer.WriteAttributeString("cap", "rnd");
@@ -575,20 +579,90 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             break;
                     }
                 }
+                
 
-                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineColor))
+                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineType))
                 {
-                    LineStyleBooleans lineStyle = new LineStyleBooleans(so.OptionsByID[ShapeOptions.PropertyId.lineStyleBooleans].op);
-                    if (lineStyle.fLine)
+                    switch (so.OptionsByID[ShapeOptions.PropertyId.lineType].op)
                     {
-                        string colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.lineColor].op, container.FirstAncestorWithType<Slide>());
-                        _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("val", colorval);
-                        _writer.WriteEndElement();
-                        _writer.WriteEndElement();
+                        case 0: //solid
+                            break;
+                        case 1: //pattern
+                            uint blipIndex = so.OptionsByID[ShapeOptions.PropertyId.lineFillBlip].op;
+                            DrawingGroup gr = (DrawingGroup)this._ctx.Ppt.DocumentRecord.FirstChildWithType<PPDrawingGroup>().Children[0];
+                            BlipStoreEntry bse = (BlipStoreEntry)gr.FirstChildWithType<BlipStoreContainer>().Children[(int)blipIndex - 1];
+                            BitmapBlip b = (BitmapBlip)_ctx.Ppt.PicturesContainer._pictures[bse.foDelay];
+
+                            _writer.WriteStartElement("a", "pattFill", OpenXmlNamespaces.DrawingML);
+
+                            _writer.WriteAttributeString("prst", Utils.getPrstForPatternCode(b.m_bTag)); //Utils.getPrstForPattern(blipNamePattern));
+
+                            _writer.WriteStartElement("a", "fgClr", OpenXmlNamespaces.DrawingML);
+
+                            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineColor))
+                            {
+                                _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("val", Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.lineColor].op, container.FirstAncestorWithType<Slide>()));
+                                _writer.WriteEndElement();
+                            } else {
+                                _writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("val", "tx1");
+                                _writer.WriteEndElement();
+                            }
+
+                            _writer.WriteEndElement();
+
+                            _writer.WriteStartElement("a", "bgClr", OpenXmlNamespaces.DrawingML);
+
+                            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineBackColor))
+                            {
+                                _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("val", Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.lineBackColor].op, container.FirstAncestorWithType<Slide>()));
+                                _writer.WriteEndElement();
+                            }
+                            else
+                            {
+                                _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("val", "FFFFFF");
+                                _writer.WriteEndElement();
+                            }
+                           
+                            _writer.WriteEndElement();
+
+                            _writer.WriteEndElement();
+
+                            break;
+                        case 2: //texture
+                            break;
+                        default:
+                            break;
                     }
                 }
+                else
+                {
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineColor))
+                    {
+                        LineStyleBooleans lineStyle = new LineStyleBooleans(so.OptionsByID[ShapeOptions.PropertyId.lineStyleBooleans].op);
+                        if (lineStyle.fLine)
+                        {
+                            string colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.lineColor].op, container.FirstAncestorWithType<Slide>());
+                            _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("val", colorval);
+                            _writer.WriteEndElement();
+                            _writer.WriteEndElement();
+                        }
+                    }
+                }
+
+                if (!so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineEndCapStyle))
+                {
+                    _writer.WriteStartElement("a", "miter", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteAttributeString("lim", "800000");
+                    _writer.WriteEndElement();
+                }
+
+
                 if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineDashing))
                 {
                     _writer.WriteStartElement("a", "prstDash", OpenXmlNamespaces.DrawingML);

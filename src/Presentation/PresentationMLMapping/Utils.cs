@@ -344,109 +344,162 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             return bytes[0].ToString("X").PadLeft(2, '0') + bytes[1].ToString("X").PadLeft(2, '0') + bytes[2].ToString("X").PadLeft(2, '0');
         }
 
-        public static string getPrstForPattern(string blipNamePattern)
+        //public static string getPrstForPattern(string blipNamePattern)
+        //{
+        //    switch (blipNamePattern)
+        //    {
+        //        case "5%":
+        //            return  "pct5";
+        //        case "10%":
+        //            return  "pct10";
+        //        case "20%":
+        //            return  "pct20";
+        //        case "25%":
+        //            return  "pct25";
+        //        case "30%":
+        //            return  "pct30";
+        //        case "40%":
+        //            return  "pct40";
+        //        case "50%":
+        //            return  "pct50";
+        //        case "60%":
+        //            return  "pct60";
+        //        case "70%":
+        //            return  "pct70";
+        //        case "75%":
+        //            return  "pct75";
+        //        case "80%":
+        //            return  "pct80";
+        //        case "90%":
+        //            return  "pct90";
+        //        case "dark horizontal":
+        //            return  "dkHorz";
+        //        case "dark vertical":
+        //            return  "dkVert";
+        //        case "dark downward diagonal":
+        //            return  "dkDnDiag";
+        //        case "dark upward diagonal":
+        //            return  "dkUpDiag";
+        //        case "dashed downward diagonal":
+        //            return  "dashDnDiag";
+        //        case "dashed horizontal":
+        //            return  "dashHorz";
+        //        case "dashed vertical":
+        //            return  "dashVert";
+        //        case "dashed upward diagonal":
+        //            return  "dashUpDiag";
+        //        case "diagonal brick":
+        //            return  "diagBrick";
+        //        case "divot":
+        //            return  "divot";
+        //        case "dotted grid":
+        //            return  "dotGrid";
+        //        case "dotted diamond":
+        //            return  "dotDmnd";
+        //        case "horizontal brick":
+        //            return  "horzBrick";
+        //        case "large checker board":
+        //            return  "lgCheck";
+        //        case "large confetti":
+        //            return  "lgConfetti";
+        //        case "large grid":
+        //            return  "lgGrid";
+        //        case "light downward diagonal":
+        //            return  "ltDnDiag";
+        //        case "light horizontal":
+        //            return  "ltHorz";
+        //        case "light upward diagonal":
+        //            return  "ltUpDiag";
+        //        case "light vertical":
+        //            return  "ltVert";
+        //        case "narrow horizontal":
+        //            return  "narHorz";
+        //        case "narrow vertical":
+        //            return  "narVert";
+        //        case "outlined diamond":
+        //            return  "openDmnd";
+        //        case "small confetti":
+        //            return  "smConfetti";
+        //        case "small checker board":
+        //            return  "smCheck";
+        //        case "small grid":
+        //            return  "smGrid";
+        //        case "solid diamond":
+        //            return  "solidDmnd";
+        //        case "plaid":
+        //            return  "plaid";
+        //        case "shingle":
+        //            return  "shingle";
+        //        case "sphere":
+        //            return  "sphere";
+        //        case "trellis":
+        //            return  "trellis";
+        //        case "wave":
+        //            return  "wave";
+        //        case "weave":
+        //            return  "weave";
+        //        case "wide downward diagonal":
+        //            return  "wdDnDiag";
+        //        case "wide upward diagonal":
+        //            return  "wdUpDiag";
+        //        case "zig zag":
+        //            return  "zigZag";
+        //        default:
+        //            return  "zigZag";
+        //    }
+        //}
+
+        public static string getPrstForPatternCode(int code)
         {
-            switch (blipNamePattern)
-            {
-                case "5%":
-                    return  "pct5";
-                case "10%":
-                    return  "pct10";
-                case "20%":
-                    return  "pct20";
-                case "25%":
-                    return  "pct25";
-                case "30%":
-                    return  "pct30";
-                case "40%":
-                    return  "pct40";
-                case "50%":
-                    return  "pct50";
-                case "60%":
-                    return  "pct60";
-                case "70%":
-                    return  "pct70";
-                case "75%":
-                    return  "pct75";
-                case "80%":
-                    return  "pct80";
-                case "90%":
-                    return  "pct90";
-                case "dark horizontal":
-                    return  "dkHorz";
-                case "dark vertical":
-                    return  "dkVert";
-                case "dark downward diagonal":
-                    return  "dkDnDiag";
-                case "dark upward diagonal":
-                    return  "dkUpDiag";
-                case "dashed downward diagonal":
-                    return  "dashDnDiag";
-                case "dashed horizontal":
-                    return  "dashHorz";
-                case "dashed vertical":
-                    return  "dashVert";
-                case "dashed upward diagonal":
-                    return  "dashUpDiag";
-                case "diagonal brick":
-                    return  "diagBrick";
-                case "divot":
-                    return  "divot";
-                case "dotted grid":
-                    return  "dotGrid";
-                case "dotted diamond":
-                    return  "dotDmnd";
-                case "horizontal brick":
-                    return  "horzBrick";
-                case "large checker board":
-                    return  "lgCheck";
-                case "large confetti":
-                    return  "lgConfetti";
-                case "large grid":
-                    return  "lgGrid";
-                case "light downward diagonal":
-                    return  "ltDnDiag";
-                case "light horizontal":
-                    return  "ltHorz";
-                case "light upward diagonal":
-                    return  "ltUpDiag";
-                case "light vertical":
-                    return  "ltVert";
-                case "narrow horizontal":
-                    return  "narHorz";
-                case "narrow vertical":
-                    return  "narVert";
-                case "outlined diamond":
-                    return  "openDmnd";
-                case "small confetti":
-                    return  "smConfetti";
-                case "small checker board":
-                    return  "smCheck";
-                case "small grid":
-                    return  "smGrid";
-                case "solid diamond":
-                    return  "solidDmnd";
-                case "plaid":
-                    return  "plaid";
-                case "shingle":
-                    return  "shingle";
-                case "sphere":
-                    return  "sphere";
-                case "trellis":
-                    return  "trellis";
-                case "wave":
-                    return  "wave";
-                case "weave":
-                    return  "weave";
-                case "wide downward diagonal":
-                    return  "wdDnDiag";
-                case "wide upward diagonal":
-                    return  "wdUpDiag";
-                case "zig zag":
-                    return  "zigZag";
-                default:
-                    return  "zigZag";
-            }
+            if (code == 0xC4) return "pct5";
+            if (code == 0xC5) return "pct50";
+            if (code == 0xC6) return "ltDnDiag";
+            if (code == 0xC7) return "ltVert";
+            if (code == 0xC8) return "dashDnDiag";
+            if (code == 0xC9) return "zigZag";
+            if (code == 0xCA) return "divot";
+            if (code == 0xCB) return "smGrid";
+            if (code == 0xCC) return "pct10";
+            if (code == 0xCD) return "pct60";
+            if (code == 0xCE) return "ltUpDiag";
+            if (code == 0xCF) return "ltHorz";
+            if (code == 0xD0) return "dashUpDiag";
+            if (code == 0xD1) return "wave";
+            if (code == 0xD2) return "dotGrid";
+            if (code == 0xD3) return "lgGrid";
+            if (code == 0xD4) return "pct20";
+            if (code == 0xD5) return "pct70";
+            if (code == 0xD6) return "dkDnDiag";
+            if (code == 0xD7) return "narVert";
+            if (code == 0xD8) return "dashHorz";
+            if (code == 0xD9) return "diagBrick";
+            if (code == 0xDA) return "dotDmnd";
+            if (code == 0xDB) return "smCheck";
+            if (code == 0xDC) return "pct25";
+            if (code == 0xDD) return "pct75";
+            if (code == 0xDE) return "dkUpDiag";
+            if (code == 0xDF) return "narHorz";
+            if (code == 0xE0) return "dashVert";
+            if (code == 0xE1) return "horzBrick";
+            if (code == 0xE2) return "shingle";
+            if (code == 0xE3) return "lgCheck";
+            if (code == 0xE4) return "pct30";
+            if (code == 0xE5) return "pct80";
+            if (code == 0xE6) return "wdDnDiag";
+            if (code == 0xE7) return "dkVert";
+            if (code == 0xE8) return "smConfetti";
+            if (code == 0xE9) return "weave";
+            if (code == 0xEA) return "trellis";
+            if (code == 0xEB) return "openDmnd";
+            if (code == 0xEC) return "pct40";
+            if (code == 0xED) return "pct90";
+            if (code == 0xEE) return "wdUpDiag";
+            if (code == 0xEF) return "dkHorz";
+            if (code == 0xF0) return "lgConfetti";
+            if (code == 0xF1) return "plaid";
+            if (code == 0xF2) return "sphere";
+            if (code == 0xF3) return "solidDmnd";
+            return "";
         }
 
         public static string getPrstForShape(uint shapeInstance)
