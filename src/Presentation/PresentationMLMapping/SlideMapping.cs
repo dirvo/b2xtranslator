@@ -138,7 +138,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             SlideAtom slideAtom = this.Slide.FirstChildWithType<SlideAtom>();
 
             bool footer = false;
-            bool header = false;
             
             foreach (SlideHeadersFootersContainer c in this._ctx.Ppt.DocumentRecord.AllChildrenWithType<SlideHeadersFootersContainer>())
             {
@@ -150,7 +149,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         foreach (HeadersFootersAtom a in c.AllChildrenWithType<HeadersFootersAtom>())
                         {
                             if (a.fHasFooter) footer = true;
-                            if (a.fHasHeader) header = true;
+                            //if (a.fHasHeader) header = true;
                         }
                         break;
                     case 4: //NotesHeadersFootersContainer

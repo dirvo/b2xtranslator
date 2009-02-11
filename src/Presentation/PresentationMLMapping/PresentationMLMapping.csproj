@@ -86,6 +86,10 @@
       <Project>{B44FAEE0-B32E-4682-AA42-618C893F14C6}</Project>
       <Name>Tools</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Common\ZipUtils\ZipUtils.csproj">
+      <Project>{05A5C68E-B901-4AD0-87F1-5E43DDC759CE}</Project>
+      <Name>ZipUtils</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PptFileFormat\PptFileFormat.csproj">
       <Project>{6EAD0A6A-8DF0-4CA3-8D5E-3C871E7FCB62}</Project>
       <Name>PptFileFormat</Name>

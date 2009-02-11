@@ -562,7 +562,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
                 entry.pid = (PropertyId)Utils.BitmaskToInt(flag, 0x3FFF);
                 entry.fBid = Utils.BitmaskToBool(flag, 0x4000);
                 entry.fComplex = Utils.BitmaskToBool(flag, 0x8000);
-                entry.op = (uint)this.Reader.ReadInt32();
+                entry.op = this.Reader.ReadUInt32();
 
                 this.Options[i] = entry;
             }

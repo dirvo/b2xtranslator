@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO.Compression;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.PptFileFormat;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
@@ -96,7 +97,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         {
             ClientData clientData = container.FirstChildWithType<ClientData>();
 
-            bool pictureWritten = false;
+            bool continueShape = true;
 
             Shape sh = container.FirstChildWithType<Shape>();
             so = container.FirstChildWithType<ShapeOptions>();
@@ -106,46 +107,35 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.Pib))
                 {
                     writePic(container);
-                    pictureWritten = true;
+                    continueShape = false;
                 }
-
-                //foreach (ShapeOptions.OptionEntry en in so.Options)
-                //{
-                //    if (en.pid == ShapeOptions.PropertyId.Pib)
-                //    {
-                //        if (en.opComplex != null)
-                //        {
-                //            //TODO
-                //        }
-                //        else
-                //        {
-                //            writePic(container);
-                //            pictureWritten = true;
-                //        }
-                //    }
-                //}
             }
 
-            if (!pictureWritten)
+            ShapeOptions sndSo = null;
+            if (container.AllChildrenWithType<ShapeOptions>().Count > 1)
             {
-                //bool isConnector = false;
-                //switch (sh.Instance)
-                //{
-                //    case 0x20:
-                //    case 0x21:
-                //    case 0x22:
-                //    case 0x23:
-                //    case 0x24:
-                //    case 0x25:
-                //    case 0x26:
-                //    case 0x27:
-                //    case 0x28:
-                //        isConnector = true;
-                //        break;
-                //    default:
-                //        break;
-                //}
+                sndSo = ((RegularContainer)sh.ParentRecord).AllChildrenWithType<ShapeOptions>()[1];
+                if (sndSo.OptionsByID.ContainsKey(ShapeOptions.PropertyId.metroBlob))
+                {
+                    ShapeOptions.OptionEntry metroBlob = sndSo.OptionsByID[ShapeOptions.PropertyId.metroBlob];
+                    byte[] code = metroBlob.opComplex;
+                    string path = System.IO.Path.GetTempFileName();
+                    System.IO.FileStream fs = new System.IO.FileStream(path, System.IO.FileMode.Create);
+                    fs.Write(code, 0, code.Length);
+                    fs.Close();
+                    ZipUtils.ZipReader reader = ZipUtils.ZipFactory.OpenArchive(path);
+                    System.IO.StreamReader mems = new System.IO.StreamReader(reader.GetEntry("drs/shapexml.xml"));
+                    string xml = mems.ReadToEnd();
+                    xml = xml.Substring(xml.IndexOf("<p:sp")); //remove xml declaration
 
+                    _writer.WriteRaw(xml);
+
+                    continueShape = false;
+                }
+            }
+
+            if (continueShape)
+            {
                 if (sh.fConnector)
                 {
                     string idStart = "";
@@ -192,8 +182,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                
                 _writer.WriteStartElement("p", "nvPr", OpenXmlNamespaces.PresentationML);
 
-
-
                 if (clientData != null)
                 {
 
@@ -232,9 +220,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             }
                             break;
                         case 4116:
-                            //AnimationInfoContainer animinfo = (AnimationInfoContainer)rec;
-                            //animinfos.Add(animinfo, _idCnt);
-                            //new AnimationMapping(_ctx, _writer).Apply(animinfo);
                             break;
                     }
                 }
@@ -252,6 +237,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 if (anchor != null && anchor.Right >= anchor.Left && anchor.Bottom >= anchor.Top)
                 {
                     _writer.WriteStartElement("a", "xfrm", OpenXmlNamespaces.DrawingML);
+                    if (sh.fFlipH) _writer.WriteAttributeString("flipH", "1");
+                    if (sh.fFlipV) _writer.WriteAttributeString("flipV", "1");
 
                     _writer.WriteStartElement("a", "off", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("x", Utils.MasterCoordToEMU(anchor.Left).ToString());
@@ -265,127 +252,307 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                     _writer.WriteEndElement();
                 }
-                if (sh.Instance != 0)
+
+                if (sh.Instance != 0) //this means a predefined shape
                 {
                     WriteprstGeom(sh);
                 }
-                else
+                else //this means a custom shape
                 {
-                    _writer.WriteStartElement("a", "custGeom", OpenXmlNamespaces.DrawingML);
-
-                    _writer.WriteStartElement("a", "cxnLst", OpenXmlNamespaces.DrawingML);
-                    
-                    ShapeOptions.OptionEntry pVertices = so.OptionsByID[ShapeOptions.PropertyId.pVertices];
-                    ShapeOptions.OptionEntry ShapePath = so.OptionsByID[ShapeOptions.PropertyId.shapePath];
-                    ShapeOptions.OptionEntry SegementInfo = so.OptionsByID[ShapeOptions.PropertyId.pSegmentInfo];
-                    PathParser pp = new PathParser(SegementInfo.opComplex, pVertices.opComplex);
-
-                    foreach (Point point in pp.Values)
-                    {
-                        _writer.WriteStartElement("a", "cxn", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("ang", "0");
-                        _writer.WriteStartElement("a", "pos", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("x", point.X.ToString());
-                        _writer.WriteAttributeString("y", point.Y.ToString());
-                        _writer.WriteEndElement(); //pos
-                        _writer.WriteEndElement(); //cxn
-                    }
-                    _writer.WriteEndElement(); //cxnLst
-
-                    _writer.WriteStartElement("a", "rect", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("l", "0");
-                    _writer.WriteAttributeString("t", "0");
-                    _writer.WriteAttributeString("r", "r");
-                    _writer.WriteAttributeString("b", "b");
-                    _writer.WriteEndElement(); //rect
-
-                    _writer.WriteStartElement("a", "pathLst", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteStartElement("a", "path", OpenXmlNamespaces.DrawingML);
-                    //compute width and height:
-                    int minX = 1000;
-                    int minY = 1000;
-                    int maxX = -1000;
-                    int maxY = -1000;
-                    foreach (Point p in pp.Values)
-                    {
-                        if ((p.X) < minX) minX = p.X;
-                        if ((p.X) > maxX) maxX = p.X;
-                        if ((p.Y) < minY) minY = p.Y;
-                        if ((p.Y) > maxY) maxY = p.Y;
-                    }
-                    _writer.WriteAttributeString("w", (maxX - minX).ToString());
-                    _writer.WriteAttributeString("h", (maxY - minY).ToString());
-                    
-                    int valuePointer = 0;
-                    foreach (PathSegment seg in pp.Segments)
-                    {
-                        switch (seg.Type)
-                        {
-                            case PathSegment.SegmentType.msopathLineTo:
-                                _writer.WriteStartElement("a", "lnTo", OpenXmlNamespaces.DrawingML);
-                                _writer.WriteStartElement("a", "pt", OpenXmlNamespaces.DrawingML);
-                                _writer.WriteAttributeString("x", pp.Values[valuePointer].X.ToString());
-                                _writer.WriteAttributeString("y", pp.Values[valuePointer].Y.ToString());
-                                _writer.WriteEndElement(); //pt
-                                _writer.WriteEndElement(); //lnTo
-                                valuePointer += 1;
-                                break;
-                            case PathSegment.SegmentType.msopathCurveTo:
-                                _writer.WriteStartElement("a", "cubicBezTo", OpenXmlNamespaces.DrawingML);
-                                _writer.WriteStartElement("a", "pt", OpenXmlNamespaces.DrawingML);
-                                _writer.WriteAttributeString("x", pp.Values[valuePointer].X.ToString());
-                                _writer.WriteAttributeString("y", pp.Values[valuePointer].Y.ToString());
-                                _writer.WriteEndElement(); //pt
-                                valuePointer += 1;
-                                _writer.WriteStartElement("a", "pt", OpenXmlNamespaces.DrawingML);
-                                _writer.WriteAttributeString("x", pp.Values[valuePointer].X.ToString());
-                                _writer.WriteAttributeString("y", pp.Values[valuePointer].Y.ToString());
-                                _writer.WriteEndElement(); //pt
-                                valuePointer += 1;
-                                _writer.WriteStartElement("a", "pt", OpenXmlNamespaces.DrawingML);
-                                _writer.WriteAttributeString("x", pp.Values[valuePointer].X.ToString());
-                                _writer.WriteAttributeString("y", pp.Values[valuePointer].Y.ToString());
-                                _writer.WriteEndElement(); //pt
-                                valuePointer += 1;
-                                _writer.WriteEndElement(); //cubicBezTo
-                                break;
-                            case PathSegment.SegmentType.msopathMoveTo:
-                                _writer.WriteStartElement("a", "moveTo", OpenXmlNamespaces.DrawingML);
-                                _writer.WriteStartElement("a", "pt", OpenXmlNamespaces.DrawingML);
-                                _writer.WriteAttributeString("x", pp.Values[valuePointer].X.ToString());
-                                _writer.WriteAttributeString("y", pp.Values[valuePointer].Y.ToString());
-                                _writer.WriteEndElement(); //pr
-                                _writer.WriteEndElement(); //moveTo
-                                valuePointer += 1;
-                                break;
-                            case PathSegment.SegmentType.msopathClose:
-                                _writer.WriteElementString("a", "close", OpenXmlNamespaces.DrawingML, "");
-                                break;
-                        }
-                    }
-
-                    _writer.WriteEndElement(); //path
-                    _writer.WriteEndElement(); //pathLst
-                    
-                    _writer.WriteEndElement(); //custGeom
+                    WritecustGeom(sh);
                 }
 
-                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillColor))
+                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillColor) | so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillType))
                 {
-                    string colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, container.FirstAncestorWithType<Slide>());
-                    _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("val", colorval);
-
-                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity))
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillType))
                     {
-                        _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillOpacity].op / 65536 * 100000)).ToString());
+                        string colorval = "";
+                        switch (so.OptionsByID[ShapeOptions.PropertyId.fillType].op)
+                        {
+                            case 0x0: //solid
+                                break;
+                            case 0x1: //pattern
+                                string blipNamePattern = Encoding.UTF8.GetString(so.OptionsByID[ShapeOptions.PropertyId.fillBlipName].opComplex).Replace("\0", "").ToLower();
+                                _writer.WriteStartElement("a", "pattFill", OpenXmlNamespaces.DrawingML);
+
+                                _writer.WriteAttributeString("prst", Utils.getPrstForPattern(blipNamePattern));
+
+                                _writer.WriteStartElement("a", "fgClr", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("val", Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, container.FirstAncestorWithType<Slide>()));
+                                _writer.WriteEndElement();
+                                _writer.WriteEndElement();
+
+                                _writer.WriteStartElement("a", "bgClr", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("val", Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillBackColor].op, container.FirstAncestorWithType<Slide>()));
+                                _writer.WriteEndElement();
+                                _writer.WriteEndElement();
+
+                                _writer.WriteEndElement();
+
+                                break;
+                            case 0x2: //texture
+                            case 0x3: //picture
+                                uint blipIndex = so.OptionsByID[ShapeOptions.PropertyId.fillBlip].op;
+                                string blipName = Encoding.UTF8.GetString(so.OptionsByID[ShapeOptions.PropertyId.fillBlipName].opComplex);
+                                string rId = "";
+                                DrawingGroup gr = (DrawingGroup)this._ctx.Ppt.DocumentRecord.FirstChildWithType<PPDrawingGroup>().Children[0];
+                                BlipStoreEntry bse = (BlipStoreEntry)gr.FirstChildWithType<BlipStoreContainer>().Children[(int)blipIndex - 1];
+                                BitmapBlip b = (BitmapBlip)_ctx.Ppt.PicturesContainer._pictures[bse.foDelay];
+
+                                ImagePart imgPart = null;
+                                imgPart = parentSlideMapping.targetPart.AddImagePart(getImageType(b.TypeCode));
+                                imgPart.TargetDirectory = "..\\media";
+                                System.IO.Stream outStream = imgPart.GetStream();
+                                outStream.Write(b.m_pvBits, 0, b.m_pvBits.Length);
+
+                                rId = imgPart.RelIdToString;
+
+                                _writer.WriteStartElement("a", "blipFill", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("dpi", "0");
+                                _writer.WriteAttributeString("rotWithShape", "1");
+
+                                _writer.WriteStartElement("a", "blip", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("r", "embed", OpenXmlNamespaces.Relationships, rId);
+                                _writer.WriteEndElement();
+
+                                _writer.WriteElementString("a", "srcRect", OpenXmlNamespaces.DrawingML,"");
+
+                                if (so.OptionsByID[ShapeOptions.PropertyId.fillType].op == 0x3)
+                                {
+                                    _writer.WriteStartElement("a", "stretch", OpenXmlNamespaces.DrawingML);
+                                    _writer.WriteElementString("a", "fillRect", OpenXmlNamespaces.DrawingML, "");
+                                    _writer.WriteEndElement();
+                                }
+                                else
+                                {
+                                    _writer.WriteStartElement("a", "tile", OpenXmlNamespaces.DrawingML);
+                                    _writer.WriteAttributeString("tx", "0");
+                                    _writer.WriteAttributeString("ty", "0");
+                                    _writer.WriteAttributeString("sx", "100000");
+                                    _writer.WriteAttributeString("sy", "100000");
+                                    _writer.WriteAttributeString("flip", "none");
+                                    _writer.WriteAttributeString("algn", "tl");
+                                    _writer.WriteEndElement();
+                                }
+
+                                _writer.WriteEndElement();
+                                break;
+                            case 0x4: //shade
+                            case 0x5: //shadecenter
+                            case 0x6: //shadeshape
+                                _writer.WriteStartElement("a", "gradFill", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("rotWithShape", "1");
+                                _writer.WriteStartElement("a", "gsLst", OpenXmlNamespaces.DrawingML);
+
+                                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillShadeColors))
+                                {
+
+                                    byte[] colors = so.OptionsByID[ShapeOptions.PropertyId.fillShadeColors].opComplex;
+                                    ShapeOptions.OptionEntry type = so.OptionsByID[ShapeOptions.PropertyId.fillShadeType];
+
+                                    UInt16 nElems = System.BitConverter.ToUInt16(colors, 0);
+                                    UInt16 nElemsAlloc = System.BitConverter.ToUInt16(colors, 2);
+                                    UInt16 cbElem = System.BitConverter.ToUInt16(colors, 4);
+
+                                    string[] positions = { "0", "30000", "65000", "90000", "100000" };
+
+                                    string[] alphas = new string[5];
+                                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity))
+                                    {
+                                        decimal end = Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillOpacity].op / 65536 * 100000));
+                                        decimal start = Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillBackOpacity].op / 65536 * 100000));
+                                        alphas[0] = start.ToString();
+                                        alphas[1] = Math.Round(start + (end - start) / 3).ToString();
+                                        alphas[2] = Math.Round(start + (end - start) / 3 * 2).ToString();
+                                        alphas[3] = Math.Round(start + (end - start) / 3 * 3).ToString();
+                                        alphas[4] = end.ToString();
+                                    }
+
+                                    for (int i = 0; i < nElems * cbElem; i += cbElem)
+                                    {
+                                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(System.BitConverter.ToUInt32(colors, 6 + i), container.FirstAncestorWithType<Slide>());
+                                        _writer.WriteStartElement("a", "gs", OpenXmlNamespaces.DrawingML);
+                                        _writer.WriteAttributeString("pos", positions[i / cbElem]);
+
+                                        _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                                        _writer.WriteAttributeString("val", colorval);
+                                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity))
+                                        {
+                                            _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
+                                            _writer.WriteAttributeString("val", alphas[i / cbElem]); //we need the percentage of the opacity (65536 means 100%)
+                                            _writer.WriteEndElement();
+                                        }
+                                        _writer.WriteEndElement();
+
+                                        _writer.WriteEndElement();
+                                    }
+
+                                }
+                                else
+                                {
+                                    colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, container.FirstAncestorWithType<Slide>());
+                                
+                                    _writer.WriteStartElement("a", "gs", OpenXmlNamespaces.DrawingML);
+                                    _writer.WriteAttributeString("pos", "0");
+                                    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                                    _writer.WriteAttributeString("val", colorval);
+                                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity))
+                                    {
+                                        _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
+                                        _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillOpacity].op / 65536 * 100000)).ToString()); //we need the percentage of the opacity (65536 means 100%)
+                                        _writer.WriteEndElement();
+                                    }
+                                    _writer.WriteEndElement();
+                                    _writer.WriteEndElement();
+
+                                    colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillBackColor].op, container.FirstAncestorWithType<Slide>());
+
+                                    _writer.WriteStartElement("a", "gs", OpenXmlNamespaces.DrawingML);
+                                    _writer.WriteAttributeString("pos", "100000");
+                                    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                                    _writer.WriteAttributeString("val", colorval);
+                                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillBackOpacity))
+                                    {
+                                        _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
+                                        _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillBackOpacity].op / 65536 * 100000)).ToString()); //we need the percentage of the opacity (65536 means 100%)
+                                        _writer.WriteEndElement();
+                                    }
+                                    _writer.WriteEndElement();
+                                    _writer.WriteEndElement();
+                                }
+
+                                _writer.WriteEndElement(); //gsLst
+
+                                switch (so.OptionsByID[ShapeOptions.PropertyId.fillType].op)
+                                {
+                                    case 0x6:
+                                        _writer.WriteStartElement("a", "path", OpenXmlNamespaces.DrawingML);
+                                        _writer.WriteAttributeString("path", "shape");
+                                        _writer.WriteStartElement("a", "fillToRect", OpenXmlNamespaces.DrawingML);
+                                        _writer.WriteAttributeString("l", "50000");
+                                        _writer.WriteAttributeString("t", "50000");
+                                        _writer.WriteAttributeString("r", "50000");
+                                        _writer.WriteAttributeString("b", "50000");
+                                        _writer.WriteEndElement();
+                                        _writer.WriteEndElement(); //path
+                                        break;
+                                    default:
+                                        _writer.WriteStartElement("a", "path", OpenXmlNamespaces.DrawingML);
+                                        _writer.WriteAttributeString("path", "rect");
+                                        _writer.WriteStartElement("a", "fillToRect", OpenXmlNamespaces.DrawingML);
+                                        _writer.WriteAttributeString("r", "100000");
+                                        _writer.WriteAttributeString("b", "100000");
+                                        _writer.WriteEndElement();
+                                        _writer.WriteEndElement(); //path
+                                        break;
+                                }                                
+
+                                _writer.WriteEndElement(); //gradFill
+
+                                break;
+                            case 0x7: //shadescale
+                                _writer.WriteStartElement("a", "gradFill", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("rotWithShape", "1");
+                                _writer.WriteStartElement("a", "gsLst", OpenXmlNamespaces.DrawingML);
+
+                                decimal angle = 0;
+                                bool switchColors = false;
+                                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillAngle))
+                                {
+                                    byte[] bytes = BitConverter.GetBytes(so.OptionsByID[ShapeOptions.PropertyId.fillAngle].op);
+                                    int integral = BitConverter.ToInt16(bytes, 0);
+                                    uint fractional = BitConverter.ToUInt16(bytes, 2);
+                                    Decimal result = integral + ((decimal)fractional / (decimal)65536);
+                                    angle = 65536 - fractional; //I have no idea why this works!!                    
+                                    angle = angle - 90;
+                                    if (angle < 0)
+                                    {
+                                        angle += 360;
+                                        switchColors = true;
+                                    }
+                                }
+                                else
+                                {
+                                    angle = 90;
+                                }
+
+                                if (switchColors)
+                                {
+                                    colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillBackColor].op, container.FirstAncestorWithType<Slide>());
+                                }
+                                else
+                                {
+                                    colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, container.FirstAncestorWithType<Slide>());
+                                }
+                                _writer.WriteStartElement("a", "gs", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("pos", "0");
+                                _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("val", colorval);
+                                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity))
+                                {
+                                    _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
+                                    _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillOpacity].op / 65536 * 100000)).ToString()); //we need the percentage of the opacity (65536 means 100%)
+                                    _writer.WriteEndElement();
+                                }
+                                _writer.WriteEndElement();
+                                _writer.WriteEndElement();
+
+                                if (switchColors)
+                                {
+                                    colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, container.FirstAncestorWithType<Slide>());
+                                }
+                                else
+                                {
+                                    colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillBackColor].op, container.FirstAncestorWithType<Slide>());
+                                }
+                                _writer.WriteStartElement("a", "gs", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("pos", "100000");
+                                _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("val", colorval);
+                                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillBackOpacity))
+                                {
+                                    _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
+                                    _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillBackOpacity].op / 65536 * 100000)).ToString()); //we need the percentage of the opacity (65536 means 100%)
+                                    _writer.WriteEndElement();
+                                }
+                                _writer.WriteEndElement();
+                                _writer.WriteEndElement();
+
+                                _writer.WriteEndElement(); //gsLst
+
+                                _writer.WriteStartElement("a", "lin", OpenXmlNamespaces.DrawingML);
+
+                                _writer.WriteAttributeString("ang", (angle * 60000).ToString());
+                                _writer.WriteAttributeString("scaled", "1");
+                                _writer.WriteEndElement();
+
+                                _writer.WriteEndElement();
+                                break;
+                            case 0x8: //shadetitle
+                            case 0x9: //background
+                                break;
+
+                        }
+                    }
+                    else
+                    {
+                        string colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, container.FirstAncestorWithType<Slide>());
+                        _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("val", colorval);
+                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity))
+                        {
+                            _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillOpacity].op / 65536 * 100000)).ToString()); //we need the percentage of the opacity (65536 means 100%)
+                            _writer.WriteEndElement();
+                        }
+                        _writer.WriteEndElement();
                         _writer.WriteEndElement();
                     }
 
-                    _writer.WriteEndElement();
-                    _writer.WriteEndElement();
+                    
                 }
 
                 _writer.WriteStartElement("a", "ln", OpenXmlNamespaces.DrawingML);
@@ -411,12 +578,16 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                 if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineColor))
                 {
-                    string colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.lineColor].op, container.FirstAncestorWithType<Slide>());
-                    _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("val", colorval);
-                    _writer.WriteEndElement();
-                    _writer.WriteEndElement();
+                    LineStyleBooleans lineStyle = new LineStyleBooleans(so.OptionsByID[ShapeOptions.PropertyId.lineStyleBooleans].op);
+                    if (lineStyle.fLine)
+                    {
+                        string colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.lineColor].op, container.FirstAncestorWithType<Slide>());
+                        _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("val", colorval);
+                        _writer.WriteEndElement();
+                        _writer.WriteEndElement();
+                    }
                 }
                 if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineDashing))
                 {
@@ -805,6 +976,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     return ImagePart.ImageType.Jpeg;
                 case 0xF01E:
                     return ImagePart.ImageType.Png;
+                case 0xF01F: //DIP
+                    return ImagePart.ImageType.Bmp;
                 case 0xF020:
                     return ImagePart.ImageType.Tiff;
                 default:
@@ -851,971 +1024,123 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement();
         }
 
+        private void WritecustGeom(Shape sh)
+        {
+            _writer.WriteStartElement("a", "custGeom", OpenXmlNamespaces.DrawingML);
+
+            _writer.WriteStartElement("a", "cxnLst", OpenXmlNamespaces.DrawingML);
+
+            ShapeOptions.OptionEntry pVertices = so.OptionsByID[ShapeOptions.PropertyId.pVertices];
+            ShapeOptions.OptionEntry ShapePath = so.OptionsByID[ShapeOptions.PropertyId.shapePath];
+            ShapeOptions.OptionEntry SegementInfo = so.OptionsByID[ShapeOptions.PropertyId.pSegmentInfo];
+            PathParser pp = new PathParser(SegementInfo.opComplex, pVertices.opComplex);
+
+            foreach (Point point in pp.Values)
+            {
+                _writer.WriteStartElement("a", "cxn", OpenXmlNamespaces.DrawingML);
+                _writer.WriteAttributeString("ang", "0");
+                _writer.WriteStartElement("a", "pos", OpenXmlNamespaces.DrawingML);
+                _writer.WriteAttributeString("x", point.X.ToString());
+                _writer.WriteAttributeString("y", point.Y.ToString());
+                _writer.WriteEndElement(); //pos
+                _writer.WriteEndElement(); //cxn
+            }
+            _writer.WriteEndElement(); //cxnLst
+
+            _writer.WriteStartElement("a", "rect", OpenXmlNamespaces.DrawingML);
+            _writer.WriteAttributeString("l", "0");
+            _writer.WriteAttributeString("t", "0");
+            _writer.WriteAttributeString("r", "r");
+            _writer.WriteAttributeString("b", "b");
+            _writer.WriteEndElement(); //rect
+
+            _writer.WriteStartElement("a", "pathLst", OpenXmlNamespaces.DrawingML);
+            _writer.WriteStartElement("a", "path", OpenXmlNamespaces.DrawingML);
+            //compute width and height:
+            int minX = 1000;
+            int minY = 1000;
+            int maxX = -1000;
+            int maxY = -1000;
+            foreach (Point p in pp.Values)
+            {
+                if ((p.X) < minX) minX = p.X;
+                if ((p.X) > maxX) maxX = p.X;
+                if ((p.Y) < minY) minY = p.Y;
+                if ((p.Y) > maxY) maxY = p.Y;
+            }
+            _writer.WriteAttributeString("w", (maxX - minX).ToString());
+            _writer.WriteAttributeString("h", (maxY - minY).ToString());
+
+            int valuePointer = 0;
+            foreach (PathSegment seg in pp.Segments)
+            {
+                switch (seg.Type)
+                {
+                    case PathSegment.SegmentType.msopathLineTo:
+                        _writer.WriteStartElement("a", "lnTo", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteStartElement("a", "pt", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("x", pp.Values[valuePointer].X.ToString());
+                        _writer.WriteAttributeString("y", pp.Values[valuePointer].Y.ToString());
+                        _writer.WriteEndElement(); //pt
+                        _writer.WriteEndElement(); //lnTo
+                        valuePointer += 1;
+                        break;
+                    case PathSegment.SegmentType.msopathCurveTo:
+                        _writer.WriteStartElement("a", "cubicBezTo", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteStartElement("a", "pt", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("x", pp.Values[valuePointer].X.ToString());
+                        _writer.WriteAttributeString("y", pp.Values[valuePointer].Y.ToString());
+                        _writer.WriteEndElement(); //pt
+                        valuePointer += 1;
+                        _writer.WriteStartElement("a", "pt", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("x", pp.Values[valuePointer].X.ToString());
+                        _writer.WriteAttributeString("y", pp.Values[valuePointer].Y.ToString());
+                        _writer.WriteEndElement(); //pt
+                        valuePointer += 1;
+                        _writer.WriteStartElement("a", "pt", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("x", pp.Values[valuePointer].X.ToString());
+                        _writer.WriteAttributeString("y", pp.Values[valuePointer].Y.ToString());
+                        _writer.WriteEndElement(); //pt
+                        valuePointer += 1;
+                        _writer.WriteEndElement(); //cubicBezTo
+                        break;
+                    case PathSegment.SegmentType.msopathMoveTo:
+                        _writer.WriteStartElement("a", "moveTo", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteStartElement("a", "pt", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("x", pp.Values[valuePointer].X.ToString());
+                        _writer.WriteAttributeString("y", pp.Values[valuePointer].Y.ToString());
+                        _writer.WriteEndElement(); //pr
+                        _writer.WriteEndElement(); //moveTo
+                        valuePointer += 1;
+                        break;
+                    case PathSegment.SegmentType.msopathClose:
+                        _writer.WriteElementString("a", "close", OpenXmlNamespaces.DrawingML, "");
+                        break;
+                }
+            }
+
+            _writer.WriteEndElement(); //path
+            _writer.WriteEndElement(); //pathLst
+
+            _writer.WriteEndElement(); //custGeom
+        }
+
         private void WriteprstGeom(Shape shape)
         {
             if (shape != null)
             {
-                switch (shape.Instance)
+                string prst = Utils.getPrstForShape(shape.Instance);
+                if (prst.Length > 0)
                 {
-                    case 0x0: //NotPrimitive
-                    case 0x1: //Rectangle
-                        break;
-                    case 0x2: //RoundRectangle
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "roundRect");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x3: //ellipse
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst","ellipse");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x4: //diamond
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "diamond");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x5: //triangle
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "triangle");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x6: //right triangle
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "rtTriangle");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x7: //parallelogram
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "parallelogram");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x8: //trapezoid
-                        //Utils.GetDefaultDocument("shapes.trapezoid").WriteTo(_writer);                         
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "nonIsoscelesTrapezoid");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x9: //hexagon
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "hexagon");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xA: //octagon
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "octagon");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xB: //Plus
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "mathPlus");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xC: //Star
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "star5");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xD: //Arrow
-                    case 0xE: //ThickArrow
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "rightArrow");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xF: //HomePlate
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "homePlate");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x10: //Cube
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "cube");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x11: //Balloon
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "wedgeEllipseCallout");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x12: //Seal
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "star16");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x13: //Arc
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "curvedConnector2");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x14: //Line
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "line");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x15: //Plaque
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "plaque");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x16: //Cylinder
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "can");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x17: //Donut
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "donut");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x18: //TextSimple
-                    case 0x19: //TextOctagon
-                    case 0x1A: //TextHexagon
-                    case 0x1B: //TextCurve
-                    case 0x1C: //TextWave
-                    case 0x1D: //TextRing
-                    case 0x1E: //TextOnCurve
-                    case 0x1F: //TextOnRing
-                        break;
-                    case 0x20: //StraightConnector1
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "straightConnector1");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x21: //BentConnector2
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "bentConnector2");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x22: //BentConnector3
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "bentConnector3");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x23: //BentConnector4
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "bentConnector4");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x24: //BentConnector5
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "bentConnector5");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x25: //CurvedConnector2
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "curvedConnector2");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x26: //CurvedConnector3
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "curvedConnector3");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x27: //CurvedConnector4
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "curvedConnector4");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x28: //CurvedConnector5
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "curvedConnector5");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x29: //Callout1
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "callout1");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x2A: //Callout2
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "callout2");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x2B: //Callout3
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "callout3");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x2C: //AccentCallout1
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "accentCallout1");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x2D: //AccentCallout2
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "accentCallout2");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x2E: //AccentCallout3
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "accentCallout3");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x2F: //BorderCallout1
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "borderCallout1");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x30: //BorderCallout2
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "borderCallout2");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x31: //BorderCallout3
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "borderCallout3");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x32: //AccentBorderCallout1
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "accentborderCallout1");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x33: //accentBorderCallout2
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "accentborderCallout2");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x34: //accentBorderCallout3
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "accentborderCallout3");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x35: //Ribbon
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "ribbon");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x36: //Ribbon2
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "ribbon2");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x37: //Chevron
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "chevron");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x38: //Pentagon
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "pentagon");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x39: //noSmoking
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "noSmoking");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x3A: //Seal8
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "star8");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x3B: //Seal16
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "star16");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x3C: //Seal32
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "star32");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x3D: //WedgeRectCallout
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "wedgeRectCallout");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x3E: //WedgeRRectCallout
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "wedgeRoundRectCallout");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x3F: //WedgeEllipseCallout
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "wedgeEllipseCallout");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x40: //Wave
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "wave");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x41: //FolderCorner
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "foldedCorner");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x42: //LeftArrow
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "leftArrow");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x43: //DownArrow
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "downArrow");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x44: //UpArrow
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "upArrow");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x45: //LeftRightArrow
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "leftRightArrow");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x46: //UpDownArrow
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "upDownArrow");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x47: //IrregularSeal1
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "irregularSeal1");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x48: //IrregularSeal2
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "irregularSeal2");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x49: //LightningBolt
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "lightningBolt");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x4A: //Heart
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "heart");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x4B: //PictureFrame
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "frame");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x4C: //QuadArrow
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "quadArrow");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x4D: //LeftArrowCallout
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "leftArrowCallout");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x4E: //RightArrowCallout
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "rightArrowCallout");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x4F: //UpArrowCallout
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "upArrowCallout");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x50: //DownArrowCallout
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "downArrowCallout");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x51: //LeftRightArrowCallout
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "leftRightArrowCallout");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x52: //UpDownArrowCallout
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "upDownArrowCallout");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x53: //QuadArrowCallout
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "quadArrowCallout");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x54: //Bevel
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "bevel");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x55: //LeftBracket
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "leftBracket");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x56: //RightBracket
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "rightBracket");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x57: //LeftBrace
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "leftBrace");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x58: //RightBrace
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "rightBrace");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x59: //LeftUpArrow
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "leftUpArrow");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x5A: //BentUpArrow
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "bentUpArrow");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x5B: //BentArrow
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "bentArrow");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x5C: //Seal24
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "star24");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x5D: //stripedRightArrow
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "stripedRightArrow");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x5E: //notchedRightArrow
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "notchedRightArrow");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x5F: //BlockArc
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "blockArc");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x60: //SmileyFace
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "smileyFace");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x61: //verticalScroll
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "verticalScroll");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x62: //horizontalScroll
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "horizontalScroll");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x63: //circularArrow
-                    case 0x64: //notchedCircularArrow
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "circularArrow");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x65: //uturnArrow
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "uturnArrow");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x66: //curvedRightArrow
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "curvedRightArrow");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x67: //curvedLeftArrow
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "curvedLeftArrow");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x68: //curvedUpArrow
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "curvedUpArrow");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x69: //curvedDownArrow
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "curvedDownArrow");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x6A: //CloudCallout
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "cloudCallout");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x6B: //EllipseRibbon
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "ellipseRibbon");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x6C: //EllipseRibbon2
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "ellipseRibbon2");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x6D: //flowChartProcess
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartProcess");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x6E: //flowChartDecision
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartDecision");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x6F: //flowChartInputOutput
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartInputOutput");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x70: //flowChartPredefinedProcess
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartPredefinedProcess");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x71: //flowChartInternalStorage
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartInternalStorage");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x72: //flowChartDocument
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartDocument");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x73: //flowChartMultidocument
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartMultidocument");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x74: //flowChartTerminator
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartTerminator");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x75: //flowChartPreparation
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartPreparation");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x76: //flowChartManualInput
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartManualInput");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x77: //flowChartManualOperation
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartManualOperation");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x78: //flowChartConnector
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartConnector");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x79: //flowChartPunchedCard
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartPunchedCard");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x7A: //flowChartPunchedTape
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartPunchedTape");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x7B: //flowChartSummingJunction
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartSummingJunction");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x7C: //flowChartOr
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartOr");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x7D: //flowChartCollate
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartCollate");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x7E: //flowChartSort
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartSort");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x7F: //flowChartExtract
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartExtract");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x80: //flowChartMerge
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartMerge");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x81: //flowChartOfflineStorage
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartOfflineStorage");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x82: //flowChartOnlineStorage
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartOnlineStorage");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x83: //flowChartMagneticTape
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartMagneticTape");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x84: //flowChartMagneticDisk
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartMagneticDisk");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x85: //flowChartMagneticDrum
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartMagneticDrum");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x86: //flowChartDisplay
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartDisplay");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x87: //flowChartDelay
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowChartDelay");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0x88: //TextPlaynText
-                    case 0x89: //TextStop
-                    case 0x8A: //TextTriangle
-                    case 0x8B: //TextTriangleInverted
-                    case 0x8C: //TextChevron
-                    case 0x8D: //TextChevronInverted
-                    case 0x8E: //TextRingInside
-                    case 0x8F: //TextRingOutside
-                    case 0x90: //TextArchUpCurve
-                    case 0x91: //TextArchDownCurve
-                    case 0x92: //TextCircleCurve
-                    case 0x93: //TextButtonCurve
-                    case 0x94: //TextArchUpPour
-                    case 0x95: //TextArchDownPour
-                    case 0x96: //TextCirclePout
-                    case 0x97: //TextButtonPout
-                    case 0x98: //TextCurveUp
-                    case 0x99: //TextCurveDown
-                    case 0x9A: //TextCascadeUp
-                    case 0x9B: //TextCascadeDown
-                    case 0x9C: //TextWave1
-                    case 0x9D: //TextWave2
-                    case 0x9E: //TextWave3
-                    case 0x9F: //TextWave4
-                    case 0xA0: //TextInflate
-                    case 0xA1: //TextDeflate
-                    case 0xA2: //TextInflateBottom
-                    case 0xA3: //TextDeflateBottom
-                    case 0xA4: //TextInflateTop
-                    case 0xA5: //TextDeflateTop
-                    case 0xA6: //TextDeflateInflate
-                    case 0xA7: //TextDeflateInflateDeflate
-                    case 0xA8: //TextFadeRight
-                    case 0xA9: //TextFadeLeft
-                    case 0xAA: //TextFadeUp
-                    case 0xAB: //TextFadeDown
-                    case 0xAC: //TextSlantUp
-                    case 0xAD: //TextSlantDown
-                    case 0xAE: //TextCanUp
-                    case 0xAF: //TextCanDown
-                        break;
-                    case 0xB0: //flowchartAlternateProcess
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowchartAlternateProcess");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xB1: //flowchartOffpageConnector
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "flowchartOffpageConnector");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xB2: //Callout90
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "callout1");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xB3: //AccentCallout90
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "accentCallout1");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xB4: //BorderCallout90
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "borderCallout1");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xB5: //AccentBorderCallout90
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "accentBorderCallout1");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xB6: //LeftRightUpArrow
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "leftRightUpArrow");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xB7: //Sun
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "sun");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xB8: //Moon
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "moon");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xB9: //BracketPair
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "bracketPair");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xBA: //BracePair
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "bracePair");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xBB: //Seal4
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "star4");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xBC: //DoubleWave
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "doubleWave");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xBD: //ActionButtonBlank
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "actionButtonBlank");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xBE: //ActionButtonHome
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "actionButtonHome");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xBF: //ActionButtonHelp
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "actionButtonHelp");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xC0: //ActionButtonInformation
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "actionButtonInformation");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xC1: //ActionButtonForwardNext
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "actionButtonForwardNext");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xC2: //ActionButtonBackPrevious
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "actionButtonBackPrevious");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xC3: //ActionButtonEnd
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "actionButtonEnd");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xC4: //ActionButtonBeginning
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "actionButtonBeginning");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xC5: //ActionButtonReturn
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "actionButtonReturn");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xC6: //ActionButtonDocument
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "actionButtonDocument");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xC7: //ActionButtonSound
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "actionButtonSound");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xC8: //ActionButtonMovie
-                        _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("prst", "actionButtonMovie");
-                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
-                        _writer.WriteEndElement(); //prstGeom
-                        break;
-                    case 0xC9: //HostControl (do not use)
-                        break;
-                    case 0xCA: //TextBox
-                        break;
-                    default:
-                        break;
-                }
+                    _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteAttributeString("prst", prst);
+                    _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
+                    _writer.WriteEndElement(); //prstGeom
+                }                
             }
         }
+
+        
 
         private Dictionary<int, int> spidToId = new Dictionary<int, int>();
         private void WriteCNvPr(int spid, string name)
