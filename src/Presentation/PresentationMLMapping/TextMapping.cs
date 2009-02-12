@@ -103,6 +103,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             Record rec = Record.ReadRecord(ms, 0);
             TextHeaderAtom thAtom = null;
             TextStyleAtom style = null;
+            FooterMCAtom mca = null;
             MasterTextPropAtom masterTextProp = null;
             string text = "";
 
@@ -138,7 +139,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 SlideNumberMCAtom snmca = (SlideNumberMCAtom)rec;
                                 break;
                             case 0xffa: //FooterMCAtom
-                                FooterMCAtom mca = (FooterMCAtom)rec;
+                                mca = (FooterMCAtom)rec;
                                 break;
                             case 0xff8: //GenericDateMCAtom
                                 GenericDateMCAtom gdmca = (GenericDateMCAtom)rec;

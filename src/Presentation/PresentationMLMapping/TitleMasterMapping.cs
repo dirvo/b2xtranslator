@@ -62,6 +62,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteAttributeString("xmlns", "r", null, OpenXmlNamespaces.Relationships);
 
             _writer.WriteStartElement("p", "cSld", OpenXmlNamespaces.PresentationML);
+
+
+
             _writer.WriteStartElement("p", "spTree", OpenXmlNamespaces.PresentationML);
             ShapeTreeMapping stm = new ShapeTreeMapping(_ctx, _writer);
             stm.parentSlideMapping = this;

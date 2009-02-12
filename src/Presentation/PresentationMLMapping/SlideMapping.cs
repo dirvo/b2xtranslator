@@ -180,6 +180,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                     if (placeholder.PlacementId == PlaceholderEnum.MasterFooter)
                                     {
                                         stm.Apply(shapecontainer);
+                                        footer = false;
                                     }
                                 }
                             }
@@ -188,6 +189,38 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                 }
             }
+
+            if (footer)
+            foreach (Slide master in this._ctx.Ppt.MainMasterRecords)
+                {
+                    if (master.PersistAtom.SlideId == slideAtom.MasterId)
+                    {
+                        List<OfficeDrawing.ShapeContainer> shapes = master.AllChildrenWithType<PPDrawing>()[0].AllChildrenWithType<OfficeDrawing.DrawingContainer>()[0].AllChildrenWithType<OfficeDrawing.GroupContainer>()[0].AllChildrenWithType<OfficeDrawing.ShapeContainer>();
+                        foreach (OfficeDrawing.ShapeContainer shapecontainer in shapes)
+                        {
+                            foreach (OfficeDrawing.ClientData data in shapecontainer.AllChildrenWithType<OfficeDrawing.ClientData>())
+                            {
+                                System.IO.MemoryStream ms = new System.IO.MemoryStream(data.bytes);
+                                OfficeDrawing.Record rec = OfficeDrawing.Record.ReadRecord(ms, 0);
+
+                                if (rec.TypeCode == 3011)
+                                {
+                                    OEPlaceHolderAtom placeholder = (OEPlaceHolderAtom)rec;
+
+                                    if (placeholder != null)
+                                    {
+                                        if (placeholder.PlacementId == PlaceholderEnum.MasterFooter)
+                                        {
+                                            stm.Apply(shapecontainer);
+                                            footer = false;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
         }
     }
 }

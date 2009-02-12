@@ -164,6 +164,22 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                     _writer.WriteEndElement(); //p:bg
                 }
+                else
+                {
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillType))
+                    {
+                        switch (so.OptionsByID[ShapeOptions.PropertyId.fillType].op)
+                        {
+                            default:
+                                _writer.WriteStartElement("p", "bg", OpenXmlNamespaces.PresentationML);
+                                _writer.WriteStartElement("p", "bgPr", OpenXmlNamespaces.PresentationML);
+                                new FillMapping(_ctx, _writer, this).Apply(so);
+                                _writer.WriteEndElement();
+                                _writer.WriteEndElement();
+                                break;
+                        }
+                    }
+                }
             }
 
             _writer.WriteStartElement("p", "spTree", OpenXmlNamespaces.PresentationML);
