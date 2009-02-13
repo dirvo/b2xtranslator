@@ -75,6 +75,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 String namexValue;
                 if (stack is Stack<AbstractPtg>)
                 {
+                    
                     Stack<AbstractPtg> opStack = new Stack<AbstractPtg>(((Stack<AbstractPtg>)stack).ToArray());
                     if (opStack.Count == 0)
                         throw new Exception();
@@ -228,6 +229,13 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         {
                             PtgNameX ptgnx = (PtgNameX)ptg;
                             String opstring = xlsContext.XlsDoc.workBookData.getExternNameByRef(ptgnx.ixti, ptgnx.nameindex);
+                            namexValue = opstring;
+                            resultStack.Push(opstring);
+                        }
+                        else if (ptg is PtgName)
+                        {
+                            PtgName ptgn = (PtgName)ptg;
+                            String opstring = "AINT"; 
                             namexValue = opstring;
                             resultStack.Push(opstring);
                         }
@@ -457,10 +465,14 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     resultStack.Push("");
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+
                 resultStack.Push("");
             }
+            if (resultStack.Count == 0)
+                resultStack.Push(""); 
+
             return resultStack.Pop();
         }
     }

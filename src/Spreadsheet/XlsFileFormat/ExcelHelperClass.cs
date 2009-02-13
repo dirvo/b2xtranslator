@@ -239,7 +239,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                             case PtgNumber.PtgNameX: ptg = new PtgNameX(reader, ptgtype); break;
                             case PtgNumber.PtgName: ptg = new PtgName(reader, ptgtype); break; 
                             case PtgNumber.PtgMissArg: ptg = new PtgMissArg(reader, ptgtype); break;
-
+                            case PtgNumber.PtgRefErr: ptg = new PtgRefErr(reader, ptgtype); break;
+                            case PtgNumber.PtgRefErr3d: ptg = new PtgRefErr3d(reader, ptgtype); break;
+                            case PtgNumber.PtgAreaErr: ptg = new PtgAreaErr(reader, ptgtype); break;
+                            case PtgNumber.PtgAreaErr3d: ptg = new PtgAreaErr3d(reader, ptgtype); break; 
 
                             default: break;
                         }

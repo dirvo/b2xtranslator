@@ -327,6 +327,8 @@
     <Compile Include="Ptg\PtgAdd.cs" />
     <Compile Include="Ptg\PtgArea.cs" />
     <Compile Include="Ptg\PtgArea3d.cs" />
+    <Compile Include="Ptg\PtgAreaErr.cs" />
+    <Compile Include="Ptg\PtgAreaErr3d.cs" />
     <Compile Include="Ptg\PtgAreaN.cs" />
     <Compile Include="Ptg\PtgAttrChoose.cs" />
     <Compile Include="Ptg\PtgAttrGoto.cs" />
@@ -361,6 +363,8 @@
     <Compile Include="Ptg\PtgPower.cs" />
     <Compile Include="Ptg\PtgRef.cs" />
     <Compile Include="Ptg\PtgRef3d.cs" />
+    <Compile Include="Ptg\PtgRefErr.cs" />
+    <Compile Include="Ptg\PtgRefErr3d.cs" />
     <Compile Include="Ptg\PtgRefN.cs" />
     <Compile Include="Ptg\PtgStr.cs" />
     <Compile Include="Ptg\PtgSub.cs" />
