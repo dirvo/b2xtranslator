@@ -101,10 +101,12 @@ namespace xls2x
                         xlsContext.SpreadDoc = spreadx;
 
                         // Converts the sst data !!!
-                        xlsDoc.workBookData.SstData.Convert(new SSTMapping(xlsContext));
+                        if (xlsDoc.workBookData.SstData != null)
+                            xlsDoc.workBookData.SstData.Convert(new SSTMapping(xlsContext));
 
                         // creates the styles.xml
-                        xlsDoc.workBookData.styleData.Convert(new StylesMapping(xlsContext)); 
+                        if (xlsDoc.workBookData.styleData != null)
+                            xlsDoc.workBookData.styleData.Convert(new StylesMapping(xlsContext)); 
 
                         // creates the Spreadsheets
                         foreach (BoundSheetData var in xlsDoc.workBookData.boundSheetDataList)

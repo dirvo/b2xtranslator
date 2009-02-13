@@ -55,7 +55,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         /// <summary>
         /// Height of the font (in units of 1/20th of a point). 
         /// </summary>
-        public UInt16 dyHeight;	
+        public int dyHeight;	
 
         /// <summary>
         /// Font attributes (packed bit field).

@@ -270,7 +270,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             path = path.Trim();
             if (path[0] == x01 && path[1] == x01)
             {
-                path = path.Substring(2);
+                path = path.Substring(2,1) + ":\\" + path.Substring(3);
             }
             else if (path[0] == x01 && path[1] == x05)
             {
@@ -290,11 +290,11 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             }
             else if (path[0] == x01 && path[1] == x08)
             {
-                path = path.Substring(2);
+                path = "file:///"  + path.Substring(2);
             }
             else if (path[0] == x01)
             {
-                path = path.Substring(1);
+                path = "file:///" + path.Substring(1);
             }
 
 
@@ -302,6 +302,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             path = path.Replace(x03, '\\');
             /// replace ' ' with %20
             path = path.Replace(" ", "%20");
+           
+
             return path; 
         }
 
