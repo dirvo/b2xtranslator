@@ -314,7 +314,12 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 switch (val & 0x00ff)
                 {
                     case 0xF0: //shape fill color
-                        result = getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions.PropertyId.fillColor].op,slide,so);
+                        if (so.OptionsByID.ContainsKey(DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions.PropertyId.fillColor))
+                        {
+                            result = getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions.PropertyId.fillColor].op,slide,so);
+                        } else {
+                            result = "000000"; //TODO: find out which color to use in this case
+                        }
                         break;
                     case 0xF1: //shape line color if it is a line else shape fill color
                     case 0xF2: //shape line color
@@ -348,6 +353,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                         res = int.Parse(result, System.Globalization.NumberStyles.HexNumber);
                         res -= v;
+                        if (res < 0) res = 0;
                         return res.ToString("X").PadLeft(6, '0');
                     case 0x200:
                         if (blue == 0xff) return result;

@@ -94,6 +94,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         }
 
         private ShapeOptions so;
+        private int shapecounter = 0;
         public void Apply(ShapeContainer container)
         {
             Apply(container, "");
@@ -151,7 +152,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     catch (Exception e)
                     {
                         continueShape = true;
-                        reader.Close();
+                        if (reader != null) reader.Close();
                     }
                 }
             }
@@ -590,8 +591,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         indexOfPicture = en.op - 1;
                         break;
                     case ShapeOptions.PropertyId.pibName:
-                        name = Encoding.Unicode.GetString(en.opComplex);
-                        name = name.Substring(0, name.Length - 1).Replace("\0","");
+                    //    name = Encoding.Unicode.GetString(en.opComplex);
+                    //    name = name.Substring(0, name.Length - 1).Replace("\0","");
                         break;
                     case ShapeOptions.PropertyId.pibPrintName:
                         id = en.op.ToString();
@@ -948,6 +949,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             int valuePointer = 0;
             foreach (PathSegment seg in pp.Segments)
             {
+                if (valuePointer >= pp.Values.Count) break;
                 switch (seg.Type)
                 {
                     case PathSegment.SegmentType.msopathLineTo:
@@ -989,6 +991,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         break;
                     case PathSegment.SegmentType.msopathClose:
                         _writer.WriteElementString("a", "close", OpenXmlNamespaces.DrawingML, "");
+                        break;
+                    default:
                         break;
                 }
             }

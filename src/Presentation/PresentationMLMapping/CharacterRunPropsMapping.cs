@@ -214,9 +214,16 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 {
                     FontCollection fonts = _ctx.Ppt.DocumentRecord.FirstChildWithType<DIaLOGIKa.b2xtranslator.PptFileFormat.Environment>().FirstChildWithType<FontCollection>();
                     FontEntityAtom entity = fonts.entities[(int)run.TypefaceIdx];
-                    _writer.WriteAttributeString("typeface", entity.TypeFace);
+                    if (entity.TypeFace.IndexOf('\0') > 0)
+                    {
+                        _writer.WriteAttributeString("typeface", entity.TypeFace.Substring(0, entity.TypeFace.IndexOf('\0')));
+                    }
+                    else
+                    {
+                        _writer.WriteAttributeString("typeface", entity.TypeFace);
+                    }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     throw;
                 }

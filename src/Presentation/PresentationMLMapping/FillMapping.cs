@@ -109,50 +109,54 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     //string blipName = Encoding.UTF8.GetString(so.OptionsByID[ShapeOptions.PropertyId.fillBlipName].opComplex);
                     string rId = "";
                     DrawingGroup gr = (DrawingGroup)this._ctx.Ppt.DocumentRecord.FirstChildWithType<PPDrawingGroup>().Children[0];
-                    BlipStoreEntry bse = (BlipStoreEntry)gr.FirstChildWithType<BlipStoreContainer>().Children[(int)blipIndex - 1];
 
-                    if (_ctx.Ppt.PicturesContainer._pictures.ContainsKey(bse.foDelay))
+                    if (blipIndex < gr.FirstChildWithType<BlipStoreContainer>().Children.Count)
                     {
+                        BlipStoreEntry bse = (BlipStoreEntry)gr.FirstChildWithType<BlipStoreContainer>().Children[(int)blipIndex - 1];
 
-                        BitmapBlip b = (BitmapBlip)_ctx.Ppt.PicturesContainer._pictures[bse.foDelay];
-
-                        ImagePart imgPart = null;
-                        imgPart = _parentSlideMapping.targetPart.AddImagePart(ShapeTreeMapping.getImageType(b.TypeCode));
-                        imgPart.TargetDirectory = "..\\media";
-                        System.IO.Stream outStream = imgPart.GetStream();
-                        outStream.Write(b.m_pvBits, 0, b.m_pvBits.Length);
-
-                        rId = imgPart.RelIdToString;
-
-                        _writer.WriteStartElement("a", "blipFill", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("dpi", "0");
-                        _writer.WriteAttributeString("rotWithShape", "1");
-
-                        _writer.WriteStartElement("a", "blip", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("r", "embed", OpenXmlNamespaces.Relationships, rId);
-                        _writer.WriteEndElement();
-
-                        _writer.WriteElementString("a", "srcRect", OpenXmlNamespaces.DrawingML, "");
-
-                        if (so.OptionsByID[ShapeOptions.PropertyId.fillType].op == 0x3)
+                        if (_ctx.Ppt.PicturesContainer._pictures.ContainsKey(bse.foDelay))
                         {
-                            _writer.WriteStartElement("a", "stretch", OpenXmlNamespaces.DrawingML);
-                            _writer.WriteElementString("a", "fillRect", OpenXmlNamespaces.DrawingML, "");
+
+                            BitmapBlip b = (BitmapBlip)_ctx.Ppt.PicturesContainer._pictures[bse.foDelay];
+
+                            ImagePart imgPart = null;
+                            imgPart = _parentSlideMapping.targetPart.AddImagePart(ShapeTreeMapping.getImageType(b.TypeCode));
+                            imgPart.TargetDirectory = "..\\media";
+                            System.IO.Stream outStream = imgPart.GetStream();
+                            outStream.Write(b.m_pvBits, 0, b.m_pvBits.Length);
+
+                            rId = imgPart.RelIdToString;
+
+                            _writer.WriteStartElement("a", "blipFill", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("dpi", "0");
+                            _writer.WriteAttributeString("rotWithShape", "1");
+
+                            _writer.WriteStartElement("a", "blip", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("r", "embed", OpenXmlNamespaces.Relationships, rId);
+                            _writer.WriteEndElement();
+
+                            _writer.WriteElementString("a", "srcRect", OpenXmlNamespaces.DrawingML, "");
+
+                            if (so.OptionsByID[ShapeOptions.PropertyId.fillType].op == 0x3)
+                            {
+                                _writer.WriteStartElement("a", "stretch", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteElementString("a", "fillRect", OpenXmlNamespaces.DrawingML, "");
+                                _writer.WriteEndElement();
+                            }
+                            else
+                            {
+                                _writer.WriteStartElement("a", "tile", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("tx", "0");
+                                _writer.WriteAttributeString("ty", "0");
+                                _writer.WriteAttributeString("sx", "100000");
+                                _writer.WriteAttributeString("sy", "100000");
+                                _writer.WriteAttributeString("flip", "none");
+                                _writer.WriteAttributeString("algn", "tl");
+                                _writer.WriteEndElement();
+                            }
+
                             _writer.WriteEndElement();
                         }
-                        else
-                        {
-                            _writer.WriteStartElement("a", "tile", OpenXmlNamespaces.DrawingML);
-                            _writer.WriteAttributeString("tx", "0");
-                            _writer.WriteAttributeString("ty", "0");
-                            _writer.WriteAttributeString("sx", "100000");
-                            _writer.WriteAttributeString("sy", "100000");
-                            _writer.WriteAttributeString("flip", "none");
-                            _writer.WriteAttributeString("algn", "tl");
-                            _writer.WriteEndElement();
-                        }
-
-                        _writer.WriteEndElement();
                     }
                     break;
                 case 0x4: //shade
@@ -161,89 +165,96 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteStartElement("a", "gradFill", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("rotWithShape", "1");
                     _writer.WriteStartElement("a", "gsLst", OpenXmlNamespaces.DrawingML);
+                    bool useFillAndBack = true;
 
                     if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillShadeColors))
                     {
 
                         byte[] colors = so.OptionsByID[ShapeOptions.PropertyId.fillShadeColors].opComplex;
-                        ShapeOptions.OptionEntry type = so.OptionsByID[ShapeOptions.PropertyId.fillShadeType];
 
-                        UInt16 nElems = System.BitConverter.ToUInt16(colors, 0);
-                        UInt16 nElemsAlloc = System.BitConverter.ToUInt16(colors, 2);
-                        UInt16 cbElem = System.BitConverter.ToUInt16(colors, 4);
-
-                        List<string> positions = new List<string>();
-
-                        switch (nElems)
+                        if (colors.Length > 0)
                         {
-                            case 1:
-                            case 2:
-                            case 3:
-                            case 4:
-                            case 5:
-                                positions.Add("0");
-                                positions.Add("30000");
-                                positions.Add("65000");
-                                positions.Add("90000");
-                                positions.Add("100000");
-                                break;
-                            case 6:
-                            case 7:
-                            case 8:
-                            case 9:
-                            case 10:
-                            default:
-                                positions.Add("0");
-                                positions.Add("8000");
-                                positions.Add("13000");
-                                positions.Add("21000");
-                                positions.Add("52000");
-                                positions.Add("56000");
-                                positions.Add("58000");
-                                positions.Add("71000");
-                                positions.Add("94000");
-                                positions.Add("100000");
-                                break;
-                        }
 
+                            useFillAndBack = false;
+                            ShapeOptions.OptionEntry type = so.OptionsByID[ShapeOptions.PropertyId.fillShadeType];
 
-                        string[] alphas = new string[nElems];
-                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity))
-                        {
-                            decimal end = Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillOpacity].op / 65536 * 100000));
-                            decimal start = Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillBackOpacity].op / 65536 * 100000));
-                            alphas[0] = start.ToString();
-                            for (int i = 1; i < nElems - 1; i++)
+                            UInt16 nElems = System.BitConverter.ToUInt16(colors, 0);
+                            UInt16 nElemsAlloc = System.BitConverter.ToUInt16(colors, 2);
+                            UInt16 cbElem = System.BitConverter.ToUInt16(colors, 4);
+
+                            List<string> positions = new List<string>();
+
+                            switch (nElems)
                             {
-                                alphas[i] = Math.Round(start + (end - start) / 3 * i).ToString();
+                                case 1:
+                                case 2:
+                                case 3:
+                                case 4:
+                                case 5:
+                                    positions.Add("0");
+                                    positions.Add("30000");
+                                    positions.Add("65000");
+                                    positions.Add("90000");
+                                    positions.Add("100000");
+                                    break;
+                                case 6:
+                                case 7:
+                                case 8:
+                                case 9:
+                                case 10:
+                                default:
+                                    positions.Add("0");
+                                    positions.Add("8000");
+                                    positions.Add("13000");
+                                    positions.Add("21000");
+                                    positions.Add("52000");
+                                    positions.Add("56000");
+                                    positions.Add("58000");
+                                    positions.Add("71000");
+                                    positions.Add("94000");
+                                    positions.Add("100000");
+                                    break;
                             }
-                            //alphas[1] = Math.Round(start + (end - start) / 3).ToString();
-                            //alphas[2] = Math.Round(start + (end - start) / 3 * 2).ToString();
-                            //alphas[3] = Math.Round(start + (end - start) / 3 * 3).ToString();
-                            alphas[nElems - 1] = end.ToString();
-                        }
 
-                        for (int i = 0; i < nElems * cbElem; i += cbElem)
-                        {
-                            colorval = Utils.getRGBColorFromOfficeArtCOLORREF(System.BitConverter.ToUInt32(colors, 6 + i), slide, so);
-                            _writer.WriteStartElement("a", "gs", OpenXmlNamespaces.DrawingML);
-                            _writer.WriteAttributeString("pos", positions[i / cbElem]);
 
-                            _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                            _writer.WriteAttributeString("val", colorval);
+                            string[] alphas = new string[nElems];
                             if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity))
                             {
-                                _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
-                                _writer.WriteAttributeString("val", alphas[i / cbElem]); //we need the percentage of the opacity (65536 means 100%)
+                                decimal end = Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillOpacity].op / 65536 * 100000));
+                                decimal start = Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillBackOpacity].op / 65536 * 100000));
+                                alphas[0] = start.ToString();
+                                for (int i = 1; i < nElems - 1; i++)
+                                {
+                                    alphas[i] = Math.Round(start + (end - start) / 3 * i).ToString();
+                                }
+                                //alphas[1] = Math.Round(start + (end - start) / 3).ToString();
+                                //alphas[2] = Math.Round(start + (end - start) / 3 * 2).ToString();
+                                //alphas[3] = Math.Round(start + (end - start) / 3 * 3).ToString();
+                                alphas[nElems - 1] = end.ToString();
+                            }
+
+                            for (int i = 0; i < nElems * cbElem; i += cbElem)
+                            {
+                                colorval = Utils.getRGBColorFromOfficeArtCOLORREF(System.BitConverter.ToUInt32(colors, 6 + i), slide, so);
+                                _writer.WriteStartElement("a", "gs", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("pos", positions[i / cbElem]);
+
+                                _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("val", colorval);
+                                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity))
+                                {
+                                    _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
+                                    _writer.WriteAttributeString("val", alphas[i / cbElem]); //we need the percentage of the opacity (65536 means 100%)
+                                    _writer.WriteEndElement();
+                                }
+                                _writer.WriteEndElement();
+
                                 _writer.WriteEndElement();
                             }
-                            _writer.WriteEndElement();
-
-                            _writer.WriteEndElement();
                         }
-
                     }
-                    else
+                    
+                    if (useFillAndBack)
                     {
                         colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide, so);
 
@@ -310,34 +321,38 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteAttributeString("rotWithShape", "1");
                     _writer.WriteStartElement("a", "gsLst", OpenXmlNamespaces.DrawingML);
 
-                    decimal angle = 0;
+                    decimal angle = 90;
                     bool switchColors = false;
                     if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillAngle))
                     {
-                        byte[] bytes = BitConverter.GetBytes(so.OptionsByID[ShapeOptions.PropertyId.fillAngle].op);
-                        int integral = BitConverter.ToInt16(bytes, 0);
-                        uint fractional = BitConverter.ToUInt16(bytes, 2);
-                        Decimal result = integral + ((decimal)fractional / (decimal)65536);
-                        angle = 65536 - fractional; //I have no idea why this works!!                    
-                        angle = angle - 90;
-                        if (angle < 0)
+                        if (so.OptionsByID[ShapeOptions.PropertyId.fillAngle].op != 0)
                         {
-                            angle += 360;
-                            switchColors = true;
+                            byte[] bytes = BitConverter.GetBytes(so.OptionsByID[ShapeOptions.PropertyId.fillAngle].op);
+                            int integral = BitConverter.ToInt16(bytes, 0);
+                            uint fractional = BitConverter.ToUInt16(bytes, 2);
+                            Decimal result = integral + ((decimal)fractional / (decimal)65536);
+                            angle = 65536 - fractional; //I have no idea why this works!!                    
+                            angle = angle - 90;
+                            if (angle < 0)
+                            {
+                                angle += 360;
+                                switchColors = true;
+                            }
                         }
                     }
-                    else
-                    {
-                        angle = 90;
-                    }
 
-                    if (switchColors)
+                    if (switchColors & so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillBackColor))
                     {
                         colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillBackColor].op, slide, so);
                     }
                     else
                     {
-                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide, so);
+                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillColor))
+                        {
+                            colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide, so);
+                        } else {
+                            colorval = "000000"; //TODO: find out which color to use in this case
+                        }
                     }
                     _writer.WriteStartElement("a", "gs", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("pos", "0");
@@ -352,7 +367,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteEndElement();
                     _writer.WriteEndElement();
 
-                    if (switchColors)
+                    if (switchColors | !so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillBackColor))
                     {
                         colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide, so);
                     }

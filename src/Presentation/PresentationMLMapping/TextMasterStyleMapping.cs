@@ -146,6 +146,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             
             _writer.WriteStartElement("a", "lvl" + (IndentLevel+1).ToString() + "pPr", OpenXmlNamespaces.DrawingML);
 
+            //marL
+            if (pr.LeftMarginPresent) _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU((int)pr.LeftMargin).ToString());
+            //marR
+            //lvl
+            if (pr.IndentLevel > 0) _writer.WriteAttributeString("lvl", pr.IndentLevel.ToString());
+            //indent
+            if (pr.IndentPresent) _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(pr.LeftMargin - pr.Indent)))).ToString());
+            //algn
             if (pr.AlignmentPresent)
             {
                 switch (pr.Alignment)
@@ -173,11 +181,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         break;
                 }
             }
-
-            if (pr.IndentLevel > 0) _writer.WriteAttributeString("lvl", pr.IndentLevel.ToString());
-            if (pr.LeftMarginPresent) _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU((int)pr.LeftMargin).ToString());
-            if (pr.IndentPresent) _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(pr.LeftMargin - pr.Indent)))).ToString());
-
+            //defTabSz
+            //rtl
             if (pr.TextDirectionPresent)
             {
                 switch (pr.TextDirection)
@@ -194,7 +199,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             {
                 _writer.WriteAttributeString("rtl", "0");
             }
-
+            //eaLnkBrk
+            //fontAlgn
             if (pr.FontAlignPresent)
             {
                 switch (pr.FontAlign)
@@ -213,7 +219,12 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         break;
                 }
             }
+            //latinLnBrk
+            //hangingPunct
 
+
+            //lnSpc
+            //spcBef
             if (pr.SpaceBeforePresent)
             {
                 _writer.WriteStartElement("a", "spcBef", OpenXmlNamespaces.DrawingML);
@@ -252,7 +263,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteEndElement(); //spcBef
                 }
             }
-
+            //spcAft
             if (pr.SpaceAfterPresent)
             {
                 _writer.WriteStartElement("a", "spcAft", OpenXmlNamespaces.DrawingML);
@@ -270,7 +281,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 }
                 _writer.WriteEndElement(); //spcAft
             }
-
+            //EG_TextBulletColor
+            //EG_TextBulletSize
+            //EG_TextBulletTypeFace
+            //EG_TextBullet
             if (pr9 != null)
             {
                 if (pr9.BulletBlipReferencePresent)
@@ -311,6 +325,18 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteEndElement(); //buChar
                 }
             }
+            //tabLst
+            //defRPr
+            //extLst
+
+            
+
+            
+           
+
+            
+
+            
 
                 
             

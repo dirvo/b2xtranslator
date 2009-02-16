@@ -337,9 +337,24 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 if (p.LineSpacingPresent)
                 {
                     _writer.WriteStartElement("a", "lnSpc", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteStartElement("a", "spcPct", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("val", (p.LineSpacing * 1000).ToString());
-                    _writer.WriteEndElement(); //spcPct
+                    //_writer.WriteStartElement("a", "spcPct", OpenXmlNamespaces.DrawingML);
+                    //_writer.WriteAttributeString("val", (p.LineSpacing * 1000).ToString());
+                    //_writer.WriteEndElement(); //spcPct
+
+                    if (p.LineSpacing < 0)
+                    {
+                        _writer.WriteStartElement("a", "spcPts", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("val", (-1 * p.LineSpacing * 12).ToString()); //TODO: this has to be verified!
+                        _writer.WriteEndElement(); //spcPct
+                    }
+                    else
+                    {
+                        _writer.WriteStartElement("a", "spcPct", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("val", (1000 * p.LineSpacing).ToString());
+                        _writer.WriteEndElement(); //spcPct
+                    }
+
+
                     _writer.WriteEndElement(); //lnSpc
                 }
                 if (p.SpaceBeforePresent)
