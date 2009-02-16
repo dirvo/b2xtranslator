@@ -57,7 +57,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             switch (so.OptionsByID[ShapeOptions.PropertyId.fillType].op)
             {
                 case 0x0: //solid
-                    colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide);
+                    colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide, so);
                     _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
                     _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("val", colorval);
@@ -82,13 +82,13 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                     _writer.WriteStartElement("a", "fgClr", OpenXmlNamespaces.DrawingML);
                     _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("val", Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide));
+                    _writer.WriteAttributeString("val", Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide,so));
                     _writer.WriteEndElement();
                     _writer.WriteEndElement();
 
                     _writer.WriteStartElement("a", "bgClr", OpenXmlNamespaces.DrawingML);
                     _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("val", Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillBackColor].op, slide));
+                    _writer.WriteAttributeString("val", Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillBackColor].op, slide, so));
                     _writer.WriteEndElement();
                     _writer.WriteEndElement();
 
@@ -225,7 +225,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                         for (int i = 0; i < nElems * cbElem; i += cbElem)
                         {
-                            colorval = Utils.getRGBColorFromOfficeArtCOLORREF(System.BitConverter.ToUInt32(colors, 6 + i), slide);
+                            colorval = Utils.getRGBColorFromOfficeArtCOLORREF(System.BitConverter.ToUInt32(colors, 6 + i), slide, so);
                             _writer.WriteStartElement("a", "gs", OpenXmlNamespaces.DrawingML);
                             _writer.WriteAttributeString("pos", positions[i / cbElem]);
 
@@ -245,7 +245,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     }
                     else
                     {
-                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide);
+                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide, so);
 
                         _writer.WriteStartElement("a", "gs", OpenXmlNamespaces.DrawingML);
                         _writer.WriteAttributeString("pos", "0");
@@ -260,7 +260,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteEndElement();
                         _writer.WriteEndElement();
 
-                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillBackColor].op, slide);
+                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillBackColor].op, slide, so);
 
                         _writer.WriteStartElement("a", "gs", OpenXmlNamespaces.DrawingML);
                         _writer.WriteAttributeString("pos", "100000");
@@ -333,11 +333,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                     if (switchColors)
                     {
-                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillBackColor].op, slide);
+                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillBackColor].op, slide, so);
                     }
                     else
                     {
-                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide);
+                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide, so);
                     }
                     _writer.WriteStartElement("a", "gs", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("pos", "0");
@@ -354,11 +354,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                     if (switchColors)
                     {
-                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide);
+                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide, so);
                     }
                     else
                     {
-                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillBackColor].op, slide);
+                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillBackColor].op, slide, so);
                     }
                     _writer.WriteStartElement("a", "gs", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("pos", "100000");

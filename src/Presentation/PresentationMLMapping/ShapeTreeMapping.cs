@@ -107,7 +107,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             Shape sh = container.FirstChildWithType<Shape>();
             so = container.FirstChildWithType<ShapeOptions>();
-            if (clientData == null)
+            //if (clientData == null)
                 if (so != null)
                 {
                     if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.Pib))
@@ -306,18 +306,22 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     }
                     else
                     {
-                        string colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, container.FirstAncestorWithType<Slide>());
-                        _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("val", colorval);
-                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity))
+                        //if (sh.Instance != 0xca)
+                        if (!so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillBackColor))
                         {
-                            _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
-                            _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillOpacity].op / 65536 * 100000)).ToString()); //we need the percentage of the opacity (65536 means 100%)
+                            string colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, container.FirstAncestorWithType<Slide>(), so);
+                            _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("val", colorval);
+                            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity))
+                            {
+                                _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillOpacity].op / 65536 * 100000)).ToString()); //we need the percentage of the opacity (65536 means 100%)
+                                _writer.WriteEndElement();
+                            }
+                            _writer.WriteEndElement();
                             _writer.WriteEndElement();
                         }
-                        _writer.WriteEndElement();
-                        _writer.WriteEndElement();
                     }
 
                     
@@ -366,7 +370,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineColor))
                             {
                                 _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                                _writer.WriteAttributeString("val", Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.lineColor].op, container.FirstAncestorWithType<Slide>()));
+                                _writer.WriteAttributeString("val", Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.lineColor].op, container.FirstAncestorWithType<Slide>(), so));
                                 _writer.WriteEndElement();
                             } else {
                                 _writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
@@ -381,7 +385,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineBackColor))
                             {
                                 _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                                _writer.WriteAttributeString("val", Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.lineBackColor].op, container.FirstAncestorWithType<Slide>()));
+                                _writer.WriteAttributeString("val", Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.lineBackColor].op, container.FirstAncestorWithType<Slide>(), so));
                                 _writer.WriteEndElement();
                             }
                             else
@@ -409,7 +413,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         LineStyleBooleans lineStyle = new LineStyleBooleans(so.OptionsByID[ShapeOptions.PropertyId.lineStyleBooleans].op);
                         if (lineStyle.fLine)
                         {
-                            string colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.lineColor].op, container.FirstAncestorWithType<Slide>());
+                            string colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.lineColor].op, container.FirstAncestorWithType<Slide>(), so);
                             _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
                             _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
                             _writer.WriteAttributeString("val", colorval);
@@ -587,7 +591,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         break;
                     case ShapeOptions.PropertyId.pibName:
                         name = Encoding.Unicode.GetString(en.opComplex);
-                        name = name.Substring(0, name.Length - 1);
+                        name = name.Substring(0, name.Length - 1).Replace("\0","");
                         break;
                     case ShapeOptions.PropertyId.pibPrintName:
                         id = en.op.ToString();
@@ -611,15 +615,34 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     return;
                 }
 
-                BitmapBlip b = (BitmapBlip)_ctx.Ppt.PicturesContainer._pictures[bse.foDelay];
+                Record recBlip = _ctx.Ppt.PicturesContainer._pictures[bse.foDelay];
+                if (recBlip is BitmapBlip)
+                {
+                    BitmapBlip b = (BitmapBlip)_ctx.Ppt.PicturesContainer._pictures[bse.foDelay];
 
-                ImagePart imgPart = null;
-                imgPart = parentSlideMapping.targetPart.AddImagePart(getImageType(b.TypeCode));
-                imgPart.TargetDirectory = "..\\media";
-                System.IO.Stream outStream = imgPart.GetStream();
-                outStream.Write(b.m_pvBits, 0, b.m_pvBits.Length);
+                    ImagePart imgPart = null;
+                    imgPart = parentSlideMapping.targetPart.AddImagePart(getImageType(b.TypeCode));
+                    imgPart.TargetDirectory = "..\\media";
+                    System.IO.Stream outStream = imgPart.GetStream();
+                    outStream.Write(b.m_pvBits, 0, b.m_pvBits.Length);
 
-                rId = imgPart.RelIdToString;
+                    rId = imgPart.RelIdToString;
+                }
+                else if (recBlip is MetafilePictBlip)
+                {
+                    MetafilePictBlip mb = (MetafilePictBlip)_ctx.Ppt.PicturesContainer._pictures[bse.foDelay];
+
+                    ImagePart imgPart = null;
+                    imgPart = parentSlideMapping.targetPart.AddImagePart(getImageType(mb.TypeCode));
+                    imgPart.TargetDirectory = "..\\media";
+                    System.IO.Stream outStream = imgPart.GetStream();
+
+                    byte[] decompressed = mb.Decrompress();
+                    outStream.Write(decompressed, 0, decompressed.Length);
+                    //outStream.Write(mb.m_pvBits, 0, mb.m_pvBits.Length);
+
+                    rId = imgPart.RelIdToString;
+                }
                 //this._ctx.AddedImages.Add(bse.foDelay, rId);
             }
 

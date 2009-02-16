@@ -298,7 +298,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
         }
 
-        public static string getRGBColorFromOfficeArtCOLORREF(uint value, Slide slide)
+        public static string getRGBColorFromOfficeArtCOLORREF(uint value, Slide slide, DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions so)
         {
             byte[] bytes = BitConverter.GetBytes(value);
             bool fPaletteIndex = (bytes[3] & 1) != 0;
@@ -307,6 +307,84 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             bool fSchemeIndex = (bytes[3] & (1 << 3)) != 0;
             bool fSysIndex = (bytes[3] & (1 << 4)) != 0;
 
+            if (fSysIndex)
+            {
+                UInt16 val = BitConverter.ToUInt16(bytes, 0);
+                string result = "";
+                switch (val & 0x00ff)
+                {
+                    case 0xF0: //shape fill color
+                        result = getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions.PropertyId.fillColor].op,slide,so);
+                        break;
+                    case 0xF1: //shape line color if it is a line else shape fill color
+                    case 0xF2: //shape line color
+                        result = getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions.PropertyId.lineColor].op, slide, so);
+                        break;
+                    case 0xF3: //shape shadow color
+                        result = getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions.PropertyId.shadowColor].op, slide, so);
+                        break;
+                    case 0xF4: //current or last used color
+                    case 0xF5: //shape fill background color
+                        result = getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions.PropertyId.fillBackColor].op, slide, so);
+                        break;
+                    case 0xF6: //shape line background color
+                        result = getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions.PropertyId.lineBackColor].op, slide, so);
+                        break;
+                    case 0xF7: //shape fill color if shape contains a fill else line color
+                        result = getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions.PropertyId.fillColor].op, slide, so);
+                        break;
+                }
+
+                int red = int.Parse(result.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+                int green = int.Parse(result.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+                int blue = int.Parse(result.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+                int v = (int)bytes[2];
+                int res;
+                switch (val & 0xff00)
+                {
+                    case 0x100:
+                        if (blue == 0xff) return result;
+                        if (blue == 0x00) return "000000";
+
+                        res = int.Parse(result, System.Globalization.NumberStyles.HexNumber);
+                        res -= v;
+                        return res.ToString("X").PadLeft(6, '0');
+                    case 0x200:
+                        if (blue == 0xff) return result;
+                        if (blue == 0x00) return "FFFFFF";
+
+                        res = int.Parse(result, System.Globalization.NumberStyles.HexNumber);
+                        res += v;
+                        return res.ToString("X").PadLeft(6, '0');
+                    case 0x300:
+                        red += v;
+                        green += v;
+                        blue += v;
+                        if (red > 0xff) red = 0xff;
+                        if (green > 0xff) green = 0xff;
+                        if (blue > 0xff) blue = 0xff;
+                        return red.ToString("X").PadLeft(2, '0') + green.ToString("X").PadLeft(2, '0') + blue.ToString("X").PadLeft(2, '0');
+                    case 0x400:
+                        red -= v;
+                        green -= v;
+                        blue -= v;
+                        if (red < 0) red = 0x0;
+                        if (green < 0) green = 0x0;
+                        if (blue < 0) blue = 0x0;
+                        return red.ToString("X").PadLeft(2, '0') + green.ToString("X").PadLeft(2, '0') + blue.ToString("X").PadLeft(2, '0');
+                    case 0x500:
+                        red = v - red;
+                        green = v - green;
+                        blue = v - blue;
+                        if (red < 0) red = 0x0;
+                        if (green < 0) green = 0x0;
+                        if (blue < 0) blue = 0x0;
+                        return red.ToString("X").PadLeft(2, '0') + green.ToString("X").PadLeft(2, '0') + blue.ToString("X").PadLeft(2, '0');
+                    default:
+                        break;
+                }
+            } 
+            
             if (fSchemeIndex)
             {
                 //red is the index to the color scheme
