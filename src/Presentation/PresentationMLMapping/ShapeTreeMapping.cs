@@ -46,6 +46,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
     {
         protected int _idCnt;
         protected ConversionContext _ctx;
+        protected string _footertext;
 
         public PresentationMapping<Slide> parentSlideMapping = null;
         public Dictionary<AnimationInfoContainer, int> animinfos = new Dictionary<AnimationInfoContainer, int>();
@@ -92,9 +93,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 DynamicApply(iter.Current);
         }
 
-        private ShapeOptions so = null;
+        private ShapeOptions so;
         public void Apply(ShapeContainer container)
         {
+            Apply(container, "");
+        }
+        public void Apply(ShapeContainer container, string footertext)
+        {
+            _footertext = footertext;
             ClientData clientData = container.FirstChildWithType<ClientData>();
 
             bool continueShape = true;
@@ -102,14 +108,18 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             Shape sh = container.FirstChildWithType<Shape>();
             so = container.FirstChildWithType<ShapeOptions>();
             if (clientData == null)
-            if (so != null)
-            {
-                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.Pib))
+                if (so != null)
                 {
-                    writePic(container);
-                    continueShape = false;
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.Pib))
+                    {
+                        writePic(container);
+                        continueShape = false;
+                    }
                 }
-            }
+                else
+                {
+                    so =  new ShapeOptions();
+                }
 
             ShapeOptions sndSo = null;
             if (container.AllChildrenWithType<ShapeOptions>().Count > 1)
@@ -117,20 +127,32 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 sndSo = ((RegularContainer)sh.ParentRecord).AllChildrenWithType<ShapeOptions>()[1];
                 if (sndSo.OptionsByID.ContainsKey(ShapeOptions.PropertyId.metroBlob))
                 {
-                    ShapeOptions.OptionEntry metroBlob = sndSo.OptionsByID[ShapeOptions.PropertyId.metroBlob];
-                    byte[] code = metroBlob.opComplex;
-                    string path = System.IO.Path.GetTempFileName();
-                    System.IO.FileStream fs = new System.IO.FileStream(path, System.IO.FileMode.Create);
-                    fs.Write(code, 0, code.Length);
-                    fs.Close();
-                    ZipUtils.ZipReader reader = ZipUtils.ZipFactory.OpenArchive(path);
-                    System.IO.StreamReader mems = new System.IO.StreamReader(reader.GetEntry("drs/shapexml.xml"));
-                    string xml = mems.ReadToEnd();
-                    xml = xml.Substring(xml.IndexOf("<p:sp")); //remove xml declaration
+                    ZipUtils.ZipReader reader = null;
+                    try
+                    {
+                        ShapeOptions.OptionEntry metroBlob = sndSo.OptionsByID[ShapeOptions.PropertyId.metroBlob];
+                        byte[] code = metroBlob.opComplex;
+                        string path = System.IO.Path.GetTempFileName();
+                        System.IO.FileStream fs = new System.IO.FileStream(path, System.IO.FileMode.Create);
+                        fs.Write(code, 0, code.Length);
+                        fs.Close();
 
-                    _writer.WriteRaw(xml);
+                        reader = ZipUtils.ZipFactory.OpenArchive(path);
+                        System.IO.StreamReader mems = new System.IO.StreamReader(reader.GetEntry("drs/shapexml.xml"));
+                        string xml = mems.ReadToEnd();
+                        xml = xml.Substring(xml.IndexOf("<p:sp")); //remove xml declaration
 
-                    continueShape = false;
+                        _writer.WriteRaw(xml);
+
+                        continueShape = false;
+
+                        reader.Close();
+                    }
+                    catch (Exception e)
+                    {
+                        continueShape = true;
+                        reader.Close();
+                    }
                 }
             }
 
@@ -146,6 +168,15 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     {
                         if (rule.spidC == sh.spid) //spidC marks the connector shape
                         {
+                            if (!spidToId.ContainsKey((int)rule.spidA))
+                            {
+                                spidToId.Add((int)rule.spidA, ++_idCnt);
+                            }
+                            if (!spidToId.ContainsKey((int)rule.spidB))
+                            {
+                                spidToId.Add((int)rule.spidB, ++_idCnt);
+                            }
+
                             idStart = spidToId[(int)rule.spidA].ToString(); //spidA marks the start shape
                             idEnd = spidToId[(int)rule.spidB].ToString(); //spidB marks the end shape
                             idxStart = rule.cptiA.ToString();
@@ -186,41 +217,46 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 {
 
                     System.IO.MemoryStream ms = new System.IO.MemoryStream(clientData.bytes);
-                    Record rec = Record.ReadRecord(ms, 0);
 
-                    if (rec.TypeCode == 4116)
+                    if (ms.Length > 0)
                     {
-                        AnimationInfoContainer animinfo = (AnimationInfoContainer)rec;
-                        animinfos.Add(animinfo, _idCnt);
-                        if (ms.Position < ms.Length) rec = Record.ReadRecord(ms, 1);
-                    }
 
-                    switch (rec.TypeCode)
-                    {
-                        case 3011:
-                            OEPlaceHolderAtom placeholder = (OEPlaceHolderAtom)rec; // clientData.FirstChildWithType<OEPlaceHolderAtom>();
+                        Record rec = Record.ReadRecord(ms, 0);
 
-                            if (placeholder != null)
-                            {
+                        if (rec.TypeCode == 4116)
+                        {
+                            AnimationInfoContainer animinfo = (AnimationInfoContainer)rec;
+                            animinfos.Add(animinfo, _idCnt);
+                            if (ms.Position < ms.Length) rec = Record.ReadRecord(ms, 1);
+                        }
 
-                                _writer.WriteStartElement("p", "ph", OpenXmlNamespaces.PresentationML);
+                        switch (rec.TypeCode)
+                        {
+                            case 3011:
+                                OEPlaceHolderAtom placeholder = (OEPlaceHolderAtom)rec; // clientData.FirstChildWithType<OEPlaceHolderAtom>();
 
-                                if (!placeholder.IsObjectPlaceholder())
+                                if (placeholder != null)
                                 {
-                                    string typeValue = Utils.PlaceholderIdToXMLValue(placeholder.PlacementId);
-                                    _writer.WriteAttributeString("type", typeValue);
-                                }
 
-                                if (placeholder.Position != -1)
-                                {
-                                    _writer.WriteAttributeString("idx", placeholder.Position.ToString());
-                                }
+                                    _writer.WriteStartElement("p", "ph", OpenXmlNamespaces.PresentationML);
 
-                                _writer.WriteEndElement();
-                            }
-                            break;
-                        case 4116:
-                            break;
+                                    if (!placeholder.IsObjectPlaceholder())
+                                    {
+                                        string typeValue = Utils.PlaceholderIdToXMLValue(placeholder.PlacementId);
+                                        _writer.WriteAttributeString("type", typeValue);
+                                    }
+
+                                    if (placeholder.Position != -1)
+                                    {
+                                        _writer.WriteAttributeString("idx", placeholder.Position.ToString());
+                                    }
+
+                                    _writer.WriteEndElement();
+                                }
+                                break;
+                            case 4116:
+                                break;
+                        }
                     }
                 }
 
@@ -383,14 +419,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     }
                 }
 
-                if (!so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineEndCapStyle))
-                {
-                    _writer.WriteStartElement("a", "miter", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("lim", "800000");
-                    _writer.WriteEndElement();
-                }
-
-
                 if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineDashing))
                 {
                     _writer.WriteStartElement("a", "prstDash", OpenXmlNamespaces.DrawingML);
@@ -500,6 +528,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteEndElement(); //tailnd
                     }
                 }
+
+                if (!so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineEndCapStyle))
+                {
+                //    _writer.WriteStartElement("a", "miter", OpenXmlNamespaces.DrawingML);
+                //    _writer.WriteAttributeString("lim", "800000");
+                //    _writer.WriteEndElement();
+                }
+
                 _writer.WriteEndElement(); //ln
 
                 _writer.WriteEndElement();
@@ -699,6 +735,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             System.IO.MemoryStream ms = new System.IO.MemoryStream(textbox.Bytes);
             TextHeaderAtom thAtom = null;
             TextStyleAtom style = null;
+            List<int> lst = new List<int>();
             while (ms.Position < ms.Length)
             {
                 Record rec = Record.ReadRecord(ms, 0);
@@ -730,18 +767,20 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         MasterTextPropAtom m = (MasterTextPropAtom)rec;
                         foreach(MasterTextPropRun r in m.MasterTextPropRuns)
                         {
-
-                            _writer.WriteStartElement("a", "lvl" + (r.indentLevel + 1) + "pPr", OpenXmlNamespaces.DrawingML);
-
-                            if (thAtom.TextType == TextType.CenterTitle || thAtom.TextType == TextType.CenterBody)
+                            if (!lst.Contains(r.indentLevel))
                             {
-                                _writer.WriteAttributeString("algn", "ctr");                                                                
+                                _writer.WriteStartElement("a", "lvl" + (r.indentLevel + 1) + "pPr", OpenXmlNamespaces.DrawingML);
+
+                                if (thAtom.TextType == TextType.CenterTitle || thAtom.TextType == TextType.CenterBody)
+                                {
+                                    _writer.WriteAttributeString("algn", "ctr");
+                                }
+
+                                //_writer.WriteElementString("a", "buNone", OpenXmlNamespaces.DrawingML, "");
+
+                                _writer.WriteEndElement();
+                                lst.Add(r.indentLevel);
                             }
-
-                            //_writer.WriteElementString("a", "buNone", OpenXmlNamespaces.DrawingML, "");
-
-                            _writer.WriteEndElement();
-                            
                         }
                         break;
                     case 0xfa8: //TextBytesAtom
@@ -761,7 +800,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteEndElement();
 
-            new TextMapping(_ctx, _writer).Apply(textbox);
+            new TextMapping(_ctx, _writer).Apply(textbox, _footertext);
 
             _writer.WriteEndElement();
         }
@@ -828,6 +867,16 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         private void WritecustGeom(Shape sh)
         {
+
+            if (!so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.pVertices) | !so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.pSegmentInfo) | !so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.shapePath))
+            {
+                _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
+                _writer.WriteAttributeString("prst", "rect");
+                _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
+                _writer.WriteEndElement(); //prstGeom
+                return;
+            }
+
             _writer.WriteStartElement("a", "custGeom", OpenXmlNamespaces.DrawingML);
 
             _writer.WriteStartElement("a", "cxnLst", OpenXmlNamespaces.DrawingML);
@@ -936,7 +985,17 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 {
                     _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("prst", prst);
-                    _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
+                    if (prst == "roundRect" & so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.adjustValue)) //TODO: implement for all shapes
+                    {
+                        _writer.WriteStartElement("a", "avLst", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteStartElement("a", "gd", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("name", "adj");
+                        _writer.WriteAttributeString("fmla", "val " + so.OptionsByID[ShapeOptions.PropertyId.adjustValue].op.ToString());
+                        _writer.WriteEndElement();
+                        _writer.WriteEndElement();
+                    } else {
+                        _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
+                    }
                     _writer.WriteEndElement(); //prstGeom
                 }                
             }
@@ -947,11 +1006,17 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         private Dictionary<int, int> spidToId = new Dictionary<int, int>();
         private void WriteCNvPr(int spid, string name)
         {
+
+            if (!spidToId.ContainsKey(spid))
+            {
+                spidToId.Add(spid, ++_idCnt);
+            }
+
             _writer.WriteStartElement("p", "cNvPr", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("id", (++_idCnt).ToString());
+            _writer.WriteAttributeString("id", spidToId[spid].ToString());
             _writer.WriteAttributeString("name", name);
             _writer.WriteEndElement();
-            if (!spidToId.ContainsKey(spid)) spidToId.Add(spid, _idCnt);
+            //if (!spidToId.ContainsKey(spid)) spidToId.Add(spid, _idCnt);
         }
 
         private void WriteXFrm(XmlWriter _writer, Rectangle rect)

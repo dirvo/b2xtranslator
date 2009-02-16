@@ -76,6 +76,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
         public uint Version;
         public uint Instance;
 
+        public Record()
+        {
+        }
+
         public Record(BinaryReader _reader, uint bodySize, uint typeCode, uint version, uint instance)
         {
             this.BodySize = bodySize;

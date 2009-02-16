@@ -176,7 +176,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             if (pr.IndentLevel > 0) _writer.WriteAttributeString("lvl", pr.IndentLevel.ToString());
             if (pr.LeftMarginPresent) _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU((int)pr.LeftMargin).ToString());
-            if (pr.IndentPresent) _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(pr.LeftMargin-pr.Indent)))).ToString());
+            if (pr.IndentPresent) _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(pr.LeftMargin - pr.Indent)))).ToString());
 
             if (pr.TextDirectionPresent)
             {
@@ -195,7 +195,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 _writer.WriteAttributeString("rtl", "0");
             }
 
-            if (pr.FontAlignPresent) 
+            if (pr.FontAlignPresent)
             {
                 switch (pr.FontAlign)
                 {
@@ -211,7 +211,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     case 0x0003: //UpholdFixed
                         _writer.WriteAttributeString("fontAlgn", "b");
                         break;
-                }                
+                }
             }
 
             if (pr.SpaceBeforePresent)
@@ -274,33 +274,33 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             if (pr9 != null)
             {
                 if (pr9.BulletBlipReferencePresent)
-                foreach (ProgTags progtags in _ctx.Ppt.DocumentRecord.FirstChildWithType<List>().AllChildrenWithType<ProgTags>())
-                {
-                    foreach (ProgBinaryTag bintags in progtags.AllChildrenWithType<ProgBinaryTag>())
+                    foreach (ProgTags progtags in _ctx.Ppt.DocumentRecord.FirstChildWithType<List>().AllChildrenWithType<ProgTags>())
                     {
-                        foreach (ProgBinaryTagDataBlob data in bintags.AllChildrenWithType<ProgBinaryTagDataBlob>())
+                        foreach (ProgBinaryTag bintags in progtags.AllChildrenWithType<ProgBinaryTag>())
                         {
-                            foreach (BlipCollection9Container blips in data.AllChildrenWithType<BlipCollection9Container>())
+                            foreach (ProgBinaryTagDataBlob data in bintags.AllChildrenWithType<ProgBinaryTagDataBlob>())
                             {
-                                if (blips.Children.Count > pr9.bulletblipref)
+                                foreach (BlipCollection9Container blips in data.AllChildrenWithType<BlipCollection9Container>())
                                 {
-                                    BitmapBlip b = ((BlipEntityAtom)blips.Children[pr9.bulletblipref]).blip;
-                                    ImagePart imgPart = null;
-                                    imgPart = _parentSlideMapping.targetPart.AddImagePart(ShapeTreeMapping.getImageType(b.TypeCode));
-                                    imgPart.TargetDirectory = "..\\media";
-                                    System.IO.Stream outStream = imgPart.GetStream();
-                                    outStream.Write(b.m_pvBits, 0, b.m_pvBits.Length);
+                                    if (blips.Children.Count > pr9.bulletblipref & pr9.bulletblipref > -1)
+                                    {
+                                        BitmapBlip b = ((BlipEntityAtom)blips.Children[pr9.bulletblipref]).blip;
+                                        ImagePart imgPart = null;
+                                        imgPart = _parentSlideMapping.targetPart.AddImagePart(ShapeTreeMapping.getImageType(b.TypeCode));
+                                        imgPart.TargetDirectory = "..\\media";
+                                        System.IO.Stream outStream = imgPart.GetStream();
+                                        outStream.Write(b.m_pvBits, 0, b.m_pvBits.Length);
 
-                                    _writer.WriteStartElement("a", "buBlip", OpenXmlNamespaces.DrawingML);
-                                    _writer.WriteStartElement("a", "blip", OpenXmlNamespaces.DrawingML);
-                                    _writer.WriteAttributeString("r", "embed", OpenXmlNamespaces.Relationships, imgPart.RelIdToString);
-                                    _writer.WriteEndElement(); //blip
-                                    _writer.WriteEndElement(); //buBlip
+                                        _writer.WriteStartElement("a", "buBlip", OpenXmlNamespaces.DrawingML);
+                                        _writer.WriteStartElement("a", "blip", OpenXmlNamespaces.DrawingML);
+                                        _writer.WriteAttributeString("r", "embed", OpenXmlNamespaces.Relationships, imgPart.RelIdToString);
+                                        _writer.WriteEndElement(); //blip
+                                        _writer.WriteEndElement(); //buBlip
+                                    }
                                 }
                             }
                         }
                     }
-                }
             }
             else
             {

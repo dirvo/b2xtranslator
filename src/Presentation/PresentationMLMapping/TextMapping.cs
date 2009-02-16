@@ -97,7 +97,30 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             return null;
         }
 
+        protected static uint GetCharacterRunStart(TextStyleAtom style, uint forIdx)
+        {
+            if (style == null)
+                return 0;
+
+            uint idx = 0;
+
+            foreach (CharacterRun c in style.CRuns)
+            {
+                if (forIdx < idx + c.Length)
+                    return idx;
+
+                idx += c.Length;
+            }
+
+            return 0;
+        }
+
         public void Apply(ClientTextbox textbox)
+        {
+            Apply(textbox, "");
+        }
+
+        public void Apply(ClientTextbox textbox, string footertext)
         {
             System.IO.MemoryStream ms = new System.IO.MemoryStream(textbox.Bytes);
             Record rec = Record.ReadRecord(ms, 0);
@@ -140,14 +163,20 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 break;
                             case 0xffa: //FooterMCAtom
                                 mca = (FooterMCAtom)rec;
+                                text = text.Replace(text.Substring(mca.Position, 1), footertext);
+
+                                foreach (CharacterRun run in style.CRuns)
+                                {
+                                    run.Length += (uint)text.Length;
+                                }
                                 break;
                             case 0xff8: //GenericDateMCAtom
                                 GenericDateMCAtom gdmca = (GenericDateMCAtom)rec;
                                 break;
                             default:
-                                TextAtom textAtom = thAtom.TextAtom;
-                                text = (textAtom == null) ? "" : textAtom.Text;
-                                style = thAtom.TextStyleAtom;
+                                //TextAtom textAtom = thAtom.TextAtom;
+                                //text = (textAtom == null) ? "" : textAtom.Text;
+                                //style = thAtom.TextStyleAtom;
                                 break;
                         }
                     }
@@ -179,46 +208,80 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
             else
             {
-                String[] runlines = text.Split(new char[] { '\v', '\r' });
-                foreach (String line in runlines)
+                String[] parlines = text.Split(new char[] { '\r' }); //text.Split(new char[] { '\v', '\r' });
+                int internalOffset = 0;
+                foreach (String parline in parlines)
                 {
-                    //each line forms a paragraph
+                    String[] runlines = parline.Split(new char[] { '\v' });
+
+                    //each parline forms a paragraph
+                    //each runline forms a run
+
                     ParagraphRun p = GetParagraphRun(style, idx);
                     String runText;
                     writeP(p);
-                    uint offset = idx;
 
-                    while (idx < offset + line.Length)
+                    uint CharacterRunStart;
+                    int len;
+
+                    bool first = true;
+                    
+                    foreach (string line in runlines)
                     {
-                        CharacterRun r = GetCharacterRun(style, idx);
+                        uint offset = idx;
 
-                        runText = line.Substring((int)(idx-offset));
-
-                        if (r != null)
-                            if ((idx - offset) + r.Length < line.Length)
+                        if (!first)
                         {
-                            runText = line.Substring((int)(idx - offset), (int)r.Length);
-                        }
-                        
-
-                        _writer.WriteStartElement("a", "r", OpenXmlNamespaces.DrawingML);
-                        if (r != null)
-                        {
-                            new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", textbox.FirstAncestorWithType<Slide>());
-                        }
-                        else
-                        {
-                            //textbox.FirstAncestorWithType<Slide>()
+                            _writer.WriteElementString("a", "br", OpenXmlNamespaces.DrawingML, "");
+                            internalOffset += 1;
                         }
 
-                        _writer.WriteStartElement("a", "t", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteValue(runText);
-                        _writer.WriteEndElement();
+                        while (idx < offset + line.Length)
+                        {
+                            len = line.Length;
+                            CharacterRun r = GetCharacterRun(style, idx + (uint)internalOffset + 1);
+                            if (r != null)
+                            {
+                                CharacterRunStart = GetCharacterRunStart(style, idx + (uint)internalOffset + 1);
+                                len = (int)(CharacterRunStart + r.Length - idx - internalOffset);
+                                if (len > line.Length - idx + offset) len = (int)(line.Length - idx + offset);
+                                if (len < 0) len = (int)(line.Length - idx + offset);
+                                runText = line.Substring((int)(idx - offset), len);
+                            }
+                            else
+                            {
+                                runText = line.Substring((int)(idx - offset));
+                            }                            
 
-                        _writer.WriteEndElement();
+                            //if (r != null)
+                            //if ((idx - offset) + r.Length < line.Length)
+                            //{
+                            //    runText = line.Substring((int)(idx - offset), (int)r.Length);
+                            //}                            
 
-                        idx += (uint)runText.Length; // +1;
+                            _writer.WriteStartElement("a", "r", OpenXmlNamespaces.DrawingML);
+                            if (r != null)
+                            {
+                                new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", textbox.FirstAncestorWithType<Slide>());
+                            }
+                            else
+                            {
+                                //textbox.FirstAncestorWithType<Slide>()
+                            }
 
+                            _writer.WriteStartElement("a", "t", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteValue(runText);
+                            _writer.WriteEndElement();
+
+                            _writer.WriteEndElement();
+
+                            idx += (uint)runText.Length; // +1;
+
+                        }
+
+                        first = false;
+
+                       
                     }
 
                     _writer.WriteStartElement("a", "endParaRPr", OpenXmlNamespaces.DrawingML);
@@ -323,7 +386,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     }
                     else
                     {
-                        if (p.BulletCharPresent)
+                        if (p.BulletCharPresent & p.BulletChar != 0xf06c & p.BulletChar != 0xf02d)
                         {
                             _writer.WriteStartElement("a", "buChar", OpenXmlNamespaces.DrawingML);
                             _writer.WriteAttributeString("char", p.BulletChar.ToString());

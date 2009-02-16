@@ -497,8 +497,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             msopvInside = 0x5,
             msopvOutside = 0x6
         }
-
-
+        
         public enum PositionVerticalRelative
         {
             msoprvMargin,
@@ -545,6 +544,12 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 
         public OptionEntry[] Options;
         public Dictionary<PropertyId, OptionEntry> OptionsByID = new Dictionary<PropertyId, OptionEntry>();
+
+        public ShapeOptions()
+            : base()
+        {
+
+        }
 
         public ShapeOptions(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)

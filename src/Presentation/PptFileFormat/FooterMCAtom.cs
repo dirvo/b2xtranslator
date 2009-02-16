@@ -38,7 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
     [OfficeRecordAttribute(4090)]
     public class FooterMCAtom: Record
     {
-        Int32 Position;
+        public Int32 Position;
         public FooterMCAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {

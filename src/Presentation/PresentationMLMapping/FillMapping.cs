@@ -57,6 +57,18 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             switch (so.OptionsByID[ShapeOptions.PropertyId.fillType].op)
             {
                 case 0x0: //solid
+                    colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide);
+                    _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteAttributeString("val", colorval);
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity))
+                    {
+                        _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillOpacity].op / 65536 * 100000)).ToString()); //we need the percentage of the opacity (65536 means 100%)
+                        _writer.WriteEndElement();
+                    }
+                    _writer.WriteEndElement();
+                    _writer.WriteEndElement();
                     break;
                 case 0x1: //pattern
                     uint blipIndex1 = so.OptionsByID[ShapeOptions.PropertyId.fillBlip].op;
@@ -85,50 +97,63 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     break;
                 case 0x2: //texture
                 case 0x3: //picture
-                    uint blipIndex = so.OptionsByID[ShapeOptions.PropertyId.fillBlip].op;
-                    string blipName = Encoding.UTF8.GetString(so.OptionsByID[ShapeOptions.PropertyId.fillBlipName].opComplex);
+                    uint blipIndex = 0;
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillBlip))
+                    {
+                        blipIndex = so.OptionsByID[ShapeOptions.PropertyId.fillBlip].op;
+                    } else 
+                    {  
+                        blipIndex = so.OptionsByID[ShapeOptions.PropertyId.Pib].op;
+                    }
+
+                    //string blipName = Encoding.UTF8.GetString(so.OptionsByID[ShapeOptions.PropertyId.fillBlipName].opComplex);
                     string rId = "";
                     DrawingGroup gr = (DrawingGroup)this._ctx.Ppt.DocumentRecord.FirstChildWithType<PPDrawingGroup>().Children[0];
                     BlipStoreEntry bse = (BlipStoreEntry)gr.FirstChildWithType<BlipStoreContainer>().Children[(int)blipIndex - 1];
-                    BitmapBlip b = (BitmapBlip)_ctx.Ppt.PicturesContainer._pictures[bse.foDelay];
 
-                    ImagePart imgPart = null;
-                    imgPart = _parentSlideMapping.targetPart.AddImagePart(ShapeTreeMapping.getImageType(b.TypeCode));
-                    imgPart.TargetDirectory = "..\\media";
-                    System.IO.Stream outStream = imgPart.GetStream();
-                    outStream.Write(b.m_pvBits, 0, b.m_pvBits.Length);
-
-                    rId = imgPart.RelIdToString;
-
-                    _writer.WriteStartElement("a", "blipFill", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("dpi", "0");
-                    _writer.WriteAttributeString("rotWithShape", "1");
-
-                    _writer.WriteStartElement("a", "blip", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("r", "embed", OpenXmlNamespaces.Relationships, rId);
-                    _writer.WriteEndElement();
-
-                    _writer.WriteElementString("a", "srcRect", OpenXmlNamespaces.DrawingML, "");
-
-                    if (so.OptionsByID[ShapeOptions.PropertyId.fillType].op == 0x3)
+                    if (_ctx.Ppt.PicturesContainer._pictures.ContainsKey(bse.foDelay))
                     {
-                        _writer.WriteStartElement("a", "stretch", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteElementString("a", "fillRect", OpenXmlNamespaces.DrawingML, "");
+
+                        BitmapBlip b = (BitmapBlip)_ctx.Ppt.PicturesContainer._pictures[bse.foDelay];
+
+                        ImagePart imgPart = null;
+                        imgPart = _parentSlideMapping.targetPart.AddImagePart(ShapeTreeMapping.getImageType(b.TypeCode));
+                        imgPart.TargetDirectory = "..\\media";
+                        System.IO.Stream outStream = imgPart.GetStream();
+                        outStream.Write(b.m_pvBits, 0, b.m_pvBits.Length);
+
+                        rId = imgPart.RelIdToString;
+
+                        _writer.WriteStartElement("a", "blipFill", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("dpi", "0");
+                        _writer.WriteAttributeString("rotWithShape", "1");
+
+                        _writer.WriteStartElement("a", "blip", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("r", "embed", OpenXmlNamespaces.Relationships, rId);
+                        _writer.WriteEndElement();
+
+                        _writer.WriteElementString("a", "srcRect", OpenXmlNamespaces.DrawingML, "");
+
+                        if (so.OptionsByID[ShapeOptions.PropertyId.fillType].op == 0x3)
+                        {
+                            _writer.WriteStartElement("a", "stretch", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteElementString("a", "fillRect", OpenXmlNamespaces.DrawingML, "");
+                            _writer.WriteEndElement();
+                        }
+                        else
+                        {
+                            _writer.WriteStartElement("a", "tile", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("tx", "0");
+                            _writer.WriteAttributeString("ty", "0");
+                            _writer.WriteAttributeString("sx", "100000");
+                            _writer.WriteAttributeString("sy", "100000");
+                            _writer.WriteAttributeString("flip", "none");
+                            _writer.WriteAttributeString("algn", "tl");
+                            _writer.WriteEndElement();
+                        }
+
                         _writer.WriteEndElement();
                     }
-                    else
-                    {
-                        _writer.WriteStartElement("a", "tile", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("tx", "0");
-                        _writer.WriteAttributeString("ty", "0");
-                        _writer.WriteAttributeString("sx", "100000");
-                        _writer.WriteAttributeString("sy", "100000");
-                        _writer.WriteAttributeString("flip", "none");
-                        _writer.WriteAttributeString("algn", "tl");
-                        _writer.WriteEndElement();
-                    }
-
-                    _writer.WriteEndElement();
                     break;
                 case 0x4: //shade
                 case 0x5: //shadecenter

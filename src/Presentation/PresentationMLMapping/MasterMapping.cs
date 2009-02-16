@@ -170,6 +170,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     {
                         switch (so.OptionsByID[ShapeOptions.PropertyId.fillType].op)
                         {
+                            case 0:
+                                //no background
+                                break;
                             default:
                                 _writer.WriteStartElement("p", "bg", OpenXmlNamespaces.PresentationML);
                                 _writer.WriteStartElement("p", "bgPr", OpenXmlNamespaces.PresentationML);

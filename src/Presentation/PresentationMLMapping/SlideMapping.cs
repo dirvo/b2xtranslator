@@ -137,6 +137,17 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         {
             SlideAtom slideAtom = this.Slide.FirstChildWithType<SlideAtom>();
 
+            string footertext = "";
+            SlideHeadersFootersContainer headersfooters = this.Slide.FirstChildWithType<SlideHeadersFootersContainer>();
+            if (headersfooters != null)
+            {
+                CStringAtom text = headersfooters.FirstChildWithType<CStringAtom>();
+                if (text != null)
+                {
+                    footertext = text.Text;
+                }
+            }
+
             bool footer = false;
             
             foreach (SlideHeadersFootersContainer c in this._ctx.Ppt.DocumentRecord.AllChildrenWithType<SlideHeadersFootersContainer>())
@@ -179,7 +190,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 {
                                     if (placeholder.PlacementId == PlaceholderEnum.MasterFooter)
                                     {
-                                        stm.Apply(shapecontainer);
+                                        stm.Apply(shapecontainer, footertext);
                                         footer = false;
                                     }
                                 }
@@ -211,7 +222,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                     {
                                         if (placeholder.PlacementId == PlaceholderEnum.MasterFooter)
                                         {
-                                            stm.Apply(shapecontainer);
+                                            stm.Apply(shapecontainer, footertext);
                                             footer = false;
                                         }
                                     }

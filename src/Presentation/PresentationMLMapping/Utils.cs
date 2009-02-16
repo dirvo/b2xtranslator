@@ -649,7 +649,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 case 0x4A: //Heart
                     return "heart";
                 case 0x4B: //PictureFrame
-                    return "frame";
+                    //return "frame";
+                    return "rect";
                 case 0x4C: //QuadArrow
                     return "quadArrow";
                 case 0x4D: //LeftArrowCallout
