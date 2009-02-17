@@ -81,7 +81,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             RoundTripContentMasterId12 masterInfo = slide.FirstChildWithType<RoundTripContentMasterId12>();
 
             // PPT2007 OOXML-Layout
-            if (masterInfo != null)
+            if (false & masterInfo != null)
             {
                 layoutPart = layoutManager.GetLayoutPartByInstanceId(masterInfo.ContentMasterInstanceId);
             }
