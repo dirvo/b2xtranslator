@@ -94,7 +94,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         }
 
         private ShapeOptions so;
-        private int shapecounter = 0;
         public void Apply(ShapeContainer container)
         {
             Apply(container, "");
@@ -126,7 +125,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             if (container.AllChildrenWithType<ShapeOptions>().Count > 1)
             {
                 sndSo = ((RegularContainer)sh.ParentRecord).AllChildrenWithType<ShapeOptions>()[1];
-                if (sndSo.OptionsByID.ContainsKey(ShapeOptions.PropertyId.metroBlob))
+                if (false & sndSo.OptionsByID.ContainsKey(ShapeOptions.PropertyId.metroBlob))
                 {
                     ZipUtils.ZipReader reader = null;
                     try
@@ -409,7 +408,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 }
                 else
                 {
-                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineColor))
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineColor) & so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineStyleBooleans))
                     {
                         LineStyleBooleans lineStyle = new LineStyleBooleans(so.OptionsByID[ShapeOptions.PropertyId.lineStyleBooleans].op);
                         if (lineStyle.fLine)

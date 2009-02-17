@@ -896,9 +896,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 case 0xAF: //TextCanDown
                     return "";
                 case 0xB0: //flowchartAlternateProcess
-                    return "flowchartAlternateProcess";
+                    return "flowChartAlternateProcess";
                 case 0xB1: //flowchartOffpageConnector
-                    return "flowchartOffpageConnector";
+                    return "flowChartOffpageConnector";
                 case 0xB2: //Callout90
                     return "callout1";
                 case 0xB3: //AccentCallout90

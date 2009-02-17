@@ -57,7 +57,12 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             switch (so.OptionsByID[ShapeOptions.PropertyId.fillType].op)
             {
                 case 0x0: //solid
-                    colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide, so);
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillColor))
+                    {
+                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide, so);
+                    } else {
+                        colorval = "000000"; //TODO: find out which color to use in this case
+                    }
                     _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
                     _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("val", colorval);
@@ -88,7 +93,15 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                     _writer.WriteStartElement("a", "bgClr", OpenXmlNamespaces.DrawingML);
                     _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("val", Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillBackColor].op, slide, so));
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillBackColor))
+                    {
+                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillBackColor].op, slide, so);
+                    }
+                    else
+                    {
+                        colorval = "ffffff"; //TODO: find out which color to use in this case
+                    }
+                    _writer.WriteAttributeString("val", colorval);
                     _writer.WriteEndElement();
                     _writer.WriteEndElement();
 

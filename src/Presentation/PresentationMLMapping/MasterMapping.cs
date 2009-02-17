@@ -63,15 +63,15 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             this.LayoutManager = _ctx.GetOrCreateLayoutManagerByMasterId(this.MasterId);
 
             // Add PPT2007 roundtrip slide layouts
-            List<RoundTripContentMasterInfo12> rtSlideLayouts = this.Master.AllChildrenWithType<RoundTripContentMasterInfo12>();
+            //List<RoundTripContentMasterInfo12> rtSlideLayouts = this.Master.AllChildrenWithType<RoundTripContentMasterInfo12>();
 
-            foreach (RoundTripContentMasterInfo12 slideLayout in rtSlideLayouts)
-            {
-                SlideLayoutPart layoutPart = this.LayoutManager.AddLayoutPartWithInstanceId(slideLayout.Instance);
+            //foreach (RoundTripContentMasterInfo12 slideLayout in rtSlideLayouts)
+            //{
+            //    SlideLayoutPart layoutPart = this.LayoutManager.AddLayoutPartWithInstanceId(slideLayout.Instance);
 
-                slideLayout.XmlDocumentElement.WriteTo(layoutPart.XmlWriter);
-                layoutPart.XmlWriter.Flush();
-            }
+            //    slideLayout.XmlDocumentElement.WriteTo(layoutPart.XmlWriter);
+            //    layoutPart.XmlWriter.Flush();
+            //}
         }
 
         public void Write()
@@ -132,15 +132,32 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             return;
                         }
 
-                        BitmapBlip b = (BitmapBlip)_ctx.Ppt.PicturesContainer._pictures[bse.foDelay];
+                        Record recBlip = _ctx.Ppt.PicturesContainer._pictures[bse.foDelay];
 
-                        ImagePart imgPart = null;
-                        imgPart = this.targetPart.AddImagePart(ShapeTreeMapping.getImageType(b.TypeCode));
-                        imgPart.TargetDirectory = "..\\media";
-                        System.IO.Stream outStream = imgPart.GetStream();
-                        outStream.Write(b.m_pvBits, 0, b.m_pvBits.Length);
+                        if (recBlip is BitmapBlip)
+                        {
+                            BitmapBlip b = (BitmapBlip)recBlip;
 
-                        rId = imgPart.RelIdToString;
+                            ImagePart imgPart = null;
+                            imgPart = this.targetPart.AddImagePart(ShapeTreeMapping.getImageType(b.TypeCode));
+                            imgPart.TargetDirectory = "..\\media";
+                            System.IO.Stream outStream = imgPart.GetStream();
+                            outStream.Write(b.m_pvBits, 0, b.m_pvBits.Length);
+
+                            rId = imgPart.RelIdToString;
+                        } else {
+                            MetafilePictBlip mb = (MetafilePictBlip)recBlip;
+
+                            ImagePart imgPart = null;
+                            imgPart = this.targetPart.AddImagePart(ShapeTreeMapping.getImageType(mb.TypeCode));
+                            imgPart.TargetDirectory = "..\\media";
+                            System.IO.Stream outStream = imgPart.GetStream();
+
+                            byte[] decompressed = mb.Decrompress();
+                            outStream.Write(decompressed, 0, decompressed.Length);
+                            
+                            rId = imgPart.RelIdToString;
+                        }
                         //this._ctx.AddedImages.Add(bse.foDelay, rId);
                     }
 
@@ -235,7 +252,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             // Write txStyles
             RoundTripOArtTextStyles12 roundTripTxStyles = this.Master.FirstChildWithType<RoundTripOArtTextStyles12>();
-            if (roundTripTxStyles != null)
+            if (false & roundTripTxStyles != null)
             {
                 roundTripTxStyles.XmlDocumentElement.WriteTo(_writer);
             }

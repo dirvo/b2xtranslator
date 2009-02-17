@@ -231,7 +231,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 if (pr.SpaceBefore < 0)
                 {
                     _writer.WriteStartElement("a", "spcPts", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("val", (-1 * 1000 * pr.SpaceBefore).ToString()); //TODO: this has to be verified!
+                    _writer.WriteAttributeString("val", (-1 * 12 * pr.SpaceBefore).ToString()); //TODO: the 12 is wrong
                     _writer.WriteEndElement(); //spcPct
                 }
                 else
@@ -251,7 +251,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     if (lastSpaceBefore < 0)
                     {
                         _writer.WriteStartElement("a", "spcPts", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("val", (-1 * 1000 * lastSpaceBefore).ToString()); //TODO: this has to be verified!
+                        _writer.WriteAttributeString("val", (-1 * 12 * lastSpaceBefore).ToString()); //TODO: the 12 is wrong
                         _writer.WriteEndElement(); //spcPct
                     }
                     else
