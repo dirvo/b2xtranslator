@@ -821,6 +821,25 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteStartElement("a", "bodyPr", OpenXmlNamespaces.DrawingML);
 
+            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.WrapText))
+            {
+                switch (so.OptionsByID[ShapeOptions.PropertyId.WrapText].op)
+                {
+                    case 0: //square
+                        _writer.WriteAttributeString("wrap", "square");
+                        break;
+                    case 1: //by points
+                        break; //TODO
+                    case 2: //none
+                        _writer.WriteAttributeString("wrap", "none");
+                        break;
+                    case 3: //top bottom
+                    case 4: //through
+                    default:
+                        break; //TODO
+                }
+            }
+
             string s = "";
             foreach (ShapeOptions.OptionEntry en in so.Options)
             {
