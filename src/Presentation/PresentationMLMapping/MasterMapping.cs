@@ -85,120 +85,48 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteStartElement("p", "cSld", OpenXmlNamespaces.PresentationML);
 
-            //TODO: write p:bg
             ShapeContainer sc = this.Master.FirstChildWithType<PPDrawing>().FirstChildWithType<DrawingContainer>().FirstChildWithType<ShapeContainer>();
             if (sc != null)
             {
                 Shape sh = sc.FirstChildWithType<Shape>();
                 ShapeOptions so = sc.FirstChildWithType<ShapeOptions>();
-                int indexOfPicture = -1;
-                string name;
-                if (so != null)
+               
+                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillType))
                 {
-                    foreach (ShapeOptions.OptionEntry en in so.Options)
-                    {
-                        switch (en.pid)
-                        {
-                            case ShapeOptions.PropertyId.fillBlip:
-                                indexOfPicture = ((int)en.op) - 1;
-                                break;
-                            case ShapeOptions.PropertyId.fillBlipName:
-                                name = Encoding.Unicode.GetString(en.opComplex);
-                                name = name.Substring(0, name.Length - 1);
-                                break;
-                            default:
-                                break;
-
-                        }
-                    }
+                    _writer.WriteStartElement("p", "bg", OpenXmlNamespaces.PresentationML);
+                    _writer.WriteStartElement("p", "bgPr", OpenXmlNamespaces.PresentationML);
+                    new FillMapping(_ctx, _writer, this).Apply(so);
+                    _writer.WriteElementString("a", "effectLst", OpenXmlNamespaces.DrawingML, "");
+                    _writer.WriteEndElement(); //p:bgPr
+                    _writer.WriteEndElement(); //p:bg
                 }
-                if (indexOfPicture > -1)
+                else if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillColor))
                 {
-                    DrawingGroup gr = (DrawingGroup)this._ctx.Ppt.DocumentRecord.FirstChildWithType<PPDrawingGroup>().Children[0];
-                    BlipStoreEntry bse = (BlipStoreEntry)gr.FirstChildWithType<BlipStoreContainer>().Children[(int)indexOfPicture];
-                    string rId;
-
-                    //if (this.parentSlideMapping is MasterMapping) return;
-
-                    if (this._ctx.AddedImages.ContainsKey(bse.foDelay))
+                    string colorval;
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillColor))
                     {
-                        rId = this._ctx.AddedImages[bse.foDelay];
+                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, this.Master, so);
                     }
                     else
                     {
-
-                        if (!_ctx.Ppt.PicturesContainer._pictures.ContainsKey(bse.foDelay))
-                        {
-                            return;
-                        }
-
-                        Record recBlip = _ctx.Ppt.PicturesContainer._pictures[bse.foDelay];
-
-                        if (recBlip is BitmapBlip)
-                        {
-                            BitmapBlip b = (BitmapBlip)recBlip;
-
-                            ImagePart imgPart = null;
-                            imgPart = this.targetPart.AddImagePart(ShapeTreeMapping.getImageType(b.TypeCode));
-                            imgPart.TargetDirectory = "..\\media";
-                            System.IO.Stream outStream = imgPart.GetStream();
-                            outStream.Write(b.m_pvBits, 0, b.m_pvBits.Length);
-
-                            rId = imgPart.RelIdToString;
-                        } else {
-                            MetafilePictBlip mb = (MetafilePictBlip)recBlip;
-
-                            ImagePart imgPart = null;
-                            imgPart = this.targetPart.AddImagePart(ShapeTreeMapping.getImageType(mb.TypeCode));
-                            imgPart.TargetDirectory = "..\\media";
-                            System.IO.Stream outStream = imgPart.GetStream();
-
-                            byte[] decompressed = mb.Decrompress();
-                            outStream.Write(decompressed, 0, decompressed.Length);
-                            
-                            rId = imgPart.RelIdToString;
-                        }
-                        //this._ctx.AddedImages.Add(bse.foDelay, rId);
+                        colorval = "000000"; //TODO: find out which color to use in this case
                     }
-
                     _writer.WriteStartElement("p", "bg", OpenXmlNamespaces.PresentationML);
-
                     _writer.WriteStartElement("p", "bgPr", OpenXmlNamespaces.PresentationML);
-
-                    _writer.WriteStartElement("a", "blipFill", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteStartElement("a", "blip", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("embed", OpenXmlNamespaces.Relationships, rId);
-                    _writer.WriteEndElement(); //a:blip
-                    _writer.WriteElementString("a", "srcRect", OpenXmlNamespaces.DrawingML, "");
-                    _writer.WriteStartElement("a", "stretch", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteElementString("a", "fillRect", OpenXmlNamespaces.DrawingML, "");
-                    _writer.WriteEndElement(); //a:stretch
-                    _writer.WriteEndElement(); //p:blipFill
-
-                    _writer.WriteElementString("a", "effectLst", OpenXmlNamespaces.DrawingML, "");
-
-                    _writer.WriteEndElement(); //p:bgPr
-
-                    _writer.WriteEndElement(); //p:bg
-                }
-                else
-                {
-                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillType))
+                    _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteAttributeString("val", colorval);
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity))
                     {
-                        switch (so.OptionsByID[ShapeOptions.PropertyId.fillType].op)
-                        {
-                            case 0:
-                                //no background
-                                break;
-                            default:
-                                _writer.WriteStartElement("p", "bg", OpenXmlNamespaces.PresentationML);
-                                _writer.WriteStartElement("p", "bgPr", OpenXmlNamespaces.PresentationML);
-                                new FillMapping(_ctx, _writer, this).Apply(so);
-                                _writer.WriteEndElement();
-                                _writer.WriteEndElement();
-                                break;
-                        }
+                        _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillOpacity].op / 65536 * 100000)).ToString()); //we need the percentage of the opacity (65536 means 100%)
+                        _writer.WriteEndElement();
                     }
+                    _writer.WriteEndElement();
+                    _writer.WriteEndElement();
+                    _writer.WriteElementString("a", "effectLst", OpenXmlNamespaces.DrawingML, "");
+                    _writer.WriteEndElement(); //p:bgPr
+                    _writer.WriteEndElement(); //p:bg
                 }
             }
 

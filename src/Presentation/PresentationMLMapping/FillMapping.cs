@@ -146,6 +146,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                             _writer.WriteStartElement("a", "blip", OpenXmlNamespaces.DrawingML);
                             _writer.WriteAttributeString("r", "embed", OpenXmlNamespaces.Relationships, rId);
+
+                           
+
                             _writer.WriteEndElement();
 
                             _writer.WriteElementString("a", "srcRect", OpenXmlNamespaces.DrawingML, "");
