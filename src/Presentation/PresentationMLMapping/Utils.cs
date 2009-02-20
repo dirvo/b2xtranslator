@@ -338,7 +338,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     case 0xF7: //shape fill color if shape contains a fill else line color
                         result = getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions.PropertyId.fillColor].op, slide, so);
                         break;
+                    case 0xFF: //undefined
+                        return "";
                 }
+
+                if (result.Length == 0) return "";
 
                 int red = int.Parse(result.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
                 int green = int.Parse(result.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);

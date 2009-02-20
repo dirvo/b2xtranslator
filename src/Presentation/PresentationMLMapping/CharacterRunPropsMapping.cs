@@ -48,7 +48,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _ctx = ctx;
         }
 
-        public void Apply(CharacterRun run, string startElement, Slide slide)
+        public void Apply(CharacterRun run, string startElement, Slide slide, ref string lastColor)
         {
             //_writer.WriteStartElement("a", "rPr", OpenXmlNamespaces.DrawingML);
             _writer.WriteStartElement("a", startElement, OpenXmlNamespaces.DrawingML);
@@ -84,31 +84,40 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     switch (run.Color.Index)
                     {
                         case 0x00: //background
-                            _writer.WriteAttributeString("val", new RGBColor(MasterScheme.Background, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
+                            lastColor = new RGBColor(MasterScheme.Background, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
+                            _writer.WriteAttributeString("val", lastColor);
                             break;
                         case 0x01: //text
-                            _writer.WriteAttributeString("val", new RGBColor(MasterScheme.TextAndLines, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
+                            lastColor =  new RGBColor(MasterScheme.TextAndLines, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
+                            _writer.WriteAttributeString("val", lastColor);
                             break;
                         case 0x02: //shadow
-                            _writer.WriteAttributeString("val", new RGBColor(MasterScheme.Shadows, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
+                            lastColor =  new RGBColor(MasterScheme.Shadows, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
+                            _writer.WriteAttributeString("val", lastColor);
                             break;
                         case 0x03: //title
-                            _writer.WriteAttributeString("val", new RGBColor(MasterScheme.TitleText, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
+                            lastColor =  new RGBColor(MasterScheme.TitleText, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
+                            _writer.WriteAttributeString("val", lastColor);
                             break;
                         case 0x04: //fill
-                            _writer.WriteAttributeString("val", new RGBColor(MasterScheme.Fills, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
+                            lastColor =  new RGBColor(MasterScheme.Fills, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
+                            _writer.WriteAttributeString("val", lastColor);
                             break;
                         case 0x05: //accent1
-                            _writer.WriteAttributeString("val", new RGBColor(MasterScheme.Accent, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
+                            lastColor =  new RGBColor(MasterScheme.Accent, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
+                            _writer.WriteAttributeString("val", lastColor);
                             break;
                         case 0x06: //accent2
-                            _writer.WriteAttributeString("val", new RGBColor(MasterScheme.AccentAndHyperlink, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
+                            lastColor =  new RGBColor(MasterScheme.AccentAndHyperlink, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
+                            _writer.WriteAttributeString("val", lastColor);
                             break;
                         case 0x07: //accent3
-                            _writer.WriteAttributeString("val", new RGBColor(MasterScheme.AccentAndFollowedHyperlink, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
+                            lastColor =  new RGBColor(MasterScheme.AccentAndFollowedHyperlink, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
+                            _writer.WriteAttributeString("val", lastColor);
                             break;
                         case 0xFE: //sRGB
-                            _writer.WriteAttributeString("val", run.Color.Red.ToString("X").PadLeft(2, '0') + run.Color.Green.ToString("X").PadLeft(2, '0') + run.Color.Blue.ToString("X").PadLeft(2, '0'));
+                            lastColor =  run.Color.Red.ToString("X").PadLeft(2, '0') + run.Color.Green.ToString("X").PadLeft(2, '0') + run.Color.Blue.ToString("X").PadLeft(2, '0');
+                            _writer.WriteAttributeString("val", lastColor);
                             break;
                         case 0xFF: //undefined
                             break;
@@ -119,9 +128,18 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 else
                 {
                     _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("val", run.Color.Red.ToString("X").PadLeft(2, '0') + run.Color.Green.ToString("X").PadLeft(2, '0') + run.Color.Blue.ToString("X").PadLeft(2, '0'));
+                    lastColor = run.Color.Red.ToString("X").PadLeft(2, '0') + run.Color.Green.ToString("X").PadLeft(2, '0') + run.Color.Blue.ToString("X").PadLeft(2, '0');
+                    _writer.WriteAttributeString("val", lastColor);
                     _writer.WriteEndElement();
                 }
+                _writer.WriteEndElement();
+            }
+            else if (lastColor.Length > 0)
+            {
+                _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
+                _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                _writer.WriteAttributeString("val",lastColor);
+                _writer.WriteEndElement();
                 _writer.WriteEndElement();
             }
 

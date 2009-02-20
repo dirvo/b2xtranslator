@@ -45,7 +45,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         public PresentationMapping<Slide> _parentSlideMapping = null;
 
         private int lastSpaceBefore = 0;
-
+        private string lastColor = "";
         public TextMasterStyleMapping(ConversionContext ctx, XmlWriter writer, PresentationMapping<Slide> parentSlideMapping)
             : base(writer)
         {
@@ -99,6 +99,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             foreach (TextMasterStyleAtom atom in titleAtoms)
             {
                 lastSpaceBefore = 0;
+                lastColor = "";
                 for (int i = 0; i < atom.IndentLevelCount; i++)
                 {
                     pr9 = null;
@@ -120,6 +121,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             foreach (TextMasterStyleAtom atom in bodyAtoms)
             {
                 lastSpaceBefore = 0;
+                lastColor = "";
                 for (int i = 0; i < atom.IndentLevelCount; i++)
                 {
                     pr9 = null;
@@ -329,19 +331,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             //defRPr
             //extLst
 
-            
-
-            
-           
-
-            
-
-            
-
-                
-            
-
-            new CharacterRunPropsMapping(_ctx, _writer).Apply(cr, "defRPr", _Master);                    
+            new CharacterRunPropsMapping(_ctx, _writer).Apply(cr, "defRPr", _Master, ref lastColor);                    
 
             _writer.WriteEndElement(); //lvlXpPr
         }

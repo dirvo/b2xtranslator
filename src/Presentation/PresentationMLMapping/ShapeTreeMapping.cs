@@ -267,6 +267,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                
                 _writer.WriteStartElement("p", "nvPr", OpenXmlNamespaces.PresentationML);
 
+                OEPlaceHolderAtom placeholder = null;
                 if (clientData != null)
                 {
 
@@ -287,7 +288,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         switch (rec.TypeCode)
                         {
                             case 3011:
-                                OEPlaceHolderAtom placeholder = (OEPlaceHolderAtom)rec; // clientData.FirstChildWithType<OEPlaceHolderAtom>();
+                                placeholder = (OEPlaceHolderAtom)rec; // clientData.FirstChildWithType<OEPlaceHolderAtom>();
 
                                 if (placeholder != null)
                                 {
@@ -395,7 +396,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 }
                 else if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillColor))
                 {
-                    if (sh.Instance != 0xca)
+                    if (sh.Instance != 0xca & placeholder == null)
                     {
                         string colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, container.FirstAncestorWithType<Slide>(), so);
                         _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
@@ -642,7 +643,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 {
                     //write dummy
                     _writer.WriteStartElement("p", "txBody", OpenXmlNamespaces.PresentationML);
-                    _writer.WriteElementString("a", "bodyPr", OpenXmlNamespaces.DrawingML,"");
+                    writeBodyPr();
                     _writer.WriteElementString("a", "lstStyle",OpenXmlNamespaces.DrawingML,"");
                     _writer.WriteStartElement("a", "p", OpenXmlNamespaces.DrawingML);
                     _writer.WriteElementString("a", "endParaRPr", OpenXmlNamespaces.DrawingML,"");
@@ -825,10 +826,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement(); //p:pic
         }
 
-        public void Apply(ClientTextbox textbox)
+        public void writeBodyPr()
         {
-            _writer.WriteStartElement("p", "txBody", OpenXmlNamespaces.PresentationML);
-
             _writer.WriteStartElement("a", "bodyPr", OpenXmlNamespaces.DrawingML);
 
             if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.WrapText))
@@ -853,17 +852,17 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             string s = "";
             foreach (ShapeOptions.OptionEntry en in so.Options)
             {
-                switch(en.pid)
+                switch (en.pid)
                 {
                     case ShapeOptions.PropertyId.anchorText:
-                        
+
                         switch (en.op)
                         {
                             case 0: //Top
                                 _writer.WriteAttributeString("anchor", "t");
                                 break;
                             case 1: //Middle
-                                _writer.WriteAttributeString("anchor","ctr");
+                                _writer.WriteAttributeString("anchor", "ctr");
                                 break;
                             case 2: //Bottom
                                 _writer.WriteAttributeString("anchor", "b");
@@ -889,8 +888,15 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             {
                 _writer.WriteElementString("a", "spAutoFit", OpenXmlNamespaces.DrawingML, "");
             }
-            
+
             _writer.WriteEndElement();
+        }
+
+        public void Apply(ClientTextbox textbox)
+        {
+            _writer.WriteStartElement("p", "txBody", OpenXmlNamespaces.PresentationML);
+
+            writeBodyPr();
 
             _writer.WriteStartElement("a", "lstStyle", OpenXmlNamespaces.DrawingML);
 
