@@ -787,7 +787,25 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
            
 
             _writer.WriteEndElement(); //a:blip
-            _writer.WriteElementString("a", "srcRect", OpenXmlNamespaces.DrawingML, "");
+            _writer.WriteStartElement("a", "srcRect", OpenXmlNamespaces.DrawingML);
+            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.cropFromLeft))
+            {
+                _writer.WriteAttributeString("l", Math.Floor((Decimal)so.OptionsByID[ShapeOptions.PropertyId.cropFromLeft].op / 65536 * 100000).ToString());
+            }
+            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.cropFromTop))
+            {
+                _writer.WriteAttributeString("t",Math.Floor((Decimal)so.OptionsByID[ShapeOptions.PropertyId.cropFromTop].op / 65536 * 100000).ToString());
+            }
+            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.cropFromRight))
+            {
+                _writer.WriteAttributeString("r", Math.Floor((Decimal)so.OptionsByID[ShapeOptions.PropertyId.cropFromRight].op / 65536 * 100000).ToString());
+            }
+            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.cropFromBottom))
+            {
+                _writer.WriteAttributeString("b", Math.Floor((Decimal)so.OptionsByID[ShapeOptions.PropertyId.cropFromBottom].op / 65536 * 100000).ToString());
+            }
+            _writer.WriteEndElement();
+
             _writer.WriteStartElement("a", "stretch", OpenXmlNamespaces.DrawingML);
             _writer.WriteElementString("a", "fillRect", OpenXmlNamespaces.DrawingML, "");
             _writer.WriteEndElement(); //a:stretch
