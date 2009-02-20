@@ -402,7 +402,35 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     }
                     else
                     {
-                        if (p.BulletCharPresent & p.BulletChar != 0xf06c & p.BulletChar != 0xf02d)
+                        if (p.BulletSizePresent)
+                        {
+                            if (p.BulletSize > 0)
+                            {
+                                _writer.WriteStartElement("a", "buSzPct", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("val", (p.BulletSize * 1000).ToString());
+                                _writer.WriteEndElement(); //buChar
+                            }
+                            else
+                            {
+                                //TODO
+                            }
+                        }
+                        if (p.BulletFontPresent)
+                        {                           
+                            _writer.WriteStartElement("a", "buFont", OpenXmlNamespaces.DrawingML);
+                            FontCollection fonts = _ctx.Ppt.DocumentRecord.FirstChildWithType<DIaLOGIKa.b2xtranslator.PptFileFormat.Environment>().FirstChildWithType<FontCollection>();
+                            FontEntityAtom entity = fonts.entities[(int)p.BulletTypefaceIdx];
+                            if (entity.TypeFace.IndexOf('\0') > 0)
+                            {
+                                _writer.WriteAttributeString("typeface", entity.TypeFace.Substring(0, entity.TypeFace.IndexOf('\0')));
+                            }
+                            else
+                            {
+                                _writer.WriteAttributeString("typeface", entity.TypeFace);
+                            }
+                            _writer.WriteEndElement(); //buChar
+                        }
+                        if (p.BulletCharPresent)
                         {
                             _writer.WriteStartElement("a", "buChar", OpenXmlNamespaces.DrawingML);
                             _writer.WriteAttributeString("char", p.BulletChar.ToString());
@@ -411,12 +439,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     }
                 }
 
-                //if (p.BulletCharPresent)
-                //{
-                //    _writer.WriteStartElement("a", "buChar", OpenXmlNamespaces.DrawingML);
-                //    _writer.WriteAttributeString("char", p.BulletChar.ToString());
-                //    _writer.WriteEndElement(); //buChar
-                //}
             }
             _writer.WriteEndElement(); //pPr
         }

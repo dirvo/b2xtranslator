@@ -548,7 +548,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
         public ShapeOptions()
             : base()
         {
-
+            this.Options = new OptionEntry[0];
         }
 
         public ShapeOptions(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
