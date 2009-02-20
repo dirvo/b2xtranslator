@@ -309,6 +309,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 }
                                 break;
                             case 4116:
+                            default:
                                 break;
                         }
                     }
@@ -331,16 +332,30 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     if (sh.fFlipH) _writer.WriteAttributeString("flipH", "1");
                     if (sh.fFlipV) _writer.WriteAttributeString("flipV", "1");
 
-                    _writer.WriteStartElement("a", "off", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("x", Utils.MasterCoordToEMU(anchor.Left).ToString());
-                    _writer.WriteAttributeString("y", Utils.MasterCoordToEMU(anchor.Top).ToString());
-                    _writer.WriteEndElement();
+                    if (container.FirstAncestorWithType<GroupContainer>().FirstAncestorWithType<GroupContainer>() == null)
+                    {
+                        _writer.WriteStartElement("a", "off", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("x", Utils.MasterCoordToEMU(anchor.Left).ToString());
+                        _writer.WriteAttributeString("y", Utils.MasterCoordToEMU(anchor.Top).ToString());
+                        _writer.WriteEndElement();
 
-                    _writer.WriteStartElement("a", "ext", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("cx", Utils.MasterCoordToEMU(anchor.Right - anchor.Left).ToString());
-                    _writer.WriteAttributeString("cy", Utils.MasterCoordToEMU(anchor.Bottom - anchor.Top).ToString());
-                    _writer.WriteEndElement();
+                        _writer.WriteStartElement("a", "ext", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("cx", Utils.MasterCoordToEMU(anchor.Right - anchor.Left).ToString());
+                        _writer.WriteAttributeString("cy", Utils.MasterCoordToEMU(anchor.Bottom - anchor.Top).ToString());
+                        _writer.WriteEndElement();
+                    }
+                    else
+                    {
+                        _writer.WriteStartElement("a", "off", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("x", (anchor.Left).ToString());
+                        _writer.WriteAttributeString("y", (anchor.Top).ToString());
+                        _writer.WriteEndElement();
 
+                        _writer.WriteStartElement("a", "ext", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("cx", (anchor.Right - anchor.Left).ToString());
+                        _writer.WriteAttributeString("cy", (anchor.Bottom - anchor.Top).ToString());
+                        _writer.WriteEndElement();
+                    }
                     _writer.WriteEndElement();
                 }
                 else if (chAnchor != null && chAnchor.Right >= chAnchor.Left && chAnchor.Bottom >= chAnchor.Top)
@@ -365,7 +380,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteEndElement();
                 }
 
-                if (sh.Instance != 0) //this means a predefined shape
+                if (sh.Instance != 0 & !so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.pSegmentInfo)) //this means a predefined shape
                 {
                     WriteprstGeom(sh);
                 }
@@ -374,34 +389,29 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     WritecustGeom(sh);
                 }
 
-                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillColor) | so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillType))
+                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillType))
                 {
-                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillType))
-                    {
-                        new FillMapping(_ctx, _writer, parentSlideMapping).Apply(so);
-                    }
-                    else
-                    {
-                        if (sh.Instance != 0xca)
-                            {
-                                string colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, container.FirstAncestorWithType<Slide>(), so);
-                                _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
-                                _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                                _writer.WriteAttributeString("val", colorval);
-                                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity))
-                                {
-                                    _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
-                                    _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillOpacity].op / 65536 * 100000)).ToString()); //we need the percentage of the opacity (65536 means 100%)
-                                    _writer.WriteEndElement();
-                                }
-                                _writer.WriteEndElement();
-                                _writer.WriteEndElement();
-                            }
-                    }
-
-                    
+                    new FillMapping(_ctx, _writer, parentSlideMapping).Apply(so);
                 }
-
+                else if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillColor))
+                {
+                    if (sh.Instance != 0xca)
+                    {
+                        string colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, container.FirstAncestorWithType<Slide>(), so);
+                        _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("val", colorval);
+                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity))
+                        {
+                            _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillOpacity].op / 65536 * 100000)).ToString()); //we need the percentage of the opacity (65536 means 100%)
+                            _writer.WriteEndElement();
+                        }
+                        _writer.WriteEndElement();
+                        _writer.WriteEndElement();
+                    }
+                }
+                
                 _writer.WriteStartElement("a", "ln", OpenXmlNamespaces.DrawingML);
                 if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineWidth))
                 {
@@ -1020,7 +1030,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         private void WritecustGeom(Shape sh)
         {
 
-            if (!so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.pVertices) | !so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.pSegmentInfo) | !so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.shapePath))
+            if (!so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.pVertices) | !so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.pSegmentInfo))
             {
                 _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
                 _writer.WriteAttributeString("prst", "rect");
@@ -1034,7 +1044,13 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteStartElement("a", "cxnLst", OpenXmlNamespaces.DrawingML);
 
             ShapeOptions.OptionEntry pVertices = so.OptionsByID[ShapeOptions.PropertyId.pVertices];
-            ShapeOptions.OptionEntry ShapePath = so.OptionsByID[ShapeOptions.PropertyId.shapePath];
+            
+            uint shapepath = 1;
+            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.shapePath))
+            {
+                ShapeOptions.OptionEntry ShapePath = so.OptionsByID[ShapeOptions.PropertyId.shapePath];
+                shapepath = ShapePath.op;
+            }
             ShapeOptions.OptionEntry SegementInfo = so.OptionsByID[ShapeOptions.PropertyId.pSegmentInfo];
             PathParser pp = new PathParser(SegementInfo.opComplex, pVertices.opComplex);
 
@@ -1075,54 +1091,90 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteAttributeString("h", (maxY - minY).ToString());
 
             int valuePointer = 0;
-            foreach (PathSegment seg in pp.Segments)
+
+            switch (shapepath)
             {
-                if (valuePointer >= pp.Values.Count) break;
-                switch (seg.Type)
-                {
-                    case PathSegment.SegmentType.msopathLineTo:
-                        _writer.WriteStartElement("a", "lnTo", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteStartElement("a", "pt", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("x", pp.Values[valuePointer].X.ToString());
-                        _writer.WriteAttributeString("y", pp.Values[valuePointer].Y.ToString());
-                        _writer.WriteEndElement(); //pt
-                        _writer.WriteEndElement(); //lnTo
-                        valuePointer += 1;
-                        break;
-                    case PathSegment.SegmentType.msopathCurveTo:
-                        _writer.WriteStartElement("a", "cubicBezTo", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteStartElement("a", "pt", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("x", pp.Values[valuePointer].X.ToString());
-                        _writer.WriteAttributeString("y", pp.Values[valuePointer].Y.ToString());
-                        _writer.WriteEndElement(); //pt
-                        valuePointer += 1;
-                        _writer.WriteStartElement("a", "pt", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("x", pp.Values[valuePointer].X.ToString());
-                        _writer.WriteAttributeString("y", pp.Values[valuePointer].Y.ToString());
-                        _writer.WriteEndElement(); //pt
-                        valuePointer += 1;
-                        _writer.WriteStartElement("a", "pt", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("x", pp.Values[valuePointer].X.ToString());
-                        _writer.WriteAttributeString("y", pp.Values[valuePointer].Y.ToString());
-                        _writer.WriteEndElement(); //pt
-                        valuePointer += 1;
-                        _writer.WriteEndElement(); //cubicBezTo
-                        break;
-                    case PathSegment.SegmentType.msopathMoveTo:
-                        _writer.WriteStartElement("a", "moveTo", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteStartElement("a", "pt", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("x", pp.Values[valuePointer].X.ToString());
-                        _writer.WriteAttributeString("y", pp.Values[valuePointer].Y.ToString());
-                        _writer.WriteEndElement(); //pr
-                        _writer.WriteEndElement(); //moveTo
-                        valuePointer += 1;
-                        break;
-                    case PathSegment.SegmentType.msopathClose:
-                        _writer.WriteElementString("a", "close", OpenXmlNamespaces.DrawingML, "");
-                        break;
-                    default:
-                        break;
-                }
+                case 0: //lines
+                case 1: //lines closed
+                    while (valuePointer < pp.Values.Count)
+                    {
+                        if (valuePointer == 0)
+                        {
+                            _writer.WriteStartElement("a", "moveTo", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteStartElement("a", "pt", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("x", pp.Values[valuePointer].X.ToString());
+                            _writer.WriteAttributeString("y", pp.Values[valuePointer].Y.ToString());
+                            _writer.WriteEndElement(); //pr
+                            _writer.WriteEndElement(); //moveTo
+                            valuePointer += 1;
+                        }
+                        else
+                        {
+                            _writer.WriteStartElement("a", "lnTo", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteStartElement("a", "pt", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("x", pp.Values[valuePointer].X.ToString());
+                            _writer.WriteAttributeString("y", pp.Values[valuePointer].Y.ToString());
+                            _writer.WriteEndElement(); //pt
+                            _writer.WriteEndElement(); //lnTo
+                            valuePointer += 1;
+                        }
+                    }
+                    break;
+                case 2: //curves
+                    break;
+                case 3: //curves closed
+                    break;
+                case 4: //complex
+                    foreach (PathSegment seg in pp.Segments)
+                    {
+                        if (valuePointer >= pp.Values.Count) break;
+                        switch (seg.Type)
+                        {
+                            case PathSegment.SegmentType.msopathLineTo:
+                                _writer.WriteStartElement("a", "lnTo", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteStartElement("a", "pt", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("x", pp.Values[valuePointer].X.ToString());
+                                _writer.WriteAttributeString("y", pp.Values[valuePointer].Y.ToString());
+                                _writer.WriteEndElement(); //pt
+                                _writer.WriteEndElement(); //lnTo
+                                valuePointer += 1;
+                                break;
+                            case PathSegment.SegmentType.msopathCurveTo:
+                                _writer.WriteStartElement("a", "cubicBezTo", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteStartElement("a", "pt", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("x", pp.Values[valuePointer].X.ToString());
+                                _writer.WriteAttributeString("y", pp.Values[valuePointer].Y.ToString());
+                                _writer.WriteEndElement(); //pt
+                                valuePointer += 1;
+                                _writer.WriteStartElement("a", "pt", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("x", pp.Values[valuePointer].X.ToString());
+                                _writer.WriteAttributeString("y", pp.Values[valuePointer].Y.ToString());
+                                _writer.WriteEndElement(); //pt
+                                valuePointer += 1;
+                                _writer.WriteStartElement("a", "pt", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("x", pp.Values[valuePointer].X.ToString());
+                                _writer.WriteAttributeString("y", pp.Values[valuePointer].Y.ToString());
+                                _writer.WriteEndElement(); //pt
+                                valuePointer += 1;
+                                _writer.WriteEndElement(); //cubicBezTo
+                                break;
+                            case PathSegment.SegmentType.msopathMoveTo:
+                                _writer.WriteStartElement("a", "moveTo", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteStartElement("a", "pt", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("x", pp.Values[valuePointer].X.ToString());
+                                _writer.WriteAttributeString("y", pp.Values[valuePointer].Y.ToString());
+                                _writer.WriteEndElement(); //pr
+                                _writer.WriteEndElement(); //moveTo
+                                valuePointer += 1;
+                                break;
+                            case PathSegment.SegmentType.msopathClose:
+                                _writer.WriteElementString("a", "close", OpenXmlNamespaces.DrawingML, "");
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    break;
             }
 
             _writer.WriteEndElement(); //path
@@ -1138,6 +1190,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 string prst = Utils.getPrstForShape(shape.Instance);
                 if (prst.Length > 0)
                 {
+                   
                     _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("prst", prst);
                     if (prst == "roundRect" & so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.adjustValue)) //TODO: implement for all shapes
@@ -1145,7 +1198,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteStartElement("a", "avLst", OpenXmlNamespaces.DrawingML);
                         _writer.WriteStartElement("a", "gd", OpenXmlNamespaces.DrawingML);
                         _writer.WriteAttributeString("name", "adj");
-                        _writer.WriteAttributeString("fmla", "val " + so.OptionsByID[ShapeOptions.PropertyId.adjustValue].op.ToString());
+                        _writer.WriteAttributeString("fmla", "val " + Math.Floor(so.OptionsByID[ShapeOptions.PropertyId.adjustValue].op * 4.63).ToString()); //TODO: find out where this 4.63 comes from (value found by analysing behaviour of Powerpoint 2003)
                         _writer.WriteEndElement();
                         _writer.WriteEndElement();
                     } else {
