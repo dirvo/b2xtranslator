@@ -46,6 +46,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         private int lastSpaceBefore = 0;
         private string lastColor = "";
+        private string lastBulletFont = "";
         public TextMasterStyleMapping(ConversionContext ctx, XmlWriter writer, PresentationMapping<Slide> parentSlideMapping)
             : base(writer)
         {
@@ -99,6 +100,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             foreach (TextMasterStyleAtom atom in titleAtoms)
             {
                 lastSpaceBefore = 0;
+                lastBulletFont = "";
                 lastColor = "";
                 for (int i = 0; i < atom.IndentLevelCount; i++)
                 {
@@ -122,6 +124,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             {
                 lastSpaceBefore = 0;
                 lastColor = "";
+                lastBulletFont = "";
                 for (int i = 0; i < atom.IndentLevelCount; i++)
                 {
                     pr9 = null;
@@ -287,6 +290,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             //EG_TextBulletSize
             //EG_TextBulletTypeFace
             //EG_TextBullet
+
+
+            bool bulletwritten = false;
             if (pr9 != null)
             {
                 if (pr9.BulletBlipReferencePresent)
@@ -312,21 +318,73 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                         _writer.WriteAttributeString("r", "embed", OpenXmlNamespaces.Relationships, imgPart.RelIdToString);
                                         _writer.WriteEndElement(); //blip
                                         _writer.WriteEndElement(); //buBlip
+                                        bulletwritten = true;
                                     }
                                 }
                             }
                         }
                     }
             }
-            else
+
+            if (!bulletwritten & !isTitle)
             {
-                if (!isTitle & pr.BulletCharPresent)
+                if (pr.BulletFlagsFieldPresent & (pr.BulletFlags & (ushort)ParagraphMask.HasBullet) == 0)
                 {
-                    _writer.WriteStartElement("a", "buChar", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("char", pr.BulletChar.ToString());
-                    _writer.WriteEndElement(); //buChar
+                    _writer.WriteElementString("a", "buNone", OpenXmlNamespaces.DrawingML, "");
                 }
+                else
+                {
+                    if (pr.BulletSizePresent)
+                    {
+                        if (pr.BulletSize > 0)
+                        {
+                            _writer.WriteStartElement("a", "buSzPct", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("val", (pr.BulletSize * 1000).ToString());
+                            _writer.WriteEndElement(); //buChar
+                        }
+                        else
+                        {
+                            //TODO
+                        }
+                     }
+                     if (pr.BulletFontPresent)
+                     {
+                        _writer.WriteStartElement("a", "buFont", OpenXmlNamespaces.DrawingML);
+                        FontCollection fonts = _ctx.Ppt.DocumentRecord.FirstChildWithType<DIaLOGIKa.b2xtranslator.PptFileFormat.Environment>().FirstChildWithType<FontCollection>();
+                        FontEntityAtom entity = fonts.entities[(int)pr.BulletTypefaceIdx];
+                        if (entity.TypeFace.IndexOf('\0') > 0)
+                        {
+                            _writer.WriteAttributeString("typeface", entity.TypeFace.Substring(0, entity.TypeFace.IndexOf('\0')));
+                        }
+                        else
+                        {
+                            _writer.WriteAttributeString("typeface", entity.TypeFace);
+                        }
+                        _writer.WriteEndElement(); //buChar
+                        lastBulletFont = entity.TypeFace;
+                     }
+                     else if (lastBulletFont.Length > 0)
+                     {
+                         _writer.WriteStartElement("a", "buFont", OpenXmlNamespaces.DrawingML);
+                         if (lastBulletFont.IndexOf('\0') > 0)
+                         {
+                             _writer.WriteAttributeString("typeface", lastBulletFont.Substring(0, lastBulletFont.IndexOf('\0')));
+                         }
+                         else
+                         {
+                             _writer.WriteAttributeString("typeface", lastBulletFont);
+                         }
+                         _writer.WriteEndElement(); //buChar
+                     }
+                     if (pr.BulletCharPresent)
+                     {
+                        _writer.WriteStartElement("a", "buChar", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("char", pr.BulletChar.ToString());
+                        _writer.WriteEndElement(); //buChar
+                     }
+                 }
             }
+            
             //tabLst
             //defRPr
             //extLst
