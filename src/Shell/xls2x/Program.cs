@@ -41,252 +41,133 @@ using DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
 using System.Reflection;
+using Microsoft.Win32;
+using DIaLOGIKa.b2xtranslator.Shell;
 
-namespace xls2x
+namespace DIaLOGIKa.b2xtranslator.xls2x
 {
-    class Program
+    class Program : CommandLineTranslator
     {
-        // Some static variables to store input data 
-        private static string inputFile;
-        private static string outputFile;
-
         static void Main(string[] args)
         {
-            Program.parseArgs(args);
+            ParseArgs(args, "xls2x");
 
-            // let the Console listen to the Trace messages
-            Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
+            InitializeLogger();
 
-            //welcome message
-            printWelcome();
+            PrintWelcome("xls2x", "DIaLOGIKa.b2xtranslator.xls2x.revision.txt");
 
-            try
+            if (CreateContextMenuEntry)
             {
-                //copy processing file
-                ProcessingFile procFile = new ProcessingFile(inputFile);
-
-                //make output file name
-                if (outputFile == null)
+                // create context menu entry
+                try
                 {
-                    if (inputFile.Contains("."))
-                    {
-                        outputFile = inputFile.Remove(inputFile.LastIndexOf(".")) + ".xlsx";
-                    }
-                    else
-                    {
-                        outputFile = inputFile + ".xlsx";
-                    }
+                    TraceLogger.Info("Creating context menu entry for xls2x ...");
+                    RegisterForContextMenu(".xls", ".xlsx");
+                    TraceLogger.Info("Succeeded.");
                 }
-
-                TraceLogger.Info("Converting file {0} into {1}", inputFile, outputFile);
-
-                //start time
-                DateTime start = DateTime.Now;
-
-                //parse the document
-                using (StructuredStorageReader reader = new StructuredStorageReader(procFile.File.FullName))
+                catch (Exception)
                 {
-                    XlsDocument xlsDoc = new XlsDocument(reader);
-                    using (SpreadsheetDocument spreadx = SpreadsheetDocument.Create(outputFile))
+                    TraceLogger.Info("Failed. Sorry :(");
+                }
+            }
+            else
+            {
+                try
+                {
+                    //copy processing file
+                    ProcessingFile procFile = new ProcessingFile(InputFile);
+
+                    //make output file name
+                    if (ChoosenOutputFile == null)
                     {
-
-                        //Setup the writer
-                        XmlWriterSettings xws = new XmlWriterSettings();
-                        xws.OmitXmlDeclaration = true;
-                        xws.CloseOutput = true;
-                        xws.Encoding = Encoding.UTF8;
-                        xws.ConformanceLevel = ConformanceLevel.Document;
-
-                        ExcelContext xlsContext = new ExcelContext(xlsDoc, xws);
-                        xlsContext.SpreadDoc = spreadx;
-
-                        // Converts the sst data !!!
-                        if (xlsDoc.workBookData.SstData != null)
-                            xlsDoc.workBookData.SstData.Convert(new SSTMapping(xlsContext));
-
-                        // creates the styles.xml
-                        if (xlsDoc.workBookData.styleData != null)
-                            xlsDoc.workBookData.styleData.Convert(new StylesMapping(xlsContext)); 
-
-                        // creates the Spreadsheets
-                        foreach (BoundSheetData var in xlsDoc.workBookData.boundSheetDataList)
+                        if (InputFile.Contains("."))
                         {
-                            if (var.boundsheetRecord.sheetType == BOUNDSHEET.sheetTypes.worksheet)
+                            ChoosenOutputFile = InputFile.Remove(InputFile.LastIndexOf(".")) + ".xlsx";
+                        }
+                        else
+                        {
+                            ChoosenOutputFile = InputFile + ".xlsx";
+                        }
+                    }
+
+                    TraceLogger.Info("Converting file {0} into {1}", InputFile, ChoosenOutputFile);
+
+                    //start time
+                    DateTime start = DateTime.Now;
+
+                    //parse the document
+                    using (StructuredStorageReader reader = new StructuredStorageReader(procFile.File.FullName))
+                    {
+                        XlsDocument xlsDoc = new XlsDocument(reader);
+                        using (SpreadsheetDocument spreadx = SpreadsheetDocument.Create(ChoosenOutputFile))
+                        {
+
+                            //Setup the writer
+                            XmlWriterSettings xws = new XmlWriterSettings();
+                            xws.OmitXmlDeclaration = true;
+                            xws.CloseOutput = true;
+                            xws.Encoding = Encoding.UTF8;
+                            xws.ConformanceLevel = ConformanceLevel.Document;
+
+                            ExcelContext xlsContext = new ExcelContext(xlsDoc, xws);
+                            xlsContext.SpreadDoc = spreadx;
+
+                            // Converts the sst data !!!
+                            if (xlsDoc.workBookData.SstData != null)
+                                xlsDoc.workBookData.SstData.Convert(new SSTMapping(xlsContext));
+
+                            // creates the styles.xml
+                            if (xlsDoc.workBookData.styleData != null)
+                                xlsDoc.workBookData.styleData.Convert(new StylesMapping(xlsContext));
+
+                            // creates the Spreadsheets
+                            foreach (BoundSheetData var in xlsDoc.workBookData.boundSheetDataList)
                             {
-                                var.Convert(new WorksheetMapping(xlsContext));
+                                if (var.boundsheetRecord.sheetType == BOUNDSHEET.sheetTypes.worksheet)
+                                {
+                                    var.Convert(new WorksheetMapping(xlsContext));
+                                }
                             }
-                        }
-                        int sbdnumber = 1; 
-                        foreach (SupBookData sbd in xlsDoc.workBookData.supBookDataList)
-                        {
-                            if (!sbd.SelfRef)
+                            int sbdnumber = 1;
+                            foreach (SupBookData sbd in xlsDoc.workBookData.supBookDataList)
                             {
-                                sbd.Number = sbdnumber;
-                                sbdnumber++;
-                                sbd.Convert(new ExternalLinkMapping(xlsContext));
+                                if (!sbd.SelfRef)
+                                {
+                                    sbd.Number = sbdnumber;
+                                    sbdnumber++;
+                                    sbd.Convert(new ExternalLinkMapping(xlsContext));
+                                }
                             }
-                        }
 
-                        xlsDoc.workBookData.Convert(new WorkbookMapping(xlsContext));
-                    }
-                    reader.Close();
-                    DateTime end = DateTime.Now;
-                    TimeSpan diff = end.Subtract(start);
-                    TraceLogger.Info("Conversion of file {0} finished in {1} seconds", inputFile, diff.TotalSeconds.ToString(CultureInfo.InvariantCulture));
-                }
-            }
-            catch (DirectoryNotFoundException ex)
-            {
-                TraceLogger.Error(ex.Message);
-                TraceLogger.Debug(ex.ToString());
-            }
-            catch (FileNotFoundException ex)
-            {
-                TraceLogger.Error(ex.Message);
-                TraceLogger.Debug(ex.ToString());
-            }
-            catch (ZipCreationException ex)
-            {
-                TraceLogger.Error("Could not create output file {0}.", outputFile);
-                TraceLogger.Debug(ex.ToString());
-            }
-            catch (Exception ex)
-            {
-                TraceLogger.Error("Conversion of file {0} failed.", inputFile);
-                TraceLogger.Debug(ex.ToString());
-            }
-
-
-        
-
-        }
-
-
-        /// <summary>
-        /// Parses the arguments of the tool
-        /// </summary>
-        /// <param name="args">The args array</param>
-        private static void parseArgs(string[] args)
-        {
-            try
-            {
-                if (args[0] == "-?")
-                {
-                    printUsage();
-                    Environment.Exit(0);
-                }
-                else
-                {
-                    inputFile = args[0];
-                }
-
-                for (int i = 1; i < args.Length; i++)
-                {
-                    if (args[i].ToLower() == "-v")
-                    {
-                        //parse verbose level
-                        string verbose = args[i + 1].ToLower();
-                        int vLvl;
-                        if (Int32.TryParse(verbose, out vLvl))
-                        {
-                            TraceLogger.LogLevel = (TraceLogger.LoggingLevel)vLvl;
+                            xlsDoc.workBookData.Convert(new WorkbookMapping(xlsContext));
                         }
-                        else if (verbose == "error")
-                        {
-                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.Error;
-                        }
-                        else if (verbose == "warning")
-                        {
-                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.Warning;
-                        }
-                        else if (verbose == "info")
-                        {
-                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.Info;
-                        }
-                        else if (verbose == "debug")
-                        {
-                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.Debug;
-                        }
-                        else if (verbose == "debuginternal")
-                        {
-                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.DebugInternal;
-                        } 
-                        else if (verbose == "none")
-                        {
-                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.None;
-                        }
-                    }
-                    else if (args[i].ToLower() == "-o")
-                    {
-                        //parse output file name
-                        outputFile = args[i + 1];
+                        reader.Close();
+                        DateTime end = DateTime.Now;
+                        TimeSpan diff = end.Subtract(start);
+                        TraceLogger.Info("Conversion of file {0} finished in {1} seconds", InputFile, diff.TotalSeconds.ToString(CultureInfo.InvariantCulture));
                     }
                 }
+                catch (DirectoryNotFoundException ex)
+                {
+                    TraceLogger.Error(ex.Message);
+                    TraceLogger.Debug(ex.ToString());
+                }
+                catch (FileNotFoundException ex)
+                {
+                    TraceLogger.Error(ex.Message);
+                    TraceLogger.Debug(ex.ToString());
+                }
+                catch (ZipCreationException ex)
+                {
+                    TraceLogger.Error("Could not create output file {0}.", ChoosenOutputFile);
+                    TraceLogger.Debug(ex.ToString());
+                }
+                catch (Exception ex)
+                {
+                    TraceLogger.Error("Conversion of file {0} failed.", InputFile);
+                    TraceLogger.Debug(ex.ToString());
+                }
             }
-            catch (Exception)
-            {
-                TraceLogger.Error("At least one of the required arguments was not correctly set.\n");
-                printUsage();
-                Environment.Exit(1);
-            }
-        }
-
-
-        /// <summary>
-        /// Prints the usage of the tool
-        /// </summary>
-        private static void printUsage()
-        {
-            StringBuilder usage = new StringBuilder();
-            usage.AppendLine("Usage: xls2x filename [-o filename] [-v level] [-?]");
-            usage.AppendLine("-o <filename>  change output filename");
-            usage.AppendLine("-v <level>     set trace level, where <level> is one of the following:");
-            usage.AppendLine("               none (0)    print nothing");
-            usage.AppendLine("               error (1)   print all errors");
-            usage.AppendLine("               warning (2) print all errors and warnings");
-            usage.AppendLine("               info (3)    print all errors, warnings and infos (default)");
-            usage.AppendLine("               debug (4)   print all errors, warnings, infos and debug messages");
-            usage.AppendLine("-?             print this help");
-            Console.WriteLine(usage.ToString());
-        }
-
-
-        /// <summary>
-        /// Prints the heading row of the tool
-        /// </summary>
-        private static void printWelcome()
-        {
-            bool backup = TraceLogger.EnableTimeStamp;
-            TraceLogger.EnableTimeStamp = false;
-            StringBuilder welcome = new StringBuilder();
-            welcome.Append("Welcome to xls2x.exe (r");
-            welcome.Append(getRevision());
-            welcome.Append(")\n");
-            welcome.Append("Copyright (c) 2008, DIaLOGIKa. All rights reserved.");
-            welcome.Append("\n");
-            TraceLogger.Simple(welcome.ToString());
-            TraceLogger.EnableTimeStamp = backup;
-        }
-
-
-        /// <summary>
-        /// Returns the revision that is stored in the embedded resource "revision.txt".
-        /// Returns -1 if something goes wrong
-        /// </summary>
-        /// <returns></returns>
-        private static int getRevision()
-        {
-            int rev = -1;
-            try
-            {
-                Assembly a = Assembly.GetExecutingAssembly();
-                Stream s = a.GetManifestResourceStream("DIaLOGIKa.b2xtranslator.xls2x.revision.txt");
-                StreamReader reader = new StreamReader(s);
-                rev = Int32.Parse(reader.ReadLine());
-                s.Close();
-            }
-            catch (Exception) { }
-            return rev;
         }
     }
 }

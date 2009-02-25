@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2427A407-3161-401A-A7C4-545A7AC90E36}</ProjectGuid>
     <OutputType>Exe</OutputType>
@@ -52,6 +52,10 @@
     <ProjectReference Include="..\..\Common\OpenXmlLib\OpenXmlLib.csproj">
       <Project>{4C10271C-CD9B-49F5-9479-3C6EB7404E75}</Project>
       <Name>OpenXmlLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\Shell\Shell.csproj">
+      <Project>{3EF2F275-1148-4703-9B2E-56966E92DF32}</Project>
+      <Name>Shell %28Common\Shell%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Common\StructuredStorage\StructuredStorage.csproj">
       <Project>{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}</Project>

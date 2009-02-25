@@ -40,238 +40,128 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
+using Microsoft.Win32;
+using DIaLOGIKa.b2xtranslator.Shell;
 
 namespace DIaLOGIKa.b2xtranslator.doc2x
 {
-    public class Program
+    public class Program : CommandLineTranslator
     {
-        private static string inputFile;
-        private static string choosenOutputFile;
-        
         public static void Main(string[] args)
         {
-            //parse arguments
-            parseArgs(args);
+            ParseArgs(args, "doc2x");
 
-            // let the Console listen to the Trace messages
-            Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
+            InitializeLogger();
 
-            //welcome message
-            printWelcome();
+            PrintWelcome("doc2x", "DIaLOGIKa.b2xtranslator.doc2x.revision.txt");
 
-            try
+            if (CreateContextMenuEntry)
             {
-                //copy processing file
-                ProcessingFile procFile = new ProcessingFile(inputFile);
-
-                //make output file name
-                if (choosenOutputFile == null)
+                // create context menu entry
+                try
                 {
-                    if (inputFile.Contains("."))
+                    TraceLogger.Info("Creating context menu entry for doc2x ...");
+                    RegisterForContextMenu(".doc", ".docx");
+                    TraceLogger.Info("Succeeded.");
+                }
+                catch (Exception)
+                {
+                    TraceLogger.Info("Failed. Sorry :(");
+                }
+            }
+            else
+            {
+                // convert
+                try
+                {
+                    //copy processing file
+                    ProcessingFile procFile = new ProcessingFile(InputFile);
+
+                    //make output file name
+                    if (ChoosenOutputFile == null)
                     {
-                        choosenOutputFile = inputFile.Remove(inputFile.LastIndexOf(".")) + ".docx";
-                    }
-                    else
-                    {
-                        choosenOutputFile = inputFile + ".docx";
-                    }
-                }
-
-                //open the reader
-                using (StructuredStorageReader reader = new StructuredStorageReader(procFile.File.FullName))
-                {
-                    //parse the input document
-                    WordDocument doc = new WordDocument(reader);
-
-                    //prepare the output document
-                    WordprocessingDocumentType outType = Converter.DetectOutputType(doc);
-                    string conformOutputFile = Converter.GetConformFilename(choosenOutputFile, outType);
-                    WordprocessingDocument docx = WordprocessingDocument.Create(conformOutputFile, outType);
-
-                    //start time
-                    DateTime start = DateTime.Now;
-                    TraceLogger.Info("Converting file {0} into {1}", inputFile, conformOutputFile);
-
-                    //convert the document
-                    Converter.Convert(doc, docx);
-
-                    DateTime end = DateTime.Now;
-                    TimeSpan diff = end.Subtract(start);
-                    TraceLogger.Info("Conversion of file {0} finished in {1} seconds", inputFile, diff.TotalSeconds.ToString(CultureInfo.InvariantCulture));
-                }
-            }
-            catch (DirectoryNotFoundException ex)
-            {
-                TraceLogger.Error(ex.Message);
-                TraceLogger.Debug(ex.ToString());
-            }
-            catch (FileNotFoundException ex)
-            {
-                TraceLogger.Error(ex.Message);
-                TraceLogger.Debug(ex.ToString());
-            }
-            catch (ReadBytesAmountMismatchException ex)
-            {
-                TraceLogger.Error("Input file {0} is not a valid Microsoft Word 97-2003 file.", inputFile);
-                TraceLogger.Debug(ex.ToString());
-            }
-            catch (MagicNumberException ex)
-            {
-                TraceLogger.Error("Input file {0} is not a valid Microsoft Word 97-2003 file.", inputFile);
-                TraceLogger.Debug(ex.ToString());
-            }
-            catch (UnspportedFileVersionException ex)
-            {
-                TraceLogger.Error("File {0} has been created with a Word version older than Word 97.", inputFile);
-                TraceLogger.Debug(ex.ToString());
-            }
-            catch (ByteParseException ex)
-            {
-                TraceLogger.Error("Input file {0} is not a valid Microsoft Word 97-2003 file.", inputFile);
-                TraceLogger.Debug(ex.ToString());
-            }
-            catch (MappingException ex)
-            {
-                TraceLogger.Error("There was an error while converting file {0}: {1}", inputFile, ex.Message);
-                TraceLogger.Debug(ex.ToString());
-            }
-            catch (ZipCreationException ex)
-            {
-                TraceLogger.Error("Could not create output file {0}.", choosenOutputFile);
-                //TraceLogger.Error("Perhaps the specified outputfile was a directory or contained invalid characters.");
-                TraceLogger.Debug(ex.ToString());
-            }
-            catch (Exception ex)
-            {
-                TraceLogger.Error("Conversion of file {0} failed.", inputFile);
-                TraceLogger.Debug(ex.ToString());
-            }
-        }
-
-        /// <summary>
-        /// Parses the arguments of the tool
-        /// </summary>
-        /// <param name="args">The args array</param>
-        private static void parseArgs(string[] args)
-        {
-            try
-            {
-                if (args[0] == "-?")
-                {
-                    printUsage();
-                    Environment.Exit(0);
-                }
-                else
-                {
-                    inputFile = args[0];
-                }
-
-                for (int i = 1; i < args.Length; i++)
-                {
-                    if (args[i].ToLower() == "-v")
-                    {
-                        //parse verbose level
-                        string verbose = args[i + 1].ToLower();
-                        int vLvl;
-                        if (Int32.TryParse(verbose, out vLvl))
+                        if (InputFile.Contains("."))
                         {
-                            TraceLogger.LogLevel = (TraceLogger.LoggingLevel)vLvl;
+                            ChoosenOutputFile = InputFile.Remove(InputFile.LastIndexOf(".")) + ".docx";
                         }
-                        else if (verbose == "error")
+                        else
                         {
-                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.Error;
-                        }
-                        else if (verbose == "warning")
-                        {
-                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.Warning;
-                        }
-                        else if (verbose == "info")
-                        {
-                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.Info;
-                        }
-                        else if (verbose == "debug")
-                        {
-                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.Debug;
-                        }
-                        else if (verbose == "none")
-                        {
-                            TraceLogger.LogLevel = TraceLogger.LoggingLevel.None;
+                            ChoosenOutputFile = InputFile + ".docx";
                         }
                     }
-                    else if (args[i].ToLower() == "-o")
+
+                    //open the reader
+                    using (StructuredStorageReader reader = new StructuredStorageReader(procFile.File.FullName))
                     {
-                        //parse output file name
-                        choosenOutputFile = args[i + 1];
+                        //parse the input document
+                        WordDocument doc = new WordDocument(reader);
+
+                        //prepare the output document
+                        WordprocessingDocumentType outType = Converter.DetectOutputType(doc);
+                        string conformOutputFile = Converter.GetConformFilename(ChoosenOutputFile, outType);
+                        WordprocessingDocument docx = WordprocessingDocument.Create(conformOutputFile, outType);
+
+                        //start time
+                        DateTime start = DateTime.Now;
+                        TraceLogger.Info("Converting file {0} into {1}", InputFile, conformOutputFile);
+
+                        //convert the document
+                        Converter.Convert(doc, docx);
+
+                        DateTime end = DateTime.Now;
+                        TimeSpan diff = end.Subtract(start);
+                        TraceLogger.Info("Conversion of file {0} finished in {1} seconds", InputFile, diff.TotalSeconds.ToString(CultureInfo.InvariantCulture));
                     }
                 }
+                catch (DirectoryNotFoundException ex)
+                {
+                    TraceLogger.Error(ex.Message);
+                    TraceLogger.Debug(ex.ToString());
+                }
+                catch (FileNotFoundException ex)
+                {
+                    TraceLogger.Error(ex.Message);
+                    TraceLogger.Debug(ex.ToString());
+                }
+                catch (ReadBytesAmountMismatchException ex)
+                {
+                    TraceLogger.Error("Input file {0} is not a valid Microsoft Word 97-2003 file.", InputFile);
+                    TraceLogger.Debug(ex.ToString());
+                }
+                catch (MagicNumberException ex)
+                {
+                    TraceLogger.Error("Input file {0} is not a valid Microsoft Word 97-2003 file.", InputFile);
+                    TraceLogger.Debug(ex.ToString());
+                }
+                catch (UnspportedFileVersionException ex)
+                {
+                    TraceLogger.Error("File {0} has been created with a Word version older than Word 97.", InputFile);
+                    TraceLogger.Debug(ex.ToString());
+                }
+                catch (ByteParseException ex)
+                {
+                    TraceLogger.Error("Input file {0} is not a valid Microsoft Word 97-2003 file.", InputFile);
+                    TraceLogger.Debug(ex.ToString());
+                }
+                catch (MappingException ex)
+                {
+                    TraceLogger.Error("There was an error while converting file {0}: {1}", InputFile, ex.Message);
+                    TraceLogger.Debug(ex.ToString());
+                }
+                catch (ZipCreationException ex)
+                {
+                    TraceLogger.Error("Could not create output file {0}.", ChoosenOutputFile);
+                    //TraceLogger.Error("Perhaps the specified outputfile was a directory or contained invalid characters.");
+                    TraceLogger.Debug(ex.ToString());
+                }
+                catch (Exception ex)
+                {
+                    TraceLogger.Error("Conversion of file {0} failed.", InputFile);
+                    TraceLogger.Debug(ex.ToString());
+                }
             }
-            catch (Exception)
-            {
-                TraceLogger.Error("At least one of the required arguments was not correctly set.\n");
-                printUsage();
-                Environment.Exit(1);
-            }
         }
 
-
-
-        /// <summary>
-        /// Prints the usage of the tool
-        /// </summary>
-        private static void printUsage()
-        {
-            StringBuilder usage = new StringBuilder();
-            usage.AppendLine("Usage: doc2x filename [-o filename] [-v level] [-?]");
-            usage.AppendLine("-o <filename>  change output filename");
-            usage.AppendLine("-v <level>     set trace level, where <level> is one of the following:");
-            usage.AppendLine("               none (0)    print nothing");
-            usage.AppendLine("               error (1)   print all errors");
-            usage.AppendLine("               warning (2) print all errors and warnings");
-            usage.AppendLine("               info (3)    print all errors, warnings and infos (default)");
-            usage.AppendLine("               debug (4)   print all errors, warnings, infos and debug messages");
-            usage.AppendLine("-?             print this help");
-            Console.WriteLine(usage.ToString());
-        }
-
-
-        /// <summary>
-        /// Prints the heading row of the tool
-        /// </summary>
-        private static void printWelcome()
-        {
-            bool backup = TraceLogger.EnableTimeStamp;
-            TraceLogger.EnableTimeStamp = false;
-            StringBuilder welcome = new StringBuilder();
-            welcome.Append("Welcome to doc2x.exe (r");
-            welcome.Append(getRevision());
-            welcome.Append(")\n");
-            welcome.Append("Copyright (c) 2008, DIaLOGIKa. All rights reserved.");
-            welcome.Append("\n");
-            TraceLogger.Simple(welcome.ToString());
-            TraceLogger.EnableTimeStamp = backup;
-        }
-
-
-        /// <summary>
-        /// Returns the revision that is stored in the embedded resource "revision.txt".
-        /// Returns -1 if something goes wrong
-        /// </summary>
-        /// <returns></returns>
-        private static int getRevision()
-        {
-            int rev = -1;
-
-            try
-            {
-                Assembly a = Assembly.GetExecutingAssembly();
-                Stream s = a.GetManifestResourceStream("DIaLOGIKa.b2xtranslator.doc2x.revision.txt");
-                StreamReader reader = new StreamReader(s);
-                rev = Int32.Parse(reader.ReadLine());
-                s.Close();
-            }
-            catch (Exception) { }
-
-            return rev;
-        }
+   
     }
 }

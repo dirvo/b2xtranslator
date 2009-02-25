@@ -6,6 +6,7 @@ using DIaLOGIKa.b2xtranslator.Tools;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.PptFileFormat;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
+using DIaLOGIKa.b2xtranslator.Shell;
 
 namespace DIaLOGIKa.b2xtranslator.PptDump
 {

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{A6AF6065-0740-42A1-BC9D-02AACDAF1476}</ProjectGuid>
     <OutputType>Exe</OutputType>
@@ -49,6 +49,10 @@
     <ProjectReference Include="..\..\Common\OfficeDrawing\OfficeDrawing.csproj">
       <Project>{AA46A3F1-919F-48FB-970C-753F58A857F6}</Project>
       <Name>OfficeDrawing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\Shell\Shell.csproj">
+      <Project>{3EF2F275-1148-4703-9B2E-56966E92DF32}</Project>
+      <Name>Shell %28Common\Shell%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Common\StructuredStorage\StructuredStorage.csproj">
       <Project>{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}</Project>

@@ -148,7 +148,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 _writer.WriteAttributeString("to", getCoordinateTo(anchor));
             }
 
-
             //temporary variables
             EmuValue shadowOffsetX = null;
             EmuValue shadowOffsetY = null;
