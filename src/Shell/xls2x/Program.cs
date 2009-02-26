@@ -48,13 +48,18 @@ namespace DIaLOGIKa.b2xtranslator.xls2x
 {
     class Program : CommandLineTranslator
     {
+        public static string ToolName = "xls2x";
+        public static string RevisionResource = "DIaLOGIKa.b2xtranslator.xls2x.revision.txt";
+        public static string ContextMenuInputExtension = ".xls";
+        public static string ContextMenuText = "Convert to .xlsx";
+
         static void Main(string[] args)
         {
-            ParseArgs(args, "xls2x");
+            ParseArgs(args, ToolName);
 
             InitializeLogger();
 
-            PrintWelcome("xls2x", "DIaLOGIKa.b2xtranslator.xls2x.revision.txt");
+            PrintWelcome(ToolName, RevisionResource);
 
             if (CreateContextMenuEntry)
             {
@@ -62,7 +67,7 @@ namespace DIaLOGIKa.b2xtranslator.xls2x
                 try
                 {
                     TraceLogger.Info("Creating context menu entry for xls2x ...");
-                    RegisterForContextMenu(".xls", ".xlsx");
+                    RegisterForContextMenu(GetContextMenuKey(ContextMenuInputExtension, ContextMenuText));
                     TraceLogger.Info("Succeeded.");
                 }
                 catch (Exception)

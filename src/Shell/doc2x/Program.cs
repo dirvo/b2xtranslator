@@ -47,13 +47,18 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
 {
     public class Program : CommandLineTranslator
     {
+        public static string ToolName = "doc2x";
+        public static string RevisionResource = "DIaLOGIKa.b2xtranslator.doc2x.revision.txt";
+        public static string ContextMenuInputExtension = ".doc";
+        public static string ContextMenuText = "Convert to .docx";
+
         public static void Main(string[] args)
         {
-            ParseArgs(args, "doc2x");
+            ParseArgs(args, ToolName);
 
             InitializeLogger();
 
-            PrintWelcome("doc2x", "DIaLOGIKa.b2xtranslator.doc2x.revision.txt");
+            PrintWelcome(ToolName, RevisionResource);
 
             if (CreateContextMenuEntry)
             {
@@ -61,7 +66,7 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                 try
                 {
                     TraceLogger.Info("Creating context menu entry for doc2x ...");
-                    RegisterForContextMenu(".doc", ".docx");
+                    RegisterForContextMenu(GetContextMenuKey(ContextMenuInputExtension, ContextMenuText));
                     TraceLogger.Info("Succeeded.");
                 }
                 catch (Exception)

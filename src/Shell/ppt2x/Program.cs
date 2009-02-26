@@ -49,15 +49,20 @@ namespace DIaLOGIKa.b2xtranslator.ppt2x
 {
     public class Program : CommandLineTranslator
     {
+        public static string ToolName = "ppt2x";
+        public static string RevisionResource = "DIaLOGIKa.b2xtranslator.ppt2x.revision.txt";
+        public static string ContextMenuInputExtension = ".ppt";
+        public static string ContextMenuText = "Convert to .pptx";
+
         public static void Main(string[] args)
         {
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
-            ParseArgs(args, "ppt2x");
+            ParseArgs(args, ToolName);
 
             InitializeLogger();
 
-            PrintWelcome("ppt2x", "DIaLOGIKa.b2xtranslator.ppt2x.revision.txt");
+            PrintWelcome(ToolName, RevisionResource);
 
             if (CreateContextMenuEntry)
             {
@@ -65,7 +70,7 @@ namespace DIaLOGIKa.b2xtranslator.ppt2x
                 try
                 {
                     TraceLogger.Info("Creating context menu entry for ppt2x ...");
-                    RegisterForContextMenu(".ppt", ".pptx");
+                    RegisterForContextMenu(GetContextMenuKey(ContextMenuInputExtension, ContextMenuText));
                     TraceLogger.Info("Succeeded.");
                 }
                 catch (Exception)

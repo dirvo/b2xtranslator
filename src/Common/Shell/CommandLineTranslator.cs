@@ -1,4 +1,31 @@
-﻿using System;
+﻿/*
+ * Copyright (c) 2008, DIaLOGIKa
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of DIaLOGIKa nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY DIaLOGIKa ''AS IS'' AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL DIaLOGIKa BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +39,7 @@ namespace DIaLOGIKa.b2xtranslator.Shell
 {
     public class CommandLineTranslator
     {
+        // parsed arguments
         public static string InputFile;
         public static string ChoosenOutputFile;
         public static bool CreateContextMenuEntry;
@@ -25,13 +53,13 @@ namespace DIaLOGIKa.b2xtranslator.Shell
         /// <summary>
         /// Prints the heading row of the tool
         /// </summary>
-        public static void PrintWelcome(string toolName, string revisionResource)
+        public static void PrintWelcome(string toolname, string revisionResource)
         {
             bool backup = TraceLogger.EnableTimeStamp;
             TraceLogger.EnableTimeStamp = false;
             StringBuilder welcome = new StringBuilder();
             welcome.Append("Welcome to ");
-            welcome.Append(toolName);
+            welcome.Append(toolname);
             welcome.Append(" (r");
             welcome.Append(getRevision(revisionResource));
             welcome.Append(")\n");
@@ -44,10 +72,10 @@ namespace DIaLOGIKa.b2xtranslator.Shell
         /// <summary>
         /// Prints the usage row of the tool
         /// </summary>
-        public static void PrintUsage(string toolName)
+        public static void PrintUsage(string toolname)
         {
             StringBuilder usage = new StringBuilder();
-            usage.AppendLine("Usage: " + toolName + " [-c | inputfile] [-o outputfile] [-v level] [-?]");
+            usage.AppendLine("Usage: " + toolname + " [-c | inputfile] [-o outputfile] [-v level] [-?]");
             usage.AppendLine("-o <outputfile>  change output filename");
             usage.AppendLine("-v <level>     set trace level, where <level> is one of the following:");
             usage.AppendLine("               none (0)    print nothing");
@@ -82,16 +110,26 @@ namespace DIaLOGIKa.b2xtranslator.Shell
             return rev;
         }
 
-        public static void RegisterForContextMenu(string inputFileExtension, string outputFileExtension)
+        public static RegistryKey GetContextMenuKey(string triggerExtension, string contextMenuText)
         {
-            string doc2xPath = Assembly.GetExecutingAssembly().Location;
-
-            string defaultWord = (string)Registry.ClassesRoot.OpenSubKey(inputFileExtension).GetValue("");
-            if (!String.IsNullOrEmpty(defaultWord))
+            RegistryKey result = null;
+            try
             {
-                RegistryKey convert = Registry.ClassesRoot.CreateSubKey(defaultWord).CreateSubKey("shell").CreateSubKey("Convert to " + outputFileExtension);
-                RegistryKey convertCommand = convert.CreateSubKey("Command");
-                convertCommand.SetValue("", String.Format("\"{0}\" \"%1\"", doc2xPath));
+                string defaultWord = (string)Registry.ClassesRoot.OpenSubKey(triggerExtension).GetValue("");
+                result = Registry.ClassesRoot.CreateSubKey(defaultWord).CreateSubKey("shell").CreateSubKey(contextMenuText);
+            }
+            catch (Exception)
+            {
+            }
+            return result;
+        }
+
+        public static void RegisterForContextMenu(RegistryKey entryKey)
+        {
+            if (entryKey != null)
+            {
+                RegistryKey convertCommand = entryKey.CreateSubKey("Command");
+                convertCommand.SetValue("", String.Format("\"{0}\" \"%1\"", Assembly.GetExecutingAssembly().Location));
             }
         }
 
