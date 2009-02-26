@@ -87,7 +87,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         ///  this is the calculated value 
         /// </summary>
         public double calculatedValue;
-        public byte boolValue;
+        public bool boolValueSet;
+        public byte boolValue; 
         public int errorValue; 
 
         public FORMULA(IStreamReader reader, RecordNumber id, UInt16 length)
@@ -99,6 +100,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
             this.rw = reader.ReadUInt16();
             this.col = reader.ReadUInt16();
             this.ixfe = reader.ReadUInt16();
+            this.boolValueSet = false;
 
             long oldStreamPosition = this.Reader.BaseStream.Position;
             this.val = reader.ReadBytes(8); // read 8 bytes for the value of the formular            
@@ -109,13 +111,13 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
                 if (firstOffset == 1)
                 {
                     // this is a boolean value 
-                    this.boolValue = val[2]; 
-
+                    this.boolValue = val[2];
+                    this.boolValueSet = true; 
                 }
                 if (firstOffset == 2)
                 {
                     // this is a error value 
-                    // this.errorValue = (int) val[2];      
+                    this.errorValue = (int) val[2];      
                 }
             }
             else

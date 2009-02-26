@@ -225,16 +225,13 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             {
                 ((FormulaCell)cell).isSharedFormula = true;
             }
+            cell.calculatedValue = formula.calculatedValue;
 
-            if (formula.calculatedValue != null)
-            {
-                cell.calculatedValue = formula.calculatedValue;
-            }
-            if (formula.boolValue != null)
+            if (formula.boolValueSet)
             {
                 cell.calculatedValue = formula.boolValue;
             }
-            if (formula.errorValue != null)
+            else if (formula.errorValue != 0)
             {
                 cell.calculatedValue = formula.errorValue;
             }

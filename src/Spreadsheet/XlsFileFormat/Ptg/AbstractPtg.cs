@@ -30,6 +30,7 @@ using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg; 
 using System.Diagnostics;
+using System.Globalization;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg
 {
@@ -121,8 +122,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg
         }
 
         public String getData()
-        {
-            return this.data;
+        {            
+            return Convert.ToString(this.data,CultureInfo.GetCultureInfo("en-US"));
         }
 
         public uint PopSize()

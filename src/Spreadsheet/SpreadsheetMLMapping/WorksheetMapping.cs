@@ -83,17 +83,20 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         _writer.WriteAttributeString("min", (col.min + 1).ToString());
                         _writer.WriteAttributeString("max", (col.max + 1).ToString());
 
-                    if (col.widht != 0)
-                        _writer.WriteAttributeString("width", Convert.ToString((double)(col.widht / 256), CultureInfo.GetCultureInfo("en-US")));
-
+                        if (col.widht != 0)
+                        {
+                            double colWidht = (double)col.widht / 256; 
+                            _writer.WriteAttributeString("width", Convert.ToString(colWidht, CultureInfo.GetCultureInfo("en-US")));
+                        }
                     if (col.hidden)
                         _writer.WriteAttributeString("hidden", "1");
 
                     if (col.outlineLevel > 0)
                         _writer.WriteAttributeString("outlineLevel", col.outlineLevel.ToString());
-
+                     
                     if (col.customWidth)
                         _writer.WriteAttributeString("customWidth", "1");
+                     
 
                     if (col.bestFit)
                         _writer.WriteAttributeString("bestFit", "1");
@@ -132,8 +135,9 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 if (row.height != null)
                 {
                     _writer.WriteAttributeString("ht", Convert.ToString(row.height.ToPoints(), CultureInfo.GetCultureInfo("en-US")));
-                    _writer.WriteAttributeString("customHeight", "1"); 
+                    // _writer.WriteAttributeString("customHeight", "1"); 
                 }
+                
                 if (row.hidden)
                 {
                     _writer.WriteAttributeString("hidden", "1"); 
@@ -162,9 +166,9 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 {
                     _writer.WriteAttributeString("thickTop", "1");
                 }
-                if (row.minSpan > 0 && row.maxSpan > 0)
+                if (row.minSpan + 1 > 0 && row.maxSpan > 0 && row.minSpan +1 < row.maxSpan)
                 {
-                    _writer.WriteAttributeString("spans", row.minSpan.ToString() + ":" + row.maxSpan.ToString());
+                    _writer.WriteAttributeString("spans", (row.minSpan+1).ToString() + ":" + row.maxSpan.ToString());
                 }
 
                 row.Cells.Sort(); 
@@ -185,7 +189,27 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     }
                     if (cell is FormulaCell)
                     {
-                        FormulaCell fcell = (FormulaCell) cell; 
+                        FormulaCell fcell = (FormulaCell) cell;
+
+
+                        if (((FormulaCell)cell).calculatedValue is String)
+                        {
+                            _writer.WriteAttributeString("t", "str");
+                        }
+                        else if (((FormulaCell)cell).calculatedValue is double)
+                        {
+                            _writer.WriteAttributeString("t", "n");
+                        }
+                        else if (((FormulaCell)cell).calculatedValue is byte)
+                        {
+                            _writer.WriteAttributeString("t", "b");
+                        }
+                        else if (((FormulaCell)cell).calculatedValue is int)
+                        {
+                            _writer.WriteAttributeString("t", "e");
+                        }
+
+
                         // <f>1</f> 
                         _writer.WriteStartElement("f");
                         if (!fcell.isSharedFormula)
@@ -240,11 +264,13 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
                         _writer.WriteStartElement("v");
 
-                        _writer.WriteString(((FormulaCell)cell).calculatedValue.ToString());
 
+                        _writer.WriteString(Convert.ToString(((FormulaCell)cell).calculatedValue, CultureInfo.GetCultureInfo("en-US")));
+                        
 
 
                         _writer.WriteEndElement(); 
+
 
 
                     }
@@ -252,6 +278,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     {// Data !!! 
                         _writer.WriteElementString("v", cell.getValue());
                     }
+                    // add a type to the c element if the formula returns following types 
 
                     _writer.WriteEndElement();  // close cell (c)  
                 }
