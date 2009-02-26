@@ -37,7 +37,6 @@ using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData;
-using ExcelprocessingMLMapping;
 using System.Globalization;
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
@@ -162,26 +161,8 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 }
 
                 // colormapping 
-                string color = StyleMappingHelper.convertColorIdToRGB(font.color);
-                if (color.Equals("Auto"))
-                {
-                    _writer.WriteStartElement("color");
-                    _writer.WriteAttributeString("auto", "1");
-                    _writer.WriteEndElement();
-                }
-                else if (color.Equals(""))
-                {
-                    // do nothing 
-                }
-                else
-                {
-                    // <bgColor rgb="FFFFFF00"/>
-                    _writer.WriteStartElement("color");
-                    _writer.WriteAttributeString("rgb", "FF" + color);
-                    _writer.WriteEndElement();
-                }
+                WriteRgbColor(_writer, StyleMappingHelper.convertColorIdToRGB(font.color));
  
-
                 // end font element 
                 _writer.WriteEndElement();
             }
@@ -200,50 +181,13 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 _writer.WriteStartElement("fill");
                 _writer.WriteStartElement("patternFill");
                 _writer.WriteAttributeString("patternType", StyleMappingHelper.getStringFromFillPatern(fd.Fillpatern));
-               // foreground color 
-                string foregroundclr = StyleMappingHelper.convertColorIdToRGB(fd.IcvFore); 
-                if (foregroundclr.Equals("Auto"))
-                {
-                    _writer.WriteStartElement("fgColor");
-                    _writer.WriteAttributeString("auto", "1");
-                    _writer.WriteEndElement();
-                }
-                else if (foregroundclr.Equals(""))
-                {
-                    // do nothing 
-                }
-                else
-                {
-                    // <fgColor rgb="FFFFFF00"/>
-                    _writer.WriteStartElement("fgColor");
-                    _writer.WriteAttributeString("rgb", "FF" + foregroundclr);
-                    _writer.WriteEndElement();
-                }
+
+                // foreground color 
+                WriteRgbForegroundColor(_writer, StyleMappingHelper.convertColorIdToRGB(fd.IcvFore)); 
+
                 // background color 
-                string backgroundclr = StyleMappingHelper.convertColorIdToRGB(fd.IcvBack);
-                if (backgroundclr.Equals("Auto"))
-                {
-                    _writer.WriteStartElement("bgColor");
-                    _writer.WriteAttributeString("auto", "1");
-                    _writer.WriteEndElement();
-                }
-                else if (backgroundclr.Equals(""))
-                {
-                    if (!foregroundclr.Equals(""))
-                    {
-                        _writer.WriteStartElement("bgColor");
-                        _writer.WriteAttributeString("auto", "1");
-                        _writer.WriteEndElement();
-                    }
-                    // do nothing 
-                }
-                else
-                {
-                    // <bgColor rgb="FFFFFF00"/>
-                    _writer.WriteStartElement("bgColor");
-                    _writer.WriteAttributeString("rgb", "FF"+backgroundclr);
-                    _writer.WriteEndElement();
-                }
+                WriteRgbBackgroundColor(_writer, StyleMappingHelper.convertColorIdToRGB(fd.IcvBack));
+
                 _writer.WriteEndElement();
                 _writer.WriteEndElement();
             }
@@ -295,24 +239,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 if (!borderStyle.Equals("none"))
                 {
                     _writer.WriteAttributeString("style", borderStyle);
-                    borderColor = StyleMappingHelper.convertColorIdToRGB(borderData.left.colorId);
-                    if (borderColor.Equals("Auto"))
-                    {
-                        _writer.WriteStartElement("bgColor");
-                        _writer.WriteAttributeString("auto", "1");
-                        _writer.WriteEndElement();
-                    }
-                    else if (borderColor.Equals(""))
-                    {
-                        // do nothing 
-                    }
-                    else
-                    {
-                        // <bgColor rgb="FFFFFF00"/>
-                        _writer.WriteStartElement("color");
-                        _writer.WriteAttributeString("rgb", "FF" + borderColor);
-                        _writer.WriteEndElement();
-                    }
+                    WriteRgbColor(_writer, StyleMappingHelper.convertColorIdToRGB(borderData.left.colorId));
                 }
                 _writer.WriteEndElement();
 
@@ -322,24 +249,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 if (!borderStyle.Equals("none"))
                 {
                     _writer.WriteAttributeString("style", borderStyle);
-                    borderColor = StyleMappingHelper.convertColorIdToRGB(borderData.right.colorId);
-                    if (borderColor.Equals("Auto"))
-                    {
-                        _writer.WriteStartElement("bgColor");
-                        _writer.WriteAttributeString("auto", "1");
-                        _writer.WriteEndElement();
-                    }
-                    else if (borderColor.Equals(""))
-                    {
-                        // do nothing 
-                    }
-                    else
-                    {
-                        // <bgColor rgb="FFFFFF00"/>
-                        _writer.WriteStartElement("color");
-                        _writer.WriteAttributeString("rgb", "FF" + borderColor);
-                        _writer.WriteEndElement();
-                    }
+                    WriteRgbColor(_writer, StyleMappingHelper.convertColorIdToRGB(borderData.right.colorId));
                 }
                 _writer.WriteEndElement();
 
@@ -349,24 +259,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 if (!borderStyle.Equals("none"))
                 {
                     _writer.WriteAttributeString("style", borderStyle);
-                    borderColor = StyleMappingHelper.convertColorIdToRGB(borderData.top.colorId);
-                    if (borderColor.Equals("Auto"))
-                    {
-                        _writer.WriteStartElement("bgColor");
-                        _writer.WriteAttributeString("auto", "1");
-                        _writer.WriteEndElement();
-                    }
-                    else if (borderColor.Equals(""))
-                    {
-                        // do nothing 
-                    }
-                    else
-                    {
-                        // <bgColor rgb="FFFFFF00"/>
-                        _writer.WriteStartElement("color");
-                        _writer.WriteAttributeString("rgb", "FF" + borderColor);
-                        _writer.WriteEndElement();
-                    }
+                    WriteRgbColor(_writer, StyleMappingHelper.convertColorIdToRGB(borderData.top.colorId));
                 }
                 _writer.WriteEndElement();
 
@@ -376,24 +269,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 if (!borderStyle.Equals("none"))
                 {
                     _writer.WriteAttributeString("style", borderStyle);
-                    borderColor = StyleMappingHelper.convertColorIdToRGB(borderData.bottom.colorId);
-                    if (borderColor.Equals("Auto"))
-                    {
-                        _writer.WriteStartElement("bgColor");
-                        _writer.WriteAttributeString("auto", "1");
-                        _writer.WriteEndElement();
-                    }
-                    else if (borderColor.Equals(""))
-                    {
-                        // do nothing 
-                    }
-                    else
-                    {
-                        // <bgColor rgb="FFFFFF00"/>
-                        _writer.WriteStartElement("color");
-                        _writer.WriteAttributeString("rgb", "FF" + borderColor);
-                        _writer.WriteEndElement();
-                    }
+                    WriteRgbColor(_writer, StyleMappingHelper.convertColorIdToRGB(borderData.bottom.colorId));
                 }
                 _writer.WriteEndElement();
 
@@ -403,32 +279,13 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 if (!borderStyle.Equals("none"))
                 {
                     _writer.WriteAttributeString("style", borderStyle);
-                    borderColor = StyleMappingHelper.convertColorIdToRGB(borderData.diagonal.colorId);
-                    if (borderColor.Equals("Auto"))
-                    {
-                        _writer.WriteStartElement("bgColor");
-                        _writer.WriteAttributeString("auto", "1");
-                        _writer.WriteEndElement();
-                    }
-                    else if (borderColor.Equals(""))
-                    {
-                        // do nothing 
-                    }
-                    else
-                    {
-                        // <bgColor rgb="FFFFFF00"/>
-                        _writer.WriteStartElement("color");
-                        _writer.WriteAttributeString("rgb", "FF" + borderColor);
-                        _writer.WriteEndElement();
-                    }
+                    WriteRgbColor(_writer, StyleMappingHelper.convertColorIdToRGB(borderData.diagonal.colorId));
                 }
-                // end diagonal
                 _writer.WriteEndElement();
-                // end border 
-                _writer.WriteEndElement();
+
+                _writer.WriteEndElement(); // end border 
             }
-            // end borders 
-            _writer.WriteEndElement(); 
+            _writer.WriteEndElement(); // end borders 
 
             ///<cellStyleXfs count="1">
             ///<xf numFmtId="0" fontId="0" fillId="0" borderId="0"/>
@@ -532,6 +389,36 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
             // close writer 
             _writer.Flush();
+        }
+
+        public static void WriteRgbColor(XmlWriter writer, string color)
+        {
+            if (!String.IsNullOrEmpty(color) && color != "Auto")
+            {
+                writer.WriteStartElement("color");
+                writer.WriteAttributeString("rgb", "FF" + color);
+                writer.WriteEndElement();
+            }
+        }
+
+        public static void WriteRgbForegroundColor(XmlWriter writer, string color)
+        {
+            if (!String.IsNullOrEmpty(color) && color != "Auto")
+            {
+                writer.WriteStartElement("fgColor");
+                writer.WriteAttributeString("rgb", "FF" + color);
+                writer.WriteEndElement();
+            }
+        }
+
+        public static void WriteRgbBackgroundColor(XmlWriter writer, string color)
+        {
+            if (!String.IsNullOrEmpty(color) && color != "Auto")
+            {
+                writer.WriteStartElement("bgColor");
+                writer.WriteAttributeString("rgb", "FF" + color);
+                writer.WriteEndElement();
+            }
         }
     }
 }

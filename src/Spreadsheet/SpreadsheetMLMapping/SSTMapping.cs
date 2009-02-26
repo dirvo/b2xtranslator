@@ -35,7 +35,6 @@ using DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer;
-using ExcelprocessingMLMapping;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData;
 
 
@@ -64,7 +63,6 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         /// <param name="SSTData">SharedStringData Object</param>
         public void Apply(SSTData sstData)
         {
-
             _writer.WriteStartDocument();
             _writer.WriteStartElement("sst", OpenXmlNamespaces.SharedStringML);
             // count="x" uniqueCount="y" 
@@ -78,23 +76,25 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             foreach (String var in sstData.StringList)
             {
                 count++;
-                _writer.WriteStartElement("si");
                 List<StringFormatAssignment> list = sstData.getFormatingRuns(count);
+
+                _writer.WriteStartElement("si");
+
                 if (list.Count == 0)
                 {
-                    _writer.WriteStartElement("r");
-                    _writer.WriteElementString("t", var);
-                    _writer.WriteEndElement();
+                    // if there is no formatting, there is no run, write only the text
+                    writeTextNode(_writer, var);
                 }
                 else
                 {
+                    // if there is no formatting, there is no run, write only the text
 
                     // first text 
                     if (list[0].CharNumber != 0)
                     {
                         // no formating for the first letters 
                         _writer.WriteStartElement("r");
-                        _writer.WriteElementString("t", var.Substring(0, list[0].CharNumber));
+                        writeTextNode(_writer, var.Substring(0, list[0].CharNumber));
                         _writer.WriteEndElement();
                     }
 
@@ -106,7 +106,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         fd = this.xlsContext.XlsDoc.workBookData.styleData.FontDataList[list[i].FontRecord];
                         StyleMappingHelper.addFontElement(_writer, fd, FontElementType.String);
 
-                        _writer.WriteElementString("t", var.Substring(list[i].CharNumber, list[i + 1].CharNumber - list[i].CharNumber));
+                        writeTextNode(_writer, var.Substring(list[i].CharNumber, list[i + 1].CharNumber - list[i].CharNumber));
                         _writer.WriteEndElement();
                     }
                     _writer.WriteStartElement("r");
@@ -114,11 +114,11 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     fd = this.xlsContext.XlsDoc.workBookData.styleData.FontDataList[list[list.Count - 1].FontRecord];
                     StyleMappingHelper.addFontElement(_writer, fd, FontElementType.String);
 
-                    _writer.WriteElementString("t", var.Substring(list[list.Count - 1].CharNumber));
+                    writeTextNode(_writer, var.Substring(list[list.Count - 1].CharNumber));
                     _writer.WriteEndElement();
                 }
 
-                _writer.WriteEndElement();
+                _writer.WriteEndElement(); // end si
 
             }
 
@@ -130,6 +130,17 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             _writer.Flush();
         }
 
+
+        private void writeTextNode(XmlWriter writer, string text)
+        {
+            writer.WriteStartElement("t");
+            if (text.StartsWith(" ") || text.EndsWith(" "))
+            {
+                writer.WriteAttributeString("xml", "space", "", "preserve");
+            }
+            writer.WriteString(text);
+            writer.WriteEndElement();
+        }
 
     }
 

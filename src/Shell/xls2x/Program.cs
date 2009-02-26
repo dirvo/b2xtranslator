@@ -109,7 +109,6 @@ namespace DIaLOGIKa.b2xtranslator.xls2x
 
                             //Setup the writer
                             XmlWriterSettings xws = new XmlWriterSettings();
-                            xws.OmitXmlDeclaration = true;
                             xws.CloseOutput = true;
                             xws.Encoding = Encoding.UTF8;
                             xws.ConformanceLevel = ConformanceLevel.Document;

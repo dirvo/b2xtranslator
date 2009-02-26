@@ -31,7 +31,7 @@ using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData;
 using System.Xml;
 using System.Globalization;
 
-namespace ExcelprocessingMLMapping
+namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
     public class StyleMappingHelper
     {
@@ -265,25 +265,7 @@ namespace ExcelprocessingMLMapping
             }
 
             // colormapping 
-            string color = StyleMappingHelper.convertColorIdToRGB(font.color);
-            if (color.Equals("Auto"))
-            {
-                _writer.WriteStartElement("color");
-                _writer.WriteAttributeString("auto", "1");
-                _writer.WriteEndElement();
-            }
-            else if (color.Equals(""))
-            {
-                // do nothing 
-            }
-            else
-            {
-                // <bgColor rgb="FFFFFF00"/>
-                _writer.WriteStartElement("color");
-                _writer.WriteAttributeString("rgb", "FF" + color);
-                _writer.WriteEndElement();
-            }
-
+            StylesMapping.WriteRgbColor(_writer, StyleMappingHelper.convertColorIdToRGB(font.color));
 
             // end font element 
             _writer.WriteEndElement(); 

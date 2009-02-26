@@ -34,7 +34,7 @@ using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
 using DIaLOGIKa.b2xtranslator.Tools;
-using DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping; 
+using DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping;
 
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
