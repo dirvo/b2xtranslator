@@ -242,7 +242,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                             case PtgNumber.PtgRefErr: ptg = new PtgRefErr(reader, ptgtype); break;
                             case PtgNumber.PtgRefErr3d: ptg = new PtgRefErr3d(reader, ptgtype); break;
                             case PtgNumber.PtgAreaErr: ptg = new PtgAreaErr(reader, ptgtype); break;
-                            case PtgNumber.PtgAreaErr3d: ptg = new PtgAreaErr3d(reader, ptgtype); break; 
+                            case PtgNumber.PtgAreaErr3d: ptg = new PtgAreaErr3d(reader, ptgtype); break;
+                            case PtgNumber.PtgMemFunc: ptg = new PtgMemFunc(reader, ptgtype); break; 
 
                             default: break;
                         }
@@ -336,5 +337,6 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             }
             return value; 
         }
+
     }
 }

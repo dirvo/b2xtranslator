@@ -302,6 +302,7 @@
     <Compile Include="DataContainer\BlankCell.cs" />
     <Compile Include="DataContainer\ColumnInfoData.cs" />
     <Compile Include="DataContainer\CRNData.cs" />
+    <Compile Include="DataContainer\DefinedNameData.cs" />
     <Compile Include="DataContainer\ExternSheetData.cs" />
     <Compile Include="DataContainer\FormulaCell.cs" />
     <Compile Include="DataContainer\MergeCellData.cs" />
@@ -350,6 +351,7 @@
     <Compile Include="Ptg\PtgLe.cs" />
     <Compile Include="Ptg\PtgLt.cs" />
     <Compile Include="Ptg\PtgMemErr.cs" />
+    <Compile Include="Ptg\PtgMemFunc.cs" />
     <Compile Include="Ptg\PtgMissArg.cs" />
     <Compile Include="Ptg\PtgMul.cs" />
     <Compile Include="Ptg\PtgName.cs" />

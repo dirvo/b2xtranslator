@@ -61,6 +61,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         public List<ExternSheetData> externSheetDataList;
         public LinkedList<SupBookData> supBookDataList;
         public LinkedList<XTIData> xtiDataList;
+        public List<DefinedNameData> definedNameList; 
 
         public int refWorkBookNumber;
 
@@ -75,6 +76,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
             this.externSheetDataList = new List<ExternSheetData>();
             this.supBookDataList = new LinkedList<SupBookData>();
             this.xtiDataList = new LinkedList<XTIData>();
+            this.definedNameList = new List<DefinedNameData>(); 
             refWorkBookNumber = 0;
 
             this.styleData = new StyleData.StyleData(); 
@@ -208,6 +210,36 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
             this.supBookDataList.Last.Value.addEXTERNNAME(extname); 
         }
 
+        /// <summary>
+        /// add a definedName data object
+        /// </summary>
+        /// <param name="name"></param>
+        public void addDefinedName(NAME name)
+        {
+            DefinedNameData nameData = new DefinedNameData();
+            nameData.chKey = name.chKey;
+            nameData.itab = name.itab;
+            nameData.Name = name.Name;
+            nameData.ptgStack = name.ptgStack;
+            this.definedNameList.Add(nameData); 
+        }
+
+        /// <summary>
+        /// Get the definedname string from an ID 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public String getDefinedNameByRef(int id)
+        {
+            return this.definedNameList[id - 1].Name; 
+        }
+
+        /// <summary>
+        /// returns the extern name if an valid ID is given! 
+        /// </summary>
+        /// <param name="supIndex"></param>
+        /// <param name="nameIndex"></param>
+        /// <returns></returns>
         public String getExternNameByRef(UInt16 supIndex, UInt32 nameIndex)
         {
             ExternSheetData extSheet = this.externSheetDataList[supIndex];

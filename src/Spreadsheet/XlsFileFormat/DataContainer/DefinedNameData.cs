@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
  * Copyright (c) 2008, DIaLOGIKa
  * All rights reserved.
  *
@@ -25,32 +24,32 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg;
+using System.IO;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg;
 
-namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg
+namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
 {
-    public class PtgName : AbstractPtg
+    public class DefinedNameData
     {
-        public const PtgNumber ID = PtgNumber.PtgName;
+        public byte chKey;
+        public UInt16 itab;
+        public string Name;
+        public Stack<AbstractPtg> ptgStack;
 
-        public Int32 nameindex;
-
-        public PtgName(IStreamReader reader, PtgNumber ptgid)
-            :
-            base(reader, ptgid)
+        public DefinedNameData()
         {
-            Debug.Assert(this.Id == ID);
-            this.Length = 5;
-            this.Data = "";
-            this.type = PtgType.Operator;
-            this.popSize = 1;
-            this.nameindex = this.Reader.ReadInt32(); 
+            this.ptgStack = new Stack<AbstractPtg>(); 
         }
     }
 }
-

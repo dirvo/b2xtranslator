@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
  * Copyright (c) 2008, DIaLOGIKa
  * All rights reserved.
  *
@@ -31,26 +30,29 @@ using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg
 {
-    public class PtgName : AbstractPtg
+    public class PtgMemFunc : AbstractPtg
     {
-        public const PtgNumber ID = PtgNumber.PtgName;
+        public const PtgNumber ID = PtgNumber.PtgMemFunc;
 
-        public Int32 nameindex;
-
-        public PtgName(IStreamReader reader, PtgNumber ptgid)
+        public PtgMemFunc(IStreamReader reader, PtgNumber ptgid)
             :
             base(reader, ptgid)
         {
             Debug.Assert(this.Id == ID);
-            this.Length = 5;
-            this.Data = "";
-            this.type = PtgType.Operator;
+
+            this.Data = "";   
+
+            this.type = PtgType.Operand;
             this.popSize = 1;
-            this.nameindex = this.Reader.ReadInt32(); 
+
+            int cce = reader.ReadUInt16();
+            this.Length = (uint)(3 + cce);
+            reader.ReadBytes(cce); 
+
         }
     }
 }
-

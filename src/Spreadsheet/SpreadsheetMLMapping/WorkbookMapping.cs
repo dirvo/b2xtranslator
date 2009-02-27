@@ -110,6 +110,43 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 }
             }
 
+            // write definedNames 
+
+            if (bsd.definedNameList.Count > 0)
+            {
+//                <definedNames>
+//<definedName name="abc" comment="test" localSheetId="1">Sheet1!$B$3</definedName>
+//</definedNames>
+                _writer.WriteStartElement("definedNames");
+
+                foreach (DefinedNameData item in bsd.definedNameList)
+                {
+                    _writer.WriteStartElement("definedName");
+                    if (item.Name.Length > 1)
+                    {
+                        _writer.WriteAttributeString("name", item.Name);
+                    }
+                    else
+                    {
+                        string internName = "_xlnm." + WorkbookMapping.getNameStringfromBuiltInFunctionID(item.Name);
+                        _writer.WriteAttributeString("name", internName);
+                    }
+                    if (item.itab > 0)
+                    {
+                        _writer.WriteAttributeString("localSheetId", (item.itab-1).ToString());
+                    }
+                    _writer.WriteValue(FormulaInfixMapping.mapFormula(item.ptgStack,xlsContext)); 
+
+                    _writer.WriteEndElement();
+                }
+
+
+                _writer.WriteEndElement();     
+
+            }
+
+
+
             // close tags 
            
             _writer.WriteEndElement();      // close worksheet
@@ -117,6 +154,31 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
             // close writer 
             _writer.Flush();
+        }
+
+
+        public static string getNameStringfromBuiltInFunctionID(string idstring)
+        {
+            char firstChar = (char)idstring.ToCharArray().GetValue(0);
+
+            switch (firstChar)
+            {
+                case (char)0x00: return "Consolidate_Area";
+                case (char)0x01: return "Auto_Open";
+                case (char)0x02: return "Auto_Close";
+                case (char)0x03: return "Extract";
+                case (char)0x04: return "Database";
+                case (char)0x05: return "Criteria";
+                case (char)0x06: return "Print_Area";
+                case (char)0x07: return "Print_Titles";
+                case (char)0x08: return "Recorder";
+                case (char)0x09: return "Data_Form";
+                case (char)0x0A: return "Auto_Activate";
+                case (char)0x0B: return "Auto_Deactivate";
+                case (char)0x0C: return "Sheet_Title";
+                default: return idstring;
+
+            }
         }
 
     }

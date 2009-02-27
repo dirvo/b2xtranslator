@@ -219,7 +219,13 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                     else if (bh.id == RecordNumber.FONT2)
                     {
                         FONT font = new FONT(this.StreamReader, bh.id, bh.length);
-                        this.workBookData.styleData.addFontData(font); 
+                        this.workBookData.styleData.addFontData(font);
+
+                    }
+                    else if (bh.id == RecordNumber.NAME)
+                    {
+                        NAME name = new NAME(this.StreamReader, bh.id, bh.length);
+                        this.workBookData.addDefinedName(name); 
                         
                     }
                     else

@@ -235,7 +235,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         else if (ptg is PtgName)
                         {
                             PtgName ptgn = (PtgName)ptg;
-                            String opstring = "AINT";
+                            String opstring = xlsContext.XlsDoc.workBookData.getDefinedNameByRef(ptgn.nameindex);
                             namexValue = opstring;
                             resultStack.Push(opstring);
                         }
