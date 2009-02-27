@@ -436,6 +436,12 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_72C04B73685A44358E3CF54DDD93CFED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_C658EA7426913203326DC30CA44ECBA0"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -449,6 +455,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_00487BF43EFBAAA1879A683D189543B8"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_705EE6B1B91744808AFF8B422272FB5C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -497,18 +509,6 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_663040E0BD72194594AB0CE7F0D25949"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_72C04B73685A44358E3CF54DDD93CFED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_705EE6B1B91744808AFF8B422272FB5C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1633,7 +1633,7 @@
                             "ContextData" = "8:"
                             "Attributes" = "3:0"
                             "Setting" = "3:2"
-                            "Value" = "8:Do you want to create entries in the windows context menu?"
+                            "Value" = "8:Do you want to create entries in the Windows Explorer context menu?"
                             "DefaultValue" = "8:#1215"
                             "UsePlugInResources" = "11:TRUE"
                             }
