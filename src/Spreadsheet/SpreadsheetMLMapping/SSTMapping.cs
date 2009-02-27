@@ -134,7 +134,9 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         private void writeTextNode(XmlWriter writer, string text)
         {
             writer.WriteStartElement("t");
-            if (text.StartsWith(" ") || text.EndsWith(" "))
+            if ( text.StartsWith(" ") || text.EndsWith(" ") ||
+                text.StartsWith("\n") || text.EndsWith("\n") ||
+                text.StartsWith("\r") || text.EndsWith("\r") ) 
             {
                 writer.WriteAttributeString("xml", "space", "", "preserve");
             }

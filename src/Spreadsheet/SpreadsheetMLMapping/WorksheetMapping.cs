@@ -135,7 +135,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 if (row.height != null)
                 {
                     _writer.WriteAttributeString("ht", Convert.ToString(row.height.ToPoints(), CultureInfo.GetCultureInfo("en-US")));
-                    // _writer.WriteAttributeString("customHeight", "1"); 
+                    _writer.WriteAttributeString("customHeight", "1"); 
                 }
                 
                 if (row.hidden)
@@ -264,10 +264,14 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
                         _writer.WriteStartElement("v");
 
-
-                        _writer.WriteString(Convert.ToString(((FormulaCell)cell).calculatedValue, CultureInfo.GetCultureInfo("en-US")));
-                        
-
+                        if (((FormulaCell)cell).calculatedValue is int)
+                        {
+                            _writer.WriteString(FormulaInfixMapping.getErrorStringfromCode((int)((FormulaCell)cell).calculatedValue)); 
+                        }
+                        else
+                        {
+                            _writer.WriteString(Convert.ToString(((FormulaCell)cell).calculatedValue, CultureInfo.GetCultureInfo("en-US")));
+                        }
 
                         _writer.WriteEndElement(); 
 

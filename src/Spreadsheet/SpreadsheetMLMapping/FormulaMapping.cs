@@ -75,7 +75,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 String namexValue;
                 if (stack is Stack<AbstractPtg>)
                 {
-                    
+
                     Stack<AbstractPtg> opStack = new Stack<AbstractPtg>(((Stack<AbstractPtg>)stack).ToArray());
                     if (opStack.Count == 0)
                         throw new Exception();
@@ -173,7 +173,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             int realColFirst = (int)ptgarean.colFirst + col;
                             if (realColFirst >= 0xFF)
                             {
-                                realColFirst -= 0x0100; 
+                                realColFirst -= 0x0100;
                             }
                             int realColLast = (int)ptgarean.colLast + col;
                             if (realColLast >= 0xFF)
@@ -213,7 +213,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             String refstring = xlsContext.XlsDoc.workBookData.getIXTIString(ptgr3d.ixti);
                             String cellref = ExcelHelperClass.intToABCString((int)ptgr3d.col, (ptgr3d.rw + 1).ToString(), ptgr3d.colRelative, ptgr3d.rwRelative);
 
-                            resultStack.Push(refstring + "!" + cellref);
+                            resultStack.Push("'" + refstring + "'" + "!" + cellref);
                         }
                         else if (ptg is PtgArea3d)
                         {
@@ -223,7 +223,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             buffer = ExcelHelperClass.intToABCString((int)ptga3d.colFirst, (ptga3d.rwFirst + 1).ToString(), ptga3d.colFirstRelative, ptga3d.rwFirstRelative);
                             buffer = buffer + ":" + ExcelHelperClass.intToABCString((int)ptga3d.colLast, (ptga3d.rwLast + 1).ToString(), ptga3d.colLastRelative, ptga3d.rwLastRelative);
 
-                            resultStack.Push(refstring + "!" + buffer);
+                            resultStack.Push("'" + refstring + "'" + "!" + buffer);
                         }
                         else if (ptg is PtgNameX)
                         {
@@ -235,7 +235,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         else if (ptg is PtgName)
                         {
                             PtgName ptgn = (PtgName)ptg;
-                            String opstring = "AINT"; 
+                            String opstring = "AINT";
                             namexValue = opstring;
                             resultStack.Push(opstring);
                         }
@@ -467,13 +467,34 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             }
             catch (Exception ex)
             {
-
+                TraceLogger.DebugInternal(ex.Message.ToString());
                 resultStack.Push("");
             }
             if (resultStack.Count == 0)
-                resultStack.Push(""); 
+                resultStack.Push("");
 
             return resultStack.Pop();
+        }
+
+        /// <summary>
+        /// returns the error string for the formula file 
+        /// </summary>
+        /// <param name="errorcode"></param>
+        /// <returns></returns>
+        public static string getErrorStringfromCode(int errorcode)
+        {
+
+            switch (errorcode)
+            {
+                case 0x00: return "#NULL!";
+                case 0x07: return "#DIV/0!";
+                case 0x0F: return "#VALUE!";
+                case 0x17: return "#REF!";
+                case 0x1D: return "#NAME?";
+                case 0x24: return "#NUM!";
+                case 0x2A: return "#N/A";
+                default: return "#NULL!";
+            }
         }
     }
 }

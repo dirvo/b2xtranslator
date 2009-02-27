@@ -329,6 +329,12 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     _writer.WriteAttributeString("applyNumberFormat", "1");
                 }
 
+                // applyBorder="1"
+                if (xfcell.borderId != 0)
+                {
+                    _writer.WriteAttributeString("applyBorder", "1");
+                }
+
                 // applyFill="1"
                 if (xfcell.fillId != 0)
                 {
