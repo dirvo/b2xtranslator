@@ -129,7 +129,7 @@ namespace DIaLOGIKa.b2xtranslator.Shell
             if (entryKey != null)
             {
                 RegistryKey convertCommand = entryKey.CreateSubKey("Command");
-                convertCommand.SetValue("", String.Format("\"{0}\" \"%1\"", Assembly.GetExecutingAssembly().Location));
+                convertCommand.SetValue("", String.Format("\"{0}\" \"%1\"", Assembly.GetCallingAssembly().Location));
             }
         }
 
