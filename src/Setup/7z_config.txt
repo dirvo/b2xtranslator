@@ -1,0 +1,5 @@
+;!@Install@!UTF-8!
+Title="b2xtranslator"
+BeginPrompt="Do you want to install b2xtranslator?"
+ExecuteFile="Win32Installer\Release\setup.exe"
+;!@InstallEnd@!
