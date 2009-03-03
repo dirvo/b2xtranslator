@@ -976,6 +976,40 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     case 0xfaa: //TextSpecialInfoAtom
                         break;
                     case 0xfd8: //SlideNumberMCAtom
+                        foreach (ParagraphRun r in style.PRuns)
+                        {
+                            _writer.WriteStartElement("a", "lvl" + (r.IndentLevel + 1) + "pPr", OpenXmlNamespaces.DrawingML);
+                            if (r.AlignmentPresent)
+                            {
+                                switch (r.Alignment)
+                                {
+                                    case 0x0000: //Left
+                                        _writer.WriteAttributeString("algn", "l");
+                                        break;
+                                    case 0x0001: //Center
+                                        _writer.WriteAttributeString("algn", "ctr");
+                                        break;
+                                    case 0x0002: //Right
+                                        _writer.WriteAttributeString("algn", "r");
+                                        break;
+                                    case 0x0003: //Justify
+                                        _writer.WriteAttributeString("algn", "just");
+                                        break;
+                                    case 0x0004: //Distributed
+                                        _writer.WriteAttributeString("algn", "dist");
+                                        break;
+                                    case 0x0005: //ThaiDistributed
+                                        _writer.WriteAttributeString("algn", "thaiDist");
+                                        break;
+                                    case 0x0006: //JustifyLow
+                                        _writer.WriteAttributeString("algn", "justLow");
+                                        break;
+                                }
+                            }
+                            string lastColor = "";
+                            new CharacterRunPropsMapping(_ctx, _writer).Apply(style.CRuns[0], "defRPr", textbox.FirstAncestorWithType<Slide>(), ref lastColor); 
+                            _writer.WriteEndElement();
+                        }
                         break;
                     case 0xff8: //GenericDateMCAtom
                         break;

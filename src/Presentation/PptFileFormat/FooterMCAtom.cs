@@ -49,7 +49,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
     [OfficeRecordAttribute(4056)]
     public class SlideNumberMCAtom : Record
     {
-        Int32 Position;
+        public Int32 Position;
         public SlideNumberMCAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {
@@ -60,7 +60,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
     [OfficeRecordAttribute(4088)]
     public class GenericDateMCAtom : Record
     {
-        Int32 Position;
+        public Int32 Position;
         public GenericDateMCAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {

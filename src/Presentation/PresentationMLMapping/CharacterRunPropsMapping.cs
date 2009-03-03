@@ -240,6 +240,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     {
                         _writer.WriteAttributeString("typeface", entity.TypeFace);
                     }
+                    //_writer.WriteAttributeString("charset", "0");
                 }
                 catch (Exception ex)
                 {

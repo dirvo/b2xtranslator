@@ -160,6 +160,20 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 break;
                             case 0xfd8: //SlideNumberMCAtom
                                 SlideNumberMCAtom snmca = (SlideNumberMCAtom)rec;
+
+                                _writer.WriteStartElement("a", "p", OpenXmlNamespaces.DrawingML);
+
+                                _writer.WriteStartElement("a", "fld", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("id", "{18109A10-03E4-4BE3-B6BB-0FCEF851AF87}");
+                                _writer.WriteAttributeString("type", "slidenum");
+                                _writer.WriteElementString("a", "t", OpenXmlNamespaces.DrawingML, "<#>");
+                                _writer.WriteEndElement(); //fld                                
+                                _writer.WriteStartElement("a", "endParaRPr", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteEndElement(); //endParaRPr
+                                _writer.WriteEndElement(); //p
+
+                                text = text.Replace(text.Substring(snmca.Position, 1), "");
+
                                 break;
                             case 0xffa: //FooterMCAtom
                                 mca = (FooterMCAtom)rec;
