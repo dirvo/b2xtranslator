@@ -142,12 +142,33 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         
        private void CreateSlides(PowerpointDocument ppt, DocumentContainer documentRecord)
         {
-            foreach (Slide slide in ppt.SlideRecords)
+            foreach (SlideListWithText lst in ppt.DocumentRecord.AllChildrenWithType<SlideListWithText>())
             {
-                SlideMapping sMapping = new SlideMapping(_ctx);
-                sMapping.Apply(slide);
-                this.SlideMappings.Add(sMapping);
+                if (lst.Instance == 0)
+                {
+                    foreach (SlidePersistAtom at in lst.SlidePersistAtoms)
+                    {
+                        foreach (Slide slide in ppt.SlideRecords)
+                        {
+                            if (slide.PersistAtom == at)
+                            {
+                                SlideMapping sMapping = new SlideMapping(_ctx);
+                                sMapping.Apply(slide);
+                                this.SlideMappings.Add(sMapping);
+                            }
+                        }
+
+
+                    }
+                }
             }
+
+            //foreach (Slide slide in ppt.SlideRecords)
+            //{
+            //    SlideMapping sMapping = new SlideMapping(_ctx);
+            //    sMapping.Apply(slide);
+            //    this.SlideMappings.Add(sMapping);
+            //}
         }
 
         private void WriteSlides(PowerpointDocument ppt, DocumentContainer documentRecord)
