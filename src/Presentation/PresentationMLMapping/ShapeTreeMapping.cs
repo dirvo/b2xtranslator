@@ -886,8 +886,17 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 _writer.WriteAttributeString("anchor", "b");
                                 break;
                             case 3: //TopCentered
+                                _writer.WriteAttributeString("anchor", "t");
+                                _writer.WriteAttributeString("anchorCtr", "1");
+                                break;
                             case 4: //MiddleCentered
+                                _writer.WriteAttributeString("anchor", "ctr");
+                                _writer.WriteAttributeString("anchorCtr", "1");
+                                break;
                             case 5: //BottomCentered
+                                _writer.WriteAttributeString("anchor", "b");
+                                _writer.WriteAttributeString("anchorCtr", "1");
+                                break;
                             case 6: //TopBaseline
                             case 7: //BottomBaseline
                             case 8: //TopCenteredBaseline
