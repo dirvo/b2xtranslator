@@ -159,11 +159,11 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         // Bit 3 is unused
 
         HasShadow = 1 << 4,
-        HasAsianSmartQuotes = 1 << 5,
+        HasAsianSmartQuotes = 1 << 5, //this should be fehint?
 
         // Bit 6 is unused
 
-        HasHorizonNumRendering = 1 << 7,
+        HasHorizonNumRendering = 1 << 7, //this should be kumi?
 
         // Bit 8 is unused
 

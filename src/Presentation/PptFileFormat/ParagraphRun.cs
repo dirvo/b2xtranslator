@@ -142,69 +142,77 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
         public ParagraphRun(BinaryReader reader, bool noIndentField)
         {
-            this.IndentLevel = noIndentField ? (ushort)0 : reader.ReadUInt16();
-            this.Mask = (ParagraphMask)reader.ReadUInt32();
-
-            // Note: These appear in Mask as well -- there they are true
-            // when the flag differs from the Master style.
-            // The actual value for the differing flags is stored here.
-            // (TODO: This is still a guess. Verify.)
-            if (this.BulletFlagsFieldPresent)
-                this.BulletFlags = reader.ReadUInt16();
-
-            if (this.BulletCharPresent)
-                this.BulletChar = (char)reader.ReadUInt16();
-
-            if (this.BulletFontPresent)
-                this.BulletTypefaceIdx = reader.ReadUInt16();
-
-            if (this.BulletSizePresent)
-                this.BulletSize = reader.ReadInt16();
-
-            if (this.BulletColorPresent)
-                this.BulletColor = new GrColorAtom(reader);
-
-            if (this.AlignmentPresent)
-                this.Alignment = reader.ReadInt16();
-
-            if (this.LineSpacingPresent)
-                this.LineSpacing = reader.ReadInt16();
-
-            if (this.SpaceBeforePresent)
-                this.SpaceBefore = reader.ReadInt16();
-
-            if (this.SpaceAfterPresent)
-                this.SpaceAfter = reader.ReadInt16();
-
-            if (this.LeftMarginPresent)
-                this.LeftMargin = reader.ReadInt16();
-
-            if (this.IndentPresent)
-                this.Indent = reader.ReadInt16();
-
-            if (this.DefaultTabSizePresent)
-                this.DefaultTabSize = reader.ReadInt16();
-
-            if (this.TabStopsPresent)
+            try
             {
-                UInt16 tabStopsCount = reader.ReadUInt16();
-                this.TabStops = new TabStop[tabStopsCount];
+            
+                this.IndentLevel = noIndentField ? (ushort)0 : reader.ReadUInt16();
+                this.Mask = (ParagraphMask)reader.ReadUInt32();
 
-                for (int i = 0; i < tabStopsCount; i++)
+                // Note: These appear in Mask as well -- there they are true
+                // when the flag differs from the Master style.
+                // The actual value for the differing flags is stored here.
+                // (TODO: This is still a guess. Verify.)
+                if (this.BulletFlagsFieldPresent)
+                    this.BulletFlags = reader.ReadUInt16();
+
+                if (this.BulletCharPresent)
+                    this.BulletChar = (char)reader.ReadUInt16();
+
+                if (this.BulletFontPresent)
+                    this.BulletTypefaceIdx = reader.ReadUInt16();
+
+                if (this.BulletSizePresent)
+                    this.BulletSize = reader.ReadInt16();
+
+                if (this.BulletColorPresent)
+                    this.BulletColor = new GrColorAtom(reader);
+
+                if (this.AlignmentPresent)
+                    this.Alignment = reader.ReadInt16();
+
+                if (this.LineSpacingPresent)
+                    this.LineSpacing = reader.ReadInt16();
+
+                if (this.SpaceBeforePresent)
+                    this.SpaceBefore = reader.ReadInt16();
+
+                if (this.SpaceAfterPresent)
+                    this.SpaceAfter = reader.ReadInt16();
+
+                if (this.LeftMarginPresent)
+                    this.LeftMargin = reader.ReadInt16();
+
+                if (this.IndentPresent)
+                    this.Indent = reader.ReadInt16();
+
+                if (this.DefaultTabSizePresent)
+                    this.DefaultTabSize = reader.ReadInt16();
+
+                if (this.TabStopsPresent)
                 {
-                    this.TabStops[i] = new TabStop(reader);
+                    UInt16 tabStopsCount = reader.ReadUInt16();
+                    this.TabStops = new TabStop[tabStopsCount];
+
+                    for (int i = 0; i < tabStopsCount; i++)
+                    {
+                        this.TabStops[i] = new TabStop(reader);
+                    }
                 }
+
+                if (this.FontAlignPresent)
+                    this.FontAlign = reader.ReadUInt16();
+
+                if (this.LineBreakFlagsFieldPresent)
+                    this.LineBreakFlags = reader.ReadUInt16();
+
+                if (this.TextDirectionPresent)
+                    this.TextDirection = reader.ReadUInt16();
+
             }
-
-            if (this.FontAlignPresent)
-                this.FontAlign = reader.ReadUInt16();
-
-            if (this.LineBreakFlagsFieldPresent)
-                this.LineBreakFlags = reader.ReadUInt16();
-
-            if (this.TextDirectionPresent)
-                this.TextDirection = reader.ReadUInt16();
-
+            catch (Exception e)
+            {
+                string s = e.ToString();
+            }
             //if (this.TabStopsPresent)
             //{
             //    UInt16 tabStopsCount = reader.ReadUInt16();

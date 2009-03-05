@@ -628,6 +628,16 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                 _writer.WriteEndElement(); //ln
 
+                //shadow
+                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.ShadowStyleBooleanProperties))
+                {
+                    ShadowStyleBooleanProperties p = new ShadowStyleBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.ShadowStyleBooleanProperties].op);
+                    if (p.fUsefShadow & p.fShadow)
+                    {
+                        new ShadowMapping(_ctx, _writer).Apply(so);
+                    }
+                }
+
                 _writer.WriteEndElement();
 
                 bool TextBoxFound = false;
@@ -837,10 +847,18 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement(); //a:prstGeom
             _writer.WriteElementString("a", "noFill", OpenXmlNamespaces.DrawingML, "");
 
+            //shadow
+            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.ShadowStyleBooleanProperties))
+            {
+                ShadowStyleBooleanProperties p = new ShadowStyleBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.ShadowStyleBooleanProperties].op);
+                if (p.fUsefShadow & p.fShadow)
+                {
+                    new ShadowMapping(_ctx, _writer).Apply(so);
+                }
+            }
+
             _writer.WriteEndElement(); //p:spPr
-
             
-
             _writer.WriteEndElement(); //p:pic
         }
 

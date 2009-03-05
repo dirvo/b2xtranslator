@@ -307,6 +307,13 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             bool fSchemeIndex = (bytes[3] & (1 << 3)) != 0;
             bool fSysIndex = (bytes[3] & (1 << 4)) != 0;
 
+            List<ColorSchemeAtom> colors = slide.AllChildrenWithType<ColorSchemeAtom>();
+            ColorSchemeAtom MasterScheme = null;
+            foreach (ColorSchemeAtom color in colors)
+            {
+                if (color.Instance == 1) MasterScheme = color;
+            }
+
             if (fSysIndex)
             {
                 UInt16 val = BitConverter.ToUInt16(bytes, 0);
@@ -318,12 +325,35 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         {
                             result = getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions.PropertyId.fillColor].op,slide,so);
                         } else {
-                            result = "000000"; //TODO: find out which color to use in this case
+                            result = new RGBColor(MasterScheme.Fills, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;  //TODO: find out which color to use in this case
                         }
                         break;
-                    case 0xF1: //shape line color if it is a line else shape fill color
+                    case 0xF1: //shape line color if it is a line else shape fill color TODO!!
+                        if (so.FirstAncestorWithType<OfficeDrawing.ShapeContainer>().FirstChildWithType<OfficeDrawing.Shape>().Instance == 1)
+                        {
+                            result = getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions.PropertyId.fillColor].op, slide, so);
+                        }
+                        else
+                        {
+                            if (so.OptionsByID.ContainsKey(DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions.PropertyId.lineColor))
+                            {
+                                result = getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions.PropertyId.lineColor].op, slide, so);
+                            }
+                            else
+                            {
+                                result = new RGBColor(MasterScheme.TextAndLines, RGBColor.ByteOrder.RedFirst).SixDigitHexCode; //TODO: find out which color to use in this case
+                            }
+                        }
+                        break;
                     case 0xF2: //shape line color
-                        result = getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions.PropertyId.lineColor].op, slide, so);
+                        if (so.OptionsByID.ContainsKey(DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions.PropertyId.lineColor))
+                        {
+                            result = getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions.PropertyId.lineColor].op, slide, so);
+                        }
+                        else
+                        {
+                            result = new RGBColor(MasterScheme.TextAndLines, RGBColor.ByteOrder.RedFirst).SixDigitHexCode; //TODO: find out which color to use in this case
+                        }
                         break;
                     case 0xF3: //shape shadow color
                         result = getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions.PropertyId.shadowColor].op, slide, so);
@@ -356,7 +386,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         if (blue == 0x00) return "000000";
 
                         res = int.Parse(result, System.Globalization.NumberStyles.HexNumber);
-                        res -= v;
+                        //res -= v; this is wrong for shadow17
                         if (res < 0) res = 0;
                         return res.ToString("X").PadLeft(6, '0');
                     case 0x200:
@@ -398,12 +428,12 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             if (fSchemeIndex)
             {
                 //red is the index to the color scheme
-                List<ColorSchemeAtom> colors = slide.AllChildrenWithType<ColorSchemeAtom>();
-                ColorSchemeAtom MasterScheme = null;
-                foreach (ColorSchemeAtom color in colors)
-                {
-                    if (color.Instance == 1) MasterScheme = color;
-                }
+                //List<ColorSchemeAtom> colors = slide.AllChildrenWithType<ColorSchemeAtom>();
+                //ColorSchemeAtom MasterScheme = null;
+                //foreach (ColorSchemeAtom color in colors)
+                //{
+                //    if (color.Instance == 1) MasterScheme = color;
+                //}
 
                 switch (bytes[0])
                 {

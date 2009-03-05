@@ -26,7 +26,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             {
                 long pos = this.Reader.BaseStream.Position;
 
-                if (this.Instance >= 5 && this.Instance < this.IndentLevelCount)
+                if ((this.Instance >= 5) & (this.Instance < this.IndentLevelCount))
                 {
                     UInt16 level = System.BitConverter.ToUInt16(this.Reader.ReadBytes(2), (int)pos);
                 }                

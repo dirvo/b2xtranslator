@@ -235,7 +235,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             shadowOriginX=528,
             shadowOriginY=529,
             fShadow=574,
-            fshadowObscured=575,
+            ShadowStyleBooleanProperties=575,
 
             //Perspective Style
             perspectiveType=576,
