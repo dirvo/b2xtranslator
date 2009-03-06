@@ -41,9 +41,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         AbstractOpenXmlMapping
     {
         protected ConversionContext _ctx;
-        protected PresentationMapping<Slide> _parentSlideMapping;
+        protected PresentationMapping<RegularContainer> _parentSlideMapping;
 
-        public FillMapping(ConversionContext ctx, XmlWriter writer, PresentationMapping<Slide> parentSlideMapping)
+        public FillMapping(ConversionContext ctx, XmlWriter writer, PresentationMapping<RegularContainer> parentSlideMapping)
             : base(writer)
         {
             _ctx = ctx;
@@ -52,14 +52,15 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         public void Apply(ShapeOptions so)
         {
-            Slide slide = so.FirstAncestorWithType<Slide>();
+            RegularContainer slide = so.FirstAncestorWithType<Slide>();
+            if (slide == null) slide = so.FirstAncestorWithType<Note>();
             string colorval = "";
             switch (so.OptionsByID[ShapeOptions.PropertyId.fillType].op)
             {
                 case 0x0: //solid
                     if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillColor))
                     {
-                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide, so);
+                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, (RegularContainer)slide, so);
                     } else {
                         colorval = "000000"; //TODO: find out which color to use in this case
                     }
@@ -370,6 +371,12 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             colorval = "000000"; //TODO: find out which color to use in this case
                         }
                     }
+
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillShadeType))
+                    {
+                        //TODO
+                    }
+
                     _writer.WriteStartElement("a", "gs", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("pos", "0");
                     _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);

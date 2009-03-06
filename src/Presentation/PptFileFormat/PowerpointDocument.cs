@@ -88,6 +88,11 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         public List<MainMaster> MainMasterRecords = new List<MainMaster>();
 
         /// <summary>
+        /// List of all notes master records for this document.
+        /// </summary>
+        public List<Note> NotesMasterRecords = new List<Note>();
+
+        /// <summary>
         /// List of title master records for this document.
         /// </summary>
         public List<Slide> TitleMasterRecords = new List<Slide>();
@@ -102,6 +107,11 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         /// List of all slide records for this document.
         /// </summary>
         public List<Slide> SlideRecords = new List<Slide>();
+
+        /// <summary>
+        /// List of all note records for this document.
+        /// </summary>
+        public List<Note> NoteRecords = new List<Note>();
 
         public PowerpointDocument(StructuredStorageReader file)
         {
@@ -200,6 +210,10 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
                 this.MasterRecordsById.Add(master.PersistAtom.SlideId, master);
             }
+
+            Note noteMaster = this.GetPersistObject<Note>(this.DocumentRecord.FirstChildWithType<DocumentAtom>().NotesMasterPersist);
+            this.NotesMasterRecords.Add(noteMaster);
+
         }
 
         /// <summary>
@@ -215,6 +229,12 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
                 Slide slide = this.GetPersistObject<Slide>(slidePersistAtom.PersistIdRef);
                 slide.PersistAtom = slidePersistAtom;
                 this.SlideRecords.Add(slide);
+            }
+            foreach (SlidePersistAtom slidePersistAtom in this.DocumentRecord.NotesPersistList)
+            {
+                Note note = this.GetPersistObject<Note>(slidePersistAtom.PersistIdRef);
+                note.PersistAtom = slidePersistAtom;
+                this.NoteRecords.Add(note);
             }
         }
 

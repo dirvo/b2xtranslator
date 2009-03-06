@@ -74,6 +74,30 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         }
 
         /// <summary>
+        /// Returns the MasterTextParagraphRun of the given style that is active at the given index.
+        /// </summary>
+        /// <param name="style">style to use</param>
+        /// <param name="forIdx">index to use</param>
+        /// <returns>ParagraphRun or null in case no run was found</returns>
+        protected static MasterTextPropRun GetMasterTextPropRun(MasterTextPropAtom style, uint forIdx)
+        {
+            if (style == null)
+                return new MasterTextPropRun();
+
+            uint idx = 0;
+
+            foreach (MasterTextPropRun p in style.MasterTextPropRuns)
+            {
+                if (forIdx < idx + p.count)
+                    return p;
+
+                idx += p.count;
+            }
+
+            return new MasterTextPropRun();
+        }
+
+        /// <summary>
         /// Returns the CharacterRun of the given style that is active at the given index.
         /// </summary>
         /// <param name="style">style to use</param>
@@ -117,10 +141,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         public void Apply(ClientTextbox textbox)
         {
-            Apply(textbox, "");
+            Apply(textbox, "", "", "");
         }
 
-        public void Apply(ClientTextbox textbox, string footertext)
+        public void Apply(ClientTextbox textbox, string footertext, string headertext, string datetext)
         {
             System.IO.MemoryStream ms = new System.IO.MemoryStream(textbox.Bytes);
             Record rec = Record.ReadRecord(ms, 0);
@@ -175,6 +199,15 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 text = text.Replace(text.Substring(snmca.Position, 1), "");
 
                                 break;
+                            case 0xff9: //HeaderMCAtom
+                                HeaderMCAtom hmca = (HeaderMCAtom)rec;
+                                text = text.Replace(text.Substring(hmca.Position, 1), headertext);
+
+                                foreach (CharacterRun run in style.CRuns)
+                                {
+                                    run.Length += (uint)text.Length;
+                                }
+                                break;
                             case 0xffa: //FooterMCAtom
                                 mca = (FooterMCAtom)rec;
                                 text = text.Replace(text.Substring(mca.Position, 1), footertext);
@@ -186,6 +219,12 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 break;
                             case 0xff8: //GenericDateMCAtom
                                 GenericDateMCAtom gdmca = (GenericDateMCAtom)rec;
+                                text = text.Replace(text.Substring(gdmca.Position, 1), datetext);
+
+                                foreach (CharacterRun run in style.CRuns)
+                                {
+                                    run.Length += (uint)text.Length;
+                                }
                                 break;
                             default:
                                 //TextAtom textAtom = thAtom.TextAtom;
@@ -232,8 +271,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     //each runline forms a run
 
                     ParagraphRun p = GetParagraphRun(style, idx);
+                    MasterTextPropRun tp = GetMasterTextPropRun(masterTextProp, idx);
+
                     String runText;
-                    writeP(p);
+                    writeP(p, tp);
 
                     uint CharacterRunStart;
                     int len;
@@ -277,7 +318,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             if (r != null)
                             {
                                 string dummy = "";
-                                new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", textbox.FirstAncestorWithType<Slide>(),ref dummy);
+                                new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", textbox.FirstAncestorWithType<Slide>(),ref dummy, ref dummy);
                             }
                             else
                             {
@@ -310,12 +351,16 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         }
 
-        private void writeP(ParagraphRun p)
+        private void writeP(ParagraphRun p, MasterTextPropRun tp)
         {
             _writer.WriteStartElement("a", "p", OpenXmlNamespaces.DrawingML);
 
             _writer.WriteStartElement("a", "pPr", OpenXmlNamespaces.DrawingML);
-            if (!(p == null))
+            if (p == null)
+            {
+                _writer.WriteAttributeString("lvl", tp.indentLevel.ToString()); 
+            }
+            else
             {
                 if (p.IndentLevel > 0) _writer.WriteAttributeString("lvl", p.IndentLevel.ToString());
                 if (p.LeftMarginPresent) _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU((int)p.LeftMargin).ToString());

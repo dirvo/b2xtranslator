@@ -33,6 +33,7 @@ using System.IO;
 using System.Xml;
 using System.Reflection;
 using DIaLOGIKa.b2xtranslator.Tools;
+using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 
 namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 {
@@ -106,12 +107,17 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 case PlaceholderEnum.MasterFooter:
                     return "ftr";
 
+                case PlaceholderEnum.MasterHeader:
+                    return "hdr";
+
                 case PlaceholderEnum.MasterTitle:
                 case PlaceholderEnum.Title:
                     return "title";
 
                 case PlaceholderEnum.MasterBody:
                 case PlaceholderEnum.Body:
+                case PlaceholderEnum.NotesBody:
+                case PlaceholderEnum.MasterNotesBody:
                     return "body";
 
                 case PlaceholderEnum.MasterCenteredTitle:
@@ -136,6 +142,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                 case PlaceholderEnum.Table:
                     return "tbl";
+
+                case PlaceholderEnum.NotesSlideImage:
+                case PlaceholderEnum.MasterNotesSlideImage:
+                    return "sldImg";
+
 
                 default:
                     throw new NotImplementedException("Don't know how to map placeholder id " + pid);
@@ -298,7 +309,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
         }
 
-        public static string getRGBColorFromOfficeArtCOLORREF(uint value, Slide slide, DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions so)
+        public static string getRGBColorFromOfficeArtCOLORREF(uint value, RegularContainer slide, DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions so)
         {
             byte[] bytes = BitConverter.GetBytes(value);
             bool fPaletteIndex = (bytes[3] & 1) != 0;
@@ -386,7 +397,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         if (blue == 0x00) return "000000";
 
                         res = int.Parse(result, System.Globalization.NumberStyles.HexNumber);
-                        //res -= v; this is wrong for shadow17
+                        if (!so.OptionsByID.ContainsKey(DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions.PropertyId.ShadowStyleBooleanProperties))
+                        res -= v; //this is wrong for shadow17
                         if (res < 0) res = 0;
                         return res.ToString("X").PadLeft(6, '0');
                     case 0x200:
@@ -888,7 +900,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     return "flowChartDisplay";
                 case 0x87: //flowChartDelay
                     return "flowChartDelay";
-                case 0x88: //TextPlaynText
+                case 0x88: //TextPlainText
                 case 0x89: //TextStop
                 case 0x8A: //TextTriangle
                 case 0x8B: //TextTriangleInverted

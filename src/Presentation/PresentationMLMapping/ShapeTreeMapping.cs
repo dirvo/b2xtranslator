@@ -47,8 +47,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         protected int _idCnt;
         protected ConversionContext _ctx;
         protected string _footertext;
+        protected string _headertext;
+        protected string _datetext;
 
-        public PresentationMapping<Slide> parentSlideMapping = null;
+
+        public PresentationMapping<RegularContainer> parentSlideMapping = null;
         public Dictionary<AnimationInfoContainer, int> animinfos = new Dictionary<AnimationInfoContainer, int>();
 
         public ShapeTreeMapping(ConversionContext ctx, XmlWriter writer)
@@ -150,11 +153,13 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         private ShapeOptions so;
         public void Apply(ShapeContainer container)
         {
-            Apply(container, "");
+            Apply(container, "","", "");
         }
-        public void Apply(ShapeContainer container, string footertext)
+        public void Apply(ShapeContainer container, string footertext, string headertext, string datetext)
         {
             _footertext = footertext;
+            _headertext = headertext;
+            _datetext = datetext;
             ClientData clientData = container.FirstChildWithType<ClientData>();
 
             bool continueShape = true;
@@ -651,12 +656,77 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                 if (!TextBoxFound & !sh.fConnector)
                 {
-                    //write dummy
+
                     _writer.WriteStartElement("p", "txBody", OpenXmlNamespaces.PresentationML);
-                    writeBodyPr();
-                    _writer.WriteElementString("a", "lstStyle",OpenXmlNamespaces.DrawingML,"");
+                    writeBodyPr(container);
+                    _writer.WriteElementString("a", "lstStyle", OpenXmlNamespaces.DrawingML, "");
                     _writer.WriteStartElement("a", "p", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteElementString("a", "endParaRPr", OpenXmlNamespaces.DrawingML,"");
+
+                    //check if there is text in so
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.gtextUNICODE))
+                    {
+                        byte[] bytes = so.OptionsByID[ShapeOptions.PropertyId.gtextUNICODE].opComplex;
+                        string sText = Encoding.Unicode.GetString(bytes);
+                        if (sText.Contains("\0")) sText = sText.Substring(0, sText.IndexOf("\0"));
+                        _writer.WriteStartElement("a", "r", OpenXmlNamespaces.DrawingML);
+
+                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.gtextFont))
+                        {
+                            bytes = so.OptionsByID[ShapeOptions.PropertyId.gtextFont].opComplex;
+                            string sFont = Encoding.Unicode.GetString(bytes);
+                            if (sFont.Contains("\0")) sFont = sFont.Substring(0, sFont.IndexOf("\0"));
+
+                            _writer.WriteStartElement("a", "rPr", OpenXmlNamespaces.DrawingML);
+                            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.gtextSize))
+                            {
+                                _writer.WriteAttributeString("sz", (so.OptionsByID[ShapeOptions.PropertyId.gtextSize].op * 100).ToString());
+                            }
+                            else
+                            {
+                                _writer.WriteAttributeString("sz", "3600");
+                            }
+                            
+                            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.GeometryTextBooleanProperties))
+                            {
+                                GeometryTextBooleanProperties gb = new GeometryTextBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.GeometryTextBooleanProperties].op);
+                                if (gb.fUsegtextFKern & gb.gtextFKern)
+                                {
+                                    _writer.WriteAttributeString("kern", "10");
+                                }
+                            }
+
+                            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineStyleBooleans))
+                            {
+                                LineStyleBooleans lb = new LineStyleBooleans(so.OptionsByID[ShapeOptions.PropertyId.lineStyleBooleans].op);
+                                if (lb.fUsefLine & lb.fLine)
+                                {
+                                    _writer.WriteStartElement("a", "ln", OpenXmlNamespaces.DrawingML);
+                                    _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
+                                    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                                    _writer.WriteAttributeString("val", "000000");
+                                    _writer.WriteEndElement();
+                                    _writer.WriteEndElement();
+                                    _writer.WriteEndElement();
+                                }
+                            }
+
+                            _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("val", "FFFFFF");
+                            _writer.WriteEndElement();
+                            _writer.WriteEndElement();
+                                                        
+                            _writer.WriteStartElement("a", "latin", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("typeface", sFont);
+                            _writer.WriteEndElement();
+                            _writer.WriteEndElement();
+                        }
+
+                        _writer.WriteElementString("a", "t", OpenXmlNamespaces.DrawingML, sText);
+                        _writer.WriteEndElement();
+                    }
+
+                    _writer.WriteElementString("a", "endParaRPr", OpenXmlNamespaces.DrawingML, "");
                     _writer.WriteEndElement();
                     _writer.WriteEndElement();
                 }
@@ -862,9 +932,27 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement(); //p:pic
         }
 
-        public void writeBodyPr()
+        public void writeBodyPr(Record rec)
         {
             _writer.WriteStartElement("a", "bodyPr", OpenXmlNamespaces.DrawingML);
+
+            if (rec is ShapeContainer)
+            {
+                ShapeContainer container = (ShapeContainer)rec;
+                switch (container.FirstChildWithType<Shape>().Instance)
+                {
+                    case 0x88:
+                        _writer.WriteAttributeString("wrap", "none");
+
+                        _writer.WriteStartElement("a", "prstTxWarp", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("prst", "textPlain");
+                        _writer.WriteFullEndElement();
+                        break;
+                    default:
+                        break;
+                }
+            }
+            
 
             if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.WrapText))
             {
@@ -941,7 +1029,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         {
             _writer.WriteStartElement("p", "txBody", OpenXmlNamespaces.PresentationML);
 
-            writeBodyPr();
+            writeBodyPr(textbox);
 
             _writer.WriteStartElement("a", "lstStyle", OpenXmlNamespaces.DrawingML);
 
@@ -1034,7 +1122,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 }
                             }
                             string lastColor = "";
-                            new CharacterRunPropsMapping(_ctx, _writer).Apply(style.CRuns[0], "defRPr", textbox.FirstAncestorWithType<Slide>(), ref lastColor); 
+                            string lastSize = "";
+                            new CharacterRunPropsMapping(_ctx, _writer).Apply(style.CRuns[0], "defRPr", textbox.FirstAncestorWithType<Slide>(), ref lastColor, ref lastSize); 
                             _writer.WriteEndElement();
                         }
                         break;
@@ -1047,7 +1136,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteEndElement();
 
-            new TextMapping(_ctx, _writer).Apply(textbox, _footertext);
+            new TextMapping(_ctx, _writer).Apply(textbox, _footertext, _headertext, _datetext);
 
             _writer.WriteEndElement();
         }

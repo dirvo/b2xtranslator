@@ -37,8 +37,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 {
     public class PresentationPartMapping : PresentationMapping<PowerpointDocument>
     {
-        private List<SlideMapping> SlideMappings = new List<SlideMapping>();
-
+        public List<SlideMapping> SlideMappings = new List<SlideMapping>();
+        private List<NoteMapping> NoteMappings = new List<NoteMapping>();
 
         public PresentationPartMapping(ConversionContext ctx)
             : base(ctx, ctx.Pptx.PresentationPart)
@@ -57,6 +57,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteAttributeString("xmlns", "r", null, OpenXmlNamespaces.Relationships);
 
             CreateMainMasters(ppt);
+            CreateNotesMasters(ppt);
             CreateSlides(ppt, documentRecord);
             //CreatePictures(ppt, documentRecord);
 
@@ -161,15 +162,33 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                     }
                 }
+                if (lst.Instance == 2) //notes
+                {
+                    foreach (SlidePersistAtom at in lst.SlidePersistAtoms)
+                    {
+                        foreach (Note note in ppt.NoteRecords)
+                        {
+                            if (note.PersistAtom == at)
+                            {
+                                foreach (SlideMapping slideMapping in this.SlideMappings)
+                                {
+                                    if (slideMapping.Slide.PersistAtom.SlideId == at.SlideId)
+                                    {
+                                        NoteMapping nMapping = new NoteMapping(_ctx, slideMapping);
+                                        nMapping.Apply(note);
+                                        this.NoteMappings.Add(nMapping);
+                                    }
+                                }
+                                
+                            }
+                        }
+
+
+                    }
+                }
             }
 
-            //foreach (Slide slide in ppt.SlideRecords)
-            //{
-            //    SlideMapping sMapping = new SlideMapping(_ctx);
-            //    sMapping.Apply(slide);
-            //    this.SlideMappings.Add(sMapping);
-            //}
-        }
+       }
 
         private void WriteSlides(PowerpointDocument ppt, DocumentContainer documentRecord)
         {
@@ -205,6 +224,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
         }
 
+        private void CreateNotesMasters(PowerpointDocument ppt)
+        {
+            foreach (Note m in ppt.NotesMasterRecords)
+            {
+                _ctx.GetOrCreateNotesMasterMappingByMasterId(0).Apply(m);
+            }
+        }
+
         private void WriteMainMasters(PowerpointDocument ppt)
         {
             _writer.WriteStartElement("p", "sldMasterIdLst", OpenXmlNamespaces.PresentationML);
@@ -215,6 +242,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
 
             _writer.WriteEndElement();
+
+            WriteNoteMaster(ppt);
         }
 
         /// <summary>
@@ -228,6 +257,37 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteStartElement("p", "sldMasterId", OpenXmlNamespaces.PresentationML);
 
             MasterMapping mapping = _ctx.GetOrCreateMasterMappingByMasterId(m.PersistAtom.SlideId);
+            mapping.Write();
+
+            string relString = mapping.targetPart.RelIdToString;
+
+            _writer.WriteAttributeString("r", "id", OpenXmlNamespaces.Relationships, relString);
+
+            _writer.WriteEndElement();
+        }
+
+        private void WriteNoteMaster(PowerpointDocument ppt)
+        {
+            _writer.WriteStartElement("p", "notesMasterIdLst", OpenXmlNamespaces.PresentationML);
+
+            foreach (Note m in ppt.NotesMasterRecords)
+            {
+                this.WriteNoteMaster2(ppt, m);
+            }
+
+            _writer.WriteEndElement();
+        }
+
+        /// <summary>
+        /// Writes a notes master.
+        /// 
+        /// <param name="ppt">PowerpointDocument record</param>
+        /// <param name="m">Notes master record</param>
+        private void WriteNoteMaster2(PowerpointDocument ppt, Note m)
+        {
+            _writer.WriteStartElement("p", "notesMasterId", OpenXmlNamespaces.PresentationML);
+
+            NotesMasterMapping mapping = _ctx.GetOrCreateNotesMasterMappingByMasterId(0);
             mapping.Write();
 
             string relString = mapping.targetPart.RelIdToString;

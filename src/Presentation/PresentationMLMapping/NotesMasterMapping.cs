@@ -39,48 +39,35 @@ using System.IO;
 
 namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 {
-    public class MasterMapping : PresentationMapping<RegularContainer>
+    public class NotesMasterMapping : PresentationMapping<RegularContainer>
     {
-        public SlideMasterPart MasterPart;
-        protected Slide Master;
+        public NotesMasterPart MasterPart;
+        protected Note Master;
         protected UInt32 MasterId;
-        protected MasterLayoutManager LayoutManager;
 
-        public MasterMapping(ConversionContext ctx)
-            : base(ctx, ctx.Pptx.PresentationPart.AddSlideMasterPart())
+        public NotesMasterMapping(ConversionContext ctx)
+            : base(ctx, ctx.Pptx.PresentationPart.AddNotesMasterPart())
         {
-            this.MasterPart = (SlideMasterPart)this.targetPart;
+            this.MasterPart = (NotesMasterPart)this.targetPart;
         }
 
         override public void Apply(RegularContainer pmaster)
         {
-            Slide master = (Slide)pmaster;
+            Note master = (Note)pmaster;
 
-            TraceLogger.DebugInternal("MasterMapping.Apply");
-            UInt32 masterId = master.PersistAtom.SlideId;
-            _ctx.RegisterMasterMapping(masterId, this);
+            TraceLogger.DebugInternal("NotesMasterMapping.Apply");
+            UInt32 masterId = 0; // master.PersistAtom.SlideId;
+            _ctx.RegisterNotesMasterMapping(masterId, this);
 
             this.Master = master;
-            this.MasterId = master.PersistAtom.SlideId;
-            this.LayoutManager = _ctx.GetOrCreateLayoutManagerByMasterId(this.MasterId);
-
-            // Add PPT2007 roundtrip slide layouts
-            //List<RoundTripContentMasterInfo12> rtSlideLayouts = this.Master.AllChildrenWithType<RoundTripContentMasterInfo12>();
-
-            //foreach (RoundTripContentMasterInfo12 slideLayout in rtSlideLayouts)
-            //{
-            //    SlideLayoutPart layoutPart = this.LayoutManager.AddLayoutPartWithInstanceId(slideLayout.Instance);
-
-            //    slideLayout.XmlDocumentElement.WriteTo(layoutPart.XmlWriter);
-            //    layoutPart.XmlWriter.Flush();
-            //}
+            this.MasterId = 0; // master.PersistAtom.SlideId;
         }
 
         public void Write()
         {
             // Start the document
             _writer.WriteStartDocument();
-            _writer.WriteStartElement("p", "sldMaster", OpenXmlNamespaces.PresentationML);
+            _writer.WriteStartElement("p", "notesMaster", OpenXmlNamespaces.PresentationML);
             // Force declaration of these namespaces at document start
             _writer.WriteAttributeString("xmlns", "a", null, OpenXmlNamespaces.DrawingML);
             _writer.WriteAttributeString("xmlns", "r", null, OpenXmlNamespaces.Relationships);
@@ -159,26 +146,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 Utils.GetDefaultDocument("clrMap").WriteTo(_writer);
             }
 
-            // Write slide layout part id list
-            _writer.WriteStartElement("p", "sldLayoutIdLst", OpenXmlNamespaces.PresentationML);
-
-            List<SlideLayoutPart> layoutParts = this.LayoutManager.GetAllLayoutParts();
-
-            // Master must have at least one SlideLayout or RepairDialog will appear
-            if (layoutParts.Count == 0)
-            {
-                SlideLayoutPart layoutPart = this.LayoutManager.GetOrCreateLayoutPartByLayoutType(0, null);
-                layoutParts.Add(layoutPart);
-            }
-
-            foreach (SlideLayoutPart slideLayoutPart in layoutParts)
-            {
-                _writer.WriteStartElement("p", "sldLayoutId", OpenXmlNamespaces.PresentationML);
-                _writer.WriteAttributeString("r", "id", OpenXmlNamespaces.Relationships, slideLayoutPart.RelIdToString);
-                _writer.WriteEndElement();
-            }
-
-            _writer.WriteEndElement();
 
             // Write txStyles
             RoundTripOArtTextStyles12 roundTripTxStyles = this.Master.FirstChildWithType<RoundTripOArtTextStyles12>();
@@ -193,7 +160,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 //XmlDocument slideLayoutDoc = Utils.GetDefaultDocument("txStyles");
                 //slideLayoutDoc.WriteTo(_writer);
 
-                new TextMasterStyleMapping(_ctx, _writer, this).Apply(this.Master);
+                new TextMasterStyleMapping(_ctx, _writer, this).ApplyNotesMaster(this.Master);
             }
 
             // Write theme

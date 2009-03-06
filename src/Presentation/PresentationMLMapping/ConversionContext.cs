@@ -42,6 +42,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         private PowerpointDocument _ppt;
 
         private Dictionary<UInt32, MasterMapping> MasterIdToMapping = new Dictionary<UInt32, MasterMapping>();
+        private Dictionary<UInt32, NotesMasterMapping> NotesMasterIdToMapping = new Dictionary<UInt32, NotesMasterMapping>();
         public Dictionary<long, string> AddedImages = new Dictionary<long, string>();
         public int lastImageID = 0;
 
@@ -79,6 +80,26 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         }
 
         /// <summary>
+        /// Registers a NotesMasterMapping so it can later be looked up by its master ID.
+        /// </summary>
+        /// <param name="masterId">Master id with which to associate the MasterMapping.</param>
+        /// <param name="mapping">MasterMapping to be registered.</param>
+        public void RegisterNotesMasterMapping(UInt32 masterId, NotesMasterMapping mapping)
+        {
+            this.NotesMasterIdToMapping[masterId] = mapping;
+        }
+
+        /// <summary>
+        /// Returns the NotesMasterMapping associated with the specified master ID.
+        /// </summary>
+        /// <param name="masterId">Master ID for which to find a MasterMapping.</param>
+        /// <returns>Found MasterMapping or null if none was found.</returns>
+        public NotesMasterMapping GetNotesMasterMappingByMasterId(UInt32 masterId)
+        {
+            return this.NotesMasterIdToMapping[masterId];
+        }
+
+        /// <summary>
         /// Registers a MasterMapping so it can later be looked up by its master ID.
         /// </summary>
         /// <param name="masterId">Master id with which to associate the MasterMapping.</param>
@@ -110,6 +131,20 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 this.MasterIdToMapping[masterId] = new MasterMapping(this);
 
             return this.MasterIdToMapping[masterId];
+        }
+
+        /// <summary>
+        /// Returns the NotesMasterMapping associated with the specified master ID if it exists.
+        /// Else a new NotesMasterMapping is created.
+        /// </summary>
+        /// <param name="masterId">Master ID for which to find or create a NotesMasterMapping.</param>
+        /// <returns>Found or created NotesMasterMapping.</returns>
+        public NotesMasterMapping GetOrCreateNotesMasterMappingByMasterId(UInt32 masterId)
+        {
+            if (!this.NotesMasterIdToMapping.ContainsKey(masterId))
+                this.NotesMasterIdToMapping[masterId] = new NotesMasterMapping(this);
+
+            return this.NotesMasterIdToMapping[masterId];
         }
 
         protected Dictionary<UInt32, MasterLayoutManager> MasterIdToLayoutManager =

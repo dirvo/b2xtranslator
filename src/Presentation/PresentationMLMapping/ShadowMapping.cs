@@ -189,13 +189,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             _writer.WriteAttributeString("sy","50000");
                         }
 
-                       
-
-                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.shadowOriginY))
-                        {
-                            int origY = (int)so.OptionsByID[ShapeOptions.PropertyId.shadowOriginY].op;
-                        }
-
                         writeColor();
 
                         _writer.WriteEndElement();

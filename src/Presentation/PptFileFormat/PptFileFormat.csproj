@@ -60,6 +60,8 @@
     <Compile Include="ColorSchemeAtom.cs" />
     <Compile Include="BlipCollection9Container.cs" />
     <Compile Include="AnimationInfoContainer.cs" />
+    <Compile Include="NotesAtom.cs" />
+    <Compile Include="Note.cs" />
     <Compile Include="FooterMCAtom.cs" />
     <Compile Include="SlideHeadersFootersContainer.cs" />
     <Compile Include="MasterTextPropAtom.cs" />

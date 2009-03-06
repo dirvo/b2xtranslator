@@ -46,6 +46,17 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         }
     }
 
+    [OfficeRecordAttribute(4089)]
+    public class HeaderMCAtom : Record
+    {
+        public Int32 Position;
+        public HeaderMCAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance)
+        {
+            Position = Reader.ReadInt32();
+        }
+    }
+
     [OfficeRecordAttribute(4056)]
     public class SlideNumberMCAtom : Record
     {

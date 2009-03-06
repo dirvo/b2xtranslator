@@ -48,7 +48,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _ctx = ctx;
         }
 
-        public void Apply(CharacterRun run, string startElement, Slide slide, ref string lastColor)
+        public void Apply(CharacterRun run, string startElement, RegularContainer slide, ref string lastColor, ref string lastSize)
         {
             //_writer.WriteStartElement("a", "rPr", OpenXmlNamespaces.DrawingML);
             _writer.WriteStartElement("a", startElement, OpenXmlNamespaces.DrawingML);
@@ -56,6 +56,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             if (run.SizePresent)
             {
                 _writer.WriteAttributeString("sz", (run.Size * 100).ToString());
+                lastSize = (run.Size * 100).ToString();
+            }
+            else
+            {
+                if (lastSize.Length > 0) _writer.WriteAttributeString("sz", lastSize);
             }
 
             if (run.StyleFlagsFieldPresent)

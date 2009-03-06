@@ -79,7 +79,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             gtextFUnderline=252,
             gtextFShadow=253,
             gtextFSmallcaps=254,
-            gtextFStrikethrough=255,
+            GeometryTextBooleanProperties=255,
 
             //BLIP
             cropFromTop=256,
@@ -579,7 +579,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             {
                 if (this.Options[i].fComplex)
                 {
-                    this.Options[i].opComplex = this.Reader.ReadBytes((int)this.Options[i].op + 6);
+                    this.Options[i].opComplex = this.Reader.ReadBytes((int)this.Options[i].op); // + 6);
                 }
                 OptionsByID.Add(this.Options[i].pid, this.Options[i]);
             }

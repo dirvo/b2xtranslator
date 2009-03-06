@@ -33,10 +33,11 @@ using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML;
 using DIaLOGIKa.b2xtranslator.Tools;
+using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 
 namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 {
-    public class TitleMasterMapping : PresentationMapping<Slide>
+    public class TitleMasterMapping : PresentationMapping<RegularContainer>
     {
         public TitleMasterMapping(ConversionContext ctx, SlideLayoutPart part)
             : base(ctx, part)
@@ -44,7 +45,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         }
 
-        override public void Apply(Slide slide)
+        override public void Apply(RegularContainer slide)
         {
             TraceLogger.DebugInternal("TitleMasterMapping.Apply");
 

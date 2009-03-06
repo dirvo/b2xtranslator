@@ -37,7 +37,7 @@ using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 
 namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 {
-    public class SlideMapping : PresentationMapping<Slide>
+    public class SlideMapping : PresentationMapping<RegularContainer>
     {
         public Slide Slide;
 
@@ -68,9 +68,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             return slideAtom.MasterId;
         }
 
-        override public void Apply(Slide slide)
-        {
-            this.Slide = slide;
+        override public void Apply(RegularContainer slide)
+        {            
+            this.Slide = (Slide)slide;
             TraceLogger.DebugInternal("SlideMapping.Apply");
 
             // Associate slide with slide layout
@@ -102,6 +102,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             // Start the document
             _writer.WriteStartDocument();
             _writer.WriteStartElement("p", "sld", OpenXmlNamespaces.PresentationML);
+                               
             // Force declaration of these namespaces at document start
             _writer.WriteAttributeString("xmlns", "a", null, OpenXmlNamespaces.DrawingML);
             // Force declaration of these namespaces at document start
@@ -157,7 +158,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 {
                                     if (placeholder.PlacementId != PlaceholderEnum.MasterFooter)
                                     {
-                                        stm.Apply(shapecontainer, "");
+                                        stm.Apply(shapecontainer, "","","");
                                     }
                                 }
                             }
@@ -174,18 +175,37 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             SlideAtom slideAtom = this.Slide.FirstChildWithType<SlideAtom>();
 
             string footertext = "";
+            string headertext = "";
+            string userdatetext = "";
             SlideHeadersFootersContainer headersfooters = this.Slide.FirstChildWithType<SlideHeadersFootersContainer>();
             if (headersfooters != null)
             {
-                CStringAtom text = headersfooters.FirstChildWithType<CStringAtom>();
-                if (text != null)
+                foreach (CStringAtom text in headersfooters.AllChildrenWithType<CStringAtom>())
                 {
-                    footertext = text.Text;
+                    switch (text.Instance)
+                    {
+                        case 0:
+                            userdatetext = text.Text;
+                            break;
+                        case 1:
+                            headertext = text.Text;
+                            break;
+                        case 2:
+                            footertext = text.Text;
+                            break;
+                    }
                 }
+                //CStringAtom text = headersfooters.FirstChildWithType<CStringAtom>();
+                //if (text != null)
+                //{
+                //    footertext = text.Text;
+                //}
             }
 
             bool footer = false;
             bool slideNumber = false;
+            bool date = false;
+            bool userDate = false;
             
             foreach (SlideHeadersFootersContainer c in this._ctx.Ppt.DocumentRecord.AllChildrenWithType<SlideHeadersFootersContainer>())
             {
@@ -198,6 +218,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         {
                             if (a.fHasFooter) footer = true;
                             if (a.fHasSlideNumber) slideNumber = true;
+                            if (a.fHasDate) date = true;
+                            if (a.fHasUserDate) userDate = true;
+
                             //if (a.fHasHeader) header = true;
                         }
                         break;
@@ -229,13 +252,49 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                     {
                                         if (placeholder.PlacementId == PlaceholderEnum.MasterSlideNumber)
                                         {
-                                            stm.Apply(shapecontainer, "");
+                                            stm.Apply(shapecontainer, "","","");
                                         }
                                     }
                                 }
                             }
                         }
 
+                    }
+                }
+            }
+
+            if (date)
+            {
+                if (!(userDate & userdatetext.Length == 0))
+                {
+                    foreach (Slide master in this._ctx.Ppt.MainMasterRecords)
+                    {
+                        if (master.PersistAtom.SlideId == slideAtom.MasterId)
+                        {
+                            List<OfficeDrawing.ShapeContainer> shapes = master.AllChildrenWithType<PPDrawing>()[0].AllChildrenWithType<OfficeDrawing.DrawingContainer>()[0].AllChildrenWithType<OfficeDrawing.GroupContainer>()[0].AllChildrenWithType<OfficeDrawing.ShapeContainer>();
+                            foreach (OfficeDrawing.ShapeContainer shapecontainer in shapes)
+                            {
+                                foreach (OfficeDrawing.ClientData data in shapecontainer.AllChildrenWithType<OfficeDrawing.ClientData>())
+                                {
+                                    System.IO.MemoryStream ms = new System.IO.MemoryStream(data.bytes);
+                                    OfficeDrawing.Record rec = OfficeDrawing.Record.ReadRecord(ms, 0);
+
+                                    if (rec.TypeCode == 3011)
+                                    {
+                                        OEPlaceHolderAtom placeholder = (OEPlaceHolderAtom)rec;
+
+                                        if (placeholder != null)
+                                        {
+                                            if (placeholder.PlacementId == PlaceholderEnum.MasterDate)
+                                            {
+                                                stm.Apply(shapecontainer, "", "","");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
                     }
                 }
             }
@@ -261,7 +320,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 {
                                     if (placeholder.PlacementId == PlaceholderEnum.MasterFooter)
                                     {
-                                        stm.Apply(shapecontainer, footertext);
+                                        stm.Apply(shapecontainer, footertext, "","");
                                         footer = false;
                                     }
                                 }
@@ -293,7 +352,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                     {
                                         if (placeholder.PlacementId == PlaceholderEnum.MasterFooter)
                                         {
-                                            stm.Apply(shapecontainer, footertext);
+                                            stm.Apply(shapecontainer, footertext, "","");
                                             footer = false;
                                         }
                                     }
