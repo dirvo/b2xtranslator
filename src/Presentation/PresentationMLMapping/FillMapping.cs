@@ -372,11 +372,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         }
                     }
 
-                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillShadeType))
-                    {
-                        //TODO
-                    }
-
                     _writer.WriteStartElement("a", "gs", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("pos", "0");
                     _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
@@ -407,6 +402,24 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
                         _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillBackOpacity].op / 65536 * 100000)).ToString()); //we need the percentage of the opacity (65536 means 100%)
                         _writer.WriteEndElement();
+                    }
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillShadeType))
+                    {
+                        uint flags = so.OptionsByID[ShapeOptions.PropertyId.fillShadeType].op;
+                        bool none = Tools.Utils.BitmaskToBool(flags, 0x1);
+                        bool gamma = Tools.Utils.BitmaskToBool(flags, 0x1 << 1);
+                        bool sigma = Tools.Utils.BitmaskToBool(flags, 0x1 << 2);
+                        bool band = Tools.Utils.BitmaskToBool(flags, 0x1 << 3);
+                        bool onecolor = Tools.Utils.BitmaskToBool(flags, 0x1 << 4);
+
+                        if (gamma) _writer.WriteElementString("a", "gamma", OpenXmlNamespaces.DrawingML, "");
+                        if (band)
+                        {
+                            _writer.WriteStartElement("a", "shade",OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("val", "46275");
+                            _writer.WriteEndElement();
+                        }
+
                     }
                     _writer.WriteEndElement();
                     _writer.WriteEndElement();
