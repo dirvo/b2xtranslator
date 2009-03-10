@@ -31,6 +31,7 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg;
 using System.Diagnostics;
 using System.Globalization;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg
 {
@@ -38,20 +39,41 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg
     {
         public const PtgNumber ID = PtgNumber.PtgMemFunc;
 
+        /// <summary>
+        /// LinkedList with the Ptg records !!
+        /// </summary>
+        public Stack<AbstractPtg> ptgStack;
+
         public PtgMemFunc(IStreamReader reader, PtgNumber ptgid)
             :
             base(reader, ptgid)
         {
             Debug.Assert(this.Id == ID);
 
-            this.Data = "";   
+            this.Data = "";
 
             this.type = PtgType.Operand;
             this.popSize = 1;
 
             int cce = reader.ReadUInt16();
             this.Length = (uint)(3 + cce);
-            reader.ReadBytes(cce); 
+
+            long oldStreamPosition = this.Reader.BaseStream.Position;
+
+
+
+            try
+            {
+                this.ptgStack = ExcelHelperClass.getFormulaStack(this.Reader, (ushort)cce);
+            }
+            catch (Exception ex)
+            {
+                this.Reader.BaseStream.Seek(oldStreamPosition, System.IO.SeekOrigin.Begin);
+                this.Reader.BaseStream.Seek(cce, System.IO.SeekOrigin.Current);
+                TraceLogger.Error(ex.StackTrace);
+            }
+
+
 
         }
     }

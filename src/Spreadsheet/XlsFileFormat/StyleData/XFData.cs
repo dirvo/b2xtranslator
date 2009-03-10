@@ -39,7 +39,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
         public int fStyle; 
         public int fillId;
         public int fontId;
-        public int borderId; 
+        public int borderId;
+        public bool wrapText;
+        public bool hasAlignment; 
 
         public XFData()
         {
@@ -48,7 +50,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
             this.fStyle = 0;
             this.fillId = 0;
             this.fontId = 0;
-            this.borderId = 0; 
+            this.borderId = 0;
+            this.wrapText = false;
+            this.hasAlignment = false; 
         }
 
     }

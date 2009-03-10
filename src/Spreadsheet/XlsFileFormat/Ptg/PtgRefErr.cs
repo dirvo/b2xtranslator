@@ -43,7 +43,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg
         {
             Debug.Assert(this.Id == ID);
             this.Length = 5;
-            this.Data = "";
+            this.Data = "#REF!";
             this.type = PtgType.Operand;
             reader.ReadBytes(4);             
         }

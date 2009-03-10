@@ -301,6 +301,13 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 _writer.WriteAttributeString("fillId", xfcellstyle.fillId.ToString());
                 _writer.WriteAttributeString("borderId", xfcellstyle.borderId.ToString());
 
+                if (xfcellstyle.wrapText)
+                {
+                    _writer.WriteStartElement("alignment");
+                    _writer.WriteAttributeString("wrapText", "1"); 
+                    _writer.WriteEndElement();
+                }
+
                 _writer.WriteEndElement();
             }
 
@@ -347,6 +354,12 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     _writer.WriteAttributeString("applyFont", "1");
                 }
 
+                if (xfcell.wrapText)
+                {
+                    _writer.WriteStartElement("alignment");
+                    _writer.WriteAttributeString("wrapText", "1");
+                    _writer.WriteEndElement();
+                }
 
                 _writer.WriteEndElement();
             }

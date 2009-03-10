@@ -239,6 +239,18 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             namexValue = opstring;
                             resultStack.Push(opstring);
                         }
+                        else if (ptg is PtgRefErr)
+                        {
+                            PtgRefErr ptgreferr = (PtgRefErr)ptg; 
+                            resultStack.Push(ptgreferr.getData()) ; 
+                        }
+                        else if (ptg is PtgRefErr3d)
+                        {
+                            PtgRefErr3d ptgreferr3d = (PtgRefErr3d)ptg;
+
+                            String refstring = xlsContext.XlsDoc.workBookData.getIXTIString(ptgreferr3d.ixti);
+                            resultStack.Push("'" + refstring + "'" + "!" + ptgreferr3d.getData());
+                        }
                         else if (ptg is PtgFunc)
                         {
                             PtgFunc ptgf = (PtgFunc)ptg;
@@ -457,6 +469,12 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                                 }
 
                             }
+                        }
+                        else if (ptg is PtgMemFunc)
+                        {
+                            string value;
+                            value = FormulaInfixMapping.mapFormula(((PtgMemFunc)ptg).ptgStack, xlsContext);
+                            resultStack.Push(value);
                         }
                     }
                 }

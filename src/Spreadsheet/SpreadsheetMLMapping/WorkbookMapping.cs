@@ -114,30 +114,33 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
             if (bsd.definedNameList.Count > 0)
             {
-//                <definedNames>
-//<definedName name="abc" comment="test" localSheetId="1">Sheet1!$B$3</definedName>
-//</definedNames>
+                //<definedNames>
+                //<definedName name="abc" comment="test" localSheetId="1">Sheet1!$B$3</definedName>
+                //</definedNames>
                 _writer.WriteStartElement("definedNames");
 
                 foreach (DefinedNameData item in bsd.definedNameList)
                 {
-                    _writer.WriteStartElement("definedName");
-                    if (item.Name.Length > 1)
+                    if (item.ptgStack.Count > 0)
                     {
-                        _writer.WriteAttributeString("name", item.Name);
-                    }
-                    else
-                    {
-                        string internName = "_xlnm." + WorkbookMapping.getNameStringfromBuiltInFunctionID(item.Name);
-                        _writer.WriteAttributeString("name", internName);
-                    }
-                    if (item.itab > 0)
-                    {
-                        _writer.WriteAttributeString("localSheetId", (item.itab-1).ToString());
-                    }
-                    _writer.WriteValue(FormulaInfixMapping.mapFormula(item.ptgStack,xlsContext)); 
+                        _writer.WriteStartElement("definedName");
+                        if (item.Name.Length > 1)
+                        {
+                            _writer.WriteAttributeString("name", item.Name);
+                        }
+                        else
+                        {
+                            string internName = "_xlnm." + WorkbookMapping.getNameStringfromBuiltInFunctionID(item.Name);
+                            _writer.WriteAttributeString("name", internName);
+                        }
+                        if (item.itab > 0)
+                        {
+                            _writer.WriteAttributeString("localSheetId", (item.itab - 1).ToString());
+                        }
+                        _writer.WriteValue(FormulaInfixMapping.mapFormula(item.ptgStack, xlsContext));
 
-                    _writer.WriteEndElement();
+                        _writer.WriteEndElement();
+                    }
                 }
 
 

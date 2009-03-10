@@ -37,17 +37,21 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     {
         public const RecordNumber ID = RecordNumber.THEME;
 
+        public UInt16 rt;
+        public UInt16 grbitFrt;
+        public UInt32 dwThemeVersion; 
+
         public THEME(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
 
-            // initialize class members from stream
-            // TODO: place code here
+
+
             
             // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            // Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
         }
     }
 }

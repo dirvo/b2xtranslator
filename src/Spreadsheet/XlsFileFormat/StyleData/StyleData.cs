@@ -84,6 +84,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
         private List<BorderData> borderDataList;
         public List<BorderData> BorderDataList { get { return this.borderDataList; } }
 
+        
+
         /// <summary>
         /// This class stores every format from a document 
         /// </summary>
@@ -96,7 +98,15 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
             this.fillDataList = new List<FillData>();
             this.fontDataList = new List<FontData>();
             this.borderDataList = new List<BorderData>(); 
-            
+
+            // fill fillList with none and grey value 
+
+            FillData none = new FillData(StyleEnum.FLSNULL, 0x0040, 0x0040);
+            this.fillDataList.Add(none);
+            FillData grey = new FillData(StyleEnum.FLSGRAY125, 0x0040, 0x0040);
+            this.fillDataList.Add(grey);
+
+
         }
 
         /// <summary>
@@ -121,6 +131,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
             xfdata.fStyle = xf.fStyle;
             xfdata.ifmt = xf.ifmt;
             xfdata.ixfParent = xf.ixfParent;
+            if (xf.fWrap != 0)
+            {
+                xfdata.wrapText = true;
+            }
 
             // the first three fontids are zero based 
             // beginning with four the fontids are one based 
