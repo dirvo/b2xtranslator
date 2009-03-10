@@ -1032,6 +1032,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             writeBodyPr(textbox);
 
             _writer.WriteStartElement("a", "lstStyle", OpenXmlNamespaces.DrawingML);
+            bool lvlRprWritten = false;
 
             System.IO.MemoryStream ms = new System.IO.MemoryStream(textbox.Bytes);
             TextHeaderAtom thAtom = null;
@@ -1091,6 +1092,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     case 0xfaa: //TextSpecialInfoAtom
                         break;
                     case 0xfd8: //SlideNumberMCAtom
+                    case 0xff9: //HeaderMCAtom
+                    case 0xffa: //FooterMCAtom
+                    case 0xff8: //GenericDateMCAtom
+                        if (!lvlRprWritten)
                         foreach (ParagraphRun r in style.PRuns)
                         {
                             _writer.WriteStartElement("a", "lvl" + (r.IndentLevel + 1) + "pPr", OpenXmlNamespaces.DrawingML);
@@ -1125,9 +1130,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             string lastSize = "";
                             new CharacterRunPropsMapping(_ctx, _writer).Apply(style.CRuns[0], "defRPr", textbox.FirstAncestorWithType<Slide>(), ref lastColor, ref lastSize); 
                             _writer.WriteEndElement();
+                            lvlRprWritten = true;
                         }
-                        break;
-                    case 0xff8: //GenericDateMCAtom
                         break;
                     default:
                         break;
