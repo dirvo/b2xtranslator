@@ -58,6 +58,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             CreateMainMasters(ppt);
             CreateNotesMasters(ppt);
+            CreateHandoutMasters(ppt);
             CreateSlides(ppt, documentRecord);
             //CreatePictures(ppt, documentRecord);
 
@@ -232,6 +233,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
         }
 
+        private void CreateHandoutMasters(PowerpointDocument ppt)
+        {
+            foreach (Handout m in ppt.HandoutMasterRecords)
+            {
+                _ctx.GetOrCreateHandoutMasterMappingByMasterId(0).Apply(m);
+            }
+        }
+
         private void WriteMainMasters(PowerpointDocument ppt)
         {
             _writer.WriteStartElement("p", "sldMasterIdLst", OpenXmlNamespaces.PresentationML);
@@ -244,6 +253,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement();
 
             WriteNoteMaster(ppt);
+            WriteHandoutMaster(ppt);
         }
 
         /// <summary>
@@ -288,6 +298,37 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteStartElement("p", "notesMasterId", OpenXmlNamespaces.PresentationML);
 
             NotesMasterMapping mapping = _ctx.GetOrCreateNotesMasterMappingByMasterId(0);
+            mapping.Write();
+
+            string relString = mapping.targetPart.RelIdToString;
+
+            _writer.WriteAttributeString("r", "id", OpenXmlNamespaces.Relationships, relString);
+
+            _writer.WriteEndElement();
+        }
+
+        private void WriteHandoutMaster(PowerpointDocument ppt)
+        {
+            _writer.WriteStartElement("p", "handoutMasterIdLst", OpenXmlNamespaces.PresentationML);
+
+            foreach (Handout m in ppt.HandoutMasterRecords)
+            {
+                this.WriteHandoutMaster2(ppt, m);
+            }
+
+            _writer.WriteEndElement();
+        }
+
+        /// <summary>
+        /// Writes a handout master.
+        /// 
+        /// <param name="ppt">PowerpointDocument record</param>
+        /// <param name="m">Handout master record</param>
+        private void WriteHandoutMaster2(PowerpointDocument ppt, Handout m)
+        {
+            _writer.WriteStartElement("p", "handoutMasterId", OpenXmlNamespaces.PresentationML);
+
+            HandoutMasterMapping mapping = _ctx.GetOrCreateHandoutMasterMappingByMasterId(0);
             mapping.Write();
 
             string relString = mapping.targetPart.RelIdToString;

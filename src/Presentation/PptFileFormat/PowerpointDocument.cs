@@ -93,6 +93,11 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         public List<Note> NotesMasterRecords = new List<Note>();
 
         /// <summary>
+        /// List of all notes master records for this document.
+        /// </summary>
+        public List<Handout> HandoutMasterRecords = new List<Handout>();
+
+        /// <summary>
         /// List of title master records for this document.
         /// </summary>
         public List<Slide> TitleMasterRecords = new List<Slide>();
@@ -214,6 +219,8 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             Note noteMaster = this.GetPersistObject<Note>(this.DocumentRecord.FirstChildWithType<DocumentAtom>().NotesMasterPersist);
             this.NotesMasterRecords.Add(noteMaster);
 
+            Handout handoutMaster = this.GetPersistObject<Handout>(this.DocumentRecord.FirstChildWithType<DocumentAtom>().HandoutMasterPersist);
+            this.HandoutMasterRecords.Add(handoutMaster);
         }
 
         /// <summary>

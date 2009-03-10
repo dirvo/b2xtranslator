@@ -54,6 +54,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         {
             RegularContainer slide = so.FirstAncestorWithType<Slide>();
             if (slide == null) slide = so.FirstAncestorWithType<Note>();
+            if (slide == null) slide = so.FirstAncestorWithType<Handout>();
             string colorval = "";
             switch (so.OptionsByID[ShapeOptions.PropertyId.fillType].op)
             {

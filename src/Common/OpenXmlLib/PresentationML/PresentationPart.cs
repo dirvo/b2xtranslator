@@ -9,9 +9,11 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML
     {
         public List<SlideMasterPart> SlideMasterParts = new List<SlideMasterPart>();
         public List<NotesMasterPart> NotesMasterParts = new List<NotesMasterPart>();
+        public List<HandoutMasterPart> HandoutMasterParts = new List<HandoutMasterPart>();
 
         protected static int _slideMasterCounter = 0;
         protected static int _notesMasterCounter = 0;
+        protected static int _handoutMasterCounter = 0;
         protected static int _slideCounter = 0;
         protected static int _noteCounter = 0;
         protected static int _themeCounter = 0;
@@ -46,6 +48,13 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML
         {
             NotesMasterPart part = new NotesMasterPart(this, ++_notesMasterCounter);
             this.NotesMasterParts.Add(part);
+            return this.AddPart(part);
+        }
+
+        public SlideMasterPart AddHandoutMasterPart()
+        {
+            HandoutMasterPart part = new HandoutMasterPart(this, ++_handoutMasterCounter);
+            this.HandoutMasterParts.Add(part);
             return this.AddPart(part);
         }
 

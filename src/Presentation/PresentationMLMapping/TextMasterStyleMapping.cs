@@ -179,6 +179,40 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement();
         }
 
+        public void ApplyHandoutMaster(RegularContainer handoutMaster)
+        {
+            _Master = handoutMaster;
+            MainMaster m = this._ctx.Ppt.MainMasterRecords[0];
+            List<TextMasterStyleAtom> atoms = m.AllChildrenWithType<TextMasterStyleAtom>();
+            foreach (TextMasterStyleAtom atom in atoms)
+            {
+                if (atom.Instance == 2) noteAtoms.Add(atom);
+            }
+
+            _writer.WriteStartElement("p", "handoutStyle", OpenXmlNamespaces.PresentationML);
+
+            ParagraphRun9 pr9 = null;
+            foreach (TextMasterStyleAtom atom in noteAtoms)
+            {
+                lastSpaceBefore = 0;
+                lastBulletFont = "";
+                lastColor = "";
+                lastSize = "";
+                for (int i = 0; i < atom.IndentLevelCount; i++)
+                {
+                    pr9 = null;
+                    writepPr(atom.CRuns[i], atom.PRuns[i], pr9, i, true);
+                }
+                for (int i = atom.IndentLevelCount; i < 9; i++)
+                {
+                    pr9 = null;
+                    writepPr(atom.CRuns[0], atom.PRuns[0], pr9, i, true);
+                }
+            }
+
+            _writer.WriteEndElement();
+        }
+
         private void writepPr(CharacterRun cr, ParagraphRun pr, ParagraphRun9 pr9, int IndentLevel, bool isTitle)
         {
           

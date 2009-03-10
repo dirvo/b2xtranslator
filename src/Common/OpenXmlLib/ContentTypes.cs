@@ -97,6 +97,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string SlideMaster = "application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml";
         public const string NotesSlide = "application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml";
         public const string NotesMaster = "application/vnd.openxmlformats-officedocument.presentationml.notesMaster+xml";
+        public const string HandoutMaster = "application/vnd.openxmlformats-officedocument.presentationml.handoutMaster+xml";
         public const string SlideLayout = "application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml";
         public const string TableStyles = "application/vnd.openxmlformats-officedocument.presentationml.tableStyles+xml";
         public const string ViewProps = "application/vnd.openxmlformats-officedocument.presentationml.viewProps+xml";
@@ -177,7 +178,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string Slide = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide";
         public const string SlideMaster = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster";
         public const string NotesSlide = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesSlide";
-        public const string NotesMaster = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster";    
+        public const string NotesMaster = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster";
+        public const string HandoutMaster = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/handoutMaster";   
         // SpreadsheetML
 
         public const string WorkSheet = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet";

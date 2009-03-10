@@ -43,6 +43,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         private Dictionary<UInt32, MasterMapping> MasterIdToMapping = new Dictionary<UInt32, MasterMapping>();
         private Dictionary<UInt32, NotesMasterMapping> NotesMasterIdToMapping = new Dictionary<UInt32, NotesMasterMapping>();
+        private Dictionary<UInt32, HandoutMasterMapping> HandoutMasterIdToMapping = new Dictionary<UInt32, HandoutMasterMapping>();
         public Dictionary<long, string> AddedImages = new Dictionary<long, string>();
         public int lastImageID = 0;
 
@@ -90,6 +91,16 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         }
 
         /// <summary>
+        /// Registers a HandoutMasterMapping so it can later be looked up by its master ID.
+        /// </summary>
+        /// <param name="masterId">Master id with which to associate the MasterMapping.</param>
+        /// <param name="mapping">MasterMapping to be registered.</param>
+        public void RegisterHandoutMasterMapping(UInt32 masterId, HandoutMasterMapping mapping)
+        {
+            this.HandoutMasterIdToMapping[masterId] = mapping;
+        }
+
+        /// <summary>
         /// Returns the NotesMasterMapping associated with the specified master ID.
         /// </summary>
         /// <param name="masterId">Master ID for which to find a MasterMapping.</param>
@@ -97,6 +108,16 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         public NotesMasterMapping GetNotesMasterMappingByMasterId(UInt32 masterId)
         {
             return this.NotesMasterIdToMapping[masterId];
+        }
+
+        /// <summary>
+        /// Returns the HandoutMasterMapping associated with the specified master ID.
+        /// </summary>
+        /// <param name="masterId">Master ID for which to find a MasterMapping.</param>
+        /// <returns>Found MasterMapping or null if none was found.</returns>
+        public HandoutMasterMapping GetHandoutMasterMappingByMasterId(UInt32 masterId)
+        {
+            return this.HandoutMasterIdToMapping[masterId];
         }
 
         /// <summary>
@@ -145,6 +166,20 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 this.NotesMasterIdToMapping[masterId] = new NotesMasterMapping(this);
 
             return this.NotesMasterIdToMapping[masterId];
+        }
+
+        /// <summary>
+        /// Returns the HandoutMasterMapping associated with the specified master ID if it exists.
+        /// Else a new HandoutMasterMapping is created.
+        /// </summary>
+        /// <param name="masterId">Master ID for which to find or create a HandoutMasterMapping.</param>
+        /// <returns>Found or created HandoutMasterMapping.</returns>
+        public HandoutMasterMapping GetOrCreateHandoutMasterMappingByMasterId(UInt32 masterId)
+        {
+            if (!this.HandoutMasterIdToMapping.ContainsKey(masterId))
+                this.HandoutMasterIdToMapping[masterId] = new HandoutMasterMapping(this);
+
+            return this.HandoutMasterIdToMapping[masterId];
         }
 
         protected Dictionary<UInt32, MasterLayoutManager> MasterIdToLayoutManager =
