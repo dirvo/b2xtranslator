@@ -270,6 +270,50 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             // end font element 
             _writer.WriteEndElement(); 
         }
+
+
+        /// <summary>
+        /// converts the horizontal alignment value to the string required by open xml 
+        /// </summary>
+        /// <param name="horValue"></param>
+        /// <returns></returns>
+        public static string getHorAlignmentValue(int horValue)
+        {
+            switch (horValue)
+            {
+                case 0x02: return "center";
+                case 0x06: return "centerContinuous";
+                case 0x07: return "distributed";
+                case 0x04: return "fill";
+                case 0x00: return "general";
+                case 0x05: return "justify";
+                case 0x01: return "left";
+                case 0x03: return "right";
+
+ 
+                default: return ""; 
+            }
+        }
+
+        /// <summary>
+        /// converts the vertical alignment value to the string required by open xml 
+        /// </summary>
+        /// <param name="verValue"></param>
+        /// <returns></returns>
+        public static string getVerAlignmentValue(int verValue)
+        {
+            switch (verValue)
+            {
+                case 0x00: return "top";
+                case 0x01: return "center";
+                case 0x02: return "bottom";
+                case 0x03: return "justify";
+                case 0x04: return "distributed";
+                default: return "";
+            }
+        }
     }
+
+    
 
 }

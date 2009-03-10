@@ -301,10 +301,42 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 _writer.WriteAttributeString("fillId", xfcellstyle.fillId.ToString());
                 _writer.WriteAttributeString("borderId", xfcellstyle.borderId.ToString());
 
-                if (xfcellstyle.wrapText)
+                if (xfcellstyle.hasAlignment)
                 {
                     _writer.WriteStartElement("alignment");
-                    _writer.WriteAttributeString("wrapText", "1"); 
+                    if (xfcellstyle.wrapText)
+                    {
+                        _writer.WriteAttributeString("wrapText", "1");
+                    }
+                    if (xfcellstyle.horizontalAlignment != 0xFF)
+                    {
+                        _writer.WriteAttributeString("horizontal", StyleMappingHelper.getHorAlignmentValue(xfcellstyle.horizontalAlignment));
+                    }
+                    if (xfcellstyle.verticalAlignment != 0x02)
+                    {
+                        _writer.WriteAttributeString("vertical", StyleMappingHelper.getVerAlignmentValue(xfcellstyle.verticalAlignment));
+                    }
+                    if (xfcellstyle.justifyLastLine)
+                    {
+                        _writer.WriteAttributeString("justifyLastLine", "1");
+                    }
+                    if (xfcellstyle.shrinkToFit)
+                    {
+                        _writer.WriteAttributeString("shrinkToFit", "1");
+                    }
+                    if (xfcellstyle.textRotation != 0x00)
+                    {
+                        _writer.WriteAttributeString("textRotation", xfcellstyle.textRotation.ToString());
+                    }
+                    if (xfcellstyle.indent != 0x00)
+                    {
+                        _writer.WriteAttributeString("indent", xfcellstyle.indent.ToString());
+                    }
+                    if (xfcellstyle.readingOrder != 0x00)
+                    {
+                        _writer.WriteAttributeString("readingOrder", xfcellstyle.readingOrder.ToString());
+                    }
+
                     _writer.WriteEndElement();
                 }
 
@@ -353,11 +385,42 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 {
                     _writer.WriteAttributeString("applyFont", "1");
                 }
-
-                if (xfcell.wrapText)
+                if (xfcell.hasAlignment)
                 {
                     _writer.WriteStartElement("alignment");
-                    _writer.WriteAttributeString("wrapText", "1");
+                    if (xfcell.wrapText)
+                    {
+                        _writer.WriteAttributeString("wrapText", "1");          
+                    }
+                    if (xfcell.horizontalAlignment != 0xFF)
+                    {
+                        _writer.WriteAttributeString("horizontal", StyleMappingHelper.getHorAlignmentValue(xfcell.horizontalAlignment));
+                    }
+                    if (xfcell.verticalAlignment != 0x02)
+                    {
+                        _writer.WriteAttributeString("vertical", StyleMappingHelper.getVerAlignmentValue(xfcell.verticalAlignment));
+                    }
+                    if (xfcell.justifyLastLine)
+                    {
+                        _writer.WriteAttributeString("justifyLastLine", "1");
+                    }
+                    if (xfcell.shrinkToFit)
+                    {
+                        _writer.WriteAttributeString("shrinkToFit", "1");
+                    }
+                    if (xfcell.textRotation != 0x00)
+                    {
+                        _writer.WriteAttributeString("textRotation", xfcell.textRotation.ToString());
+                    }
+                    if (xfcell.indent != 0x00)
+                    {
+                        _writer.WriteAttributeString("indent", xfcell.indent.ToString());
+                    }
+                    if (xfcell.readingOrder != 0x00)
+                    {
+                        _writer.WriteAttributeString("readingOrder", xfcell.readingOrder.ToString());
+                    }
+
                     _writer.WriteEndElement();
                 }
 

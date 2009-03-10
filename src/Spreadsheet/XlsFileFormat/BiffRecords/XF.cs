@@ -128,7 +128,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
             this.alc = (int)buffer & 0x00000007;
             this.fWrap = (int)buffer & 0x00000008;
             this.alcV = (int)(buffer & 0x00000070) >> 0x04;
-            this.fJustLast = (int)(buffer & 0x00000080) >> 0x04;
+            this.fJustLast = (int)(buffer & 0x00000080) >> 0x07;
             this.trot = (int)(buffer & 0x0000FF00) >> 0x08;
 
             /// 
@@ -136,14 +136,14 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
             buffer = reader.ReadUInt16(); 
             this.cIndent = (int)buffer & 0x0000000F;
             this.fShrinkToFit = (int)(buffer & 0x00000010) >> 0x04;
-            this.fMergeCell = (int)(buffer & 0x00000020) >> 0x04;
-            this.iReadOrder = (int)(buffer & 0x000000C0) >> 0x04;
-            this.fAtrNum = (int)(buffer & 0x00000400) >> 0x08;
-            this.fAtrFnt= (int)(buffer & 0x00000800) >> 0x08;
+            this.fMergeCell = (int)(buffer & 0x00000020) >> 0x05;
+            this.iReadOrder = (int)(buffer & 0x000000C0) >> 0x06;
+            this.fAtrNum = (int)(buffer & 0x00000400) >> 0x0A;
+            this.fAtrFnt= (int)(buffer & 0x00000800) >> 0x0B;
             this.fAtrAlc= (int)(buffer & 0x00001000) >> 0x0C;
-            this.fAtrBdr= (int)(buffer & 0x00002000) >> 0x0C;
-            this.fAtrPat= (int)(buffer & 0x00004000) >> 0x0C;
-            this.fAtrProt = (int)(buffer & 0x0008000) >> 0x0C;
+            this.fAtrBdr= (int)(buffer & 0x00002000) >> 0x0D;
+            this.fAtrPat= (int)(buffer & 0x00004000) >> 0x0E;
+            this.fAtrProt = (int)(buffer & 0x0008000) >> 0x0F;
 
             
             /// 

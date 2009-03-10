@@ -134,7 +134,45 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
             if (xf.fWrap != 0)
             {
                 xfdata.wrapText = true;
+                xfdata.hasAlignment = true; 
             }
+            if (xf.alc != 0xFF)
+            {
+                xfdata.hasAlignment = true;
+                xfdata.horizontalAlignment = xf.alc; 
+            }
+            if (xf.alcV != 0x02)
+            {
+                xfdata.hasAlignment = true;               
+            }
+            xfdata.verticalAlignment = xf.alcV;
+
+            if (xf.fJustLast != 0)
+            {
+                xfdata.hasAlignment = true;
+                xfdata.justifyLastLine = true; 
+            }
+            if (xf.fShrinkToFit != 0)
+            {
+                xfdata.hasAlignment = true;
+                xfdata.shrinkToFit = true;
+            }
+            if (xf.trot != 0)
+            {
+                xfdata.hasAlignment = true;
+                xfdata.textRotation = xf.trot;
+            }
+            if (xf.cIndent != 0)
+            {
+                xfdata.hasAlignment = true;
+                xfdata.indent = xf.cIndent;
+            }
+            if (xf.iReadOrder != 0)
+            {
+                xfdata.hasAlignment = true;
+                xfdata.readingOrder = xf.iReadOrder;
+            }
+
 
             // the first three fontids are zero based 
             // beginning with four the fontids are one based 
