@@ -1399,6 +1399,23 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteAttributeString("fmla", "val " + Math.Floor(so.OptionsByID[ShapeOptions.PropertyId.adjustValue].op * 4.63).ToString()); //TODO: find out where this 4.63 comes from (value found by analysing behaviour of Powerpoint 2003)
                         _writer.WriteEndElement();
                         _writer.WriteEndElement();
+                    }
+                    else if (prst == "wedgeRectCallout" & so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.adjustValue))
+                    {
+                        _writer.WriteStartElement("a", "avLst", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteStartElement("a", "gd", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("name", "adj1");
+                        _writer.WriteAttributeString("fmla", "val " + Math.Floor(so.OptionsByID[ShapeOptions.PropertyId.adjustValue].op * 2.176).ToString()); 
+                        _writer.WriteEndElement();
+                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.adjust2Value))
+                        {
+                            _writer.WriteStartElement("a", "gd", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("name", "adj2");
+                            _writer.WriteAttributeString("fmla", "val " + Math.Floor(so.OptionsByID[ShapeOptions.PropertyId.adjust2Value].op * 3.125).ToString()); 
+                            _writer.WriteEndElement();
+                        }
+                        _writer.WriteEndElement();                       
+
                     } else {
                         _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
                     }
