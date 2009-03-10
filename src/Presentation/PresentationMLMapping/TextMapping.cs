@@ -251,6 +251,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             uint idx = 0;
 
+            ShapeOptions so = textbox.FirstAncestorWithType<ShapeContainer>().FirstChildWithType<ShapeOptions>();
+
             if (text.Length == 0)
             {
                 _writer.WriteStartElement("a", "p", OpenXmlNamespaces.DrawingML);
@@ -274,7 +276,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     MasterTextPropRun tp = GetMasterTextPropRun(masterTextProp, idx);
 
                     String runText;
-                    writeP(p, tp);
+                    writeP(p, tp, so);
 
                     uint CharacterRunStart;
                     int len;
@@ -351,7 +353,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         }
 
-        private void writeP(ParagraphRun p, MasterTextPropRun tp)
+        private void writeP(ParagraphRun p, MasterTextPropRun tp, ShapeOptions so)
         {
             _writer.WriteStartElement("a", "p", OpenXmlNamespaces.DrawingML);
 
@@ -363,7 +365,13 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             else
             {
                 if (p.IndentLevel > 0) _writer.WriteAttributeString("lvl", p.IndentLevel.ToString());
-                if (p.LeftMarginPresent) _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU((int)p.LeftMargin).ToString());
+                if (p.LeftMarginPresent)
+                {
+                    _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU((int)p.LeftMargin).ToString());
+                } else if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.dxTextLeft))
+                {
+                    _writer.WriteAttributeString("marL", so.OptionsByID[ShapeOptions.PropertyId.dxTextLeft].op.ToString());
+                }
                 if (p.IndentPresent) _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(p.LeftMargin - p.Indent)))).ToString());
 
                 if (p.AlignmentPresent)

@@ -220,7 +220,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             this.NotesMasterRecords.Add(noteMaster);
 
             Handout handoutMaster = this.GetPersistObject<Handout>(this.DocumentRecord.FirstChildWithType<DocumentAtom>().HandoutMasterPersist);
-            this.HandoutMasterRecords.Add(handoutMaster);
+            if (handoutMaster != null) this.HandoutMasterRecords.Add(handoutMaster);
         }
 
         /// <summary>

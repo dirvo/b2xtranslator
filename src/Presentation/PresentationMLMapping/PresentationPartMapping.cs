@@ -309,14 +309,18 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         private void WriteHandoutMaster(PowerpointDocument ppt)
         {
-            _writer.WriteStartElement("p", "handoutMasterIdLst", OpenXmlNamespaces.PresentationML);
-
-            foreach (Handout m in ppt.HandoutMasterRecords)
+            if (ppt.HandoutMasterRecords.Count > 0)
             {
-                this.WriteHandoutMaster2(ppt, m);
-            }
 
-            _writer.WriteEndElement();
+                _writer.WriteStartElement("p", "handoutMasterIdLst", OpenXmlNamespaces.PresentationML);
+
+                foreach (Handout m in ppt.HandoutMasterRecords)
+                {
+                    this.WriteHandoutMaster2(ppt, m);
+                }
+
+                _writer.WriteEndElement();
+            }
         }
 
         /// <summary>

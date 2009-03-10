@@ -952,6 +952,26 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         break;
                 }
             }
+
+            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.dxTextLeft))
+            {
+                _writer.WriteAttributeString("lIns", so.OptionsByID[ShapeOptions.PropertyId.dxTextLeft].op.ToString());
+            }
+
+            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.dyTextTop))
+            {
+                _writer.WriteAttributeString("tIns", so.OptionsByID[ShapeOptions.PropertyId.dyTextTop].op.ToString());
+            }
+
+            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.dxTextRight))
+            {
+                _writer.WriteAttributeString("rIns", so.OptionsByID[ShapeOptions.PropertyId.dxTextRight].op.ToString());
+            }
+
+            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.dyTextBottom))
+            {
+                _writer.WriteAttributeString("bIns", so.OptionsByID[ShapeOptions.PropertyId.dyTextBottom].op.ToString());
+            }
             
 
             if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.WrapText))
