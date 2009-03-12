@@ -1402,16 +1402,42 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     }
                     else if (prst == "wedgeRectCallout" & so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.adjustValue))
                     {
+                        //the following computations are based on experiments using Powerpoint 2003 and are not part of the spec
+                        Decimal val = (Decimal)(int)so.OptionsByID[ShapeOptions.PropertyId.adjustValue].op;
+                        Decimal percent = val / 21600 * 100;
+                        int newVal = 0;
+                        if (percent >= 50)
+                        {
+                            newVal = (int)(percent - 50) * 1000;
+                        }
+                        else
+                        {
+                            newVal = (int)(50 - percent) * -1000;
+                        }
+
                         _writer.WriteStartElement("a", "avLst", OpenXmlNamespaces.DrawingML);
                         _writer.WriteStartElement("a", "gd", OpenXmlNamespaces.DrawingML);
                         _writer.WriteAttributeString("name", "adj1");
-                        _writer.WriteAttributeString("fmla", "val " + Math.Floor(so.OptionsByID[ShapeOptions.PropertyId.adjustValue].op * 2.176).ToString()); 
+                        _writer.WriteAttributeString("fmla", "val " + newVal.ToString()); 
                         _writer.WriteEndElement();
                         if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.adjust2Value))
                         {
+                            val = (Decimal)(int)so.OptionsByID[ShapeOptions.PropertyId.adjust2Value].op;
+                            percent = val / 21600 * 100;
+                            newVal = 0;
+                            if (percent >= 50)
+                            {
+                                newVal = (int)(percent - 50) * 1000;
+                            }
+                            else
+                            {
+                                newVal = (int)(50 - percent) * -1000;
+                            }
+
+
                             _writer.WriteStartElement("a", "gd", OpenXmlNamespaces.DrawingML);
                             _writer.WriteAttributeString("name", "adj2");
-                            _writer.WriteAttributeString("fmla", "val " + Math.Floor(so.OptionsByID[ShapeOptions.PropertyId.adjust2Value].op * 3.125).ToString()); 
+                            _writer.WriteAttributeString("fmla", "val " + newVal.ToString()); 
                             _writer.WriteEndElement();
                         }
                         _writer.WriteEndElement();                       

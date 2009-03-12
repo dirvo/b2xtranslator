@@ -217,7 +217,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             }
 
             Note noteMaster = this.GetPersistObject<Note>(this.DocumentRecord.FirstChildWithType<DocumentAtom>().NotesMasterPersist);
-            this.NotesMasterRecords.Add(noteMaster);
+            if (noteMaster != null) this.NotesMasterRecords.Add(noteMaster);
 
             Handout handoutMaster = this.GetPersistObject<Handout>(this.DocumentRecord.FirstChildWithType<DocumentAtom>().HandoutMasterPersist);
             if (handoutMaster != null) this.HandoutMasterRecords.Add(handoutMaster);
