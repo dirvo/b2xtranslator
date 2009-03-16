@@ -307,6 +307,7 @@
     <Compile Include="DataContainer\FormulaCell.cs" />
     <Compile Include="DataContainer\MergeCellData.cs" />
     <Compile Include="DataContainer\NumberCell.cs" />
+    <Compile Include="DataContainer\PageSetupData.cs" />
     <Compile Include="DataContainer\RowData.cs" />
     <Compile Include="DataContainer\SharedFormulaData.cs" />
     <Compile Include="DataContainer\SSTData.cs" />
@@ -374,8 +375,8 @@
     <Compile Include="Ptg\PtgUnion.cs" />
     <Compile Include="Ptg\PtgUplus.cs" />
     <Compile Include="RecordNumbers.cs" />
-    <Compile Include="DataContainer\BoundSheetData.cs" />
-    <Compile Include="DataExtraction\BoundSheetExtractor.cs" />
+    <Compile Include="DataContainer\WorkSheetData.cs" />
+    <Compile Include="DataExtraction\WorkSheetExtractor.cs" />
     <Compile Include="DataExtraction\StreamExtractor.cs" />
     <Compile Include="DataExtraction\WorkbookExtractor.cs" />
     <Compile Include="StyleData\BorderData.cs" />

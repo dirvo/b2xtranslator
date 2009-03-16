@@ -125,7 +125,7 @@ namespace DIaLOGIKa.b2xtranslator.xls2x
                                 xlsDoc.workBookData.styleData.Convert(new StylesMapping(xlsContext));
 
                             // creates the Spreadsheets
-                            foreach (BoundSheetData var in xlsDoc.workBookData.boundSheetDataList)
+                            foreach (WorkSheetData var in xlsDoc.workBookData.boundSheetDataList)
                             {
                                 if (var.boundsheetRecord.sheetType == BOUNDSHEET.sheetTypes.worksheet)
                                 {

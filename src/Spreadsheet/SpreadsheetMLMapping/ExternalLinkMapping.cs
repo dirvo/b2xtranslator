@@ -61,7 +61,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         /// The overload apply method 
         /// Creates the Workbook xml document 
         /// </summary>
-        /// <param name="bsd">BoundSheetData</param>
+        /// <param name="bsd">WorkSheetData</param>
         public void Apply(SupBookData sbd)
         {
             Uri uri = new Uri(sbd.VirtPath, UriKind.RelativeOrAbsolute); 

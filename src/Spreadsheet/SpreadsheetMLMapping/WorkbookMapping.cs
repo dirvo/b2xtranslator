@@ -58,7 +58,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         /// The overload apply method 
         /// Creates the Workbook xml document 
         /// </summary>
-        /// <param name="bsd">BoundSheetData</param>
+        /// <param name="bsd">WorkSheetData</param>
         public void Apply(WorkBookData bsd)
         {
             _writer.WriteStartDocument();
@@ -66,7 +66,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             _writer.WriteAttributeString("xmlns", "r", "", OpenXmlNamespaces.Relationships); 
             _writer.WriteStartElement("sheets");
 
-            foreach (BoundSheetData var in bsd.boundSheetDataList)
+            foreach (WorkSheetData var in bsd.boundSheetDataList)
             {
                 if (var.boundsheetRecord.sheetType == BOUNDSHEET.sheetTypes.worksheet)
                 {

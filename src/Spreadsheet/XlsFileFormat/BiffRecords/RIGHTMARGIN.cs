@@ -36,6 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     public class RIGHTMARGIN : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.RIGHTMARGIN;
+        public double value; 
 
         public RIGHTMARGIN(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
@@ -43,11 +44,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
 
-            // initialize class members from stream
-            // TODO: place code here
-            
-            // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            this.value = reader.ReadDouble(); 
         }
     }
 }

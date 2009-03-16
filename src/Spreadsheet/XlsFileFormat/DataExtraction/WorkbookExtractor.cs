@@ -94,8 +94,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
                     if (bh.id == RecordNumber.BOUNDSHEET)
                     {
-                        // Creates a BoundSheetData element
-                        BoundSheetData bsd = new BoundSheetData();
+                        // Creates a WorkSheetData element
+                        WorkSheetData bsd = new WorkSheetData();
                         this.workBookData.addBoundSheetData(bsd);
 
                         // Extracts the Boundsheet data 
@@ -105,7 +105,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                         this.StreamReader.BaseStream.Seek(bs.lbPlyPos, SeekOrigin.Begin);
                         bsd.worksheetName = bs.getBoundsheetName();
                         bsd.boundsheetRecord = bs; 
-                        BoundSheetExtractor se = new BoundSheetExtractor(this.StreamReader, bsd);
+                        WorkSheetExtractor se = new WorkSheetExtractor(this.StreamReader, bsd);
                         this.StreamReader.BaseStream.Seek(oldOffset, SeekOrigin.Begin);
                         TraceLogger.DebugInternal(bs.ToString());
                     }

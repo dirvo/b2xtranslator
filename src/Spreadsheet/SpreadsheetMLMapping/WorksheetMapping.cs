@@ -42,7 +42,7 @@ using System.Globalization;
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
     public class WorksheetMapping : AbstractOpenXmlMapping,
-          IMapping<BoundSheetData>
+          IMapping<WorkSheetData>
     {
         ExcelContext xlsContext;
 
@@ -60,10 +60,10 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         /// The overload apply method 
         /// Creates the Worksheet xml document 
         /// </summary>
-        /// <param name="bsd">BoundSheetData</param>
-        public void Apply(BoundSheetData bsd)
+        /// <param name="bsd">WorkSheetData</param>
+        public void Apply(WorkSheetData bsd)
         {
-            xlsContext.CurrentSheet = bsd; 
+            xlsContext.CurrentSheet = bsd;
             _writer.WriteStartDocument();
             _writer.WriteStartElement("worksheet", OpenXmlNamespaces.WorkBookML);
 
@@ -71,7 +71,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             // default info 
             if (bsd.defaultColWidth >= 0 || bsd.defaultRowHeight >= 0)
             {
-                 _writer.WriteStartElement("sheetFormatPr");
+                _writer.WriteStartElement("sheetFormatPr");
 
                 if (bsd.defaultColWidth >= 0)
                 {
@@ -80,12 +80,12 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 }
                 if (bsd.defaultRowHeight >= 0)
                 {
-                    TwipsValue tv = new TwipsValue(bsd.defaultRowHeight); 
+                    TwipsValue tv = new TwipsValue(bsd.defaultRowHeight);
                     _writer.WriteAttributeString("defaultRowHeight", Convert.ToString(tv.ToPoints(), CultureInfo.GetCultureInfo("en-US")));
                 }
                 if (bsd.zeroHeight)
                 {
-                    _writer.WriteAttributeString("zeroHeight", "1"); 
+                    _writer.WriteAttributeString("zeroHeight", "1");
                 }
                 if (bsd.customHeight)
                 {
@@ -100,7 +100,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     _writer.WriteAttributeString("thickBottom", "1");
                 }
 
-                 _writer.WriteEndElement();
+                _writer.WriteEndElement();
             }
 
 
@@ -116,23 +116,23 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     // booth values are 0 based in the binary format and 1 based in the oxml format 
                     // so you have to add 1 to the value!
 
-                        _writer.WriteAttributeString("min", (col.min + 1).ToString());
-                        _writer.WriteAttributeString("max", (col.max + 1).ToString());
+                    _writer.WriteAttributeString("min", (col.min + 1).ToString());
+                    _writer.WriteAttributeString("max", (col.max + 1).ToString());
 
-                        if (col.widht != 0)
-                        {
-                            double colWidht = (double)col.widht / 256; 
-                            _writer.WriteAttributeString("width", Convert.ToString(colWidht, CultureInfo.GetCultureInfo("en-US")));
-                        }
+                    if (col.widht != 0)
+                    {
+                        double colWidht = (double)col.widht / 256;
+                        _writer.WriteAttributeString("width", Convert.ToString(colWidht, CultureInfo.GetCultureInfo("en-US")));
+                    }
                     if (col.hidden)
                         _writer.WriteAttributeString("hidden", "1");
 
                     if (col.outlineLevel > 0)
                         _writer.WriteAttributeString("outlineLevel", col.outlineLevel.ToString());
-                     
+
                     if (col.customWidth)
                         _writer.WriteAttributeString("customWidth", "1");
-                     
+
 
                     if (col.bestFit)
                         _writer.WriteAttributeString("bestFit", "1");
@@ -142,7 +142,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
                     if (col.style > 15)
                     {
-                        
+
                         _writer.WriteAttributeString("style", Convert.ToString(col.style - this.xlsContext.XlsDoc.workBookData.styleData.XFCellStyleDataList.Count, CultureInfo.GetCultureInfo("en-US")));
                     }
 
@@ -159,7 +159,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
 
             _writer.WriteStartElement("sheetData");
-           //  bsd.rowDataTable.Values
+            //  bsd.rowDataTable.Values
             foreach (RowData row in bsd.rowDataTable.Values)
             {
 
@@ -167,7 +167,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 // Row 
                 _writer.WriteStartElement("row");
                 // the rowindex from the binary format is zero based, the ooxml format is one based 
-                _writer.WriteAttributeString("r", (row.Row +1).ToString());
+                _writer.WriteAttributeString("r", (row.Row + 1).ToString());
                 if (row.height != null)
                 {
                     if (row.customHeight)
@@ -177,10 +177,10 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     }
 
                 }
-                
+
                 if (row.hidden)
                 {
-                    _writer.WriteAttributeString("hidden", "1"); 
+                    _writer.WriteAttributeString("hidden", "1");
                 }
                 if (row.outlineLevel > 0)
                 {
@@ -206,12 +206,12 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 {
                     _writer.WriteAttributeString("thickTop", "1");
                 }
-                if (row.minSpan + 1 > 0 && row.maxSpan > 0 && row.minSpan +1 < row.maxSpan)
+                if (row.minSpan + 1 > 0 && row.maxSpan > 0 && row.minSpan + 1 < row.maxSpan)
                 {
-                    _writer.WriteAttributeString("spans", (row.minSpan+1).ToString() + ":" + row.maxSpan.ToString());
+                    _writer.WriteAttributeString("spans", (row.minSpan + 1).ToString() + ":" + row.maxSpan.ToString());
                 }
 
-                row.Cells.Sort(); 
+                row.Cells.Sort();
                 foreach (AbstractCellData cell in row.Cells)
                 {
                     // Col 
@@ -229,7 +229,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     }
                     if (cell is FormulaCell)
                     {
-                        FormulaCell fcell = (FormulaCell) cell;
+                        FormulaCell fcell = (FormulaCell)cell;
 
 
                         if (((FormulaCell)cell).calculatedValue is String)
@@ -285,20 +285,20 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                                     /// Write value and reference 
                                     _writer.WriteAttributeString("ref", sfd.getOXMLFormatedData());
 
-                                    String value = FormulaInfixMapping.mapFormula(sfd.PtgStack, this.xlsContext,sfd.rwFirst,sfd.colFirst);
+                                    String value = FormulaInfixMapping.mapFormula(sfd.PtgStack, this.xlsContext, sfd.rwFirst, sfd.colFirst);
                                     _writer.WriteString(value);
 
-                                    sfd.RefCount++; 
+                                    sfd.RefCount++;
                                 }
-                                
+
                             }
                             else
                             {
-                                TraceLogger.Debug("Formula Parse Error in Row {0}\t Column {1}\t", cell.Row.ToString(), cell.Col.ToString());                          
+                                TraceLogger.Debug("Formula Parse Error in Row {0}\t Column {1}\t", cell.Row.ToString(), cell.Col.ToString());
                             }
                         }
 
-                        _writer.WriteEndElement(); 
+                        _writer.WriteEndElement();
                         /// write down calculated value from a formula
                         /// 
 
@@ -306,14 +306,14 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
                         if (((FormulaCell)cell).calculatedValue is int)
                         {
-                            _writer.WriteString(FormulaInfixMapping.getErrorStringfromCode((int)((FormulaCell)cell).calculatedValue)); 
+                            _writer.WriteString(FormulaInfixMapping.getErrorStringfromCode((int)((FormulaCell)cell).calculatedValue));
                         }
                         else
                         {
                             _writer.WriteString(Convert.ToString(((FormulaCell)cell).calculatedValue, CultureInfo.GetCultureInfo("en-US")));
                         }
 
-                        _writer.WriteEndElement(); 
+                        _writer.WriteEndElement();
 
 
 
@@ -329,7 +329,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
 
                 _writer.WriteEndElement();  // close row 
-            }          
+            }
 
             // close tags 
             _writer.WriteEndElement();      // close sheetData 
@@ -352,18 +352,88 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     _writer.WriteEndElement();
                 }
                 // close mergeCells Tag 
-                _writer.WriteEndElement(); 
+                _writer.WriteEndElement();
             }
 
 
+            // worksheet margins !!
+            if (bsd.leftMargin != null && bsd.topMargin != null &&
+                bsd.rightMargin != null && bsd.bottomMargin != null &&
+                bsd.headerMargin != null && bsd.footerMargin != null)
+            {
+                _writer.WriteStartElement("pageMargins");
+                _writer.WriteAttributeString("left", Convert.ToString(bsd.leftMargin, CultureInfo.GetCultureInfo("en-US")));
+                _writer.WriteAttributeString("right", Convert.ToString(bsd.rightMargin, CultureInfo.GetCultureInfo("en-US")));
+                _writer.WriteAttributeString("top", Convert.ToString(bsd.topMargin, CultureInfo.GetCultureInfo("en-US")));
+                _writer.WriteAttributeString("bottom", Convert.ToString(bsd.bottomMargin, CultureInfo.GetCultureInfo("en-US")));
+                _writer.WriteAttributeString("header", Convert.ToString(bsd.headerMargin, CultureInfo.GetCultureInfo("en-US")));
+                _writer.WriteAttributeString("footer", Convert.ToString(bsd.footerMargin, CultureInfo.GetCultureInfo("en-US")));
 
+
+                _writer.WriteEndElement();
+            }
+
+            // page setup settings 
+            if (bsd.PageSetup != null)
+            {
+                _writer.WriteStartElement("pageSetup");
+
+                _writer.WriteAttributeString("paperSize", bsd.PageSetup.iPaperSize.ToString());
+                _writer.WriteAttributeString("scale", bsd.PageSetup.iScale.ToString());
+                _writer.WriteAttributeString("firstPageNumber", bsd.PageSetup.iPageStart.ToString());
+                _writer.WriteAttributeString("fitToWidth", bsd.PageSetup.iFitWidth.ToString());
+                _writer.WriteAttributeString("fitToHeight", bsd.PageSetup.iFitHeight.ToString());
+
+                if (bsd.PageSetup.fLeftToRight)
+                    _writer.WriteAttributeString("pageOrder", "overThenDown");
+
+                if (!bsd.PageSetup.fNoOrient)
+                {
+                    if (bsd.PageSetup.fPortrait)
+                        _writer.WriteAttributeString("orientation", "portrait");
+                    else
+                        _writer.WriteAttributeString("orientation", "landscape");
+                }
+
+                //10 <attribute name="usePrinterDefaults" type="xsd:boolean" use="optional" default="true"/>
+
+                if (bsd.PageSetup.fNoColor)
+                    _writer.WriteAttributeString("blackAndWhite", "1");
+                if (bsd.PageSetup.fDraft)
+                    _writer.WriteAttributeString("draft", "1");
+
+                if (bsd.PageSetup.fNotes)
+                {
+                    if (bsd.PageSetup.fEndNotes)
+                        _writer.WriteAttributeString("cellComments", "atEnd");
+                    else
+                        _writer.WriteAttributeString("cellComments", "asDisplayed");
+                }
+                if (bsd.PageSetup.fUsePage)
+                    _writer.WriteAttributeString("useFirstPageNumber", "1");
+
+                switch (bsd.PageSetup.iErrors)
+                {
+                    case 0x00: _writer.WriteAttributeString("errors", "displayed"); break;
+                    case 0x01: _writer.WriteAttributeString("errors", "blank"); break;
+                    case 0x02: _writer.WriteAttributeString("errors", "dash"); break;
+                    case 0x03: _writer.WriteAttributeString("errors", "NA"); break;
+                    default: _writer.WriteAttributeString("errors", "displayed"); break;
+                }
+
+                _writer.WriteAttributeString("horizontalDpi", bsd.PageSetup.iRes.ToString());
+                _writer.WriteAttributeString("verticalDpi", bsd.PageSetup.iVRes.ToString());
+                _writer.WriteAttributeString("copies", bsd.PageSetup.iCopies.ToString());
+
+                _writer.WriteEndElement();
+            }
 
 
             _writer.WriteEndElement();      // close worksheet
             _writer.WriteEndDocument();
             bsd.worksheetId = this.xlsContext.SpreadDoc.WorkbookPart.GetWorksheetPart().RelId;
             bsd.worksheetRef = this.xlsContext.SpreadDoc.WorkbookPart.GetWorksheetPart().RelIdToString;
-            
+
             // close writer 
             _writer.Flush();
         }

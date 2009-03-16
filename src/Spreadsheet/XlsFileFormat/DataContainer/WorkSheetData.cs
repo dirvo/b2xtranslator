@@ -45,7 +45,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
     /// <summary>
     /// This class stores the data from every Boundsheet 
     /// </summary>
-    public class BoundSheetData : IVisitable
+    public class WorkSheetData : IVisitable
     {
         /// <summary>
         /// List with the cellrecords from the boundsheet 
@@ -80,10 +80,27 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public bool thickTop;
         public bool thickBottom;
 
+        // Margins 
+        public double? leftMargin;
+        public double? rightMargin;
+        public double? topMargin;
+        public double? bottomMargin;
+        public double? headerMargin;
+        public double? footerMargin; 
+
+        // PageSetup 
+        private SETUP pageSetup;
+        public SETUP PageSetup 
+        { 
+            get{ return this.pageSetup; }
+        }
+        
+        
+
         /// <summary>
         /// Ctor 
         /// </summary>
-        public BoundSheetData()
+        public WorkSheetData()
         {
             this.LABELSSTList = new List<LABELSST>();
             this.MULRKList = new List<MULRK>();
@@ -452,13 +469,23 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             this.thickBottom = defaultRowData.fExDsc; 
         }
 
+        public void addSetupData(SETUP setup)
+        {
+            this.footerMargin = setup.numFtr;
+            this.headerMargin = setup.numHdr;
+            this.pageSetup = setup; 
+        }
+
+
         #region IVisitable Members
 
         public void Convert<T>(T mapping)
         {
-            ((IMapping<BoundSheetData>)mapping).Apply(this);
+            ((IMapping<WorkSheetData>)mapping).Apply(this);
         }
 
         #endregion
+
+
     }
 }

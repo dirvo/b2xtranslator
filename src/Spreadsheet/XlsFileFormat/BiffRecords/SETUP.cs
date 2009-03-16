@@ -37,17 +37,66 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     {
         public const RecordNumber ID = RecordNumber.SETUP;
 
+        public UInt16 iPaperSize;
+        public UInt16 iScale;
+        public UInt16 iPageStart;
+        public UInt16 iFitWidth;
+        public UInt16 iFitHeight;
+        public UInt16 grbit;
+        public UInt16 iRes;
+        public UInt16 iVRes;
+        public UInt16 iCopies;
+
+        public double numHdr;
+        public double numFtr;
+
+        public bool fLeftToRight;
+        public bool fPortrait;
+        public bool fNoPls;
+        public bool fNoColor;
+
+        public bool fDraft;
+        public bool fNotes;
+        public bool fNoOrient;
+        public bool fUsePage;
+
+        public bool fEndNotes;
+        public int iErrors; 
+
         public SETUP(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
 
-            // initialize class members from stream
-            // TODO: place code here
-            
-            // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+
+            this.iPaperSize = reader.ReadUInt16();
+            this.iScale = reader.ReadUInt16();
+            this.iPageStart = reader.ReadUInt16();
+            this.iFitWidth = reader.ReadUInt16();
+            this.iFitHeight = reader.ReadUInt16();
+            this.grbit = reader.ReadUInt16();
+            this.iRes = reader.ReadUInt16();
+            this.iVRes = reader.ReadUInt16();
+
+            this.numHdr = reader.ReadDouble();
+            this.numFtr = reader.ReadDouble(); 
+
+            this.iCopies = reader.ReadUInt16(); 
+
+            // set flags 
+            this.fLeftToRight = Utils.BitmaskToBool(this.grbit, 0x01);
+            this.fPortrait = Utils.BitmaskToBool(this.grbit, 0x02);
+            this.fNoPls = Utils.BitmaskToBool(this.grbit, 0x04);
+            this.fNoColor = Utils.BitmaskToBool(this.grbit, 0x08);
+
+            this.fDraft = Utils.BitmaskToBool(this.grbit, 0x010);
+            this.fNotes = Utils.BitmaskToBool(this.grbit, 0x020);
+            this.fNoOrient = Utils.BitmaskToBool(this.grbit, 0x040);
+            this.fUsePage = Utils.BitmaskToBool(this.grbit, 0x080);
+
+            this.fEndNotes = Utils.BitmaskToBool(this.grbit, 0x080);
+            this.iErrors = (this.grbit & 0x0C00) << 0x0A;
         }
     }
 }

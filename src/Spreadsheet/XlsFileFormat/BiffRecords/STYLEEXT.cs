@@ -68,7 +68,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         /// <summary>
         /// A packed bit field
         /// </summary>
-        private byte grbitFlags; 
+        // private byte grbitFlags; 
 
         /// <summary>
         /// style category

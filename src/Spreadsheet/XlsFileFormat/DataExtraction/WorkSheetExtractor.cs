@@ -15,19 +15,19 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
     /// <summary>
     /// This class should extract the specific worksheet data. 
     /// </summary>
-    public class BoundSheetExtractor : Extractor
+    public class WorkSheetExtractor : Extractor
     {
         /// <summary>
         /// Datacontainer for the worksheet
         /// </summary>
-        private BoundSheetData bsd;
+        private WorkSheetData bsd;
 
         /// <summary>
         /// CTor 
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="bsd"> Boundsheetdata container</param>
-        public BoundSheetExtractor(VirtualStreamReader reader, BoundSheetData bsd)
+        public WorkSheetExtractor(VirtualStreamReader reader, WorkSheetData bsd)
             : base(reader) 
         {
             this.bsd = bsd;
@@ -147,7 +147,31 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                         DEFAULTROWHEIGHT defrowheigth = new DEFAULTROWHEIGHT(this.StreamReader, bh.id, bh.length);
                         this.bsd.addDefaultRowData(defrowheigth); 
                     }
-
+                    else if (bh.id == RecordNumber.LEFTMARGIN)
+                    {
+                        LEFTMARGIN leftm = new LEFTMARGIN(this.StreamReader, bh.id, bh.length);
+                        this.bsd.leftMargin = leftm.value; 
+                    }
+                    else if (bh.id == RecordNumber.RIGHTMARGIN)
+                    {
+                        RIGHTMARGIN rightm = new RIGHTMARGIN(this.StreamReader, bh.id, bh.length);
+                        this.bsd.rightMargin = rightm.value; 
+                    }
+                    else if (bh.id == RecordNumber.TOPMARGIN)
+                    {
+                        TOPMARGIN topm = new TOPMARGIN(this.StreamReader, bh.id, bh.length);
+                        this.bsd.topMargin = topm.value; 
+                    }
+                    else if (bh.id == RecordNumber.BOTTOMMARGIN)
+                    {
+                        BOTTOMMARGIN bottomm = new BOTTOMMARGIN(this.StreamReader, bh.id, bh.length);
+                        this.bsd.bottomMargin = bottomm.value; 
+                    }
+                    else if (bh.id == RecordNumber.SETUP)
+                    {
+                        SETUP setup = new SETUP(this.StreamReader, bh.id, bh.length);
+                        this.bsd.addSetupData(setup); 
+                    }
 
                     else
                     {
