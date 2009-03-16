@@ -729,11 +729,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 case 0x31: //BorderCallout3
                     return "borderCallout3";
                 case 0x32: //AccentBorderCallout1
-                    return "accentborderCallout1";
+                    return "accentBorderCallout1";
                 case 0x33: //accentBorderCallout2
-                    return "accentborderCallout2";
+                    return "accentBorderCallout2";
                 case 0x34: //accentBorderCallout3
-                    return "accentborderCallout3";
+                    return "accentBorderCallout3";
                 case 0x35: //Ribbon
                     return "ribbon";
                 case 0x36: //Ribbon2

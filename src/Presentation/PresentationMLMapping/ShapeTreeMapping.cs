@@ -40,7 +40,7 @@ using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 {
-    class ShapeTreeMapping :
+    public class ShapeTreeMapping :
         AbstractOpenXmlMapping,
         IMapping<PPDrawing>
     {
@@ -49,8 +49,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         protected string _footertext;
         protected string _headertext;
         protected string _datetext;
-
-
+        
         public PresentationMapping<RegularContainer> parentSlideMapping = null;
         public Dictionary<AnimationInfoContainer, int> animinfos = new Dictionary<AnimationInfoContainer, int>();
 
@@ -273,54 +272,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 _writer.WriteStartElement("p", "nvPr", OpenXmlNamespaces.PresentationML);
 
                 OEPlaceHolderAtom placeholder = null;
-                if (clientData != null)
-                {
 
-                    System.IO.MemoryStream ms = new System.IO.MemoryStream(clientData.bytes);
-
-                    if (ms.Length > 0)
-                    {
-
-                        Record rec = Record.ReadRecord(ms, 0);
-
-                        if (rec.TypeCode == 4116)
-                        {
-                            AnimationInfoContainer animinfo = (AnimationInfoContainer)rec;
-                            animinfos.Add(animinfo, _idCnt);
-                            if (ms.Position < ms.Length) rec = Record.ReadRecord(ms, 1);
-                        }
-
-                        switch (rec.TypeCode)
-                        {
-                            case 3011:
-                                placeholder = (OEPlaceHolderAtom)rec; // clientData.FirstChildWithType<OEPlaceHolderAtom>();
-
-                                if (placeholder != null)
-                                {
-
-                                    _writer.WriteStartElement("p", "ph", OpenXmlNamespaces.PresentationML);
-
-                                    if (!placeholder.IsObjectPlaceholder())
-                                    {
-                                        string typeValue = Utils.PlaceholderIdToXMLValue(placeholder.PlacementId);
-                                        _writer.WriteAttributeString("type", typeValue);
-                                    }
-
-                                    if (placeholder.Position != -1)
-                                    {
-                                        _writer.WriteAttributeString("idx", placeholder.Position.ToString());
-                                    }
-
-                                    _writer.WriteEndElement();
-                                }
-                                break;
-                            case 4116:
-                            default:
-                                break;
-                        }
-                    }
-                }
-
+                CheckClientData(clientData, ref placeholder);
+                
                 _writer.WriteEndElement();
 
                 _writer.WriteEndElement();
@@ -930,6 +884,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement(); //p:spPr
             
             _writer.WriteEndElement(); //p:pic
+
         }
 
         public void writeBodyPr(Record rec)
@@ -1043,6 +998,57 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
 
             _writer.WriteEndElement();
+        }
+
+        private void CheckClientData(ClientData clientData, ref OEPlaceHolderAtom placeholder)
+        {
+            if (clientData != null)
+            {
+
+                System.IO.MemoryStream ms = new System.IO.MemoryStream(clientData.bytes);
+
+                if (ms.Length > 0)
+                {
+
+                    Record rec = Record.ReadRecord(ms, 0);
+
+                    if (rec.TypeCode == 4116)
+                    {
+                        AnimationInfoContainer animinfo = (AnimationInfoContainer)rec;
+                        animinfos.Add(animinfo, _idCnt);
+                        if (ms.Position < ms.Length) rec = Record.ReadRecord(ms, 1);
+                    }
+
+                    switch (rec.TypeCode)
+                    {
+                        case 3011:
+                            placeholder = (OEPlaceHolderAtom)rec; // clientData.FirstChildWithType<OEPlaceHolderAtom>();
+
+                            if (placeholder != null)
+                            {
+
+                                _writer.WriteStartElement("p", "ph", OpenXmlNamespaces.PresentationML);
+
+                                if (!placeholder.IsObjectPlaceholder())
+                                {
+                                    string typeValue = Utils.PlaceholderIdToXMLValue(placeholder.PlacementId);
+                                    _writer.WriteAttributeString("type", typeValue);
+                                }
+
+                                if (placeholder.Position != -1)
+                                {
+                                    _writer.WriteAttributeString("idx", placeholder.Position.ToString());
+                                }
+
+                                _writer.WriteEndElement();
+                            }
+                            break;
+                        case 4116:
+                        default:
+                            break;
+                    }
+                }
+            }
         }
 
         public void Apply(ClientTextbox textbox)
@@ -1433,8 +1439,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             {
                                 newVal = (int)(50 - percent) * -1000;
                             }
-
-
                             _writer.WriteStartElement("a", "gd", OpenXmlNamespaces.DrawingML);
                             _writer.WriteAttributeString("name", "adj2");
                             _writer.WriteAttributeString("fmla", "val " + newVal.ToString()); 
@@ -1452,7 +1456,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         
 
-        private Dictionary<int, int> spidToId = new Dictionary<int, int>();
+        public Dictionary<int, int> spidToId = new Dictionary<int, int>();
         private void WriteCNvPr(int spid, string name)
         {
 

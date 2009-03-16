@@ -29,12 +29,31 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         public TextBuildSubEffectEnum textBuildSubEffect;
         public byte oleVerb;
 
+        public bool fReverse;
+        public bool fAutomatic;
+        public bool fSound;
+        public bool fStopSound;
+        public bool fPlay;
+        public bool fSynchronous;
+        public bool fHide;
+        public bool fAnimateBg;
+
         public AnimationInfoAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {
 
             dimColor = this.Reader.ReadBytes(4);
             flags = this.Reader.ReadInt16();
+
+            fReverse = Tools.Utils.BitmaskToBool(flags, 0x1 << 0);
+            fAutomatic = Tools.Utils.BitmaskToBool(flags, 0x1 << 1);
+            fSound = Tools.Utils.BitmaskToBool(flags, 0x1 << 2);
+            fStopSound = Tools.Utils.BitmaskToBool(flags, 0x1 << 3);
+            fPlay = Tools.Utils.BitmaskToBool(flags, 0x1 << 4);
+            fSynchronous = Tools.Utils.BitmaskToBool(flags, 0x1 << 5);
+            fHide = Tools.Utils.BitmaskToBool(flags, 0x1 << 6);
+            fAnimateBg = Tools.Utils.BitmaskToBool(flags, 0x1 << 7);
+
             Int16 reserved = this.Reader.ReadInt16();
             soundIdRef = this.Reader.ReadBytes(4);
             delayTime = this.Reader.ReadInt32();

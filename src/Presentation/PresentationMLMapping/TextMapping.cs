@@ -320,7 +320,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             if (r != null)
                             {
                                 string dummy = "";
-                                new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", textbox.FirstAncestorWithType<Slide>(),ref dummy, ref dummy);
+                                string dummy2 = "";
+                                new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", textbox.FirstAncestorWithType<Slide>(),ref dummy, ref dummy2);
                             }
                             else
                             {

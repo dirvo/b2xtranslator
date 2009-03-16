@@ -278,14 +278,17 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         private void WriteNoteMaster(PowerpointDocument ppt)
         {
-            _writer.WriteStartElement("p", "notesMasterIdLst", OpenXmlNamespaces.PresentationML);
-
-            foreach (Note m in ppt.NotesMasterRecords)
+            if (ppt.NotesMasterRecords.Count > 0)
             {
-                this.WriteNoteMaster2(ppt, m);
-            }
+                _writer.WriteStartElement("p", "notesMasterIdLst", OpenXmlNamespaces.PresentationML);
 
-            _writer.WriteEndElement();
+                foreach (Note m in ppt.NotesMasterRecords)
+                {
+                    this.WriteNoteMaster2(ppt, m);
+                }
+
+                _writer.WriteEndElement();
+            }
         }
 
         /// <summary>

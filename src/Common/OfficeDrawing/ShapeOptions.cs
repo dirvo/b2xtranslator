@@ -579,7 +579,14 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             {
                 if (this.Options[i].fComplex)
                 {
-                    this.Options[i].opComplex = this.Reader.ReadBytes((int)this.Options[i].op); // + 6);
+                    if (this.Options[i].pid == PropertyId.pVertices)
+                    {
+                        this.Options[i].opComplex = this.Reader.ReadBytes((int)this.Options[i].op + 6);
+                    }
+                    else
+                    {
+                        this.Options[i].opComplex = this.Reader.ReadBytes((int)this.Options[i].op);
+                    }
                 }
                 OptionsByID.Add(this.Options[i].pid, this.Options[i]);
             }

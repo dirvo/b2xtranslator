@@ -40,6 +40,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
     public class SlideMapping : PresentationMapping<RegularContainer>
     {
         public Slide Slide;
+        public ShapeTreeMapping shapeTreeMapping;
 
         public SlideMapping(ConversionContext ctx)
             : base(ctx, ctx.Pptx.PresentationPart.AddSlidePart())
@@ -115,18 +116,30 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteStartElement("p", "spTree", OpenXmlNamespaces.PresentationML);
 
-            ShapeTreeMapping stm = new ShapeTreeMapping(_ctx, _writer);
-            stm.parentSlideMapping = this;
-            stm.Apply(slide.FirstChildWithType<PPDrawing>());
+            shapeTreeMapping = new ShapeTreeMapping(_ctx, _writer);
+            shapeTreeMapping.parentSlideMapping = this;
+            shapeTreeMapping.Apply(slide.FirstChildWithType<PPDrawing>());
 
-            checkHeaderFooter(stm);
+            checkHeaderFooter(shapeTreeMapping);
           
             _writer.WriteEndElement(); //spTree
             _writer.WriteEndElement(); //cSld
 
             // TODO: Write clrMapOvr
 
-            if (stm.animinfos.Count > 0) new AnimationMapping(_ctx, _writer).Apply(stm.animinfos);
+            if (slide.FirstChildWithType<SlideShowSlideInfoAtom>() != null)
+            {
+                new AnimationMapping(_ctx, _writer).Apply(slide.FirstChildWithType<SlideShowSlideInfoAtom>());
+            }
+
+            if (slide.FirstChildWithType<ProgTags>() != null)
+            if (slide.FirstChildWithType<ProgTags>().FirstChildWithType<ProgBinaryTag>() != null)
+            if (slide.FirstChildWithType<ProgTags>().FirstChildWithType<ProgBinaryTag>().FirstChildWithType<ProgBinaryTagDataBlob>() != null)
+            {
+                new AnimationMapping(_ctx, _writer).Apply(slide.FirstChildWithType<ProgTags>().FirstChildWithType<ProgBinaryTag>().FirstChildWithType<ProgBinaryTagDataBlob>(), this);
+            }
+            
+            if (shapeTreeMapping.animinfos.Count > 0) new AnimationMapping(_ctx, _writer).Apply(shapeTreeMapping.animinfos);
 
             // End the document
             _writer.WriteEndElement(); //sld
