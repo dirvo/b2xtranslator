@@ -71,6 +71,15 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
         public MERGECELLS MERGECELLSData;
 
+
+        // Default values for the worksheet 
+        public int defaultColWidth;
+        public int defaultRowHeight;
+        public bool zeroHeight;
+        public bool customHeight;
+        public bool thickTop;
+        public bool thickBottom;
+
         /// <summary>
         /// Ctor 
         /// </summary>
@@ -88,6 +97,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             this.sharedFormulaDataTable = new List<SharedFormulaData>();
             this.colInfoDataTable = new List<ColumnInfoData>();
             boundsheetRecord = null;
+
+            this.defaultRowHeight = -1;
+            this.defaultColWidth = -1; 
+
 
         }
 
@@ -384,6 +397,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
             rowData.maxSpan = row.colMac;
             rowData.minSpan = row.colMic;
+            rowData.customHeight = row.fUnsynced; 
         }
 
         /// <summary>
@@ -407,6 +421,35 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             colinfoData.style = colinfo.ixfe;
 
             this.colInfoDataTable.Add(colinfoData); 
+        }
+
+        /// <summary>
+        ///  Add the default column width 
+        /// </summary>
+        /// <param name="width"></param>
+        public void addDefaultColWidth(int width)
+        {
+            this.defaultColWidth = width; 
+        }
+
+        /// <summary>
+        /// add the default row data to the boundsheet data object 
+        /// </summary>
+        /// <param name="defaultRowData"></param>
+        public void addDefaultRowData(DEFAULTROWHEIGHT defaultRowData)
+        {
+            if (!defaultRowData.fDyZero)
+            {
+                this.defaultRowHeight = defaultRowData.miyRW;
+            }
+            else
+            {
+                this.defaultRowHeight = defaultRowData.miyRwHidden; 
+            }
+            this.zeroHeight = defaultRowData.fDyZero;
+            this.customHeight = defaultRowData.fUnsynced;
+            this.thickTop = defaultRowData.fExAsc;
+            this.thickBottom = defaultRowData.fExDsc; 
         }
 
         #region IVisitable Members

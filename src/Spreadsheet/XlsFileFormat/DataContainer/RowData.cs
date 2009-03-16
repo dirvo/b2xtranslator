@@ -73,6 +73,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         public int style;
         public bool thickBot;
         public bool thickTop;
+        public bool customHeight;
 
         public int minSpan;
         public int maxSpan; 

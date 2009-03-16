@@ -338,5 +338,37 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             return value; 
         }
 
+        /// <summary>
+        /// Converts the builtin function id to a string
+        /// </summary>
+        /// <param name="idstring"></param>
+        /// <returns></returns>
+        public static string getNameStringfromBuiltInFunctionID(string idstring)
+        {
+            char firstChar = (char)idstring.ToCharArray().GetValue(0);
+
+            switch (firstChar)
+            {
+                case (char)0x00: return "Consolidate_Area";
+                case (char)0x01: return "Auto_Open";
+                case (char)0x02: return "Auto_Close";
+                case (char)0x03: return "Extract";
+                case (char)0x04: return "Database";
+                case (char)0x05: return "Criteria";
+                case (char)0x06: return "Print_Area";
+                case (char)0x07: return "Print_Titles";
+                case (char)0x08: return "Recorder";
+                case (char)0x09: return "Data_Form";
+                case (char)0x0A: return "Auto_Activate";
+                case (char)0x0B: return "Auto_Deactivate";
+                case (char)0x0C: return "Sheet_Title";
+                case (char)0x0D: return "_FilterDatabase";
+
+
+                default: return idstring;
+
+            }
+        }
+
     }
 }

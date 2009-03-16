@@ -135,14 +135,28 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                     else if (bh.id == RecordNumber.COLINFO)
                     {
                         COLINFO colinfo = new COLINFO(this.StreamReader, bh.id, bh.length);
-                        this.bsd.addColData(colinfo); 
+                        this.bsd.addColData(colinfo);
                     }
+                    else if (bh.id == RecordNumber.DEFCOLWIDTH)
+                    {
+                        DEFCOLWIDTH defcolwidth = new DEFCOLWIDTH(this.StreamReader, bh.id, bh.length);
+                        this.bsd.addDefaultColWidth(defcolwidth.cchdefColWidth);
+                    }
+                    else if (bh.id == RecordNumber.DEFAULTROWHEIGHT)
+                    {
+                        DEFAULTROWHEIGHT defrowheigth = new DEFAULTROWHEIGHT(this.StreamReader, bh.id, bh.length);
+                        this.bsd.addDefaultRowData(defrowheigth); 
+                    }
+
+
                     else
                     {
                         // this else statement is used to read BiffRecords which aren't implemented 
                         byte[] buffer = new byte[bh.length];
                         buffer = this.StreamReader.ReadBytes(bh.length);
                     }
+
+
                     latestbiff = bh; 
                 }
             }

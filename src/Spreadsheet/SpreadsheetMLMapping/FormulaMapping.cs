@@ -209,21 +209,36 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         }
                         else if (ptg is PtgRef3d)
                         {
-                            PtgRef3d ptgr3d = (PtgRef3d)ptg;
-                            String refstring = xlsContext.XlsDoc.workBookData.getIXTIString(ptgr3d.ixti);
-                            String cellref = ExcelHelperClass.intToABCString((int)ptgr3d.col, (ptgr3d.rw + 1).ToString(), ptgr3d.colRelative, ptgr3d.rwRelative);
+                            try
+                            {
+                                PtgRef3d ptgr3d = (PtgRef3d)ptg;
+                                String refstring = xlsContext.XlsDoc.workBookData.getIXTIString(ptgr3d.ixti);
+                                String cellref = ExcelHelperClass.intToABCString((int)ptgr3d.col, (ptgr3d.rw + 1).ToString(), ptgr3d.colRelative, ptgr3d.rwRelative);
 
-                            resultStack.Push("'" + refstring + "'" + "!" + cellref);
+                                resultStack.Push("'" + refstring + "'" + "!" + cellref);
+                            }
+                            catch (Exception)
+                            {
+                                resultStack.Push("#REF!");
+                            }
                         }
                         else if (ptg is PtgArea3d)
                         {
-                            PtgArea3d ptga3d = (PtgArea3d)ptg;
-                            String refstring = xlsContext.XlsDoc.workBookData.getIXTIString(ptga3d.ixti);
-                            String buffer = "";
-                            buffer = ExcelHelperClass.intToABCString((int)ptga3d.colFirst, (ptga3d.rwFirst + 1).ToString(), ptga3d.colFirstRelative, ptga3d.rwFirstRelative);
-                            buffer = buffer + ":" + ExcelHelperClass.intToABCString((int)ptga3d.colLast, (ptga3d.rwLast + 1).ToString(), ptga3d.colLastRelative, ptga3d.rwLastRelative);
+                            try
+                            {
+                                PtgArea3d ptga3d = (PtgArea3d)ptg;
+                                String refstring = xlsContext.XlsDoc.workBookData.getIXTIString(ptga3d.ixti);
+                                String buffer = "";
+                                buffer = ExcelHelperClass.intToABCString((int)ptga3d.colFirst, (ptga3d.rwFirst + 1).ToString(), ptga3d.colFirstRelative, ptga3d.rwFirstRelative);
+                                buffer = buffer + ":" + ExcelHelperClass.intToABCString((int)ptga3d.colLast, (ptga3d.rwLast + 1).ToString(), ptga3d.colLastRelative, ptga3d.rwLastRelative);
 
-                            resultStack.Push("'" + refstring + "'" + "!" + buffer);
+                                resultStack.Push("'" + refstring + "'!" + buffer);
+                            }
+                            catch (Exception)
+                            {
+                                resultStack.Push("#REF!");
+                            }
+
                         }
                         else if (ptg is PtgNameX)
                         {
@@ -241,15 +256,35 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         }
                         else if (ptg is PtgRefErr)
                         {
-                            PtgRefErr ptgreferr = (PtgRefErr)ptg; 
-                            resultStack.Push(ptgreferr.getData()) ; 
+                            PtgRefErr ptgreferr = (PtgRefErr)ptg;
+                            resultStack.Push(ptgreferr.getData());
                         }
                         else if (ptg is PtgRefErr3d)
                         {
-                            PtgRefErr3d ptgreferr3d = (PtgRefErr3d)ptg;
+                            try
+                            {
+                                PtgRefErr3d ptgreferr3d = (PtgRefErr3d)ptg;
 
-                            String refstring = xlsContext.XlsDoc.workBookData.getIXTIString(ptgreferr3d.ixti);
-                            resultStack.Push("'" + refstring + "'" + "!" + ptgreferr3d.getData());
+                                String refstring = xlsContext.XlsDoc.workBookData.getIXTIString(ptgreferr3d.ixti);
+                                resultStack.Push("'" + refstring + "'" + "!" + ptgreferr3d.getData());
+                            }
+                            catch (Exception)
+                            {
+                                resultStack.Push("#REF!");
+                            }
+                        }
+                        else if (ptg is PtgAreaErr3d)
+                        {
+                            try
+                            {
+                                PtgAreaErr3d ptgareaerr3d = (PtgAreaErr3d)ptg;
+                                String refstring = xlsContext.XlsDoc.workBookData.getIXTIString(ptgareaerr3d.ixti);
+                                resultStack.Push("'" + refstring + "'" + "!" + ptgareaerr3d.getData());
+                            }
+                            catch (Exception)
+                            {
+                                resultStack.Push("#REF!");
+                            }
                         }
                         else if (ptg is PtgFunc)
                         {

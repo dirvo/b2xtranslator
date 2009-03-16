@@ -93,78 +93,10 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             _writer.WriteAttributeString("count", sd.FontDataList.Count.ToString());
             foreach (FontData font in sd.FontDataList)
             {
-                // begin font element 
-                _writer.WriteStartElement("font");
-                // font size 
-                _writer.WriteStartElement("sz");
-                _writer.WriteAttributeString("val", Convert.ToString(font.size.ToPoints(), CultureInfo.GetCultureInfo("en-US")));
-                _writer.WriteEndElement();
-                // font name 
-                _writer.WriteStartElement("name");
-                _writer.WriteAttributeString("val", font.fontName);
-                _writer.WriteEndElement();
-                // font family 
-                if (font.fontFamily != 0)
-                {
-                    _writer.WriteStartElement("family");
-                    _writer.WriteAttributeString("val", font.fontFamily.ToString());
-                    _writer.WriteEndElement();
-                }
-                // font charset 
-                if (font.charSet != 0)
-                {
-                    _writer.WriteStartElement("charset");
-                    _writer.WriteAttributeString("val", font.charSet.ToString());
-                    _writer.WriteEndElement();
-                }
+                ///
+                StyleMappingHelper.addFontElement(_writer, font, FontElementType.NormalStyle); 
 
-                // bool values 
-                if (font.isBold)
-                    _writer.WriteElementString("b", "");
 
-                if (font.isItalic)
-                    _writer.WriteElementString("i", "");
-
-                if (font.isOutline)
-                    _writer.WriteElementString("outline", "");
-
-                if (font.isShadow)
-                    _writer.WriteElementString("shadow", "");
-
-                if (font.isStrike)
-                    _writer.WriteElementString("strike", "");
-
-                // underline style mapping 
-                if (font.uStyle != UnderlineStyle.none)
-                {
-                    _writer.WriteStartElement("u");
-                    if (font.uStyle == UnderlineStyle.singleLine)
-                    {
-                        _writer.WriteAttributeString("val", "single");
-                    }
-                    else if (font.uStyle == UnderlineStyle.doubleLine)
-                    {
-                        _writer.WriteAttributeString("val", "double");
-                    }
-                    else
-                    {
-                        _writer.WriteAttributeString("val", font.uStyle.ToString());
-                    }
-                    _writer.WriteEndElement();
-                }
-
-                if (font.vertAlign != SuperSubScriptStyle.none)
-                {
-                    _writer.WriteStartElement("vertAlign");
-                    _writer.WriteAttributeString("val", font.vertAlign.ToString());
-                    _writer.WriteEndElement();
-                }
-
-                // colormapping 
-                WriteRgbColor(_writer, StyleMappingHelper.convertColorIdToRGB(font.color));
- 
-                // end font element 
-                _writer.WriteEndElement();
             }
             // write fonts end element 
             _writer.WriteEndElement(); 
@@ -230,7 +162,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     // do nothing !
                 }
 
-                string borderColor = "";
+               
                 string borderStyle = ""; 
 
                 // left border 
@@ -303,41 +235,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
                 if (xfcellstyle.hasAlignment)
                 {
-                    _writer.WriteStartElement("alignment");
-                    if (xfcellstyle.wrapText)
-                    {
-                        _writer.WriteAttributeString("wrapText", "1");
-                    }
-                    if (xfcellstyle.horizontalAlignment != 0xFF)
-                    {
-                        _writer.WriteAttributeString("horizontal", StyleMappingHelper.getHorAlignmentValue(xfcellstyle.horizontalAlignment));
-                    }
-                    if (xfcellstyle.verticalAlignment != 0x02)
-                    {
-                        _writer.WriteAttributeString("vertical", StyleMappingHelper.getVerAlignmentValue(xfcellstyle.verticalAlignment));
-                    }
-                    if (xfcellstyle.justifyLastLine)
-                    {
-                        _writer.WriteAttributeString("justifyLastLine", "1");
-                    }
-                    if (xfcellstyle.shrinkToFit)
-                    {
-                        _writer.WriteAttributeString("shrinkToFit", "1");
-                    }
-                    if (xfcellstyle.textRotation != 0x00)
-                    {
-                        _writer.WriteAttributeString("textRotation", xfcellstyle.textRotation.ToString());
-                    }
-                    if (xfcellstyle.indent != 0x00)
-                    {
-                        _writer.WriteAttributeString("indent", xfcellstyle.indent.ToString());
-                    }
-                    if (xfcellstyle.readingOrder != 0x00)
-                    {
-                        _writer.WriteAttributeString("readingOrder", xfcellstyle.readingOrder.ToString());
-                    }
-
-                    _writer.WriteEndElement();
+                    StylesMapping.WriteCellAlignment(_writer, xfcellstyle);
                 }
 
                 _writer.WriteEndElement();
@@ -387,41 +285,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 }
                 if (xfcell.hasAlignment)
                 {
-                    _writer.WriteStartElement("alignment");
-                    if (xfcell.wrapText)
-                    {
-                        _writer.WriteAttributeString("wrapText", "1");          
-                    }
-                    if (xfcell.horizontalAlignment != 0xFF)
-                    {
-                        _writer.WriteAttributeString("horizontal", StyleMappingHelper.getHorAlignmentValue(xfcell.horizontalAlignment));
-                    }
-                    if (xfcell.verticalAlignment != 0x02)
-                    {
-                        _writer.WriteAttributeString("vertical", StyleMappingHelper.getVerAlignmentValue(xfcell.verticalAlignment));
-                    }
-                    if (xfcell.justifyLastLine)
-                    {
-                        _writer.WriteAttributeString("justifyLastLine", "1");
-                    }
-                    if (xfcell.shrinkToFit)
-                    {
-                        _writer.WriteAttributeString("shrinkToFit", "1");
-                    }
-                    if (xfcell.textRotation != 0x00)
-                    {
-                        _writer.WriteAttributeString("textRotation", xfcell.textRotation.ToString());
-                    }
-                    if (xfcell.indent != 0x00)
-                    {
-                        _writer.WriteAttributeString("indent", xfcell.indent.ToString());
-                    }
-                    if (xfcell.readingOrder != 0x00)
-                    {
-                        _writer.WriteAttributeString("readingOrder", xfcell.readingOrder.ToString());
-                    }
-
-                    _writer.WriteEndElement();
+                    StylesMapping.WriteCellAlignment(_writer, xfcell); 
                 }
 
                 _writer.WriteEndElement();
@@ -501,6 +365,45 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 writer.WriteAttributeString("rgb", "FF" + color);
                 writer.WriteEndElement();
             }
+        }
+
+        public static void WriteCellAlignment(XmlWriter _writer, XFData xfcell)
+        {
+            _writer.WriteStartElement("alignment");
+            if (xfcell.wrapText)
+            {
+                _writer.WriteAttributeString("wrapText", "1");
+            }
+            if (xfcell.horizontalAlignment != 0xFF)
+            {
+                _writer.WriteAttributeString("horizontal", StyleMappingHelper.getHorAlignmentValue(xfcell.horizontalAlignment));
+            }
+            if (xfcell.verticalAlignment != 0x02)
+            {
+                _writer.WriteAttributeString("vertical", StyleMappingHelper.getVerAlignmentValue(xfcell.verticalAlignment));
+            }
+            if (xfcell.justifyLastLine)
+            {
+                _writer.WriteAttributeString("justifyLastLine", "1");
+            }
+            if (xfcell.shrinkToFit)
+            {
+                _writer.WriteAttributeString("shrinkToFit", "1");
+            }
+            if (xfcell.textRotation != 0x00)
+            {
+                _writer.WriteAttributeString("textRotation", xfcell.textRotation.ToString());
+            }
+            if (xfcell.indent != 0x00)
+            {
+                _writer.WriteAttributeString("indent", xfcell.indent.ToString());
+            }
+            if (xfcell.readingOrder != 0x00)
+            {
+                _writer.WriteAttributeString("readingOrder", xfcell.readingOrder.ToString());
+            }
+
+            _writer.WriteEndElement();
         }
     }
 }

@@ -36,7 +36,8 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData; 
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData;
+
 
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
@@ -231,7 +232,16 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         /// <returns></returns>
         public String getDefinedNameByRef(int id)
         {
-            return this.definedNameList[id - 1].Name; 
+            if (this.definedNameList[id - 1].Name.Length > 1)
+            {
+                return this.definedNameList[id - 1].Name; 
+            }
+            else
+            {
+                string internName = "_xlnm." + ExcelHelperClass.getNameStringfromBuiltInFunctionID(this.definedNameList[id - 1].Name);
+                return internName; 
+            }
+           
         }
 
         /// <summary>

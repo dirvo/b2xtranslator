@@ -36,6 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg
     public class PtgAreaErr3d : AbstractPtg
     {
         public const PtgNumber ID = PtgNumber.PtgAreaErr3d;
+        public UInt16 ixti;
 
         public PtgAreaErr3d(IStreamReader reader, PtgNumber ptgid)
             :
@@ -43,9 +44,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg
         {
             Debug.Assert(this.Id == ID);
             this.Length = 11;
-            this.Data = "";
+            this.Data = "#REF!";
             this.type = PtgType.Operand;
-            reader.ReadBytes(10);             
+            this.ixti = reader.ReadUInt16(); 
+            reader.ReadBytes(8);             
         }
     }
 }

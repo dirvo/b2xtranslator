@@ -37,17 +37,34 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     {
         public const RecordNumber ID = RecordNumber.DEFAULTROWHEIGHT;
 
+        public int miyRW;
+        public int miyRwHidden; 
+        public bool fDyZero;
+        public bool fUnsynced;
+        public bool fExAsc;
+        public bool fExDsc; 
+
         public DEFAULTROWHEIGHT(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
 
-            // initialize class members from stream
-            // TODO: place code here
-            
-            // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            int grbit = reader.ReadUInt16();
+            this.fUnsynced = Utils.BitmaskToBool(grbit, 0x01);
+            this.fDyZero = Utils.BitmaskToBool(grbit, 0x02);
+            this.fExAsc = Utils.BitmaskToBool(grbit, 0x04);
+            this.fExDsc = Utils.BitmaskToBool(grbit, 0x08);
+
+            if (!fDyZero)
+            {
+                this.miyRW = reader.ReadUInt16();
+            }
+            else
+            {
+                this.miyRwHidden = reader.ReadUInt16(); 
+            }
+
         }
     }
 }

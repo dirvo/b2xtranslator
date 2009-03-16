@@ -68,6 +68,42 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             _writer.WriteStartElement("worksheet", OpenXmlNamespaces.WorkBookML);
 
 
+            // default info 
+            if (bsd.defaultColWidth >= 0 || bsd.defaultRowHeight >= 0)
+            {
+                 _writer.WriteStartElement("sheetFormatPr");
+
+                if (bsd.defaultColWidth >= 0)
+                {
+                    double colWidht = (double)bsd.defaultColWidth;
+                    _writer.WriteAttributeString("defaultColWidth", Convert.ToString(colWidht, CultureInfo.GetCultureInfo("en-US")));
+                }
+                if (bsd.defaultRowHeight >= 0)
+                {
+                    TwipsValue tv = new TwipsValue(bsd.defaultRowHeight); 
+                    _writer.WriteAttributeString("defaultRowHeight", Convert.ToString(tv.ToPoints(), CultureInfo.GetCultureInfo("en-US")));
+                }
+                if (bsd.zeroHeight)
+                {
+                    _writer.WriteAttributeString("zeroHeight", "1"); 
+                }
+                if (bsd.customHeight)
+                {
+                    _writer.WriteAttributeString("customHeight", "1");
+                }
+                if (bsd.thickTop)
+                {
+                    _writer.WriteAttributeString("thickTop", "1");
+                }
+                if (bsd.thickBottom)
+                {
+                    _writer.WriteAttributeString("thickBottom", "1");
+                }
+
+                 _writer.WriteEndElement();
+            }
+
+
 
             // Col info 
             if (bsd.colInfoDataTable.Count > 0)
@@ -134,8 +170,12 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 _writer.WriteAttributeString("r", (row.Row +1).ToString());
                 if (row.height != null)
                 {
-                    _writer.WriteAttributeString("ht", Convert.ToString(row.height.ToPoints(), CultureInfo.GetCultureInfo("en-US")));
-                    _writer.WriteAttributeString("customHeight", "1"); 
+                    if (row.customHeight)
+                    {
+                        _writer.WriteAttributeString("ht", Convert.ToString(row.height.ToPoints(), CultureInfo.GetCultureInfo("en-US")));
+                        _writer.WriteAttributeString("customHeight", "1");
+                    }
+
                 }
                 
                 if (row.hidden)
