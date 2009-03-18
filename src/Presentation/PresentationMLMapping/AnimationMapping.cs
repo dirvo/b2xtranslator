@@ -66,7 +66,26 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 animAtoms.Add(anim, animations[container]);
             }
 
-            writeTiming(animAtoms, blob);
+             ExtTimeNodeContainer c1 = blob.FirstChildWithType<ExtTimeNodeContainer>();
+             if (animAtoms.Count > 0)
+             {
+                 writeTiming(animAtoms, blob);
+             }
+             else
+             {
+                 if (c1 != null)
+                 {
+                     ExtTimeNodeContainer c2 = c1.FirstChildWithType<ExtTimeNodeContainer>();
+                     if (c2 != null)
+                     {
+                         ExtTimeNodeContainer c3 = c2.FirstChildWithType<ExtTimeNodeContainer>();
+                         if (c3 != null)
+                         {
+                             writeTiming(animAtoms, blob);
+                         }
+                     }
+                 }
+             }
         }
 
         private SlideMapping _parentMapping;
@@ -148,99 +167,109 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             {
 
                 ExtTimeNodeContainer c1 = blob.FirstChildWithType<ExtTimeNodeContainer>();
-                ExtTimeNodeContainer c2 = c1.FirstChildWithType<ExtTimeNodeContainer>();
-                ExtTimeNodeContainer c3 = c2.FirstChildWithType<ExtTimeNodeContainer>();
-
-                int counter = 0;
-                AnimationInfoAtom a;
-                System.Collections.Generic.List<AnimationInfoAtom> atoms = new List<AnimationInfoAtom>();
-                foreach (AnimationInfoAtom key in blindAtoms.Keys) atoms.Add(key);
-
-                _writer.WriteStartElement("p", "par", OpenXmlNamespaces.PresentationML);
-
-                _writer.WriteStartElement("p", "cTn", OpenXmlNamespaces.PresentationML);
-                _writer.WriteAttributeString("id", (++lastID).ToString());
-                _writer.WriteAttributeString("fill", "hold");
-
-                _writer.WriteStartElement("p", "stCondLst", OpenXmlNamespaces.PresentationML);
-
-
-                foreach (TimeConditionContainer c in c3.AllChildrenWithType<TimeConditionContainer>())
+                if (c1 != null)
                 {
-                    TimeConditionAtom t = c.FirstChildWithType<TimeConditionAtom>();
-
-                    _writer.WriteStartElement("p", "cond", OpenXmlNamespaces.PresentationML);
-
-                    switch (t.triggerEvent)
+                    ExtTimeNodeContainer c2 = c1.FirstChildWithType<ExtTimeNodeContainer>();
+                    if (c2 != null)
                     {
-                        case 0x0: //none
-                            break;
-                        case 0x1: //onBegin
-                            _writer.WriteAttributeString("evt", "onBegin");
-                            break;
-                        case 0x3: //Start
-                            _writer.WriteAttributeString("evt", "begin");
-                            break;
-                        case 0x4: //End
-                            _writer.WriteAttributeString("evt", "end");
-                            break;
-                        case 0x5: //Mouse click
-                            _writer.WriteAttributeString("evt", "onClick");
-                            break;
-                        case 0x7: //Mouse over
-                            _writer.WriteAttributeString("evt", "onMouseOver");
-                            break;
-                        case 0x9: //OnNext
-                            _writer.WriteAttributeString("evt", "onNext");
-                            break;
-                        case 0xa: //OnPrev
-                            _writer.WriteAttributeString("evt", "onPrev");
-                            break;
-                        case 0xb: //Stop audio
-                            _writer.WriteAttributeString("evt", "onStopAudio");
-                            break;
-                        default:
-                            break;
-                    }
 
-                    if (t.delay == -1)
-                    {
-                        _writer.WriteAttributeString("delay", "indefinite");
-                    }
-                    else
-                    {
-                        _writer.WriteAttributeString("delay", t.delay.ToString());
-                    }
+                        ExtTimeNodeContainer c3 = c2.FirstChildWithType<ExtTimeNodeContainer>();
+                        if (c3 != null)
+                        {
 
-                    if (t.triggerObject == TimeConditionAtom.TriggerObjectEnum.TimeNode)
-                    {
-                        _writer.WriteStartElement("p", "tn", OpenXmlNamespaces.PresentationML);
-                        _writer.WriteAttributeString("val", t.id.ToString());
-                        _writer.WriteEndElement();
+                            int counter = 0;
+                            AnimationInfoAtom a;
+                            System.Collections.Generic.List<AnimationInfoAtom> atoms = new List<AnimationInfoAtom>();
+                            foreach (AnimationInfoAtom key in blindAtoms.Keys) atoms.Add(key);
+
+                            _writer.WriteStartElement("p", "par", OpenXmlNamespaces.PresentationML);
+
+                            _writer.WriteStartElement("p", "cTn", OpenXmlNamespaces.PresentationML);
+                            _writer.WriteAttributeString("id", (++lastID).ToString());
+                            _writer.WriteAttributeString("fill", "hold");
+
+                            _writer.WriteStartElement("p", "stCondLst", OpenXmlNamespaces.PresentationML);
+
+
+                            foreach (TimeConditionContainer c in c3.AllChildrenWithType<TimeConditionContainer>())
+                            {
+                                TimeConditionAtom t = c.FirstChildWithType<TimeConditionAtom>();
+
+                                _writer.WriteStartElement("p", "cond", OpenXmlNamespaces.PresentationML);
+
+                                switch (t.triggerEvent)
+                                {
+                                    case 0x0: //none
+                                        break;
+                                    case 0x1: //onBegin
+                                        _writer.WriteAttributeString("evt", "onBegin");
+                                        break;
+                                    case 0x3: //Start
+                                        _writer.WriteAttributeString("evt", "begin");
+                                        break;
+                                    case 0x4: //End
+                                        _writer.WriteAttributeString("evt", "end");
+                                        break;
+                                    case 0x5: //Mouse click
+                                        _writer.WriteAttributeString("evt", "onClick");
+                                        break;
+                                    case 0x7: //Mouse over
+                                        _writer.WriteAttributeString("evt", "onMouseOver");
+                                        break;
+                                    case 0x9: //OnNext
+                                        _writer.WriteAttributeString("evt", "onNext");
+                                        break;
+                                    case 0xa: //OnPrev
+                                        _writer.WriteAttributeString("evt", "onPrev");
+                                        break;
+                                    case 0xb: //Stop audio
+                                        _writer.WriteAttributeString("evt", "onStopAudio");
+                                        break;
+                                    default:
+                                        break;
+                                }
+
+                                if (t.delay == -1)
+                                {
+                                    _writer.WriteAttributeString("delay", "indefinite");
+                                }
+                                else
+                                {
+                                    _writer.WriteAttributeString("delay", t.delay.ToString());
+                                }
+
+                                if (t.triggerObject == TimeConditionAtom.TriggerObjectEnum.TimeNode)
+                                {
+                                    _writer.WriteStartElement("p", "tn", OpenXmlNamespaces.PresentationML);
+                                    _writer.WriteAttributeString("val", t.id.ToString());
+                                    _writer.WriteEndElement();
+                                }
+
+                                _writer.WriteEndElement(); //cond
+
+                            }
+
+                            _writer.WriteEndElement(); //stCondLst
+
+                            _writer.WriteStartElement("p", "childTnLst", OpenXmlNamespaces.PresentationML);
+
+
+                            foreach (ExtTimeNodeContainer c4 in c3.AllChildrenWithType<ExtTimeNodeContainer>())
+                            {
+                                a = null;
+                                if (atoms.Count > counter) a = atoms[counter];
+                                writePar2(c4, a);
+                                counter++;
+                            }
+
+                            _writer.WriteEndElement(); //childTnLst
+
+                            _writer.WriteEndElement(); //cTn
+
+                            _writer.WriteEndElement(); //par
+                        }
                     }
-
-                    _writer.WriteEndElement(); //cond
-
                 }
-
-                _writer.WriteEndElement(); //stCondLst
-
-                _writer.WriteStartElement("p", "childTnLst", OpenXmlNamespaces.PresentationML);
-
-
-                foreach (ExtTimeNodeContainer c4 in c3.AllChildrenWithType<ExtTimeNodeContainer>())
-                {
-                    a = null;
-                    if (atoms.Count > counter) a = atoms[counter];
-                    writePar2(c4, a);
-                    counter++;
-                }
-
-                _writer.WriteEndElement(); //childTnLst
-
-                _writer.WriteEndElement(); //cTn
-
-                _writer.WriteEndElement(); //par
             }
             //writePar(ShapeID);
 
