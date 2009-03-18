@@ -132,19 +132,18 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 new AnimationMapping(_ctx, _writer).Apply(slide.FirstChildWithType<SlideShowSlideInfoAtom>());
             }            
 
-            if (shapeTreeMapping.animinfos.Count > 0)
+            //if (shapeTreeMapping.animinfos.Count > 0)
+            //{
+            //    new AnimationMapping(_ctx, _writer).Apply(shapeTreeMapping.animinfos);
+            //}
+
+            if (slide.FirstChildWithType<ProgTags>() != null)
+            if (slide.FirstChildWithType<ProgTags>().FirstChildWithType<ProgBinaryTag>() != null)
+            if (slide.FirstChildWithType<ProgTags>().FirstChildWithType<ProgBinaryTag>().FirstChildWithType<ProgBinaryTagDataBlob>() != null)
             {
-                new AnimationMapping(_ctx, _writer).Apply(shapeTreeMapping.animinfos);
+                new AnimationMapping(_ctx, _writer).Apply(slide.FirstChildWithType<ProgTags>().FirstChildWithType<ProgBinaryTag>().FirstChildWithType<ProgBinaryTagDataBlob>(), this, shapeTreeMapping.animinfos);
             }
-            else
-            {
-                if (slide.FirstChildWithType<ProgTags>() != null)
-                    if (slide.FirstChildWithType<ProgTags>().FirstChildWithType<ProgBinaryTag>() != null)
-                        if (slide.FirstChildWithType<ProgTags>().FirstChildWithType<ProgBinaryTag>().FirstChildWithType<ProgBinaryTagDataBlob>() != null)
-                        {
-                            new AnimationMapping(_ctx, _writer).Apply(slide.FirstChildWithType<ProgTags>().FirstChildWithType<ProgBinaryTag>().FirstChildWithType<ProgBinaryTagDataBlob>(), this);
-                        }
-            }
+            
 
             // End the document
             _writer.WriteEndElement(); //sld

@@ -46,13 +46,13 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             flags = this.Reader.ReadInt16();
 
             fReverse = Tools.Utils.BitmaskToBool(flags, 0x1 << 0);
-            fAutomatic = Tools.Utils.BitmaskToBool(flags, 0x1 << 1);
-            fSound = Tools.Utils.BitmaskToBool(flags, 0x1 << 2);
-            fStopSound = Tools.Utils.BitmaskToBool(flags, 0x1 << 3);
-            fPlay = Tools.Utils.BitmaskToBool(flags, 0x1 << 4);
-            fSynchronous = Tools.Utils.BitmaskToBool(flags, 0x1 << 5);
-            fHide = Tools.Utils.BitmaskToBool(flags, 0x1 << 6);
-            fAnimateBg = Tools.Utils.BitmaskToBool(flags, 0x1 << 7);
+            fAutomatic = Tools.Utils.BitmaskToBool(flags, 0x1 << 2);
+            fSound = Tools.Utils.BitmaskToBool(flags, 0x1 << 4);
+            fStopSound = Tools.Utils.BitmaskToBool(flags, 0x1 << 6);
+            fPlay = Tools.Utils.BitmaskToBool(flags, 0x1 << 8);
+            fSynchronous = Tools.Utils.BitmaskToBool(flags, 0x1 << 10);
+            fHide = Tools.Utils.BitmaskToBool(flags, 0x1 << 12);
+            fAnimateBg = Tools.Utils.BitmaskToBool(flags, 0x1 << 14);
 
             Int16 reserved = this.Reader.ReadInt16();
             soundIdRef = this.Reader.ReadBytes(4);
