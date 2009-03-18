@@ -130,16 +130,21 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             if (slide.FirstChildWithType<SlideShowSlideInfoAtom>() != null)
             {
                 new AnimationMapping(_ctx, _writer).Apply(slide.FirstChildWithType<SlideShowSlideInfoAtom>());
-            }
+            }            
 
-            if (slide.FirstChildWithType<ProgTags>() != null)
-            if (slide.FirstChildWithType<ProgTags>().FirstChildWithType<ProgBinaryTag>() != null)
-            if (slide.FirstChildWithType<ProgTags>().FirstChildWithType<ProgBinaryTag>().FirstChildWithType<ProgBinaryTagDataBlob>() != null)
+            if (shapeTreeMapping.animinfos.Count > 0)
             {
-                new AnimationMapping(_ctx, _writer).Apply(slide.FirstChildWithType<ProgTags>().FirstChildWithType<ProgBinaryTag>().FirstChildWithType<ProgBinaryTagDataBlob>(), this);
+                new AnimationMapping(_ctx, _writer).Apply(shapeTreeMapping.animinfos);
             }
-            
-            if (shapeTreeMapping.animinfos.Count > 0) new AnimationMapping(_ctx, _writer).Apply(shapeTreeMapping.animinfos);
+            else
+            {
+                if (slide.FirstChildWithType<ProgTags>() != null)
+                    if (slide.FirstChildWithType<ProgTags>().FirstChildWithType<ProgBinaryTag>() != null)
+                        if (slide.FirstChildWithType<ProgTags>().FirstChildWithType<ProgBinaryTag>().FirstChildWithType<ProgBinaryTagDataBlob>() != null)
+                        {
+                            new AnimationMapping(_ctx, _writer).Apply(slide.FirstChildWithType<ProgTags>().FirstChildWithType<ProgBinaryTag>().FirstChildWithType<ProgBinaryTagDataBlob>(), this);
+                        }
+            }
 
             // End the document
             _writer.WriteEndElement(); //sld

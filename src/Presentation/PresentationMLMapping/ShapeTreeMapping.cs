@@ -697,7 +697,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             uint indexOfPicture = 0;
             //TODO: read these infos from so
             ++_ctx.lastImageID;
-            string id = _ctx.lastImageID.ToString(); // "213";
+            int id = _ctx.lastImageID; // "213";
             string name = "";
             string descr = "";
             string rId = "";
@@ -714,7 +714,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     //    name = name.Substring(0, name.Length - 1).Replace("\0","");
                         break;
                     case ShapeOptions.PropertyId.pibPrintName:
-                        id = en.op.ToString();
+                        id = (int)en.op;
                         break;
 
                 }
@@ -770,8 +770,17 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteStartElement("p", "nvPicPr", OpenXmlNamespaces.PresentationML);
 
+
+            if (!spidToId.ContainsKey(sh.spid))
+            {
+                spidToId.Add(sh.spid, id);
+            }
+
             _writer.WriteStartElement("p", "cNvPr", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("id", id);
+            _writer.WriteAttributeString("id", spidToId[sh.spid].ToString());
+
+            //_writer.WriteStartElement("p", "cNvPr", OpenXmlNamespaces.PresentationML);
+            //_writer.WriteAttributeString("id", id);
             _writer.WriteAttributeString("name", name);
             _writer.WriteAttributeString("descr", descr);
             _writer.WriteEndElement(); //p:cNvPr
