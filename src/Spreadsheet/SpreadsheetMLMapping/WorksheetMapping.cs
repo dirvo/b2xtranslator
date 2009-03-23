@@ -170,9 +170,9 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 _writer.WriteAttributeString("r", (row.Row + 1).ToString());
                 if (row.height != null)
                 {
+                    _writer.WriteAttributeString("ht", Convert.ToString(row.height.ToPoints(), CultureInfo.GetCultureInfo("en-US")));
                     if (row.customHeight)
-                    {
-                        _writer.WriteAttributeString("ht", Convert.ToString(row.height.ToPoints(), CultureInfo.GetCultureInfo("en-US")));
+                    {                        
                         _writer.WriteAttributeString("customHeight", "1");
                     }
 
@@ -378,8 +378,14 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             {
                 _writer.WriteStartElement("pageSetup");
 
-                _writer.WriteAttributeString("paperSize", bsd.PageSetup.iPaperSize.ToString());
-                _writer.WriteAttributeString("scale", bsd.PageSetup.iScale.ToString());
+                if (!bsd.PageSetup.fNoPls && bsd.PageSetup.iPaperSize > 0 && bsd.PageSetup.iPaperSize <255)
+                {
+                    _writer.WriteAttributeString("paperSize", bsd.PageSetup.iPaperSize.ToString());
+                }
+                if (bsd.PageSetup.iScale >= 10 && bsd.PageSetup.iScale <= 400)
+                {
+                    _writer.WriteAttributeString("scale", bsd.PageSetup.iScale.ToString());
+                }
                 _writer.WriteAttributeString("firstPageNumber", bsd.PageSetup.iPageStart.ToString());
                 _writer.WriteAttributeString("fitToWidth", bsd.PageSetup.iFitWidth.ToString());
                 _writer.WriteAttributeString("fitToHeight", bsd.PageSetup.iFitHeight.ToString());
@@ -423,7 +429,10 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
                 _writer.WriteAttributeString("horizontalDpi", bsd.PageSetup.iRes.ToString());
                 _writer.WriteAttributeString("verticalDpi", bsd.PageSetup.iVRes.ToString());
-                _writer.WriteAttributeString("copies", bsd.PageSetup.iCopies.ToString());
+                if (!bsd.PageSetup.fNoPls)
+                {
+                    _writer.WriteAttributeString("copies", bsd.PageSetup.iCopies.ToString());
+                }
 
                 _writer.WriteEndElement();
             }

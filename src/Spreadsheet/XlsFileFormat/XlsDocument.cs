@@ -40,6 +40,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// Some constant strings 
         /// </summary>
         private const string WORKBOOK = "Workbook";
+        private const string ALTERNATE1 = "Book"; 
 
         /// <summary>
         /// The workbook streamreader 
@@ -63,8 +64,14 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// <param name="file"></param>
         public XlsDocument(IStructuredStorageReader file)
         {
-            this.workBookData = new WorkBookData(); 
-            this.workBookStreamReader = new VirtualStreamReader(file.GetStream(WORKBOOK));
+            this.workBookData = new WorkBookData();
+
+            if (file.FullNameOfAllStreamEntries.Contains("\\" + WORKBOOK))
+                this.workBookStreamReader = new VirtualStreamReader(file.GetStream(WORKBOOK));
+            else if (file.FullNameOfAllStreamEntries.Contains("\\" + ALTERNATE1))
+                this.workBookStreamReader = new VirtualStreamReader(file.GetStream(ALTERNATE1));
+            else
+                throw new ExtractorException(ExtractorException.WORKBOOKSTREAMNOTFOUND); 
 
             this.workBookExtr = new WorkbookExtractor(this.workBookStreamReader, this.workBookData); 
         }
