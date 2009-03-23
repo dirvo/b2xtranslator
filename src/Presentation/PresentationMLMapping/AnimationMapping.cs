@@ -67,12 +67,12 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
 
              ExtTimeNodeContainer c1 = blob.FirstChildWithType<ExtTimeNodeContainer>();
-             if (animAtoms.Count > 0)
-             {
-                 writeTiming(animAtoms, blob);
-             }
-             else
-             {
+             //if (animAtoms.Count > 0)
+             //{
+             //    writeTiming(animAtoms, blob);
+             //}
+             //else
+             //{
                  if (c1 != null)
                  {
                      ExtTimeNodeContainer c2 = c1.FirstChildWithType<ExtTimeNodeContainer>();
@@ -85,7 +85,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                          }
                      }
                  }
-             }
+             //}
         }
 
         private SlideMapping _parentMapping;
@@ -98,23 +98,40 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         private uint getShapeID(ExtTimeNodeContainer c)
         {
-                foreach (ExtTimeNodeContainer c8 in c.AllChildrenWithType<ExtTimeNodeContainer>())
-                    foreach (ExtTimeNodeContainer c9 in c8.AllChildrenWithType<ExtTimeNodeContainer>())
-                        foreach (ExtTimeNodeContainer c10 in c8.AllChildrenWithType<ExtTimeNodeContainer>())
-                        {
-                            foreach (TimeEffectBehaviorContainer c10a in c10.AllChildrenWithType<TimeEffectBehaviorContainer>())
-                                foreach (TimeBehaviorContainer c10aa in c10a.AllChildrenWithType<TimeBehaviorContainer>())
-                                    foreach (ClientVisualElementContainer c10aaa in c10aa.AllChildrenWithType<ClientVisualElementContainer>())
-                                        foreach (VisualShapeAtom c10aaaa in c10aaa.AllChildrenWithType<VisualShapeAtom>())
-                                            return c10aaaa.shapeIdRef;
-                            foreach (TimeSetBehaviourContainer c10b in c10.AllChildrenWithType<TimeSetBehaviourContainer>())
-                                foreach (TimeBehaviorContainer c10aa in c10b.AllChildrenWithType<TimeBehaviorContainer>())
-                                    foreach (ClientVisualElementContainer c10aaa in c10aa.AllChildrenWithType<ClientVisualElementContainer>())
-                                        foreach (VisualShapeAtom c10aaaa in c10aaa.AllChildrenWithType<VisualShapeAtom>())
-                                            return c10aaaa.shapeIdRef;
-                        }
+            List<uint> lst = new List<uint>();
 
-                return 0;
+            foreach (ExtTimeNodeContainer c8 in c.AllChildrenWithType<ExtTimeNodeContainer>())
+                foreach (ExtTimeNodeContainer c9 in c8.AllChildrenWithType<ExtTimeNodeContainer>())
+                {
+                    foreach (TimeEffectBehaviorContainer c10a in c9.AllChildrenWithType<TimeEffectBehaviorContainer>())
+                        foreach (TimeBehaviorContainer c10aa in c10a.AllChildrenWithType<TimeBehaviorContainer>())
+                            foreach (ClientVisualElementContainer c10aaa in c10aa.AllChildrenWithType<ClientVisualElementContainer>())
+                                foreach (VisualShapeAtom c10aaaa in c10aaa.AllChildrenWithType<VisualShapeAtom>())
+                                    lst.Add(c10aaaa.shapeIdRef); //return c10aaaa.shapeIdRef;
+                    foreach (TimeSetBehaviourContainer c10b in c9.AllChildrenWithType<TimeSetBehaviourContainer>())
+                        foreach (TimeBehaviorContainer c10aa in c10b.AllChildrenWithType<TimeBehaviorContainer>())
+                            foreach (ClientVisualElementContainer c10aaa in c10aa.AllChildrenWithType<ClientVisualElementContainer>())
+                                foreach (VisualShapeAtom c10aaaa in c10aaa.AllChildrenWithType<VisualShapeAtom>())
+                                    lst.Add(c10aaaa.shapeIdRef); //return c10aaaa.shapeIdRef;                     
+                    foreach (TimeRotationBehaviorContainer r in c9.AllChildrenWithType<TimeRotationBehaviorContainer>())
+                        foreach (TimeBehaviorContainer rr in r.AllChildrenWithType<TimeBehaviorContainer>())
+                            foreach (ClientVisualElementContainer c10aaa in rr.AllChildrenWithType<ClientVisualElementContainer>())
+                                foreach (VisualShapeAtom c10aaaa in c10aaa.AllChildrenWithType<VisualShapeAtom>())
+                                    lst.Add(c10aaaa.shapeIdRef); //return c10aaaa.shapeIdRef;
+                    foreach (TimeCommandBehaviorContainer r in c9.AllChildrenWithType<TimeCommandBehaviorContainer>())
+                        foreach (TimeBehaviorContainer rr in r.AllChildrenWithType<TimeBehaviorContainer>())
+                            foreach (ClientVisualElementContainer c10aaa in rr.AllChildrenWithType<ClientVisualElementContainer>())
+                                foreach (VisualShapeAtom c10aaaa in c10aaa.AllChildrenWithType<VisualShapeAtom>())
+                                    lst.Add(c10aaaa.shapeIdRef); //return c10aaaa.shapeIdRef;
+                    foreach (TimeMotionBehaviorContainer r in c9.AllChildrenWithType<TimeMotionBehaviorContainer>())
+                        foreach (TimeBehaviorContainer rr in r.AllChildrenWithType<TimeBehaviorContainer>())
+                            foreach (ClientVisualElementContainer c10aaa in rr.AllChildrenWithType<ClientVisualElementContainer>())
+                                foreach (VisualShapeAtom c10aaaa in c10aaa.AllChildrenWithType<VisualShapeAtom>())
+                                    lst.Add(c10aaaa.shapeIdRef); //return c10aaaa.shapeIdRef;
+                }
+
+            return lst[0];
+            //return 0;
         }
 
         //public void Apply(Dictionary<AnimationInfoContainer, int> animations)
@@ -633,10 +650,16 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
 
             uint c4Id = getShapeID(container);
-            string ShapeID;
-           
-            ShapeID = this._parentMapping.shapeTreeMapping.spidToId[(int)c4Id].ToString();
+            string ShapeID = "";
 
+            if (this._parentMapping.shapeTreeMapping.spidToId.ContainsKey((int)c4Id))
+            {
+                ShapeID = this._parentMapping.shapeTreeMapping.spidToId[(int)c4Id].ToString();
+            }
+            else
+            {
+                ShapeID = "";
+            }
             _writer.WriteAttributeString("spid", ShapeID);
 
             _writer.WriteEndElement(); //spTgt

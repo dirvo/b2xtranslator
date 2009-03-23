@@ -43,7 +43,14 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
                 foreach (Record rec in Children)
                 {
-                    entities.Add((FontEntityAtom)rec);
+                    if (rec is FontEntityAtom)
+                    {
+                        entities.Add((FontEntityAtom)rec);
+                    }
+                    else
+                    {
+                        uint type = rec.TypeCode;
+                    }
                 }
 
                 return;

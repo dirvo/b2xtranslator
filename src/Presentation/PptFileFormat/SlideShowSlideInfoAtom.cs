@@ -494,6 +494,56 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         }
     }
 
+    [OfficeRecordAttribute(61742)]
+    public class TimeMotionBehaviorContainer : RegularContainer
+    {
+        public TimeMotionBehaviorContainer(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance)
+        {
+
+        }
+    }
+
+    [OfficeRecordAttribute(61751)]
+    public class TimeMotionBehaviorAtom : Record
+    {
+        public bool fByPropertyUsed;
+        public bool fFromPropertyUsed;
+        public bool fToPropertyUsed;
+        public bool fOriginPropertyUsed;
+        public bool fPathPropertyUsed;
+        public bool fEditRotationPropertyUsed;
+        public bool fPointsTypesPropertyUsed;
+        public float fXBy;
+        public float fYBy;
+        public float fXFrom;
+        public float fYFrom;
+        public float fXTo;
+        public float fYTo;
+        public uint behaviorOrigin;
+
+        public TimeMotionBehaviorAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance)
+        {
+            int flags = this.Reader.ReadInt32();
+            fByPropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1);
+            fFromPropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1 << 1);
+            fToPropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1 << 2);
+            fOriginPropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1 << 3);
+            fPathPropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1 << 4);
+            // 1 bit reserved
+            fEditRotationPropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1 << 6);           
+            fPointsTypesPropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1 << 7);
+            fXBy = this.Reader.ReadSingle();
+            fYBy = this.Reader.ReadSingle();
+            fXFrom = this.Reader.ReadSingle();
+            fYFrom = this.Reader.ReadSingle();
+            fXTo = this.Reader.ReadSingle();
+            fYTo = this.Reader.ReadSingle();
+            behaviorOrigin = this.Reader.ReadUInt32();
+        }
+    }
+
     [OfficeRecordAttribute(61741)]
     public class TimeEffectBehaviorContainer : RegularContainer
     {
@@ -522,6 +572,25 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             fProgressPropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1 << 2);
             fRuntimeContextObsolete = Tools.Utils.BitmaskToBool(flags, 0x1 << 3);
             effectTransition = this.Reader.ReadUInt32();
+        }
+    }
+
+    [OfficeRecordAttribute(61743)]
+    public class TimeRotationBehaviorContainer : RegularContainer
+    {
+        public TimeRotationBehaviorContainer(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance)
+        {
+        }
+    }
+
+
+    [OfficeRecordAttribute(61746)]
+    public class TimeCommandBehaviorContainer : RegularContainer
+    {
+        public TimeCommandBehaviorContainer(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance)
+        {
         }
     }
 

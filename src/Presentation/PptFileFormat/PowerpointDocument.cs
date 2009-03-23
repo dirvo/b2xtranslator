@@ -123,7 +123,18 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             try
             {
                 this.CurrentUserStream = file.GetStream("Current User");
-                this.CurrentUserAtom = (CurrentUserAtom)Record.ReadRecord(this.CurrentUserStream, 0);
+                Record rec = Record.ReadRecord(this.CurrentUserStream, 0);
+                if (rec is CurrentUserAtom)
+                {
+                    this.CurrentUserAtom = (CurrentUserAtom)rec;
+                }
+                else
+                {
+                    this.CurrentUserStream.Position = 0;
+                    byte[] bytes = new byte[this.CurrentUserStream.Length];
+                    this.CurrentUserStream.Read(bytes);
+                    string s = Encoding.UTF8.GetString(bytes).Replace("\0","");
+                }
             }
             catch (InvalidRecordException e)
             {
@@ -146,9 +157,12 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
             
             this.PowerpointDocumentStream = file.GetStream("PowerPoint Document");
-            this.PowerpointDocumentStream.Seek(this.CurrentUserAtom.OffsetToCurrentEdit, SeekOrigin.Begin);
 
-            this.LastUserEdit = (UserEditAtom)Record.ReadRecord(this.PowerpointDocumentStream, 0);
+            if (this.CurrentUserAtom != null)
+            {
+                this.PowerpointDocumentStream.Seek(this.CurrentUserAtom.OffsetToCurrentEdit, SeekOrigin.Begin);
+                this.LastUserEdit = (UserEditAtom)Record.ReadRecord(this.PowerpointDocumentStream, 0);
+            }
 
             this.ConstructPersistObjectDirectory();
 
@@ -192,7 +206,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         /// </summary>
         private void IdentifyDocumentPersistObject()
         {
-            this.DocumentRecord = this.GetPersistObject<DocumentContainer>(this.LastUserEdit.DocPersistIdRef);
+               this.DocumentRecord = this.GetPersistObject<DocumentContainer>(this.LastUserEdit.DocPersistIdRef);
         }
 
         /// <summary>

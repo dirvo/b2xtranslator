@@ -180,7 +180,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             fHitTestFill=444,
             fillShape=445,
             fillUseRect=446,
-            fNoFillHitTest=447,
+            FillStyleBooleanProperties=447,
 
             //Line Style
             lineColor=448,
@@ -588,7 +588,12 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
                         this.Options[i].opComplex = this.Reader.ReadBytes((int)this.Options[i].op);
                     }
                 }
-                OptionsByID.Add(this.Options[i].pid, this.Options[i]);
+                if (this.OptionsByID.ContainsKey(this.Options[i].pid))
+                {
+                    OptionsByID[this.Options[i].pid] = this.Options[i];
+                } else {
+                    OptionsByID.Add(this.Options[i].pid, this.Options[i]);
+                }
             }
 
             this.Reader.BaseStream.Seek(pos + size, SeekOrigin.Begin);

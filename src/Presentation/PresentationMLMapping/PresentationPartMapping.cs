@@ -163,27 +163,34 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                     }
                 }
+                bool found = false;
                 if (lst.Instance == 2) //notes
                 {
                     foreach (SlidePersistAtom at in lst.SlidePersistAtoms)
                     {
+                        found = false;
                         foreach (Note note in ppt.NoteRecords)
                         {
-                            if (note.PersistAtom == at)
+                            if (note.PersistAtom.SlideId == at.SlideId)
                             {
+                                NotesAtom a = note.FirstChildWithType<NotesAtom>();
                                 foreach (SlideMapping slideMapping in this.SlideMappings)
                                 {
-                                    if (slideMapping.Slide.PersistAtom.SlideId == at.SlideId)
+                                    if (slideMapping.Slide.PersistAtom.SlideId == a.SlideIdRef)
                                     {
                                         NoteMapping nMapping = new NoteMapping(_ctx, slideMapping);
                                         nMapping.Apply(note);
                                         this.NoteMappings.Add(nMapping);
+                                        found = true;
                                     }
                                 }
                                 
                             }
                         }
-
+                        if (!found)
+                        {
+                            string s = "";
+                        }
 
                     }
                 }

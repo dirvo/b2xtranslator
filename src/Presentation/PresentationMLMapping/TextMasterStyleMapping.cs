@@ -375,12 +375,27 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 {
                                     if (blips.Children.Count > pr9.bulletblipref & pr9.bulletblipref > -1)
                                     {
-                                        BitmapBlip b = ((BlipEntityAtom)blips.Children[pr9.bulletblipref]).blip;
                                         ImagePart imgPart = null;
-                                        imgPart = _parentSlideMapping.targetPart.AddImagePart(ShapeTreeMapping.getImageType(b.TypeCode));
-                                        imgPart.TargetDirectory = "..\\media";
-                                        System.IO.Stream outStream = imgPart.GetStream();
-                                        outStream.Write(b.m_pvBits, 0, b.m_pvBits.Length);
+
+                                        BitmapBlip b = ((BlipEntityAtom)blips.Children[pr9.bulletblipref]).blip;
+
+                                        if (b == null)
+                                        {
+                                            MetafilePictBlip mb = ((BlipEntityAtom)blips.Children[pr9.bulletblipref]).mblip;
+                                            imgPart = _parentSlideMapping.targetPart.AddImagePart(ShapeTreeMapping.getImageType(mb.TypeCode));
+                                            imgPart.TargetDirectory = "..\\media";
+                                            System.IO.Stream outStream = imgPart.GetStream();
+                                            byte[] decompressed = mb.Decrompress();
+                                            outStream.Write(decompressed, 0, decompressed.Length);
+                                            //outStream.Write(mb.m_pvBits, 0, mb.m_pvBits.Length);
+                                        }
+                                        else
+                                        {
+                                            imgPart = _parentSlideMapping.targetPart.AddImagePart(ShapeTreeMapping.getImageType(b.TypeCode));
+                                            imgPart.TargetDirectory = "..\\media";
+                                            System.IO.Stream outStream = imgPart.GetStream();
+                                            outStream.Write(b.m_pvBits, 0, b.m_pvBits.Length);
+                                        }
 
                                         _writer.WriteStartElement("a", "buBlip", OpenXmlNamespaces.DrawingML);
                                         _writer.WriteStartElement("a", "blip", OpenXmlNamespaces.DrawingML);

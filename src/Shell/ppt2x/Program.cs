@@ -147,7 +147,7 @@ namespace DIaLOGIKa.b2xtranslator.ppt2x
                 {
                     TraceLogger.Error("Input file {0} is not a valid PowerPoint file.", InputFile);
                 }
-                catch (InvalidStreamException)
+                catch (InvalidStreamException e)
                 {
                     TraceLogger.Error("Input file {0} is not a valid PowerPoint file.", InputFile);
                 }

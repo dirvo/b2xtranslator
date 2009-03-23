@@ -56,7 +56,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             if (slide == null) slide = so.FirstAncestorWithType<Note>();
             if (slide == null) slide = so.FirstAncestorWithType<Handout>();
             string colorval = "";
-            switch (so.OptionsByID[ShapeOptions.PropertyId.fillType].op)
+            uint fillType = 0;
+            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillType)) fillType = so.OptionsByID[ShapeOptions.PropertyId.fillType].op;
+            switch (fillType)
             {
                 case 0x0: //solid
                     if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillColor))
@@ -125,20 +127,31 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     string rId = "";
                     DrawingGroup gr = (DrawingGroup)this._ctx.Ppt.DocumentRecord.FirstChildWithType<PPDrawingGroup>().Children[0];
 
-                    if (blipIndex < gr.FirstChildWithType<BlipStoreContainer>().Children.Count)
+                    if (blipIndex <= gr.FirstChildWithType<BlipStoreContainer>().Children.Count)
                     {
                         BlipStoreEntry bse = (BlipStoreEntry)gr.FirstChildWithType<BlipStoreContainer>().Children[(int)blipIndex - 1];
 
                         if (_ctx.Ppt.PicturesContainer._pictures.ContainsKey(bse.foDelay))
                         {
-
-                            BitmapBlip b = (BitmapBlip)_ctx.Ppt.PicturesContainer._pictures[bse.foDelay];
-
+                            Record rec = _ctx.Ppt.PicturesContainer._pictures[bse.foDelay];
                             ImagePart imgPart = null;
-                            imgPart = _parentSlideMapping.targetPart.AddImagePart(ShapeTreeMapping.getImageType(b.TypeCode));
-                            imgPart.TargetDirectory = "..\\media";
-                            System.IO.Stream outStream = imgPart.GetStream();
-                            outStream.Write(b.m_pvBits, 0, b.m_pvBits.Length);
+                            if (rec is BitmapBlip)
+                            {
+                                BitmapBlip b = (BitmapBlip)_ctx.Ppt.PicturesContainer._pictures[bse.foDelay];                                
+                                imgPart = _parentSlideMapping.targetPart.AddImagePart(ShapeTreeMapping.getImageType(b.TypeCode));
+                                imgPart.TargetDirectory = "..\\media";
+                                System.IO.Stream outStream = imgPart.GetStream();
+                                outStream.Write(b.m_pvBits, 0, b.m_pvBits.Length);
+                            }
+                            else
+                            {
+                                MetafilePictBlip b = (MetafilePictBlip)_ctx.Ppt.PicturesContainer._pictures[bse.foDelay];
+                                imgPart = _parentSlideMapping.targetPart.AddImagePart(ShapeTreeMapping.getImageType(b.TypeCode));
+                                imgPart.TargetDirectory = "..\\media";
+                                System.IO.Stream outStream = imgPart.GetStream();
+                                byte[] decompressed = b.Decrompress();
+                                outStream.Write(decompressed, 0, decompressed.Length);
+                            }
 
                             rId = imgPart.RelIdToString;
 
@@ -155,7 +168,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                             _writer.WriteElementString("a", "srcRect", OpenXmlNamespaces.DrawingML, "");
 
-                            if (so.OptionsByID[ShapeOptions.PropertyId.fillType].op == 0x3)
+                            if (fillType == 0x3)
                             {
                                 _writer.WriteStartElement("a", "stretch", OpenXmlNamespaces.DrawingML);
                                 _writer.WriteElementString("a", "fillRect", OpenXmlNamespaces.DrawingML, "");
@@ -274,6 +287,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     
                     if (useFillAndBack)
                     {
+                        
                         colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide, so);
 
                         _writer.WriteStartElement("a", "gs", OpenXmlNamespaces.DrawingML);
@@ -289,7 +303,21 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteEndElement();
                         _writer.WriteEndElement();
 
-                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillBackColor].op, slide, so);
+                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillBackColor))
+                        {
+                            colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillBackColor].op, slide, so);
+                        }
+                        else
+                        {
+                            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.shadowColor))
+                            {
+                                colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.shadowColor].op, slide, so);
+                            }
+                            else
+                            {
+                                //use filColor
+                            }
+                        }
 
                         _writer.WriteStartElement("a", "gs", OpenXmlNamespaces.DrawingML);
                         _writer.WriteAttributeString("pos", "100000");
@@ -307,7 +335,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                     _writer.WriteEndElement(); //gsLst
 
-                    switch (so.OptionsByID[ShapeOptions.PropertyId.fillType].op)
+                    switch (fillType)
                     {
                         case 0x6:
                             _writer.WriteStartElement("a", "path", OpenXmlNamespaces.DrawingML);

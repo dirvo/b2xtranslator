@@ -46,6 +46,7 @@
     <Compile Include="ClientAnchor.cs" />
     <Compile Include="ClientData.cs" />
     <Compile Include="ClientTextbox.cs" />
+    <Compile Include="FillStyleBooleanProperties.cs" />
     <Compile Include="GeometryTextBooleanProperties.cs" />
     <Compile Include="ShadowStyleBooleanProperties.cs" />
     <Compile Include="Shapetypes\LineType.cs" />

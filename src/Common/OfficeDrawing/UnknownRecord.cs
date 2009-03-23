@@ -37,7 +37,14 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
         public UnknownRecord(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {
-            this.Reader.ReadBytes((int)size);
+            if (this.Reader.BaseStream.Length - this.Reader.BaseStream.Position >= size)
+            {
+                this.Reader.ReadBytes((int)size);
+            }
+            else
+            {
+                this.Reader.ReadBytes((int)(this.Reader.BaseStream.Length - this.Reader.BaseStream.Position));
+            }
         }
     }
 

@@ -34,9 +34,20 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             : base(_reader, size, typeCode, version, instance)
         {
             this.m_rgbUid = this.Reader.ReadBytes(16);
-            this.m_rgbUidPrimary = new byte[16];
-            this.m_bTag = this.Reader.ReadByte();
-            this.m_pvBits = this.Reader.ReadBytes((int)(size - 17));
+
+            if (this.Instance == 0x6E1)
+            {
+                this.m_rgbUidPrimary = this.Reader.ReadBytes(16);
+                this.m_bTag = this.Reader.ReadByte();
+                this.m_pvBits = this.Reader.ReadBytes((int)(size - 33));
+            }
+            else
+            {
+                this.m_rgbUidPrimary = new byte[16];
+                this.m_bTag = this.Reader.ReadByte();
+                this.m_pvBits = this.Reader.ReadBytes((int)(size - 17));
+            }
+           
         }
     }
 }

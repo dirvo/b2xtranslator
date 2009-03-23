@@ -156,14 +156,20 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         }
         public void Apply(ShapeContainer container, string footertext, string headertext, string datetext)
         {
+            
             _footertext = footertext;
             _headertext = headertext;
             _datetext = datetext;
             ClientData clientData = container.FirstChildWithType<ClientData>();
 
+            RegularContainer slide = container.FirstAncestorWithType<Slide>();
+            if (slide == null) slide = container.FirstAncestorWithType<Note>();
+            if (slide == null) slide = container.FirstAncestorWithType<Handout>();
+
             bool continueShape = true;
 
             Shape sh = container.FirstChildWithType<Shape>();
+
             so = container.FirstChildWithType<ShapeOptions>();
             //if (clientData == null)
                 if (so != null)
@@ -349,15 +355,19 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     WritecustGeom(sh);
                 }
 
-                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillType))
+                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.FillStyleBooleanProperties))
                 {
-                    new FillMapping(_ctx, _writer, parentSlideMapping).Apply(so);
+                    FillStyleBooleanProperties p = new FillStyleBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.FillStyleBooleanProperties].op);
+                    if (p.fUsefFilled & p.fFilled) //  so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillType))
+                    {
+                        new FillMapping(_ctx, _writer, parentSlideMapping).Apply(so);
+                    }
                 }
                 else if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillColor))
                 {
                     if (sh.Instance != 0xca & placeholder == null)
                     {
-                        string colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, container.FirstAncestorWithType<Slide>(), so);
+                        string colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide, so);
                         _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
                         _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
                         _writer.WriteAttributeString("val", colorval);
@@ -458,7 +468,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         LineStyleBooleans lineStyle = new LineStyleBooleans(so.OptionsByID[ShapeOptions.PropertyId.lineStyleBooleans].op);
                         if (lineStyle.fLine)
                         {
-                            string colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.lineColor].op, container.FirstAncestorWithType<Slide>(), so);
+                            string colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.lineColor].op, slide, so);
                             _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
                             _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
                             _writer.WriteAttributeString("val", colorval);
@@ -590,8 +600,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 //shadow
                 if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.ShadowStyleBooleanProperties))
                 {
-                    ShadowStyleBooleanProperties p = new ShadowStyleBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.ShadowStyleBooleanProperties].op);
-                    if (p.fUsefShadow & p.fShadow)
+                    ShadowStyleBooleanProperties sp = new ShadowStyleBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.ShadowStyleBooleanProperties].op);
+                    if (sp.fUsefShadow & sp.fShadow)
                     {
                         new ShadowMapping(_ctx, _writer).Apply(so);
                     }
@@ -633,7 +643,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             _writer.WriteStartElement("a", "rPr", OpenXmlNamespaces.DrawingML);
                             if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.gtextSize))
                             {
-                                _writer.WriteAttributeString("sz", (so.OptionsByID[ShapeOptions.PropertyId.gtextSize].op * 100).ToString());
+                                _writer.WriteAttributeString("sz", (so.OptionsByID[ShapeOptions.PropertyId.gtextSize].op / 0x100).ToString());
                             }
                             else
                             {
@@ -808,7 +818,19 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 {
                     UInt32 b = so.OptionsByID[ShapeOptions.PropertyId.pictureBrightness].op;
                     if (b == 0xFFF8000) b = 0;
-                    Decimal b1 = (Decimal)b / 0x8000;
+
+                    Decimal b1 = 0;
+
+                    if (((int)b) < 0)
+                    {
+                        int b2 = (int)b;
+                        b1 = (Decimal)b2 / 0x8000;
+                    }
+                    else
+                    {
+                        b1 = (Decimal)b / 0x8000;
+                    }
+                    
                     b1 = b1 * 100000;
                     b1 = Math.Floor(b1);
                     _writer.WriteAttributeString("bright", b1.ToString());
@@ -833,19 +855,19 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteStartElement("a", "srcRect", OpenXmlNamespaces.DrawingML);
             if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.cropFromLeft))
             {
-                _writer.WriteAttributeString("l", Math.Floor((Decimal)so.OptionsByID[ShapeOptions.PropertyId.cropFromLeft].op / 65536 * 100000).ToString());
+                _writer.WriteAttributeString("l", Math.Floor((Decimal)(int)so.OptionsByID[ShapeOptions.PropertyId.cropFromLeft].op / 65536 * 100000).ToString());
             }
             if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.cropFromTop))
             {
-                _writer.WriteAttributeString("t",Math.Floor((Decimal)so.OptionsByID[ShapeOptions.PropertyId.cropFromTop].op / 65536 * 100000).ToString());
+                _writer.WriteAttributeString("t", Math.Floor((Decimal)(int)so.OptionsByID[ShapeOptions.PropertyId.cropFromTop].op / 65536 * 100000).ToString());
             }
             if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.cropFromRight))
             {
-                _writer.WriteAttributeString("r", Math.Floor((Decimal)so.OptionsByID[ShapeOptions.PropertyId.cropFromRight].op / 65536 * 100000).ToString());
+                _writer.WriteAttributeString("r", Math.Floor((Decimal)(int)so.OptionsByID[ShapeOptions.PropertyId.cropFromRight].op / 65536 * 100000).ToString());
             }
             if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.cropFromBottom))
             {
-                _writer.WriteAttributeString("b", Math.Floor((Decimal)so.OptionsByID[ShapeOptions.PropertyId.cropFromBottom].op / 65536 * 100000).ToString());
+                _writer.WriteAttributeString("b", Math.Floor((Decimal)(int)so.OptionsByID[ShapeOptions.PropertyId.cropFromBottom].op / 65536 * 100000).ToString());
             }
             _writer.WriteEndElement();
 
@@ -899,7 +921,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         public void writeBodyPr(Record rec)
         {
             _writer.WriteStartElement("a", "bodyPr", OpenXmlNamespaces.DrawingML);
-
+            bool cancelAttributes = false;
             if (rec is ShapeContainer)
             {
                 ShapeContainer container = (ShapeContainer)rec;
@@ -910,94 +932,99 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                         _writer.WriteStartElement("a", "prstTxWarp", OpenXmlNamespaces.DrawingML);
                         _writer.WriteAttributeString("prst", "textPlain");
-                        _writer.WriteFullEndElement();
+                        _writer.WriteEndElement();
+                        cancelAttributes = true;
                         break;
                     default:
                         break;
                 }
             }
 
-            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.dxTextLeft))
+            if (!cancelAttributes)
             {
-                _writer.WriteAttributeString("lIns", so.OptionsByID[ShapeOptions.PropertyId.dxTextLeft].op.ToString());
-            }
 
-            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.dyTextTop))
-            {
-                _writer.WriteAttributeString("tIns", so.OptionsByID[ShapeOptions.PropertyId.dyTextTop].op.ToString());
-            }
-
-            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.dxTextRight))
-            {
-                _writer.WriteAttributeString("rIns", so.OptionsByID[ShapeOptions.PropertyId.dxTextRight].op.ToString());
-            }
-
-            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.dyTextBottom))
-            {
-                _writer.WriteAttributeString("bIns", so.OptionsByID[ShapeOptions.PropertyId.dyTextBottom].op.ToString());
-            }
-            
-
-            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.WrapText))
-            {
-                switch (so.OptionsByID[ShapeOptions.PropertyId.WrapText].op)
+                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.dxTextLeft))
                 {
-                    case 0: //square
-                        _writer.WriteAttributeString("wrap", "square");
-                        break;
-                    case 1: //by points
-                        break; //TODO
-                    case 2: //none
-                        _writer.WriteAttributeString("wrap", "none");
-                        break;
-                    case 3: //top bottom
-                    case 4: //through
-                    default:
-                        break; //TODO
+                    _writer.WriteAttributeString("lIns", so.OptionsByID[ShapeOptions.PropertyId.dxTextLeft].op.ToString());
                 }
-            }
 
-            string s = "";
-            foreach (ShapeOptions.OptionEntry en in so.Options)
-            {
-                switch (en.pid)
+                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.dyTextTop))
                 {
-                    case ShapeOptions.PropertyId.anchorText:
+                    _writer.WriteAttributeString("tIns", so.OptionsByID[ShapeOptions.PropertyId.dyTextTop].op.ToString());
+                }
 
-                        switch (en.op)
-                        {
-                            case 0: //Top
-                                _writer.WriteAttributeString("anchor", "t");
-                                break;
-                            case 1: //Middle
-                                _writer.WriteAttributeString("anchor", "ctr");
-                                break;
-                            case 2: //Bottom
-                                _writer.WriteAttributeString("anchor", "b");
-                                break;
-                            case 3: //TopCentered
-                                _writer.WriteAttributeString("anchor", "t");
-                                _writer.WriteAttributeString("anchorCtr", "1");
-                                break;
-                            case 4: //MiddleCentered
-                                _writer.WriteAttributeString("anchor", "ctr");
-                                _writer.WriteAttributeString("anchorCtr", "1");
-                                break;
-                            case 5: //BottomCentered
-                                _writer.WriteAttributeString("anchor", "b");
-                                _writer.WriteAttributeString("anchorCtr", "1");
-                                break;
-                            case 6: //TopBaseline
-                            case 7: //BottomBaseline
-                            case 8: //TopCenteredBaseline
-                            case 9: //BottomCenteredBaseline
-                                //TODO
-                                break;
-                        }
-                        break;
-                    default:
-                        s += en.pid.ToString() + " ";
-                        break;
+                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.dxTextRight))
+                {
+                    _writer.WriteAttributeString("rIns", so.OptionsByID[ShapeOptions.PropertyId.dxTextRight].op.ToString());
+                }
+
+                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.dyTextBottom))
+                {
+                    _writer.WriteAttributeString("bIns", so.OptionsByID[ShapeOptions.PropertyId.dyTextBottom].op.ToString());
+                }
+
+
+                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.WrapText))
+                {
+                    switch (so.OptionsByID[ShapeOptions.PropertyId.WrapText].op)
+                    {
+                        case 0: //square
+                            _writer.WriteAttributeString("wrap", "square");
+                            break;
+                        case 1: //by points
+                            break; //TODO
+                        case 2: //none
+                            _writer.WriteAttributeString("wrap", "none");
+                            break;
+                        case 3: //top bottom
+                        case 4: //through
+                        default:
+                            break; //TODO
+                    }
+                }
+
+                string s = "";
+                foreach (ShapeOptions.OptionEntry en in so.Options)
+                {
+                    switch (en.pid)
+                    {
+                        case ShapeOptions.PropertyId.anchorText:
+
+                            switch (en.op)
+                            {
+                                case 0: //Top
+                                    _writer.WriteAttributeString("anchor", "t");
+                                    break;
+                                case 1: //Middle
+                                    _writer.WriteAttributeString("anchor", "ctr");
+                                    break;
+                                case 2: //Bottom
+                                    _writer.WriteAttributeString("anchor", "b");
+                                    break;
+                                case 3: //TopCentered
+                                    _writer.WriteAttributeString("anchor", "t");
+                                    _writer.WriteAttributeString("anchorCtr", "1");
+                                    break;
+                                case 4: //MiddleCentered
+                                    _writer.WriteAttributeString("anchor", "ctr");
+                                    _writer.WriteAttributeString("anchorCtr", "1");
+                                    break;
+                                case 5: //BottomCentered
+                                    _writer.WriteAttributeString("anchor", "b");
+                                    _writer.WriteAttributeString("anchorCtr", "1");
+                                    break;
+                                case 6: //TopBaseline
+                                case 7: //BottomBaseline
+                                case 8: //TopCenteredBaseline
+                                case 9: //BottomCenteredBaseline
+                                    //TODO
+                                    break;
+                            }
+                            break;
+                        default:
+                            s += en.pid.ToString() + " ";
+                            break;
+                    }
                 }
             }
 
@@ -1163,7 +1190,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             }
                             string lastColor = "";
                             string lastSize = "";
-                            new CharacterRunPropsMapping(_ctx, _writer).Apply(style.CRuns[0], "defRPr", textbox.FirstAncestorWithType<Slide>(), ref lastColor, ref lastSize); 
+                            RegularContainer slide = textbox.FirstAncestorWithType<Slide>();
+                            if (slide == null) slide = textbox.FirstAncestorWithType<Note>();
+                            if (slide == null) slide = textbox.FirstAncestorWithType<Handout>();
+                            new CharacterRunPropsMapping(_ctx, _writer).Apply(style.CRuns[0], "defRPr", slide, ref lastColor, ref lastSize); 
                             _writer.WriteEndElement();
                             lvlRprWritten = true;
                         }

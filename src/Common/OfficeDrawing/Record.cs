@@ -87,7 +87,14 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             this.Version = version;
             this.Instance = instance;
 
-            this.RawData = _reader.ReadBytes((int)this.BodySize);
+            if (this.BodySize <= _reader.BaseStream.Length)
+            {
+                this.RawData = _reader.ReadBytes((int)this.BodySize);
+            }
+            else
+            {
+                this.RawData = _reader.ReadBytes((int)(_reader.BaseStream.Length - _reader.BaseStream.Position));
+            }
 
             this.Reader = new BinaryReader(new MemoryStream(this.RawData));
         }

@@ -61,8 +61,19 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
             String managerPath = rootRels[0].Attributes["Target"].Value;
             String managerDirectory = Path.GetDirectoryName(managerPath).Replace("\\", "/");
+            XmlNodeList managerRels;
 
-            XmlNodeList managerRels = GetRelations(zipReader, managerPath);
+            try
+            {
+                managerRels = GetRelations(zipReader, managerPath);
+            }
+            catch (Exception)
+            {
+                this.XmlDocumentElement = null;
+                return null;
+            }
+           
+    
 
             if (managerRels.Count != 1)
                 throw new Exception("Expected actly one Relationship for Theme manager");

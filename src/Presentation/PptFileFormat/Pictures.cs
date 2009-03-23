@@ -53,7 +53,9 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
                     case 0:
                         this.Reader.BaseStream.Position = this.Reader.BaseStream.Length;
                         break;
+                    case 0xF01A:
                     case 0xF01B:
+                    case 0xF01C:
                         MetafilePictBlip mb = (MetafilePictBlip)r;
                         _pictures.Add(pos, mb);
                         break;

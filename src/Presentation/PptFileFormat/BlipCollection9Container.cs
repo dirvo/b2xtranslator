@@ -17,6 +17,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
     public class BlipEntityAtom : Record
     {
         public BitmapBlip blip;
+        public MetafilePictBlip mblip;
 
         public BlipEntityAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
@@ -26,7 +27,13 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             byte unused = this.Reader.ReadByte();
 
             Record rec = Record.ReadRecord(this.Reader, 0);
-            blip = (BitmapBlip)rec;
+
+            if (rec is BitmapBlip)
+            {
+                blip = (BitmapBlip)rec;
+            } else if (rec is MetafilePictBlip) {
+                mblip = (MetafilePictBlip)rec;
+            }
         }
     }
 
