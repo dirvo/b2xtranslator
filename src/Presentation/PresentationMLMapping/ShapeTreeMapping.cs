@@ -838,12 +838,13 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                 if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.pictureContrast))
                 {
-                    UInt32 b = so.OptionsByID[ShapeOptions.PropertyId.pictureContrast].op;
-                    if (b == 0x7FFFFFFF) b = 0;
-                    Decimal b2 = (Decimal)b / 0x10000;
-                    b2 = b2 - 1;
+                    Int32 b = (int)so.OptionsByID[ShapeOptions.PropertyId.pictureContrast].op;
+                    Decimal b2 = (Decimal)b  / 0x10000; //This comes from analysing, no hint in spec found
                     b2 = b2 * 100000;
                     b2 = Math.Floor(b2);
+                    if (b == 0x7FFFFFFF) b2 = 100000;
+                    if (b > 100000) b = 100000;
+                    
                     _writer.WriteAttributeString("contrast", b2.ToString());
                 }
 

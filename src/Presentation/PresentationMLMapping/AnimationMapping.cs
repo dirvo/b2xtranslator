@@ -658,7 +658,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
             else
             {
-                ShapeID = "";
+                foreach (int sId in this._parentMapping.shapeTreeMapping.spidToId.Keys)
+                {
+                    if (sId > 0)
+                    {
+                        ShapeID = this._parentMapping.shapeTreeMapping.spidToId[sId].ToString();
+                        break;
+                    }
+                }
             }
             _writer.WriteAttributeString("spid", ShapeID);
 

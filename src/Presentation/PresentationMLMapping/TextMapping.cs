@@ -153,6 +153,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             FooterMCAtom mca = null;
             MasterTextPropAtom masterTextProp = null;
             string text = "";
+            string origText = "";
 
             switch (rec.TypeCode)
             {
@@ -166,6 +167,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         {
                             case 0xfa0: //TextCharsAtom
                                 text = ((TextCharsAtom)rec).Text;
+                                origText = text;
                                 thAtom.TextAtom = (TextAtom)rec;
                                 break;
                             case 0xfa1: //TextRunStyleAtom
@@ -174,6 +176,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 break;
                             case 0xfa8: //TextBytesAtom
                                 text = ((TextBytesAtom)rec).Text;
+                                origText = text;
                                 thAtom.TextAtom = (TextAtom)rec;
                                 break;
                             case 0xfaa: //TextSpecialInfoAtom
@@ -196,12 +199,12 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 _writer.WriteEndElement(); //endParaRPr
                                 _writer.WriteEndElement(); //p
 
-                                text = text.Replace(text.Substring(snmca.Position, 1), "");
+                                text = text.Replace(origText.Substring(snmca.Position, 1), "");
 
                                 break;
                             case 0xff9: //HeaderMCAtom
                                 HeaderMCAtom hmca = (HeaderMCAtom)rec;
-                                text = text.Replace(text.Substring(hmca.Position, 1), headertext);
+                                text = text.Replace(origText.Substring(hmca.Position, 1), headertext);
 
                                 foreach (CharacterRun run in style.CRuns)
                                 {
@@ -210,7 +213,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 break;
                             case 0xffa: //FooterMCAtom
                                 mca = (FooterMCAtom)rec;
-                                text = text.Replace(text.Substring(mca.Position, 1), footertext);
+                                text = text.Replace(origText.Substring(mca.Position, 1), footertext);
 
                                 foreach (CharacterRun run in style.CRuns)
                                 {
@@ -219,7 +222,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 break;
                             case 0xff8: //GenericDateMCAtom
                                 GenericDateMCAtom gdmca = (GenericDateMCAtom)rec;
-                                text = text.Replace(text.Substring(gdmca.Position, 1), datetext);
+                                text = text.Replace(origText.Substring(gdmca.Position, 1), datetext);
 
                                 foreach (CharacterRun run in style.CRuns)
                                 {

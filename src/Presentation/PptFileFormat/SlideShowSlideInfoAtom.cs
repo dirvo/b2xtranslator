@@ -70,6 +70,8 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             fCursorVisible = Tools.Utils.BitmaskToBool(flags, 0x1 << 12);
 
             speed = this.Reader.ReadByte();
+
+            this.Reader.BaseStream.Position = this.Reader.BaseStream.Length;
         }
 
     }
@@ -131,6 +133,8 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             fRestartProperty = Tools.Utils.BitmaskToBool(flags, 0x1 << 1);
             fGroupingTypeProperty = Tools.Utils.BitmaskToBool(flags, 0x1 << 3);
             fDurationProperty = Tools.Utils.BitmaskToBool(flags, 0x1 << 4);
+
+            this.Reader.BaseStream.Position = this.Reader.BaseStream.Length;
         }
 
         public enum TimeNodeTypeEnum
