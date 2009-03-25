@@ -548,6 +548,17 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         }
     }
 
+
+    [OfficeRecordAttribute(61744)]
+    public class TimeScaleBehaviorContainer : RegularContainer
+    {
+        public TimeScaleBehaviorContainer(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance)
+        {
+
+        }
+    }
+
     [OfficeRecordAttribute(61741)]
     public class TimeEffectBehaviorContainer : RegularContainer
     {

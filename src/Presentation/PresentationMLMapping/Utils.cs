@@ -342,7 +342,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     case 0xF1: //shape line color if it is a line else shape fill color TODO!!
                         if (so.FirstAncestorWithType<OfficeDrawing.ShapeContainer>().FirstChildWithType<OfficeDrawing.Shape>().Instance == 1)
                         {
-                            result = getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions.PropertyId.fillColor].op, slide, so);
+                            if (so.OptionsByID.ContainsKey(DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions.PropertyId.fillColor))
+                            {
+                                result = getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions.PropertyId.fillColor].op, slide, so);
+                            }
+                            else
+                            {
+                                result = new RGBColor(MasterScheme.Fills, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;  //TODO: find out which color to use in this case
+                            }
                         }
                         else
                         {

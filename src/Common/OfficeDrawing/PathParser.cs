@@ -18,15 +18,18 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
         {
             // parse the segments
             this.Segments = new List<PathSegment>();
-            UInt16 nElemsSeg = System.BitConverter.ToUInt16(pSegmentInfo, 0);
-            UInt16 nElemsAllocSeg = System.BitConverter.ToUInt16(pSegmentInfo, 2);
-            UInt16 cbElemSeg = System.BitConverter.ToUInt16(pSegmentInfo, 4);
-            for (int i = 6; i < pSegmentInfo.Length; i += 2)
+            if (pSegmentInfo.Length > 0)
             {
-                this.Segments.Add(
-                    new PathSegment(
-                        System.BitConverter.ToUInt16(pSegmentInfo, i)
-                ));
+                UInt16 nElemsSeg = System.BitConverter.ToUInt16(pSegmentInfo, 0);
+                UInt16 nElemsAllocSeg = System.BitConverter.ToUInt16(pSegmentInfo, 2);
+                UInt16 cbElemSeg = System.BitConverter.ToUInt16(pSegmentInfo, 4);
+                for (int i = 6; i < pSegmentInfo.Length; i += 2)
+                {
+                    this.Segments.Add(
+                        new PathSegment(
+                            System.BitConverter.ToUInt16(pSegmentInfo, i)
+                    ));
+                }
             }
 
             // parse the values

@@ -145,15 +145,19 @@ namespace DIaLOGIKa.b2xtranslator.ppt2x
                 }
                 catch (MagicNumberException)
                 {
-                    TraceLogger.Error("Input file {0} is not a valid PowerPoint file.", InputFile);
+                    TraceLogger.Error("Input file {0} is not a valid PowerPoint 97-2007 file.", InputFile);
                 }
                 catch (InvalidStreamException e)
                 {
-                    TraceLogger.Error("Input file {0} is not a valid PowerPoint file.", InputFile);
+                    TraceLogger.Error("Input file {0} is not a valid PowerPoint 97-2007 file.", InputFile);
                 }
                 catch (InvalidRecordException)
                 {
-                    TraceLogger.Error("Input file {0} is not a valid PowerPoint file.", InputFile);
+                    TraceLogger.Error("Input file {0} is not a valid PowerPoint 97-2007 file.", InputFile);
+                }
+                catch (StreamNotFoundException e)
+                {
+                    TraceLogger.Error("Input file {0} is not a valid PowerPoint 97-2007 file.", InputFile);
                 }
                 catch (Exception ex)
                 {

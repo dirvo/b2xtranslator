@@ -128,6 +128,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             foreach (ClientVisualElementContainer c10aaa in rr.AllChildrenWithType<ClientVisualElementContainer>())
                                 foreach (VisualShapeAtom c10aaaa in c10aaa.AllChildrenWithType<VisualShapeAtom>())
                                     lst.Add(c10aaaa.shapeIdRef); //return c10aaaa.shapeIdRef;
+                    foreach (TimeScaleBehaviorContainer c10a in c9.AllChildrenWithType<TimeScaleBehaviorContainer>())
+                        foreach (TimeBehaviorContainer c10aa in c10a.AllChildrenWithType<TimeBehaviorContainer>())
+                            foreach (ClientVisualElementContainer c10aaa in c10aa.AllChildrenWithType<ClientVisualElementContainer>())
+                                foreach (VisualShapeAtom c10aaaa in c10aaa.AllChildrenWithType<VisualShapeAtom>())
+                                    lst.Add(c10aaaa.shapeIdRef); //return c10aaaa.shapeIdRef;
                 }
 
             return lst[0];

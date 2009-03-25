@@ -206,7 +206,14 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         /// </summary>
         private void IdentifyDocumentPersistObject()
         {
-               this.DocumentRecord = this.GetPersistObject<DocumentContainer>(this.LastUserEdit.DocPersistIdRef);
+            try
+            {
+                this.DocumentRecord = this.GetPersistObject<DocumentContainer>(this.LastUserEdit.DocPersistIdRef);
+            }
+            catch (Exception e)
+            {
+                throw new InvalidStreamException();
+            }
         }
 
         /// <summary>
