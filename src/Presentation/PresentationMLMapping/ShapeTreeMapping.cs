@@ -297,6 +297,22 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteStartElement("a", "xfrm", OpenXmlNamespaces.DrawingML);
                     if (sh.fFlipH) _writer.WriteAttributeString("flipH", "1");
                     if (sh.fFlipV) _writer.WriteAttributeString("flipV", "1");
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.rotation))
+                    {
+                        byte[] bytes = BitConverter.GetBytes(so.OptionsByID[ShapeOptions.PropertyId.rotation].op);
+                        int integral = BitConverter.ToInt16(bytes, 2);
+                        uint fractional = BitConverter.ToUInt16(bytes, 0);
+                        Decimal result = integral + ((decimal)fractional / (decimal)65536);
+
+                        string rotation = Math.Floor(result * 60000).ToString();
+                        _writer.WriteAttributeString("rot", rotation);
+                    }
+
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.TextBooleanProperties))
+                    {
+                        TextBooleanProperties props = new TextBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.TextBooleanProperties].op);
+
+                    }
 
                     if (container.FirstAncestorWithType<GroupContainer>().FirstAncestorWithType<GroupContainer>() == null)
                     {
@@ -332,6 +348,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteStartElement("a", "xfrm", OpenXmlNamespaces.DrawingML);
                     if (sh.fFlipH) _writer.WriteAttributeString("flipH", "1");
                     if (sh.fFlipV) _writer.WriteAttributeString("flipV", "1");
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.rotation))
+                    {
+                        string rotation = so.OptionsByID[ShapeOptions.PropertyId.rotation].op.ToString();
+                        _writer.WriteAttributeString("rot", rotation);
+                    }
 
                     _writer.WriteStartElement("a", "off", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("x", chAnchor.Left.ToString());
@@ -1029,9 +1050,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 }
             }
 
-            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fFitTextToShape))
+            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.TextBooleanProperties))
             {
-                _writer.WriteElementString("a", "spAutoFit", OpenXmlNamespaces.DrawingML, "");
+                TextBooleanProperties props = new TextBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.TextBooleanProperties].op);
+                if (props.fFitShapeToText && props.fUsefFitShapeToText) _writer.WriteElementString("a", "spAutoFit", OpenXmlNamespaces.DrawingML, "");
             }
 
             _writer.WriteEndElement();

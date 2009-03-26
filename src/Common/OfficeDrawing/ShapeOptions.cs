@@ -54,7 +54,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             fAutoTextMargin=188,
             fRotateText=189,
             fFitShapeToText=190,
-            fFitTextToShape=191,
+            TextBooleanProperties=191,
 
             //GeoText
             gtextUNICODE=192,
