@@ -305,17 +305,18 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         byte[] bytes = BitConverter.GetBytes(so.OptionsByID[ShapeOptions.PropertyId.rotation].op);
                         int integral = BitConverter.ToInt16(bytes, 2);
                         uint fractional = BitConverter.ToUInt16(bytes, 0);
-                        Decimal result = integral + ((decimal)fractional / (decimal)65536);
+                        Decimal result = integral + ((decimal)fractional / (decimal)65536);                        
 
                         Double alpha = (Double)result;
                         Double beta = (180 - alpha) / 2;
-                        Double a = (anchor.Bottom - anchor.Top) / 2;
-                        dc = 2 * a * Math.Sin((alpha / 2) * Math.PI / 180) * Math.Sin(beta * Math.PI / 180);
+                        Double a = (anchor.Right - anchor.Left) / 2;
+                        dc = Math.Abs(2 * a * Math.Sin((alpha / 2) * Math.PI / 180) * Math.Sin(beta * Math.PI / 180));
                         db = 2 * a * Math.Sin((alpha / 2) * Math.PI / 180) * Math.Cos(beta * Math.PI / 180);
 
+                        if (Math.Abs(result) > 45 && Math.Abs(result) < 135) swapHeightWidth = true;
+                        if (Math.Abs(result) > 225 && Math.Abs(result) < 315) swapHeightWidth = true;
 
-                        if (result > 45 && result < 135) swapHeightWidth = true;
-                        if (result > 225 && result < 315) swapHeightWidth = true;
+                        if (result < 0 && sh.fFlipH == false) result = result * -1;
 
                         string rotation = Math.Floor(result * 60000).ToString();
                         _writer.WriteAttributeString("rot", rotation);
@@ -379,13 +380,30 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     Rectangle rec = container.FirstAncestorWithType<GroupContainer>().FirstChildWithType<ShapeContainer>().FirstChildWithType<GroupShapeRecord>().rcgBounds;
 
                     _writer.WriteStartElement("a", "xfrm", OpenXmlNamespaces.DrawingML);
-                    if (sh.fFlipH) _writer.WriteAttributeString("flipH", "1");
-                    if (sh.fFlipV) _writer.WriteAttributeString("flipV", "1");
                     if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.rotation))
                     {
-                        string rotation = so.OptionsByID[ShapeOptions.PropertyId.rotation].op.ToString();
+                        byte[] bytes = BitConverter.GetBytes(so.OptionsByID[ShapeOptions.PropertyId.rotation].op);
+                        int integral = BitConverter.ToInt16(bytes, 2);
+                        uint fractional = BitConverter.ToUInt16(bytes, 0);
+                        Decimal result = integral + ((decimal)fractional / (decimal)65536);
+
+                        if (result < 0 && sh.fFlipH == false) result = result * -1;
+
+                        Double alpha = (Double)result;
+                        Double beta = (180 - alpha) / 2;
+                        Double a = (chAnchor.Bottom - chAnchor.Top) / 2;
+                        dc = 2 * a * Math.Sin((alpha / 2) * Math.PI / 180) * Math.Sin(beta * Math.PI / 180);
+                        db = 2 * a * Math.Sin((alpha / 2) * Math.PI / 180) * Math.Cos(beta * Math.PI / 180);
+
+                        if (Math.Abs(result) > 45 && Math.Abs(result) < 135) swapHeightWidth = true;
+                        if (Math.Abs(result) > 225 && Math.Abs(result) < 315) swapHeightWidth = true;
+
+                        string rotation = Math.Floor(result * 60000).ToString();
                         _writer.WriteAttributeString("rot", rotation);
                     }
+
+                    if (sh.fFlipH) _writer.WriteAttributeString("flipH", "1");
+                    if (sh.fFlipV) _writer.WriteAttributeString("flipV", "1");
 
                     _writer.WriteStartElement("a", "off", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("x", chAnchor.Left.ToString());

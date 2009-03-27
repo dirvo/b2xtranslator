@@ -389,6 +389,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             fReallyHidden=951,
             fScriptAnchor=952,
             groupShapeBooleans = 959,
+            relRotation = 964,
 
             //Unknown HTML
             wzLineId=1026,
