@@ -247,6 +247,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             }
 
+            if (footertext.Length == 0) footer = false;
+
             if (slideNumber)
             {
                 foreach (Slide master in this._ctx.Ppt.MainMasterRecords)
