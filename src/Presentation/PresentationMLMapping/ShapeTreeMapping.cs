@@ -188,36 +188,36 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             ShapeOptions sndSo = null;
             if (container.AllChildrenWithType<ShapeOptions>().Count > 1)
             {
-                sndSo = ((RegularContainer)sh.ParentRecord).AllChildrenWithType<ShapeOptions>()[1];
-                if (false & sndSo.OptionsByID.ContainsKey(ShapeOptions.PropertyId.metroBlob))
-                {
-                    ZipUtils.ZipReader reader = null;
-                    try
-                    {
-                        ShapeOptions.OptionEntry metroBlob = sndSo.OptionsByID[ShapeOptions.PropertyId.metroBlob];
-                        byte[] code = metroBlob.opComplex;
-                        string path = System.IO.Path.GetTempFileName();
-                        System.IO.FileStream fs = new System.IO.FileStream(path, System.IO.FileMode.Create);
-                        fs.Write(code, 0, code.Length);
-                        fs.Close();
+                //sndSo = ((RegularContainer)sh.ParentRecord).AllChildrenWithType<ShapeOptions>()[1];
+                //if (sndSo.OptionsByID.ContainsKey(ShapeOptions.PropertyId.metroBlob))
+                //{
+                //    ZipUtils.ZipReader reader = null;
+                //    try
+                //    {
+                //        ShapeOptions.OptionEntry metroBlob = sndSo.OptionsByID[ShapeOptions.PropertyId.metroBlob];
+                //        byte[] code = metroBlob.opComplex;
+                //        string path = System.IO.Path.GetTempFileName();
+                //        System.IO.FileStream fs = new System.IO.FileStream(path, System.IO.FileMode.Create);
+                //        fs.Write(code, 0, code.Length);
+                //        fs.Close();
 
-                        reader = ZipUtils.ZipFactory.OpenArchive(path);
-                        System.IO.StreamReader mems = new System.IO.StreamReader(reader.GetEntry("drs/shapexml.xml"));
-                        string xml = mems.ReadToEnd();
-                        xml = xml.Substring(xml.IndexOf("<p:sp")); //remove xml declaration
+                //        reader = ZipUtils.ZipFactory.OpenArchive(path);
+                //        System.IO.StreamReader mems = new System.IO.StreamReader(reader.GetEntry("drs/shapexml.xml"));
+                //        string xml = mems.ReadToEnd();
+                //        xml = xml.Substring(xml.IndexOf("<p:sp")); //remove xml declaration
 
-                        _writer.WriteRaw(xml);
+                //        _writer.WriteRaw(xml);
 
-                        continueShape = false;
+                //        continueShape = false;
 
-                        reader.Close();
-                    }
-                    catch (Exception e)
-                    {
-                        continueShape = true;
-                        if (reader != null) reader.Close();
-                    }
-                }
+                //        reader.Close();
+                //    }
+                //    catch (Exception e)
+                //    {
+                //        continueShape = true;
+                //        if (reader != null) reader.Close();
+                //    }
+                //}
             }
 
             if (continueShape)
