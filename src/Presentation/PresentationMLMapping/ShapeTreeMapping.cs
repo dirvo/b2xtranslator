@@ -294,7 +294,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                 bool swapHeightWidth = false;
                 Double dc = 0;
-                Double db = 0;
                 if (anchor != null && anchor.Right >= anchor.Left && anchor.Bottom >= anchor.Top)
                 {
                     _writer.WriteStartElement("a", "xfrm", OpenXmlNamespaces.DrawingML);
@@ -305,13 +304,12 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         byte[] bytes = BitConverter.GetBytes(so.OptionsByID[ShapeOptions.PropertyId.rotation].op);
                         int integral = BitConverter.ToInt16(bytes, 2);
                         uint fractional = BitConverter.ToUInt16(bytes, 0);
-                        Decimal result = integral + ((decimal)fractional / (decimal)65536);                        
+                        Decimal result = integral +((decimal)fractional / (decimal)65536);
 
-                        Double alpha = (Double)result;
-                        Double beta = (180 - alpha) / 2;
-                        Double a = (anchor.Right - anchor.Left) / 2;
-                        dc = Math.Abs(2 * a * Math.Sin((alpha / 2) * Math.PI / 180) * Math.Sin(beta * Math.PI / 180));
-                        db = 2 * a * Math.Sin((alpha / 2) * Math.PI / 180) * Math.Cos(beta * Math.PI / 180);
+                        Double w = anchor.Bottom - anchor.Top;
+                        Double h = anchor.Right - anchor.Left;
+
+                        dc = (w - h) / 2;
 
                         if (Math.Abs(result) > 45 && Math.Abs(result) < 135) swapHeightWidth = true;
                         if (Math.Abs(result) > 225 && Math.Abs(result) < 315) swapHeightWidth = true;
@@ -319,7 +317,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         if (result < 0 && sh.fFlipH == false) result = result * -1;
 
                         string rotation = Math.Floor(result * 60000).ToString();
-                        _writer.WriteAttributeString("rot", rotation);
+                        if (result != 0)
+                        {
+                            _writer.WriteAttributeString("rot", rotation);
+                        }
+
                     }
 
                     if (container.FirstAncestorWithType<GroupContainer>().FirstAncestorWithType<GroupContainer>() == null)
@@ -328,8 +330,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                         if (swapHeightWidth)
                         {
-                            _writer.WriteAttributeString("x", Utils.MasterCoordToEMU(anchor.Top + (int)db).ToString());
-                            _writer.WriteAttributeString("y", Utils.MasterCoordToEMU(anchor.Left - (int)dc).ToString());
+                            _writer.WriteAttributeString("x", Utils.MasterCoordToEMU(anchor.Left - (int)dc).ToString());
+                            _writer.WriteAttributeString("y", Utils.MasterCoordToEMU(anchor.Top + (int)dc).ToString());
                         }
                         else
                         {
@@ -392,8 +394,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         Double alpha = (Double)result;
                         Double beta = (180 - alpha) / 2;
                         Double a = (chAnchor.Bottom - chAnchor.Top) / 2;
-                        dc = 2 * a * Math.Sin((alpha / 2) * Math.PI / 180) * Math.Sin(beta * Math.PI / 180);
-                        db = 2 * a * Math.Sin((alpha / 2) * Math.PI / 180) * Math.Cos(beta * Math.PI / 180);
+                        dc = a * Math.Sin(beta * Math.PI / 180);
+                        db = a * Math.Cos(beta * Math.PI / 180);
+
 
                         if (Math.Abs(result) > 45 && Math.Abs(result) < 135) swapHeightWidth = true;
                         if (Math.Abs(result) > 225 && Math.Abs(result) < 315) swapHeightWidth = true;
