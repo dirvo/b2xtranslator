@@ -46,6 +46,20 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         }
     }
 
+    [OfficeRecordAttribute(4087)]
+    public class DateTimeMCAtom : Record
+    {
+        public Int32 Position;
+        public byte index;
+        public DateTimeMCAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance)
+        {
+            Position = Reader.ReadInt32();
+            index = Reader.ReadByte();
+        }
+    }
+
+
     [OfficeRecordAttribute(4089)]
     public class HeaderMCAtom : Record
     {

@@ -174,6 +174,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 style = (TextStyleAtom)rec;
                                 style.TextHeaderAtom = thAtom;
                                 break;
+                            case 0xfa6: //TextRulerAtom
+                                break;
                             case 0xfa8: //TextBytesAtom
                                 text = ((TextBytesAtom)rec).Text;
                                 origText = text;
@@ -201,6 +203,28 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                                 text = text.Replace(origText.Substring(snmca.Position, 1), "");
 
+                                break;
+                            case 0xff7: //DateTimeMCAtom
+                                DateTimeMCAtom d = (DateTimeMCAtom)rec;
+                                String date = System.DateTime.Now.ToString();
+
+                                _writer.WriteStartElement("a", "p", OpenXmlNamespaces.DrawingML);
+
+                                _writer.WriteStartElement("a", "fld", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("id", "{1023E2E8-AA53-4FEA-8F5C-1FABD68F61AB}");
+                                _writer.WriteAttributeString("type", "datetime9");
+                                _writer.WriteElementString("a", "t", OpenXmlNamespaces.DrawingML, date);
+                                _writer.WriteEndElement(); //fld                                
+                                _writer.WriteStartElement("a", "endParaRPr", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteEndElement(); //endParaRPr
+                                _writer.WriteEndElement(); //p
+
+                                text = text.Replace(origText.Substring(d.Position, 1), "");
+
+                                foreach (CharacterRun run in style.CRuns)
+                                {
+                                    run.Length += (uint)text.Length;
+                                }
                                 break;
                             case 0xff9: //HeaderMCAtom
                                 HeaderMCAtom hmca = (HeaderMCAtom)rec;

@@ -391,12 +391,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                         if (result < 0 && sh.fFlipH == false) result = result * -1;
 
-                        Double alpha = (Double)result;
-                        Double beta = (180 - alpha) / 2;
-                        Double a = (chAnchor.Bottom - chAnchor.Top) / 2;
-                        dc = a * Math.Sin(beta * Math.PI / 180);
-                        db = a * Math.Cos(beta * Math.PI / 180);
+                        Double w = chAnchor.Bottom - chAnchor.Top;
+                        Double h = chAnchor.Right - chAnchor.Left;
 
+                        dc = (w - h) / 2;
 
                         if (Math.Abs(result) > 45 && Math.Abs(result) < 135) swapHeightWidth = true;
                         if (Math.Abs(result) > 225 && Math.Abs(result) < 315) swapHeightWidth = true;
@@ -1148,6 +1146,17 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                     _writer.WriteAttributeString("type", typeValue);
                                 }
 
+                                switch (placeholder.PlaceholderSize)
+                                {
+                                    case 1:
+                                        _writer.WriteAttributeString("sz", "half");
+                                        break;
+                                    case 2:
+                                        _writer.WriteAttributeString("sz", "quarter");
+                                        break;
+                                }
+
+
                                 if (placeholder.Position != -1)
                                 {
                                     _writer.WriteAttributeString("idx", placeholder.Position.ToString());
@@ -1157,8 +1166,56 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             }
                             break;
                         case 4116:
+                            break;
+                        case 5000:
+                            RegularContainer con = (RegularContainer)rec;
+                            foreach (ProgBinaryTag t in con.AllChildrenWithType<ProgBinaryTag>())
+                            {
+                                CStringAtom c = t.FirstChildWithType<CStringAtom>();
+                                ProgBinaryTagDataBlob b = t.FirstChildWithType<ProgBinaryTagDataBlob>();
+                                StyleTextProp9Atom p = b.FirstChildWithType<StyleTextProp9Atom>();
+                            }
+                            break;
                         default:
                             break;
+                    }
+                }
+            
+                RegularContainer container = (RegularContainer)(clientData.ParentRecord);
+                foreach (ClientTextbox b in container.AllChildrenWithType<ClientTextbox>())
+                {
+                    ms = new System.IO.MemoryStream(b.Bytes);
+                    Record rec;
+                    while (ms.Position < ms.Length)
+                    {
+                        rec = Record.ReadRecord(ms, 0);
+
+                        switch (rec.TypeCode)
+                        {
+                            case 0xfa0: //TextCharsAtom
+                            case 0xfa1: //TextRunStyleAtom
+                            case 0xfa6: //TextRulerAtom
+                            case 0xfa8: //TextBytesAtom
+                            case 0xfaa: //TextSpecialInfoAtom
+                            case 0xfa2: //MasterTextPropAtom
+                                break;
+                            case 0xfd8: //SlideNumberMCAtom
+                               
+                                break;
+                            case 0xff7: //DateTimeMCAtom
+                                _writer.WriteStartElement("p", "ph", OpenXmlNamespaces.PresentationML);
+                                _writer.WriteAttributeString("type", "dt");
+                                _writer.WriteEndElement();
+                                break;
+                            case 0xff9: //HeaderMCAtom
+                                break;
+                            case 0xffa: //FooterMCAtom
+                                break;
+                            case 0xff8: //GenericDateMCAtom
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
             }
