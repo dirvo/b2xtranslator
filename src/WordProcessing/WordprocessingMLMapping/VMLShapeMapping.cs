@@ -76,7 +76,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             _writer.WriteStartElement("v", "group", OpenXmlNamespaces.VectorML);
             _writer.WriteAttributeString("id", getShapeId(shape));
-            _writer.WriteAttributeString("style", buildStyle(shape, anchor, options).ToString());
+            _writer.WriteAttributeString("style", buildStyle(shape, anchor, options, 0).ToString());
             _writer.WriteAttributeString("coordorigin", gsr.rcgBounds.Left + "," + gsr.rcgBounds.Top);
             _writer.WriteAttributeString("coordsize", gsr.rcgBounds.Width + "," + gsr.rcgBounds.Height);
             
@@ -140,7 +140,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 _writer.WriteAttributeString("type", "#" + VMLShapeTypeMapping.GenerateTypeId(shape.ShapeType));
             }
-            _writer.WriteAttributeString("style", buildStyle(shape, anchor, options).ToString());
+            _writer.WriteAttributeString("style", buildStyle(shape, anchor, options, container.Index).ToString());
             if (shape.ShapeType is LineType)
             {
                 //append "from" and  "to" attributes
@@ -708,7 +708,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             return from.ToString();
         }
 
-        private StringBuilder buildStyle(Shape shape, ChildAnchor anchor, List<ShapeOptions.OptionEntry> options)
+        private StringBuilder buildStyle(Shape shape, ChildAnchor anchor, List<ShapeOptions.OptionEntry> options, int zIndex)
         {
             StringBuilder style = new StringBuilder();
             appendStyleProperty(style, "position", "absolute");
@@ -741,6 +741,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
 
             AppendOptionsToStyle(style, options);
+
+            appendStyleProperty(style, "z-index", zIndex.ToString());
 
             return style;
         }

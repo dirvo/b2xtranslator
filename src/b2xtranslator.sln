@@ -63,6 +63,8 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Win32Installer", "Setup\Win
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shell", "Common\Shell\Shell.csproj", "{3EF2F275-1148-4703-9B2E-56966E92DF32}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Architecture", "Architecture", "{D69EBA3F-37B1-4D8F-A8CF-CD7D35BF5AE3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -36,6 +36,8 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
     [OfficeRecordAttribute(0xF004)]
     public class ShapeContainer : RegularContainer, IVisitable
     {
+        public int Index;
+
         public ShapeContainer(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance) 
         { 

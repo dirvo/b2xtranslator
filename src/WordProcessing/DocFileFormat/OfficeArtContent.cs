@@ -75,6 +75,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                             if (shape.spid == spid)
                             {
                                 ret = container;
+                                ret.Index = i;
                                 break;
                             }
                         }
@@ -86,6 +87,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                             if (shape.spid == spid)
                             {
                                 ret = container;
+                                ret.Index = i;
                                 break;
                             }
                         }
