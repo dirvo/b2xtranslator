@@ -48,10 +48,13 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _ctx = ctx;
         }
 
-        public void Apply(CharacterRun run, string startElement, RegularContainer slide, ref string lastColor, ref string lastSize)
+        public void Apply(CharacterRun run, string startElement, RegularContainer slide, ref string lastColor, ref string lastSize, string lang)
         {
-            //_writer.WriteStartElement("a", "rPr", OpenXmlNamespaces.DrawingML);
+
             _writer.WriteStartElement("a", startElement, OpenXmlNamespaces.DrawingML);
+
+            //TODO: use real language
+            _writer.WriteAttributeString("lang", lang);
 
             if (run.SizePresent)
             {

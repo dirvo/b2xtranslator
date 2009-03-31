@@ -44,6 +44,7 @@ using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
 using Microsoft.Win32;
 using DIaLOGIKa.b2xtranslator.Shell;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 
 namespace DIaLOGIKa.b2xtranslator.ppt2x
 {
@@ -125,6 +126,13 @@ namespace DIaLOGIKa.b2xtranslator.ppt2x
 
                             // Write presentation.xml
                             ppt.Convert(new PresentationPartMapping(context));
+
+                            AppMapping app = new AppMapping(pptx.AddAppPropertiesPart(), xws);
+                            app.Apply(null);
+
+                            CoreMapping core = new CoreMapping(pptx.AddCoreFilePropertiesPart(), xws);
+                            core.Apply(null);
+                                                       
                         }
 
                         DateTime end = DateTime.Now;

@@ -102,6 +102,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string TableStyles = "application/vnd.openxmlformats-officedocument.presentationml.tableStyles+xml";
         public const string ViewProps = "application/vnd.openxmlformats-officedocument.presentationml.viewProps+xml";
         public const string PresProps = "application/vnd.openxmlformats-officedocument.presentationml.presProps+xml";
+        public const string ExtendedProps = "application/vnd.openxmlformats-officedocument.extended-properties+xml";
     }
 
     public static class MicrosoftWordContentTypes
@@ -131,6 +132,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 
         // PresentationML namespaces
         public const string PresentationML = "http://schemas.openxmlformats.org/presentationml/2006/main";
+        public const string docPropsVTypes = "http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes";
 
         // SpreadsheetML Namespaces
         public const string SharedStringML = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
@@ -179,7 +181,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string SlideMaster = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster";
         public const string NotesSlide = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesSlide";
         public const string NotesMaster = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster";
-        public const string HandoutMaster = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/handoutMaster";   
+        public const string HandoutMaster = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/handoutMaster";
+
         // SpreadsheetML
 
         public const string WorkSheet = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet";

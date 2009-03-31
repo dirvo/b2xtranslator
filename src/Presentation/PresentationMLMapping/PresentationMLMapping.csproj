@@ -58,6 +58,8 @@
     <Compile Include="ColorSchemeMapping.cs" />
     <Compile Include="ConversionContext.cs" />
     <Compile Include="AnimationMapping.cs" />
+    <Compile Include="AppMapping.cs" />
+    <Compile Include="CoreMapping.cs" />
     <Compile Include="HandoutMasterMapping.cs" />
     <Compile Include="NotesMasterMapping.cs" />
     <Compile Include="NoteMapping.cs" />

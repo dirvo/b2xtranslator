@@ -213,7 +213,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement();
         }
 
-        private void writepPr(CharacterRun cr, ParagraphRun pr, ParagraphRun9 pr9, int IndentLevel, bool isTitle)
+        public void writepPr(CharacterRun cr, ParagraphRun pr, ParagraphRun9 pr9, int IndentLevel, bool isTitle)
         {
           
             //TextMasterStyleAtom defaultStyle = _ctx.Ppt.DocumentRecord.FirstChildWithType<DIaLOGIKa.b2xtranslator.PptFileFormat.Environment>().FirstChildWithType<TextMasterStyleAtom>();
@@ -473,7 +473,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             //defRPr
             //extLst
 
-            new CharacterRunPropsMapping(_ctx, _writer).Apply(cr, "defRPr", (RegularContainer)_Master, ref lastColor, ref lastSize);                    
+            new CharacterRunPropsMapping(_ctx, _writer).Apply(cr, "defRPr", (RegularContainer)_Master, ref lastColor, ref lastSize, "en-US");                    
 
             _writer.WriteEndElement(); //lvlXpPr
         }

@@ -61,18 +61,48 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             CreateHandoutMasters(ppt);
             CreateSlides(ppt, documentRecord);
             //CreatePictures(ppt, documentRecord);
-
+                        
             WriteMainMasters(ppt);
             WriteSlides(ppt, documentRecord);
 
             // sldSz and notesSz
             WriteSizeInfo(ppt, documentRecord);
 
+            WriteDefaultTextStyle(ppt, documentRecord);
+
             // End the document
             _writer.WriteEndElement();
             _writer.WriteEndDocument();
 
             _writer.Flush();
+        }
+
+        private void WriteDefaultTextStyle(PowerpointDocument ppt, DocumentContainer documentRecord)
+        {
+            _writer.WriteStartElement("p", "defaultTextStyle", OpenXmlNamespaces.PresentationML);
+
+            _writer.WriteStartElement("a", "defPPr", OpenXmlNamespaces.DrawingML);
+            _writer.WriteStartElement("a", "defRPr", OpenXmlNamespaces.DrawingML);
+            _writer.WriteAttributeString("lang", "en-US");
+            _writer.WriteEndElement(); //defRPr
+            _writer.WriteEndElement(); //defPPr
+
+
+            TextMasterStyleAtom defaultStyle = _ctx.Ppt.DocumentRecord.FirstChildWithType<DIaLOGIKa.b2xtranslator.PptFileFormat.Environment>().FirstChildWithType<TextMasterStyleAtom>();
+
+            TextMasterStyleMapping map = new TextMasterStyleMapping(_ctx, _writer, null);
+
+            for (int i = 0; i < defaultStyle.IndentLevelCount; i++)
+            {
+                map.writepPr(defaultStyle.CRuns[i], defaultStyle.PRuns[i], null, i, false);
+            }
+            for (int i = defaultStyle.IndentLevelCount; i < 9; i++)
+            {
+                map.writepPr(defaultStyle.CRuns[0], defaultStyle.PRuns[0], null, i, false);
+            }
+
+
+            _writer.WriteEndElement(); //defaultTextStyle
         }
 
         private void WriteSizeInfo(PowerpointDocument ppt, DocumentContainer documentRecord)

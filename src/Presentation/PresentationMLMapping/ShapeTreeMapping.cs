@@ -1234,6 +1234,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             TextHeaderAtom thAtom = null;
             TextStyleAtom style = null;
             List<int> lst = new List<int>();
+            string lang = "en-US";
             while (ms.Position < ms.Length)
             {
                 Record rec = Record.ReadRecord(ms, 0);
@@ -1286,6 +1287,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         thAtom.TextAtom = (TextAtom)rec;
                         break;
                     case 0xfaa: //TextSpecialInfoAtom
+                        TextSpecialInfoAtom sia = (TextSpecialInfoAtom)rec;
+                        if (sia.Runs.Count > 0)
+                        {
+                            if (sia.Runs[0].si.lang) lang = System.Globalization.CultureInfo.GetCultureInfo(sia.Runs[0].si.lid).IetfLanguageTag;
+                        }
                         break;
                     case 0xfd8: //SlideNumberMCAtom
                     case 0xff9: //HeaderMCAtom
@@ -1327,7 +1333,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             RegularContainer slide = textbox.FirstAncestorWithType<Slide>();
                             if (slide == null) slide = textbox.FirstAncestorWithType<Note>();
                             if (slide == null) slide = textbox.FirstAncestorWithType<Handout>();
-                            new CharacterRunPropsMapping(_ctx, _writer).Apply(style.CRuns[0], "defRPr", slide, ref lastColor, ref lastSize); 
+                            new CharacterRunPropsMapping(_ctx, _writer).Apply(style.CRuns[0], "defRPr", slide, ref lastColor, ref lastSize, lang); 
                             _writer.WriteEndElement();
                             lvlRprWritten = true;
                         }
