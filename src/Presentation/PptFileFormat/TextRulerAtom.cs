@@ -66,7 +66,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             if (fLeftMargin1) leftMargin1 = Reader.ReadInt16();
             if (fIndent1) indent1 = Reader.ReadInt16();
             if (fLeftMargin2) leftMargin2 = Reader.ReadInt16();
-            if (fIndent2) indent3 = Reader.ReadInt16();
+            if (fIndent2) indent2 = Reader.ReadInt16();
             if (fLeftMargin3) leftMargin3 = Reader.ReadInt16();
             if (fIndent3) indent3 = Reader.ReadInt16();
             if (fLeftMargin4) leftMargin4 = Reader.ReadInt16();

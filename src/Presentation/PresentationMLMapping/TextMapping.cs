@@ -457,8 +457,25 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 if (p.LeftMarginPresent)
                 {
                     _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU((int)p.LeftMargin).ToString());
-                } else if (ruler != null && ruler.fLeftMargin1){
+                } 
+                else if (ruler != null && ruler.fLeftMargin1){
                     _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU(ruler.leftMargin1).ToString());
+                }
+                else if (ruler != null && ruler.fLeftMargin2)
+                {
+                    _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU(ruler.leftMargin2).ToString());
+                }
+                else if (ruler != null && ruler.fLeftMargin3)
+                {
+                    _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU(ruler.leftMargin3).ToString());
+                }
+                else if (ruler != null && ruler.fLeftMargin4)
+                {
+                    _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU(ruler.leftMargin4).ToString());
+                }
+                else if (ruler != null && ruler.fLeftMargin5)
+                {
+                    _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU(ruler.leftMargin5).ToString());
                 } else if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.dxTextLeft))
                 {
                     if (so.OptionsByID[ShapeOptions.PropertyId.dxTextLeft].op > 0)
@@ -471,6 +488,22 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 else if (ruler != null && ruler.fIndent1)
                 {
                     _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(ruler.leftMargin1 - ruler.indent1)))).ToString());
+                }
+                else if (ruler != null && ruler.fIndent2)
+                {
+                    _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(ruler.leftMargin2 - ruler.indent2)))).ToString());
+                }
+                else if (ruler != null && ruler.fIndent3)
+                {
+                    _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(ruler.leftMargin3 - ruler.indent3)))).ToString());
+                }
+                else if (ruler != null && ruler.fIndent4)
+                {
+                    _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(ruler.leftMargin4 - ruler.indent4)))).ToString());
+                }
+                else if (ruler != null && ruler.fIndent5)
+                {
+                    _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(ruler.leftMargin5 - ruler.indent5)))).ToString());
                 }
 
                 if (p.AlignmentPresent)
