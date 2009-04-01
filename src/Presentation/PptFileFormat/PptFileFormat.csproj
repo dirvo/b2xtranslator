@@ -60,6 +60,9 @@
     <Compile Include="ColorSchemeAtom.cs" />
     <Compile Include="BlipCollection9Container.cs" />
     <Compile Include="AnimationInfoContainer.cs" />
+    <Compile Include="TextPFExceptionAtom.cs" />
+    <Compile Include="DefaultRulerAtom.cs" />
+    <Compile Include="TextRulerAtom.cs" />
     <Compile Include="TextSpecialInfoAtom.cs" />
     <Compile Include="SlideShowSlideInfoAtom.cs" />
     <Compile Include="Handout.cs" />

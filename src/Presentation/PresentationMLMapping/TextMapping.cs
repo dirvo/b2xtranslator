@@ -152,6 +152,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             TextHeaderAtom thAtom = null;
             TextStyleAtom style = null;
             FooterMCAtom mca = null;
+            TextRulerAtom ruler = null;
             MasterTextPropAtom masterTextProp = null;
             string text = "";
             string origText = "";
@@ -177,6 +178,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 style.TextHeaderAtom = thAtom;
                                 break;
                             case 0xfa6: //TextRulerAtom
+                                ruler = (TextRulerAtom)rec;
                                 break;
                             case 0xfa8: //TextBytesAtom
                                 text = ((TextBytesAtom)rec).Text;
@@ -218,7 +220,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                                 ParagraphRun p = GetParagraphRun(style, 0);
                                 MasterTextPropRun tp = GetMasterTextPropRun(masterTextProp, 0);
-                                writeP(p, tp, so);
+                                writeP(p, tp, so, ruler);
 
                                 _writer.WriteStartElement("a", "fld", OpenXmlNamespaces.DrawingML);
                                 _writer.WriteAttributeString("id", "{1023E2E8-AA53-4FEA-8F5C-1FABD68F61AB}");
@@ -293,6 +295,19 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     if (thAtom.TextAtom != null) text = thAtom.TextAtom.Text;
                     if (thAtom.TextStyleAtom != null) style = thAtom.TextStyleAtom;
 
+                    while (ms.Position < ms.Length)
+                    {
+                        rec = Record.ReadRecord(ms, 0);
+                        switch (rec.TypeCode)
+                        {
+                            case 0xfa6: //TextRulerAtom
+                                ruler = (TextRulerAtom)rec;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
                     break;
                 default:
                     throw new NotSupportedException("Can't find text for ClientTextbox without TextHeaderAtom and OutlineTextRefAtom");
@@ -331,7 +346,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     MasterTextPropRun tp = GetMasterTextPropRun(masterTextProp, idx);
 
                     String runText;
-                    writeP(p, tp, so);
+                    writeP(p, tp, so, ruler);
 
                     uint CharacterRunStart;
                     int len;
@@ -427,7 +442,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         }
 
-        private void writeP(ParagraphRun p, MasterTextPropRun tp, ShapeOptions so)
+        private void writeP(ParagraphRun p, MasterTextPropRun tp, ShapeOptions so, TextRulerAtom ruler)
         {
             _writer.WriteStartElement("a", "p", OpenXmlNamespaces.DrawingML);
 
@@ -442,11 +457,21 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 if (p.LeftMarginPresent)
                 {
                     _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU((int)p.LeftMargin).ToString());
+                } else if (ruler != null && ruler.fLeftMargin1){
+                    _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU(ruler.leftMargin1).ToString());
                 } else if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.dxTextLeft))
                 {
+                    if (so.OptionsByID[ShapeOptions.PropertyId.dxTextLeft].op > 0)
                     _writer.WriteAttributeString("marL", so.OptionsByID[ShapeOptions.PropertyId.dxTextLeft].op.ToString());
                 }
-                if (p.IndentPresent) _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(p.LeftMargin - p.Indent)))).ToString());
+                if (p.IndentPresent)
+                {
+                    _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(p.LeftMargin - p.Indent)))).ToString());
+                }
+                else if (ruler != null && ruler.fIndent1)
+                {
+                    _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(ruler.leftMargin1 - ruler.indent1)))).ToString());
+                }
 
                 if (p.AlignmentPresent)
                 {

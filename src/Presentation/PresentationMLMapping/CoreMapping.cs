@@ -60,10 +60,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteAttributeString("xmlns", "dcmitype", null, "http://purl.org/dc/dcmitype/");
             _writer.WriteAttributeString("xmlns", "xsi", null, "http://www.w3.org/2001/XMLSchema-instance");
 
-            _writer.WriteElementString("dc", "title", "http://purl.org/dc/elements/1.1/", "Clams Title");
-            _writer.WriteElementString("dc", "creator", "http://purl.org/dc/elements/1.1/", "Chris Lambert");
-            _writer.WriteElementString("dc", "description", "http://purl.org/dc/elements/1.1/", "Clams Description");
-            _writer.WriteElementString("cp", "lastModifiedBy", "http://schemas.openxmlformats.org/package/2006/metadata/core-properties", "Chris Lambert");
+            _writer.WriteElementString("dc", "title", "http://purl.org/dc/elements/1.1/", "Title");
+            _writer.WriteElementString("dc", "creator", "http://purl.org/dc/elements/1.1/", "Creator");
+            _writer.WriteElementString("dc", "description", "http://purl.org/dc/elements/1.1/", "Description");
+            _writer.WriteElementString("cp", "lastModifiedBy", "http://schemas.openxmlformats.org/package/2006/metadata/core-properties", "Modifier");
             _writer.WriteElementString("cp", "revision", "http://schemas.openxmlformats.org/package/2006/metadata/core-properties", "10");
             _writer.WriteElementString("cp", "lastPrinted", "http://schemas.openxmlformats.org/package/2006/metadata/core-properties", "1601-01-01T00:00:00Z");
 
