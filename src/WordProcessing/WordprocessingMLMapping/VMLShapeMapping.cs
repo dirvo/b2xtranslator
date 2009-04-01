@@ -76,7 +76,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             _writer.WriteStartElement("v", "group", OpenXmlNamespaces.VectorML);
             _writer.WriteAttributeString("id", getShapeId(shape));
-            _writer.WriteAttributeString("style", buildStyle(shape, anchor, options, 0).ToString());
+            _writer.WriteAttributeString("style", buildStyle(shape, anchor, options, container.Index).ToString());
             _writer.WriteAttributeString("coordorigin", gsr.rcgBounds.Left + "," + gsr.rcgBounds.Top);
             _writer.WriteAttributeString("coordsize", gsr.rcgBounds.Width + "," + gsr.rcgBounds.Height);
             
