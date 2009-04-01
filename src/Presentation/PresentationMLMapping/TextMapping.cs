@@ -155,6 +155,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             MasterTextPropAtom masterTextProp = null;
             string text = "";
             string origText = "";
+            ShapeOptions so = textbox.FirstAncestorWithType<ShapeContainer>().FirstChildWithType<ShapeOptions>();
 
             switch (rec.TypeCode)
             {
@@ -213,11 +214,27 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 DateTimeMCAtom d = (DateTimeMCAtom)rec;
                                 String date = System.DateTime.Now.ToString();
 
-                                _writer.WriteStartElement("a", "p", OpenXmlNamespaces.DrawingML);
+                                //_writer.WriteStartElement("a", "p", OpenXmlNamespaces.DrawingML);
+
+                                ParagraphRun p = GetParagraphRun(style, 0);
+                                MasterTextPropRun tp = GetMasterTextPropRun(masterTextProp, 0);
+                                writeP(p, tp, so);
 
                                 _writer.WriteStartElement("a", "fld", OpenXmlNamespaces.DrawingML);
                                 _writer.WriteAttributeString("id", "{1023E2E8-AA53-4FEA-8F5C-1FABD68F61AB}");
                                 _writer.WriteAttributeString("type", "datetime9");
+
+                                CharacterRun r = GetCharacterRun(style, 0);
+                                if (r != null)
+                                {
+                                    string dummy = "";
+                                    string dummy2 = "";
+                                    RegularContainer slide = textbox.FirstAncestorWithType<Slide>();
+                                    if (slide == null) slide = textbox.FirstAncestorWithType<Note>();
+                                    if (slide == null) slide = textbox.FirstAncestorWithType<Handout>();
+                                    new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", slide, ref dummy, ref dummy2, lang);
+                                }
+
                                 _writer.WriteElementString("a", "t", OpenXmlNamespaces.DrawingML, date);
                                 _writer.WriteEndElement(); //fld                                
                                 _writer.WriteStartElement("a", "endParaRPr", OpenXmlNamespaces.DrawingML);
@@ -282,8 +299,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
 
             uint idx = 0;
-
-            ShapeOptions so = textbox.FirstAncestorWithType<ShapeContainer>().FirstChildWithType<ShapeOptions>();
 
             Slide s = textbox.FirstAncestorWithType<Slide>();
 
