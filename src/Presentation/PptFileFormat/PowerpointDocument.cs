@@ -43,6 +43,11 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         }
 
         /// <summary>
+        /// The stream "Document Summary Information"
+        /// </summary>
+        public VirtualStream DocumentSummaryInformationStream;
+
+        /// <summary>
         /// The stream "PowerPoint Document"
         /// </summary>
         public VirtualStream PowerpointDocumentStream;
@@ -158,6 +163,17 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             
             this.PowerpointDocumentStream = file.GetStream("PowerPoint Document");
 
+            try
+            {
+                this.DocumentSummaryInformationStream = file.GetStream("DocumentSummaryInformation");
+                ScanDocumentSummaryInformation();
+            }
+            catch (StructuredStorage.Common.StreamNotFoundException e)
+            {
+                //ignore
+            }
+           
+
             if (this.CurrentUserAtom != null)
             {
                 this.PowerpointDocumentStream.Seek(this.CurrentUserAtom.OffsetToCurrentEdit, SeekOrigin.Begin);
@@ -170,7 +186,143 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             this.IdentifyMasterPersistObjects();
             this.IdentifySlidePersistObjects();
 
-            // TODO: notes / handout masters and slides
+        }
+
+        private void ScanDocumentSummaryInformation()
+        {
+            //VirtualStream s = this.DocumentSummaryInformationStream;
+            BinaryReader s = new BinaryReader(this.DocumentSummaryInformationStream);
+            int ByteOrder = s.ReadInt16();
+            uint Version = s.ReadUInt16();
+            int SystemIdentifier = s.ReadInt32();
+            byte[] CLSID = new byte[16];
+            CLSID = s.ReadBytes(16);
+            uint NumPropertySets = s.ReadUInt32();
+            byte[] FMTID0 = new byte[16];
+            FMTID0 = s.ReadBytes(16);
+            uint Offset0 = s.ReadUInt32();
+            uint Offset1 = 0;
+            if (NumPropertySets > 1)
+            {
+                byte[] FMTID1 = new byte[16];
+                FMTID1 = s.ReadBytes(16);
+                Offset1 = s.ReadUInt32();
+            }
+
+            //start of PropertySet
+            uint Size = s.ReadUInt32();
+            uint NumProperties = s.ReadUInt32();
+            uint id;
+            uint offset;
+            Dictionary<uint, uint> Offsets = new Dictionary<uint, uint>();
+            for (int i = 0; i < NumProperties; i++)
+            {
+                id = s.ReadUInt32();
+                offset = s.ReadUInt32();
+                Offsets.Add(id, offset);
+            }
+
+            //start of PropertySet2
+            if (Offset1 > 0)
+            {
+                s.BaseStream.Seek(Offset1, 0);
+                Size = s.ReadUInt32();
+                NumProperties = s.ReadUInt32();
+                Dictionary<uint, uint> Offsets2 = new Dictionary<uint, uint>();
+                for (int i = 0; i < NumProperties; i++)
+                {
+                    id = s.ReadUInt32();
+                    offset = s.ReadUInt32();
+                    Offsets2.Add(id, offset);
+                }
+            }
+
+            foreach(uint idKey in Offsets.Keys)
+            {
+                s.BaseStream.Seek(Offsets[idKey] + Offset0,0);
+                                
+                int Type = s.ReadInt16();
+                int Padding = s.ReadInt16();
+                switch (Type)
+                {
+                    case 0x0: //empty
+                    case 0x1:
+                        break;
+                    case 0x2: //16 bit signed int followed by zero padding to 4 bytes
+                        int v = s.ReadInt16();
+                        break;
+                    case 0x3: //32 bit signed integer
+                        int v2 = s.ReadInt32();
+                        if (idKey == 23)
+                        {
+                            int version = BitConverter.ToInt16(BitConverter.GetBytes(v2), 2);
+                        }
+                        break;
+                    case 0x4: //4 byte float
+                        Single v3 = s.ReadSingle();
+                        break;
+                    case 0x5: //8 byte float
+                        Double v4 = s.ReadDouble();
+                        break;
+                    case 0x6: //CURRENCY
+                        Int64 v5 = s.ReadInt64();
+                        break;
+                    case 0x7: //DATE
+                        Double v6 = s.ReadDouble();
+                        break;
+                    case 0x8: //CodePageString
+                    case 0x1e:
+                        int v7 = s.ReadInt32();
+                        //if CodePage is CP_WINUNICODE: 16 bit characters, else 8 bit characters
+                        string st = Encoding.ASCII.GetString(s.ReadBytes(v7));
+                        break;
+                    case 0xA: //32 bit uint
+                        uint v8 = s.ReadUInt32();
+                        break;
+                    case 0xB: //VARIANT_BOOL
+                        bool v9 = s.ReadBoolean();
+                        break;
+                    case 0xE: //DECIMAL
+                        int wReserved = s.ReadInt16();
+                        byte scale = s.ReadByte();
+                        byte sign = s.ReadByte();
+                        Int32 Hi32 = s.ReadInt32();
+                        Int64 Lo64 = s.ReadInt64();
+                        break;
+                    case 0x10: //1 byte signed int
+                        int v10 = (int)s.ReadByte();
+                        break;
+                    case 0x11: //1 byte unsigned int
+                        uint v11 = (uint)s.ReadByte();
+                        break;
+                    case 0x12: //2 byte unsigned int
+                        uint v12 = s.ReadUInt16();
+                        break;
+                    case 0x13: //4 byte unsigned int
+                    case 0x17:
+                        uint v13 = s.ReadUInt32();
+                        break;
+                    case 0x14: //8 byte int
+                        Int64 v14 = s.ReadInt64();
+                        break;
+                    case 0x15: //8 byte unsigned int
+                        UInt64 v15 = s.ReadUInt64();
+                        break;
+                    case 0x16: //4 byte int
+                        int v16 = s.ReadInt32();
+                        break;
+                    case 0x1f: //UnicodeString
+                        string st2 = s.ReadString();
+                        break;
+                    case 0x40: //FILETIME
+                        int dwLowDateTime = s.ReadInt32();
+                        int dwHighDateTime = s.ReadInt32();
+                        break;
+                    default:
+                        break;
+                }
+            }
+
         }
 
         /// <summary>

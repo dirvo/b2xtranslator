@@ -83,7 +83,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             RoundTripContentMasterId12 masterInfo = slide.FirstChildWithType<RoundTripContentMasterId12>();
 
             // PPT2007 OOXML-Layout
-            if (false & masterInfo != null)
+            if (masterInfo != null)
             {
                 layoutPart = layoutManager.GetLayoutPartByInstanceId(masterInfo.ContentMasterInstanceId);
             }
@@ -247,7 +247,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             }
 
-            if (footertext.Length == 0) footer = false;
+            //if (footertext.Length == 0) footer = false;
 
             if (slideNumber)
             {
@@ -339,7 +339,17 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 {
                                     if (placeholder.PlacementId == PlaceholderEnum.MasterFooter)
                                     {
-                                        stm.Apply(shapecontainer, footertext, "","");
+                                        bool doit = footertext.Length > 0;
+                                        if (!doit)
+                                        {
+                                            foreach (ShapeOptions so in shapecontainer.AllChildrenWithType<ShapeOptions>())
+                                                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.FillStyleBooleanProperties))
+                                                {
+                                                    FillStyleBooleanProperties props = new FillStyleBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.FillStyleBooleanProperties].op);
+                                                    if (props.fFilled && props.fUsefFilled) doit = true;
+                                                }
+                                        }
+                                        if (doit) stm.Apply(shapecontainer, footertext, "", "");
                                         footer = false;
                                     }
                                 }
@@ -371,7 +381,17 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                     {
                                         if (placeholder.PlacementId == PlaceholderEnum.MasterFooter)
                                         {
-                                            stm.Apply(shapecontainer, footertext, "","");
+                                            bool doit = footertext.Length > 0;
+                                            if (!doit)
+                                            {
+                                                foreach(ShapeOptions so in shapecontainer.AllChildrenWithType<ShapeOptions>())
+                                                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.FillStyleBooleanProperties))
+                                                    {
+                                                        FillStyleBooleanProperties props = new FillStyleBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.FillStyleBooleanProperties].op);
+                                                        if (props.fFilled && props.fUsefFilled) doit = true;
+                                                    }
+                                            }
+                                            if (doit) stm.Apply(shapecontainer, footertext, "","");
                                             footer = false;
                                         }
                                     }

@@ -35,14 +35,14 @@ using DIaLOGIKa.b2xtranslator.Tools;
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
 
-    [OfficeRecordAttribute(4005)]
-    public class TextPFExceptionAtom : Record
+    [OfficeRecordAttribute(4004)]
+    public class TextCFExceptionAtom : Record
     {
-
-        public TextPFExceptionAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+        public CharacterRun run;
+        public TextCFExceptionAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {
-
+            run = new CharacterRun(Reader);
         }
 
     }

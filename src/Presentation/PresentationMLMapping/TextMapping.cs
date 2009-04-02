@@ -317,7 +317,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             Slide s = textbox.FirstAncestorWithType<Slide>();
 
-            
+          
             if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.hspMaster))
             {
                 uint MasterID = so.OptionsByID[ShapeOptions.PropertyId.hspMaster].op;

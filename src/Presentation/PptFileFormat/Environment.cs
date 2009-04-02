@@ -22,8 +22,10 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
                             TextMasterStyleAtom a = (TextMasterStyleAtom)rec;
                             break;
                         case 0xfa4: //TextCFExceptionAtom
+                            TextCFExceptionAtom ce = (TextCFExceptionAtom)rec;
                             break;
                         case 0xfa5: //TextPFExceptionAtom
+                            TextPFExceptionAtom e = (TextPFExceptionAtom)rec;
                             break;
                         case 0xfa9: //TextSIEExceptionAtom
                             break;

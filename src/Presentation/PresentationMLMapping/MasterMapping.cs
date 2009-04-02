@@ -65,15 +65,15 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             this.LayoutManager = _ctx.GetOrCreateLayoutManagerByMasterId(this.MasterId);
 
             // Add PPT2007 roundtrip slide layouts
-            //List<RoundTripContentMasterInfo12> rtSlideLayouts = this.Master.AllChildrenWithType<RoundTripContentMasterInfo12>();
+            List<RoundTripContentMasterInfo12> rtSlideLayouts = this.Master.AllChildrenWithType<RoundTripContentMasterInfo12>();
 
-            //foreach (RoundTripContentMasterInfo12 slideLayout in rtSlideLayouts)
-            //{
-            //    SlideLayoutPart layoutPart = this.LayoutManager.AddLayoutPartWithInstanceId(slideLayout.Instance);
+            foreach (RoundTripContentMasterInfo12 slideLayout in rtSlideLayouts)
+            {
+                SlideLayoutPart layoutPart = this.LayoutManager.AddLayoutPartWithInstanceId(slideLayout.Instance);
 
-            //    slideLayout.XmlDocumentElement.WriteTo(layoutPart.XmlWriter);
-            //    layoutPart.XmlWriter.Flush();
-            //}
+                slideLayout.XmlDocumentElement.WriteTo(layoutPart.XmlWriter);
+                layoutPart.XmlWriter.Flush();
+            }
         }
 
         public void Write()

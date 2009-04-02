@@ -152,7 +152,8 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
         public SSlideLayoutAtom(BinaryReader reader)
         {
-            this.Geom = (SlideLayoutType)reader.ReadInt32();
+            int geom = reader.ReadInt32();
+            this.Geom = (SlideLayoutType)geom;
 
             for (int i = 0; i < 8; i++)
                 this.PlaceholderTypes[i] = (PlaceholderEnum)reader.ReadByte();

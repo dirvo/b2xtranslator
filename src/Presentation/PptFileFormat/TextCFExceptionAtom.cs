@@ -30,39 +30,22 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
-    [OfficeRecordAttribute(1006)]
-    public class Slide : RegularContainer
+
+    [OfficeRecordAttribute(4005)]
+    public class TextPFExceptionAtom : Record
     {
-        public Slide(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
-            : base(_reader, size, typeCode, version, instance) {
-                foreach (Record rec in Children)
-                {
-                    switch (rec.TypeCode)
-                    {
-                        case 0x3ef: //SlideAtom
-                        case 0x3f9: //SlideShowSlideInfoAtom
-                        case 0x40c: //DrawingContainer
-                            break;
-                        case 0x422: //RoundTripContentMasterId12
-                            RoundTripContentMasterId12 id = (RoundTripContentMasterId12)rec;
-                            break;
-                        case 0x7f0: //SlideSchemeColorSchemeAtom
-                        case 0xfa3: //TextMasterStyleAtom
-                        case 0xfd9: //SlideHeadersFootersContainer
-                            break;
-                        case 0x1388: //SlideProgTagsContainer
-                            RegularContainer con = (RegularContainer)rec;
-                            break;
-                        default:
-                            break;
-                    }
-                }
+        public ParagraphRun run;
+        public TextPFExceptionAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance)
+        {
+            Reader.ReadInt16();
+            run = new ParagraphRun(Reader, true);
         }
 
-        public SlidePersistAtom PersistAtom;
     }
 
 }

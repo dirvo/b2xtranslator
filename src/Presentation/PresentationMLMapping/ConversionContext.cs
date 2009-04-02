@@ -263,6 +263,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             SlideMasterPart masterPart = _ctx.GetOrCreateMasterMappingByMasterId(this.MasterId).MasterPart;
             string layoutFilename = Utils.SlideLayoutTypeToFilename(type, placeholderTypes);
 
+            
             if (!this.LayoutFilenameToLayoutPart.ContainsKey(layoutFilename))
             {
                 XmlDocument slideLayoutDoc = Utils.GetDefaultDocument("slideLayouts." + layoutFilename);
