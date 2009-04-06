@@ -20,15 +20,15 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             this.Bytes = this.Reader.ReadBytes((int)this.BodySize);
             this.Reader.BaseStream.Position = 0;
 
-            this.IndentLevelCount = System.BitConverter.ToUInt16(this.Reader.ReadBytes(2), 0); // System.BitConverter.ToUInt16(this.Bytes, 0);
+            this.IndentLevelCount = Reader.ReadUInt16();
 
             for (int i = 0; i < this.IndentLevelCount; i++)
             {
                 long pos = this.Reader.BaseStream.Position;
 
-                if ((this.Instance >= 5) & (this.Instance < this.IndentLevelCount))
+                if ((this.Instance >= 5)) // & (this.Instance < this.IndentLevelCount))
                 {
-                    UInt16 level = System.BitConverter.ToUInt16(this.Reader.ReadBytes(2), (int)pos);
+                    UInt16 level = Reader.ReadUInt16(); 
                 }                
              
                 this.PRuns.Add(new ParagraphRun(this.Reader, true));

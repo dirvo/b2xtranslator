@@ -356,7 +356,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         /// </summary>
         LeftMargin = 1 << 8,
 
-        // Bit 9 is reserved
+        unused9 = 1 << 9, // Bit 9 is reserved
 
         /// <summary>
         /// A bit that specifies whether the indent field of the TextPFException structure that
@@ -432,7 +432,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         /// </summary>
         TextDirection = 1 << 21,
 
-        // Bit 22 is reserved
+        unused22 = 1 << 22, // Bit 22 is reserved
 
         /// <summary>
         /// A bit that specifies whether the bulletBlipRef field of the TextPFException9

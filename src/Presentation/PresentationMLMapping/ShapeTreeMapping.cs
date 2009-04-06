@@ -188,9 +188,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             ShapeOptions sndSo = null;
             if (container.AllChildrenWithType<ShapeOptions>().Count > 1)
             {
-                //sndSo = ((RegularContainer)sh.ParentRecord).AllChildrenWithType<ShapeOptions>()[1];
-                //if (sndSo.OptionsByID.ContainsKey(ShapeOptions.PropertyId.metroBlob))
-                //{
+                sndSo = ((RegularContainer)sh.ParentRecord).AllChildrenWithType<ShapeOptions>()[1];
+                if (sndSo.OptionsByID.ContainsKey(ShapeOptions.PropertyId.metroBlob))
+                {
                 //    ZipUtils.ZipReader reader = null;
                 //    try
                 //    {
@@ -217,7 +217,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 //        continueShape = true;
                 //        if (reader != null) reader.Close();
                 //    }
-                //}
+                }
             }
 
             if (continueShape)
@@ -691,6 +691,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     if (record is ClientTextbox) TextBoxFound = true;
                 }
 
+                
                 if (!TextBoxFound & !sh.fConnector)
                 {
 
@@ -1333,7 +1334,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             RegularContainer slide = textbox.FirstAncestorWithType<Slide>();
                             if (slide == null) slide = textbox.FirstAncestorWithType<Note>();
                             if (slide == null) slide = textbox.FirstAncestorWithType<Handout>();
-                            new CharacterRunPropsMapping(_ctx, _writer).Apply(style.CRuns[0], "defRPr", slide, ref lastColor, ref lastSize, lang); 
+                            new CharacterRunPropsMapping(_ctx, _writer).Apply(style.CRuns[0], "defRPr", slide, ref lastColor, ref lastSize, lang, null); 
                             _writer.WriteEndElement();
                             lvlRprWritten = true;
                         }

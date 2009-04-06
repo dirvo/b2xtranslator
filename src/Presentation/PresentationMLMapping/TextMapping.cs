@@ -157,6 +157,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             string text = "";
             string origText = "";
             ShapeOptions so = textbox.FirstAncestorWithType<ShapeContainer>().FirstChildWithType<ShapeOptions>();
+            TextMasterStyleAtom defaultStyle = null;
 
             switch (rec.TypeCode)
             {
@@ -220,7 +221,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                                 ParagraphRun p = GetParagraphRun(style, 0);
                                 MasterTextPropRun tp = GetMasterTextPropRun(masterTextProp, 0);
-                                writeP(p, tp, so, ruler);
+                                writeP(p, tp, so, ruler, defaultStyle);
 
                                 _writer.WriteStartElement("a", "fld", OpenXmlNamespaces.DrawingML);
                                 _writer.WriteAttributeString("id", "{1023E2E8-AA53-4FEA-8F5C-1FABD68F61AB}");
@@ -234,7 +235,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                     RegularContainer slide = textbox.FirstAncestorWithType<Slide>();
                                     if (slide == null) slide = textbox.FirstAncestorWithType<Note>();
                                     if (slide == null) slide = textbox.FirstAncestorWithType<Handout>();
-                                    new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", slide, ref dummy, ref dummy2, lang);
+                                    new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", slide, ref dummy, ref dummy2, lang, defaultStyle);
                                 }
 
                                 _writer.WriteElementString("a", "t", OpenXmlNamespaces.DrawingML, date);
@@ -316,7 +317,29 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             uint idx = 0;
 
             Slide s = textbox.FirstAncestorWithType<Slide>();
-
+            if (s != null)
+            {
+                try
+                {
+                    SlideAtom a = s.FirstChildWithType<SlideAtom>();
+                    if (a.MasterId > 0)
+                    {
+                        Slide m = _ctx.Ppt.FindMasterRecordById(a.MasterId);
+                        foreach (TextMasterStyleAtom at in m.AllChildrenWithType<TextMasterStyleAtom>())
+                        {
+                            if (at.Instance == (int)thAtom.TextType)
+                            {
+                                defaultStyle = at;
+                            }
+                        }
+                    }
+                }
+                catch (Exception)
+                {                    
+                    throw;
+                }
+                
+            }
           
             if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.hspMaster))
             {
@@ -346,7 +369,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     MasterTextPropRun tp = GetMasterTextPropRun(masterTextProp, idx);
 
                     String runText;
-                    writeP(p, tp, so, ruler);
+                    writeP(p, tp, so, ruler, defaultStyle);
 
                     uint CharacterRunStart;
                     int len;
@@ -368,7 +391,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 RegularContainer slide = textbox.FirstAncestorWithType<Slide>();
                                 if (slide == null) slide = textbox.FirstAncestorWithType<Note>();
                                 if (slide == null) slide = textbox.FirstAncestorWithType<Handout>();
-                                new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", slide, ref dummy, ref dummy2, lang);
+                                new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", slide, ref dummy, ref dummy2, lang, defaultStyle);
                             }
 
                             _writer.WriteEndElement();
@@ -406,7 +429,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 RegularContainer slide = textbox.FirstAncestorWithType<Slide>();
                                 if (slide == null) slide = textbox.FirstAncestorWithType<Note>();
                                 if (slide == null) slide = textbox.FirstAncestorWithType<Handout>();
-                                new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", slide,ref dummy, ref dummy2, lang);
+                                new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", slide,ref dummy, ref dummy2, lang, defaultStyle);
                             }
                             else
                             {
@@ -442,7 +465,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         }
 
-        private void writeP(ParagraphRun p, MasterTextPropRun tp, ShapeOptions so, TextRulerAtom ruler)
+        private void writeP(ParagraphRun p, MasterTextPropRun tp, ShapeOptions so, TextRulerAtom ruler, TextMasterStyleAtom defaultStyle)
         {
             _writer.WriteStartElement("a", "p", OpenXmlNamespaces.DrawingML);
 
@@ -531,6 +554,36 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         case 0x0006: //JustifyLow
                             _writer.WriteAttributeString("algn", "justLow");
                             break;
+                    }
+                }
+                else if (defaultStyle != null)
+                {
+                    if (defaultStyle.PRuns[p.IndentLevel].AlignmentPresent)
+                    {
+                        switch (defaultStyle.PRuns[p.IndentLevel].Alignment)
+                        {
+                            case 0x0000: //Left
+                                _writer.WriteAttributeString("algn", "l");
+                                break;
+                            case 0x0001: //Center
+                                _writer.WriteAttributeString("algn", "ctr");
+                                break;
+                            case 0x0002: //Right
+                                _writer.WriteAttributeString("algn", "r");
+                                break;
+                            case 0x0003: //Justify
+                                _writer.WriteAttributeString("algn", "just");
+                                break;
+                            case 0x0004: //Distributed
+                                _writer.WriteAttributeString("algn", "dist");
+                                break;
+                            case 0x0005: //ThaiDistributed
+                                _writer.WriteAttributeString("algn", "thaiDist");
+                                break;
+                            case 0x0006: //JustifyLow
+                                _writer.WriteAttributeString("algn", "justLow");
+                                break;
+                        }
                     }
                 }
 
@@ -635,6 +688,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             _writer.WriteAttributeString("char", p.BulletChar.ToString());
                             _writer.WriteEndElement(); //buChar
                         }
+                        
                     }
                 }
 

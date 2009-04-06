@@ -109,6 +109,12 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             // Force declaration of these namespaces at document start
             _writer.WriteAttributeString("xmlns", "r", null, OpenXmlNamespaces.Relationships);
 
+
+            if (Tools.Utils.BitmaskToBool(slideAtom.Flags, 0x1 << 0) == false)
+            {
+                _writer.WriteAttributeString("showMasterSp", "0");
+            }
+
             // TODO: Write slide data of master slide
             _writer.WriteStartElement("p", "cSld", OpenXmlNamespaces.PresentationML);
 

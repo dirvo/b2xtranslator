@@ -179,19 +179,47 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
     {
         None = 0,
 
+        IsBold = 1 << 0,
+        IsItalic = 1 << 1,
+        IsUnderlined = 1 << 2,
+
+        unused3 = 1 << 3, // Bit 3 is unused
+
+        HasShadow = 1 << 4,
+        HasAsianSmartQuotes = 1 << 5, //this should be fehint?
+
+        unused6 = 1 << 6, // Bit 6 is unused
+
+        HasHorizonNumRendering = 1 << 7, //this should be kumi?
+
+        unused8 = 1 << 8, // Bit 8 is unused
+
+        IsEmbossed = 1 << 9,
+
+        unused10 = 1 << 10, // Bit 10 is unused
+        unused11 = 1 << 11, // Bit 11 is unused
+        unused12 = 1 << 12, // Bit 12 is unused
+        unused13= 1 << 13, // Bit 13 is unused
+        unused14 = 1 << 14, // Bit 14 is unused
+        unused15 = 1 << 15, // Bit 15 is unused
+
         // Bit 0 - 15 are used for marking style flag presence
-        StyleFlagsFieldPresent = 0xFFFF,
+        //StyleFlagsFieldPresent = 0xFFFF,
 
         TypefacePresent = 1 << 16,
         SizePresent = 1 << 17,
         ColorPresent = 1 << 18,
         PositionPresent = 1 << 19,
 
-        // Bit 20 is unused
+        unused20 = 1 << 20, // Bit 20 is unused
 
         FEOldTypefacePresent = 1 << 21,
         ANSITypefacePresent = 1 << 22,
         SymbolTypefacePresent = 1 << 23,
-        pp11ext = 1 << 26
+        unused24 = 1 << 24, // Bit 24 is unused
+        unused25 = 1 << 25, // Bit 25 is unused
+        pp11ext = 1 << 26,
+        
+        StyleFlagsFieldPresent = 0xFFFF,
     }
 }
