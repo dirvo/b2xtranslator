@@ -48,7 +48,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _ctx = ctx;
         }
 
-        public void Apply(CharacterRun run, string startElement, RegularContainer slide, ref string lastColor, ref string lastSize, string lang, TextMasterStyleAtom defaultStyle)
+        public void Apply(CharacterRun run, string startElement, RegularContainer slide, ref string lastColor, ref string lastSize, ref string lastTypeface, string lang, TextMasterStyleAtom defaultStyle)
         {
 
             _writer.WriteStartElement("a", startElement, OpenXmlNamespaces.DrawingML);
@@ -58,8 +58,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             if (run.SizePresent)
             {
-                _writer.WriteAttributeString("sz", (run.Size * 100).ToString());
-                lastSize = (run.Size * 100).ToString();
+                if (run.Size > 0)
+                {
+                    _writer.WriteAttributeString("sz", (run.Size * 100).ToString());
+                    lastSize = (run.Size * 100).ToString();
+                }
             }
             else
             {
@@ -183,10 +186,12 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     if (entity.TypeFace.IndexOf('\0') > 0)
                     {
                         _writer.WriteAttributeString("typeface", entity.TypeFace.Substring(0, entity.TypeFace.IndexOf('\0')));
+                        lastTypeface = entity.TypeFace.Substring(0, entity.TypeFace.IndexOf('\0'));
                     }
                     else
                     {
                         _writer.WriteAttributeString("typeface", entity.TypeFace);
+                        lastTypeface = entity.TypeFace;
                     }
                     //_writer.WriteAttributeString("charset", "0");
                 }
@@ -195,6 +200,12 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     throw;
                 }
 
+                _writer.WriteEndElement();
+            }
+            else if (lastTypeface.Length > 0)
+            {
+                _writer.WriteStartElement("a", "latin", OpenXmlNamespaces.DrawingML);
+                _writer.WriteAttributeString("typeface", lastTypeface);
                 _writer.WriteEndElement();
             }
 
@@ -214,7 +225,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 {
                     //TODO: what shall be used in this case (happens for default text style in presentation.xml)
                     _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("val", "AAAAAA");
+                    _writer.WriteAttributeString("val", "000000");
                     _writer.WriteEndElement();
                 }
                 else

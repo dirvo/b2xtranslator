@@ -73,6 +73,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         public UInt16 spellInfo;
         public UInt16 lid;
         public UInt16 bidi;
+        public UInt16 altLid;
         
         public TextSIException(BinaryReader reader)
         {
@@ -86,6 +87,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
             if (spell) spellInfo = reader.ReadUInt16();
             if (lang) lid = reader.ReadUInt16();
+            if (altLang) altLid = reader.ReadUInt16();
             if (fBidi) bidi = reader.ReadUInt16();
             UInt32 dummy;
             if (fPp10ext) dummy = reader.ReadUInt32();

@@ -41,13 +41,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         AbstractOpenXmlMapping
     {
         protected ConversionContext _ctx;
-        RegularContainer _Master;
+        public RegularContainer _Master;
         public PresentationMapping<RegularContainer> _parentSlideMapping = null;
 
         private int lastSpaceBefore = 0;
         private string lastColor = "";
         private string lastBulletFont = "";
         private string lastSize = "";
+        private string lastTypeface = "";
         public TextMasterStyleMapping(ConversionContext ctx, XmlWriter writer, PresentationMapping<RegularContainer> parentSlideMapping)
             : base(writer)
         {
@@ -215,18 +216,23 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         public void writepPr(CharacterRun cr, ParagraphRun pr, ParagraphRun9 pr9, int IndentLevel, bool isTitle)
         {
+            writepPr(cr, pr, pr9, IndentLevel, isTitle, false);
+        }
+
+        public void writepPr(CharacterRun cr, ParagraphRun pr, ParagraphRun9 pr9, int IndentLevel, bool isTitle, bool isDefault)
+        {
           
             //TextMasterStyleAtom defaultStyle = _ctx.Ppt.DocumentRecord.FirstChildWithType<DIaLOGIKa.b2xtranslator.PptFileFormat.Environment>().FirstChildWithType<TextMasterStyleAtom>();
             
             _writer.WriteStartElement("a", "lvl" + (IndentLevel+1).ToString() + "pPr", OpenXmlNamespaces.DrawingML);
 
             //marL
-            if (pr.LeftMarginPresent) _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU((int)pr.LeftMargin).ToString());
+            if (pr.LeftMarginPresent && !isDefault) _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU((int)pr.LeftMargin).ToString());
             //marR
             //lvl
             if (pr.IndentLevel > 0) _writer.WriteAttributeString("lvl", pr.IndentLevel.ToString());
             //indent
-            if (pr.IndentPresent) _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(pr.LeftMargin - pr.Indent)))).ToString());
+            if (pr.IndentPresent && !isDefault) _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(pr.LeftMargin - pr.Indent)))).ToString());
             //algn
             if (pr.AlignmentPresent)
             {
@@ -473,7 +479,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             //defRPr
             //extLst
 
-            new CharacterRunPropsMapping(_ctx, _writer).Apply(cr, "defRPr", (RegularContainer)_Master, ref lastColor, ref lastSize, "en-US", null);                    
+           
+            new CharacterRunPropsMapping(_ctx, _writer).Apply(cr, "defRPr", (RegularContainer)_Master, ref lastColor, ref lastSize, ref lastTypeface, "en-US", null);                    
 
             _writer.WriteEndElement(); //lvlXpPr
         }

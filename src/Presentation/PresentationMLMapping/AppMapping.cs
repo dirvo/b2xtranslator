@@ -58,17 +58,17 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteAttributeString("xmlns", "vt", null, OpenXmlNamespaces.docPropsVTypes);
 
             //TotalTime
-            _writer.WriteElementString("TotalTime", "294");
+            _writer.WriteElementString("TotalTime", "0");
             //Words
-            _writer.WriteElementString("Words", "103");
+            _writer.WriteElementString("Words", "0");
             //PresentationFormat
             _writer.WriteElementString("PresentationFormat", "Custom");
             //Paragraphs
-            _writer.WriteElementString("Paragraphs", "42");
+            _writer.WriteElementString("Paragraphs", "0");
             //Slides
-            _writer.WriteElementString("Slides", "7");
+            _writer.WriteElementString("Slides", "0");
             //Notes
-            _writer.WriteElementString("Notes", "7");
+            _writer.WriteElementString("Notes", "0");
             //HiddenSlides
             _writer.WriteElementString("HiddenSlides", "0");
             //MMClips
@@ -76,9 +76,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             //ScaleCrop
             _writer.WriteElementString("ScaleCrop", "false");
             //HeadingPairs
-            //TitlesOfParts
-            string s = "<HeadingPairs><vt:vector size=\"6\" baseType=\"variant\"><vt:variant><vt:lpstr>Fonts Used</vt:lpstr></vt:variant><vt:variant><vt:i4>4</vt:i4></vt:variant><vt:variant><vt:lpstr>Design Template</vt:lpstr></vt:variant><vt:variant><vt:i4>1</vt:i4></vt:variant><vt:variant><vt:lpstr>Slide Titles</vt:lpstr></vt:variant><vt:variant><vt:i4>7</vt:i4></vt:variant></vt:vector></HeadingPairs><TitlesOfParts><vt:vector size=\"12\" baseType=\"lpstr\"><vt:lpstr>Arial</vt:lpstr><vt:lpstr>Times New Roman</vt:lpstr><vt:lpstr>Wingdings</vt:lpstr><vt:lpstr>Symbol</vt:lpstr><vt:lpstr>Default Design</vt:lpstr><vt:lpstr>Electrodomésticos</vt:lpstr><vt:lpstr>Clam Frigoríficos, Congeladores, Maquinas Lavar Louça, Roupa, Secadores e Fogões</vt:lpstr><vt:lpstr>Placas, Fornos, Chaminés, Lava-Louças, Torneiras</vt:lpstr><vt:lpstr>Televisores, DVD´s, Hi-Fi, Antenas Satélite</vt:lpstr><vt:lpstr>Encontra-se as marcas as suas necessidade</vt:lpstr><vt:lpstr>Pequenos e grandes . . . ...electrodomésticos</vt:lpstr><vt:lpstr>Obrigado . . . Volte Sempre . . .</vt:lpstr></vt:vector></TitlesOfParts>";
-            _writer.WriteRaw(s);
+            //TitlesOfParts           
 
             //LinksUpToDate
             _writer.WriteElementString("LinksUpToDate", "false");

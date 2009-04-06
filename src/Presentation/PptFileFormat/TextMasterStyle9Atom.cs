@@ -28,11 +28,11 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
                 }
                 if ((pmask & ParagraphMask.BulletHasScheme) != 0)
                 {
-                    int fbullethasautonumber = Reader.ReadInt16();
+                    pr.fBulletHasAutoNumber = Reader.ReadInt16();
                 }
                 if ((pmask & ParagraphMask.BulletScheme) != 0)
                 {
-                    byte[] fbullethasautonumber = Reader.ReadBytes(4);
+                    pr.bulletAutoNumberScheme = Reader.ReadInt32();
                 }
                 this.pruns.Add(pr);
 
@@ -50,6 +50,8 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
     {
         public ParagraphMask mask;
         public int bulletblipref;
+        public int fBulletHasAutoNumber;
+        public int bulletAutoNumberScheme = -1;
 
         public bool BulletBlipReferencePresent
         {

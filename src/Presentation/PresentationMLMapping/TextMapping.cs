@@ -43,6 +43,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
     {
         protected ConversionContext _ctx;
         private string lang = "en-US";
+        private ShapeTreeMapping parentShapeTreeMapping = null;
 
         public TextMapping(ConversionContext ctx, XmlWriter writer)
             : base(writer)
@@ -142,11 +143,12 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         public void Apply(ClientTextbox textbox)
         {
-            Apply(textbox, "", "", "");
+            Apply(null, textbox, "", "", "");
         }
 
-        public void Apply(ClientTextbox textbox, string footertext, string headertext, string datetext)
+        public void Apply(ShapeTreeMapping pparentShapeTreeMapping, ClientTextbox textbox, string footertext, string headertext, string datetext)
         {
+            parentShapeTreeMapping = pparentShapeTreeMapping;
             System.IO.MemoryStream ms = new System.IO.MemoryStream(textbox.Bytes);
             Record rec = Record.ReadRecord(ms, 0);
             TextHeaderAtom thAtom = null;
@@ -190,7 +192,28 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 TextSpecialInfoAtom sia = (TextSpecialInfoAtom)rec;
                                 if (sia.Runs.Count > 0)
                                 {
-                                    if (sia.Runs[0].si.lang) lang = System.Globalization.CultureInfo.GetCultureInfo(sia.Runs[0].si.lid).IetfLanguageTag;
+                                    if (sia.Runs[0].si.lang)
+                                    {
+                                        switch (sia.Runs[0].si.lid)
+                                        {
+                                            case 0x0: // no language
+                                                break;
+                                            case 0x13: //Any Dutch language is preferred over non-Dutch languages when proofing the text
+                                                break;
+                                            case 0x400: //no proofing
+                                                break;
+                                            default:
+                                                try
+                                                {
+                                                    lang = System.Globalization.CultureInfo.GetCultureInfo(sia.Runs[0].si.lid).IetfLanguageTag;
+                                                }
+                                                catch (Exception)
+                                                {
+                                                    //ignore
+                                                }
+                                                break;
+                                        }
+                                    }
                                 }
                                 break;
                             case 0xfa2: //MasterTextPropAtom
@@ -232,10 +255,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 {
                                     string dummy = "";
                                     string dummy2 = "";
+                                    string dummy3 = "";
                                     RegularContainer slide = textbox.FirstAncestorWithType<Slide>();
                                     if (slide == null) slide = textbox.FirstAncestorWithType<Note>();
                                     if (slide == null) slide = textbox.FirstAncestorWithType<Handout>();
-                                    new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", slide, ref dummy, ref dummy2, lang, defaultStyle);
+                                    new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", slide, ref dummy, ref dummy2, ref dummy3, lang, defaultStyle);
                                 }
 
                                 _writer.WriteElementString("a", "t", OpenXmlNamespaces.DrawingML, date);
@@ -327,6 +351,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         Slide m = _ctx.Ppt.FindMasterRecordById(a.MasterId);
                         foreach (TextMasterStyleAtom at in m.AllChildrenWithType<TextMasterStyleAtom>())
                         {
+                            if (thAtom.TextType == TextType.Other && at.Instance == 1)
+                            {
+                                defaultStyle = at;
+                                break;
+                            }
                             if (at.Instance == (int)thAtom.TextType)
                             {
                                 defaultStyle = at;
@@ -388,10 +417,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             {
                                 string dummy = "";
                                 string dummy2 = "";
+                                string dummy3 = "";
                                 RegularContainer slide = textbox.FirstAncestorWithType<Slide>();
                                 if (slide == null) slide = textbox.FirstAncestorWithType<Note>();
                                 if (slide == null) slide = textbox.FirstAncestorWithType<Handout>();
-                                new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", slide, ref dummy, ref dummy2, lang, defaultStyle);
+                                new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", slide, ref dummy, ref dummy2, ref dummy3, lang, defaultStyle);
                             }
 
                             _writer.WriteEndElement();
@@ -426,10 +456,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             {
                                 string dummy = "";
                                 string dummy2 = "";
+                                string dummy3 = "";
                                 RegularContainer slide = textbox.FirstAncestorWithType<Slide>();
                                 if (slide == null) slide = textbox.FirstAncestorWithType<Note>();
                                 if (slide == null) slide = textbox.FirstAncestorWithType<Handout>();
-                                new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", slide,ref dummy, ref dummy2, lang, defaultStyle);
+                                new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", slide,ref dummy, ref dummy2, ref dummy3, lang, defaultStyle);
                             }
                             else
                             {
@@ -440,7 +471,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             }
 
                             _writer.WriteStartElement("a", "t", OpenXmlNamespaces.DrawingML);
-                            _writer.WriteValue(runText);
+
+                            _writer.WriteValue(runText.Replace(Char.ToString((char)0x05), ""));
+                            
                             _writer.WriteEndElement();
 
                             _writer.WriteEndElement();
@@ -481,22 +514,22 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 {
                     _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU((int)p.LeftMargin).ToString());
                 } 
-                else if (ruler != null && ruler.fLeftMargin1){
+                else if (ruler != null && ruler.fLeftMargin1 && p.IndentLevel == 0){
                     _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU(ruler.leftMargin1).ToString());
                 }
-                else if (ruler != null && ruler.fLeftMargin2)
+                else if (ruler != null && ruler.fLeftMargin2 && p.IndentLevel == 1)
                 {
                     _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU(ruler.leftMargin2).ToString());
                 }
-                else if (ruler != null && ruler.fLeftMargin3)
+                else if (ruler != null && ruler.fLeftMargin3 && p.IndentLevel == 2)
                 {
                     _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU(ruler.leftMargin3).ToString());
                 }
-                else if (ruler != null && ruler.fLeftMargin4)
+                else if (ruler != null && ruler.fLeftMargin4 && p.IndentLevel == 3)
                 {
                     _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU(ruler.leftMargin4).ToString());
                 }
-                else if (ruler != null && ruler.fLeftMargin5)
+                else if (ruler != null && ruler.fLeftMargin5 && p.IndentLevel == 4)
                 {
                     _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU(ruler.leftMargin5).ToString());
                 } else if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.dxTextLeft))
@@ -508,27 +541,31 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 {
                     _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(p.LeftMargin - p.Indent)))).ToString());
                 }
-                else if (ruler != null && ruler.fIndent1)
+                else if (ruler != null && ruler.fIndent1 && p.IndentLevel == 0)
                 {
                     _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(ruler.leftMargin1 - ruler.indent1)))).ToString());
                 }
-                else if (ruler != null && ruler.fIndent2)
+                else if (ruler != null && ruler.fIndent2 && p.IndentLevel == 1)
                 {
                     _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(ruler.leftMargin2 - ruler.indent2)))).ToString());
                 }
-                else if (ruler != null && ruler.fIndent3)
+                else if (ruler != null && ruler.fIndent3 && p.IndentLevel == 2)
                 {
                     _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(ruler.leftMargin3 - ruler.indent3)))).ToString());
                 }
-                else if (ruler != null && ruler.fIndent4)
+                else if (ruler != null && ruler.fIndent4 && p.IndentLevel == 3)
                 {
                     _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(ruler.leftMargin4 - ruler.indent4)))).ToString());
                 }
-                else if (ruler != null && ruler.fIndent5)
+                else if (ruler != null && ruler.fIndent5 && p.IndentLevel == 4)
                 {
                     _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(ruler.leftMargin5 - ruler.indent5)))).ToString());
                 }
-
+                else if (defaultStyle != null && defaultStyle.PRuns.Count > p.IndentLevel && defaultStyle.PRuns[p.IndentLevel].IndentPresent)
+                {
+                    _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(defaultStyle.PRuns[p.IndentLevel].LeftMargin - defaultStyle.PRuns[p.IndentLevel].Indent)))).ToString());
+                }
+              
                 if (p.AlignmentPresent)
                 {
                     switch (p.Alignment)
@@ -556,7 +593,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             break;
                     }
                 }
-                else if (defaultStyle != null)
+                else if (defaultStyle != null && defaultStyle.PRuns.Count > p.IndentLevel)
                 {
                     if (defaultStyle.PRuns[p.IndentLevel].AlignmentPresent)
                     {
@@ -688,7 +725,25 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             _writer.WriteAttributeString("char", p.BulletChar.ToString());
                             _writer.WriteEndElement(); //buChar
                         }
-                        
+
+                        if (parentShapeTreeMapping != null && parentShapeTreeMapping.ShapeStyleTextProp9Atom != null && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs.Count > p.IndentLevel)
+                        {
+                            if (parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[p.IndentLevel].fBulletHasAutoNumber == 1)
+                            {
+                                if (parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[p.IndentLevel].bulletAutoNumberScheme != -1)
+                                {
+
+                                }
+                                else
+                                {
+                                    _writer.WriteStartElement("a","buAutoNum",OpenXmlNamespaces.DrawingML);
+                                    _writer.WriteAttributeString("type","arabicPeriod");
+                                    _writer.WriteEndElement();
+                                }
+                            }
+                           
+                        }
+
                     }
                 }
 

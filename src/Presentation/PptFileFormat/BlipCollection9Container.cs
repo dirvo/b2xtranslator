@@ -40,10 +40,47 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
     [OfficeRecordAttribute(4012)]
     public class StyleTextProp9Atom : Record
     {
+        public List<ParagraphRun9> P9Runs = new List<ParagraphRun9>();
+        
         public StyleTextProp9Atom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {
+            while (Reader.BaseStream.Position < Reader.BaseStream.Length)
+            {
+                try
+                {
+                    ParagraphRun9 pr = new ParagraphRun9();
+                    ParagraphMask pmask = (ParagraphMask)Reader.ReadUInt32();
+                    pr.mask = pmask;
+                    if ((pmask & ParagraphMask.BulletBlip) != 0)
+                    {
+                        int bulletblipref = Reader.ReadInt16();
+                        pr.bulletblipref = bulletblipref;
+                    }
+                    if ((pmask & ParagraphMask.BulletHasScheme) != 0)
+                    {
+                        pr.fBulletHasAutoNumber = Reader.ReadInt16();
+                    }
+                    if ((pmask & ParagraphMask.BulletScheme) != 0)
+                    {
+                        pr.bulletAutoNumberScheme = Reader.ReadInt32();
+                    }
+                    P9Runs.Add(pr);
 
+                    CharacterMask cmask = (CharacterMask)Reader.ReadUInt32();
+                    if ((cmask & CharacterMask.pp11ext) != 0)
+                    {
+                        byte[] rest = Reader.ReadBytes(4);
+                    }
+
+                    TextSIException si = new TextSIException(Reader);
+                }
+                catch (Exception)
+                {
+                    //ignore
+                }
+                
+            }
         }
     }
 }

@@ -91,14 +91,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             TextMasterStyleAtom defaultStyle = _ctx.Ppt.DocumentRecord.FirstChildWithType<DIaLOGIKa.b2xtranslator.PptFileFormat.Environment>().FirstChildWithType<TextMasterStyleAtom>();
 
             TextMasterStyleMapping map = new TextMasterStyleMapping(_ctx, _writer, null);
-
+            
             for (int i = 0; i < defaultStyle.IndentLevelCount; i++)
             {
-                map.writepPr(defaultStyle.CRuns[i], defaultStyle.PRuns[i], null, i, false);
+                map.writepPr(defaultStyle.CRuns[i], defaultStyle.PRuns[i], null, i, false, true);
             }
             for (int i = defaultStyle.IndentLevelCount; i < 9; i++)
             {
-                map.writepPr(defaultStyle.CRuns[0], defaultStyle.PRuns[0], null, i, false);
+                map.writepPr(defaultStyle.CRuns[0], defaultStyle.PRuns[0], null, i, false, true);
             }
 
 

@@ -52,6 +52,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         
         public PresentationMapping<RegularContainer> parentSlideMapping = null;
         public Dictionary<AnimationInfoContainer, int> animinfos = new Dictionary<AnimationInfoContainer, int>();
+        public StyleTextProp9Atom ShapeStyleTextProp9Atom = null;
 
         public ShapeTreeMapping(ConversionContext ctx, XmlWriter writer)
             : base(writer)
@@ -126,13 +127,13 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 _writer.WriteEndElement();
 
                 _writer.WriteStartElement("a", "chOff", OpenXmlNamespaces.DrawingML);
-                _writer.WriteAttributeString("x", gsr.rcgBounds.Left.ToString());
-                _writer.WriteAttributeString("y", gsr.rcgBounds.Top.ToString());
+                _writer.WriteAttributeString("x", Utils.MasterCoordToEMU(gsr.rcgBounds.Left).ToString());
+                _writer.WriteAttributeString("y", Utils.MasterCoordToEMU(gsr.rcgBounds.Top).ToString());
                 _writer.WriteEndElement();
 
                 _writer.WriteStartElement("a", "chExt", OpenXmlNamespaces.DrawingML);
-                _writer.WriteAttributeString("cx", (gsr.rcgBounds.Right - gsr.rcgBounds.Left).ToString());
-                _writer.WriteAttributeString("cy", (gsr.rcgBounds.Bottom - gsr.rcgBounds.Top).ToString());
+                _writer.WriteAttributeString("cx", Utils.MasterCoordToEMU(gsr.rcgBounds.Right - gsr.rcgBounds.Left).ToString());
+                _writer.WriteAttributeString("cy", Utils.MasterCoordToEMU(gsr.rcgBounds.Bottom - gsr.rcgBounds.Top).ToString());
                 _writer.WriteEndElement();       
 
                 _writer.WriteEndElement();
@@ -357,20 +358,20 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     else
                     {
                         _writer.WriteStartElement("a", "off", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("x", (anchor.Left).ToString());
-                        _writer.WriteAttributeString("y", (anchor.Top).ToString());
+                        _writer.WriteAttributeString("x", Utils.MasterCoordToEMU(anchor.Left).ToString());
+                        _writer.WriteAttributeString("y", Utils.MasterCoordToEMU(anchor.Top).ToString());
                         _writer.WriteEndElement();
 
                         _writer.WriteStartElement("a", "ext", OpenXmlNamespaces.DrawingML);
                         if (swapHeightWidth)
                         {
-                            _writer.WriteAttributeString("cx", (anchor.Bottom - anchor.Top).ToString());
-                            _writer.WriteAttributeString("cy", (anchor.Right - anchor.Left).ToString());                            
+                            _writer.WriteAttributeString("cx", Utils.MasterCoordToEMU(anchor.Bottom - anchor.Top).ToString());
+                            _writer.WriteAttributeString("cy", Utils.MasterCoordToEMU(anchor.Right - anchor.Left).ToString());                            
                         }
                         else
                         {
-                            _writer.WriteAttributeString("cx", (anchor.Right - anchor.Left).ToString());
-                            _writer.WriteAttributeString("cy", (anchor.Bottom - anchor.Top).ToString());
+                            _writer.WriteAttributeString("cx", Utils.MasterCoordToEMU(anchor.Right - anchor.Left).ToString());
+                            _writer.WriteAttributeString("cy", Utils.MasterCoordToEMU(anchor.Bottom - anchor.Top).ToString());
                         }         
                         _writer.WriteEndElement();
                     }
@@ -407,13 +408,13 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     if (sh.fFlipV) _writer.WriteAttributeString("flipV", "1");
 
                     _writer.WriteStartElement("a", "off", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("x", chAnchor.Left.ToString());
-                    _writer.WriteAttributeString("y", chAnchor.Top.ToString());
+                    _writer.WriteAttributeString("x", Utils.MasterCoordToEMU(chAnchor.Left).ToString());
+                    _writer.WriteAttributeString("y", Utils.MasterCoordToEMU(chAnchor.Top).ToString());
                     _writer.WriteEndElement();
 
                     _writer.WriteStartElement("a", "ext", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("cx", (chAnchor.Right - chAnchor.Left).ToString());
-                    _writer.WriteAttributeString("cy", (chAnchor.Bottom - chAnchor.Top).ToString());
+                    _writer.WriteAttributeString("cx", Utils.MasterCoordToEMU(chAnchor.Right - chAnchor.Left).ToString());
+                    _writer.WriteAttributeString("cy", Utils.MasterCoordToEMU(chAnchor.Bottom - chAnchor.Top).ToString());
                     _writer.WriteEndElement();
 
                     _writer.WriteEndElement();
@@ -1114,6 +1115,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         private void CheckClientData(ClientData clientData, ref OEPlaceHolderAtom placeholder)
         {
+            ShapeStyleTextProp9Atom = null;
+            bool phWritten = false;
             if (clientData != null)
             {
 
@@ -1164,6 +1167,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 }
 
                                 _writer.WriteEndElement();
+                                phWritten = true;
                             }
                             break;
                         case 4116:
@@ -1175,6 +1179,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 CStringAtom c = t.FirstChildWithType<CStringAtom>();
                                 ProgBinaryTagDataBlob b = t.FirstChildWithType<ProgBinaryTagDataBlob>();
                                 StyleTextProp9Atom p = b.FirstChildWithType<StyleTextProp9Atom>();
+                                ShapeStyleTextProp9Atom = p;
                             }
                             break;
                         default:
@@ -1204,9 +1209,12 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                
                                 break;
                             case 0xff7: //DateTimeMCAtom
-                                _writer.WriteStartElement("p", "ph", OpenXmlNamespaces.PresentationML);
-                                _writer.WriteAttributeString("type", "dt");
-                                _writer.WriteEndElement();
+                                if (!phWritten)
+                                {
+                                    _writer.WriteStartElement("p", "ph", OpenXmlNamespaces.PresentationML);
+                                    _writer.WriteAttributeString("type", "dt");
+                                    _writer.WriteEndElement();
+                                }
                                 break;
                             case 0xff9: //HeaderMCAtom
                                 break;
@@ -1291,7 +1299,28 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         TextSpecialInfoAtom sia = (TextSpecialInfoAtom)rec;
                         if (sia.Runs.Count > 0)
                         {
-                            if (sia.Runs[0].si.lang) lang = System.Globalization.CultureInfo.GetCultureInfo(sia.Runs[0].si.lid).IetfLanguageTag;
+                            if (sia.Runs[0].si.lang)
+                            {
+                                switch (sia.Runs[0].si.lid)
+                                {
+                                    case 0x0: // no language
+                                        break;
+                                    case 0x13: //Any Dutch language is preferred over non-Dutch languages when proofing the text
+                                        break;
+                                    case 0x400: //no proofing
+                                        break;
+                                    default:
+                                        try
+                                        {
+                                            lang = System.Globalization.CultureInfo.GetCultureInfo(sia.Runs[0].si.lid).IetfLanguageTag;
+                                        }
+                                        catch (Exception)
+                                        {   
+                                            //ignore
+                                        }                                       
+                                        break;
+                                }                               
+                            }
                         }
                         break;
                     case 0xfd8: //SlideNumberMCAtom
@@ -1331,10 +1360,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             }
                             string lastColor = "";
                             string lastSize = "";
+                            string lastTypeface = "";
                             RegularContainer slide = textbox.FirstAncestorWithType<Slide>();
                             if (slide == null) slide = textbox.FirstAncestorWithType<Note>();
                             if (slide == null) slide = textbox.FirstAncestorWithType<Handout>();
-                            new CharacterRunPropsMapping(_ctx, _writer).Apply(style.CRuns[0], "defRPr", slide, ref lastColor, ref lastSize, lang, null); 
+                            new CharacterRunPropsMapping(_ctx, _writer).Apply(style.CRuns[0], "defRPr", slide, ref lastColor, ref lastSize, ref lastTypeface, lang, null); 
                             _writer.WriteEndElement();
                             lvlRprWritten = true;
                         }
@@ -1346,7 +1376,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteEndElement();
 
-            new TextMapping(_ctx, _writer).Apply(textbox, _footertext, _headertext, _datetext);
+            new TextMapping(_ctx, _writer).Apply(this, textbox, _footertext, _headertext, _datetext);
 
             _writer.WriteEndElement();
         }
