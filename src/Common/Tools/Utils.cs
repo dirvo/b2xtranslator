@@ -30,11 +30,29 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Collections;
+using System.Xml;
 
 namespace DIaLOGIKa.b2xtranslator.Tools
 {
     public class Utils
     {
+        //Microsoft Office 2007 Beta 2 used namespaces that are not valid anymore.
+        //This method should be used for all xml-code inside the binary Powerpoint file.
+        //e.g. Themes, Layouts
+        public static void replaceOutdatedNamespaces(ref XmlNode e)
+        {
+            string s = replaceOutdatedNamespaces(e.OuterXml);
+            XmlDocument d2 = new XmlDocument();
+            d2.LoadXml(s);
+            e = d2.DocumentElement;
+        }
+
+        public static string replaceOutdatedNamespaces(string input)
+        {
+            string output = input.Replace("http://schemas.openxmlformats.org/drawingml/2006/3/main", "http://schemas.openxmlformats.org/drawingml/2006/main");
+            output = output.Replace("http://schemas.openxmlformats.org/presentationml/2006/3/main", "http://schemas.openxmlformats.org/presentationml/2006/main");
+            return output;
+        }
 
         public static string ReadWString(Stream stream)
         {

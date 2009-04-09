@@ -50,7 +50,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         {
             return (Int32) (emu / MC_PER_EMU);
         }
-
+                
         public static XmlDocument GetDefaultDocument(string filename)
         {
             Assembly a = Assembly.GetExecutingAssembly();

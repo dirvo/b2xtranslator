@@ -65,7 +65,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     {
                         colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, (RegularContainer)slide, so);
                     } else {
-                        colorval = "000000"; //TODO: find out which color to use in this case
+                        colorval = "FFFFFF"; //TODO: find out which color to use in this case
                     }
                     _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
                     _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
@@ -397,7 +397,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         {
                             colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide, so);
                         } else {
-                            colorval = "000000"; //TODO: find out which color to use in this case
+                            colorval = "FFFFFF"; //TODO: find out which color to use in this case
                         }
                     }
 

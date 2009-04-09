@@ -262,6 +262,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 }
             }
             //defTabSz
+            if (pr.DefaultTabSizePresent)
+            {
+                _writer.WriteAttributeString("defTabSz", Utils.MasterCoordToEMU((int)pr.DefaultTabSize).ToString());
+            }
             //rtl
             if (pr.TextDirectionPresent)
             {

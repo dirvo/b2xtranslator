@@ -70,8 +70,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             foreach (RoundTripContentMasterInfo12 slideLayout in rtSlideLayouts)
             {
                 SlideLayoutPart layoutPart = this.LayoutManager.AddLayoutPartWithInstanceId(slideLayout.Instance);
-
-                slideLayout.XmlDocumentElement.WriteTo(layoutPart.XmlWriter);
+                XmlNode e = slideLayout.XmlDocumentElement;
+                Tools.Utils.replaceOutdatedNamespaces(ref e);
+                e.WriteTo(layoutPart.XmlWriter);
                 layoutPart.XmlWriter.Flush();
             }
         }
@@ -209,7 +210,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             if (theme != null)
             {
-                xmlDoc = theme.XmlDocumentElement;
+                xmlDoc = theme.XmlDocumentElement;             
+                                
+                //Tools.Utils.recursiveReplaceOutdatedNamespaces(ref xmlDoc);
                 xmlDoc.WriteTo(themePart.XmlWriter);
             }
             else

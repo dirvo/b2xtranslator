@@ -190,8 +190,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             if (container.AllChildrenWithType<ShapeOptions>().Count > 1)
             {
                 sndSo = ((RegularContainer)sh.ParentRecord).AllChildrenWithType<ShapeOptions>()[1];
-                if (sndSo.OptionsByID.ContainsKey(ShapeOptions.PropertyId.metroBlob))
-                {
+                //if (sndSo.OptionsByID.ContainsKey(ShapeOptions.PropertyId.metroBlob))
+                //{
                 //    ZipUtils.ZipReader reader = null;
                 //    try
                 //    {
@@ -205,6 +205,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 //        reader = ZipUtils.ZipFactory.OpenArchive(path);
                 //        System.IO.StreamReader mems = new System.IO.StreamReader(reader.GetEntry("drs/shapexml.xml"));
                 //        string xml = mems.ReadToEnd();
+                //        xml = Tools.Utils.replaceOutdatedNamespaces(xml);
                 //        xml = xml.Substring(xml.IndexOf("<p:sp")); //remove xml declaration
 
                 //        _writer.WriteRaw(xml);
@@ -218,7 +219,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 //        continueShape = true;
                 //        if (reader != null) reader.Close();
                 //    }
-                }
+                //}
             }
 
             if (continueShape)
@@ -1166,6 +1167,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                     _writer.WriteAttributeString("idx", placeholder.Position.ToString());
                                 }
 
+
                                 _writer.WriteEndElement();
                                 phWritten = true;
                             }
@@ -1186,6 +1188,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             break;
                     }
                 }
+                               
             
                 RegularContainer container = (RegularContainer)(clientData.ParentRecord);
                 foreach (ClientTextbox b in container.AllChildrenWithType<ClientTextbox>())

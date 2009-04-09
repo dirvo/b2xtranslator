@@ -84,8 +84,14 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             XmlDocument partDoc = new XmlDocument();
             partDoc.Load(partStream);
 
-            return partDoc.DocumentElement;
+            XmlNode e = partDoc.DocumentElement;
+            
+            DIaLOGIKa.b2xtranslator.Tools.Utils.replaceOutdatedNamespaces(ref e);
+            
+            return (XmlElement)e;
         }
+
+
     }
 
 }

@@ -258,7 +258,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         {
             foreach (Slide m in ppt.MainMasterRecords)
             {
-                _ctx.GetOrCreateMasterMappingByMasterId(m.PersistAtom.SlideId).Apply(m);
+                 _ctx.GetOrCreateMasterMappingByMasterId(m.PersistAtom.SlideId).Apply(m);
             }
         }
 

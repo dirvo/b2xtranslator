@@ -18,6 +18,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
                     {
                         RoundTripContentMasterInfo12 info = (RoundTripContentMasterInfo12)rec;
                         string xml = info.XmlDocumentElement.OuterXml;
+                        xml = xml.Replace("http://schemas.openxmlformats.org/drawingml/2006/3/main", "http://schemas.openxmlformats.org/drawingml/2006/main");
                         string title = info.XmlDocumentElement.Attributes["type"].InnerText;
                         Layouts.Add(title, xml);
                     }           

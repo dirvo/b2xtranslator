@@ -226,6 +226,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         public Dictionary<UInt32, SlideLayoutPart> TitleMasterIdToLayoutPart =
             new Dictionary<UInt32, SlideLayoutPart>();
 
+        public Dictionary<string, SlideLayoutPart> CodeToLayoutPart =
+            new Dictionary<string, SlideLayoutPart>();
+
         public MasterLayoutManager(ConversionContext ctx, UInt32 masterId)
         {
             this._ctx = ctx;
@@ -239,6 +242,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             result.AddRange(this.InstanceIdToLayoutPart.Values);
             result.AddRange(this.LayoutFilenameToLayoutPart.Values);
             result.AddRange(this.TitleMasterIdToLayoutPart.Values);
+            result.AddRange(this.CodeToLayoutPart.Values);
 
             return result;
         }
@@ -276,6 +280,25 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
 
             return this.LayoutFilenameToLayoutPart[layoutFilename];
+        }
+
+        public SlideLayoutPart GetOrCreateLayoutPartByCode(string xml)
+        {
+            SlideMasterPart masterPart = _ctx.GetOrCreateMasterMappingByMasterId(this.MasterId).MasterPart;
+
+            if (!this.CodeToLayoutPart.ContainsKey(xml))
+            {
+
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(xml);
+
+                SlideLayoutPart layoutPart = masterPart.AddSlideLayoutPart();
+                doc.WriteTo(layoutPart.XmlWriter);
+                layoutPart.XmlWriter.Flush();
+                CodeToLayoutPart.Add(xml, layoutPart);
+            }
+
+            return CodeToLayoutPart[xml];
         }
 
         public SlideLayoutPart GetOrCreateLayoutPartForTitleMasterId(UInt32 titleMasterId)

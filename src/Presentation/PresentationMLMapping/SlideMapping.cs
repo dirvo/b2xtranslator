@@ -79,7 +79,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             UInt32 mainMasterId = GetMainMasterId(slideAtom);
             MasterLayoutManager layoutManager = _ctx.GetOrCreateLayoutManagerByMasterId(mainMasterId);
 
-            SlideLayoutPart layoutPart;
+            SlideLayoutPart layoutPart = null;
             RoundTripContentMasterId12 masterInfo = slide.FirstChildWithType<RoundTripContentMasterId12>();
 
             // PPT2007 OOXML-Layout
@@ -95,7 +95,19 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             // Pre-PPT2007 SSlideLayoutAtom primitive SlideLayoutType layout
             else
             {
-                layoutPart = layoutManager.GetOrCreateLayoutPartByLayoutType(slideAtom.Layout.Geom, slideAtom.Layout.PlaceholderTypes);
+                MainMaster m = (MainMaster)_ctx.Ppt.FindMasterRecordById(slideAtom.MasterId);
+                if (m.Layouts.Count == 1 && slideAtom.Layout.Geom == SlideLayoutType.Blank)
+                {
+                    foreach (string layout in m.Layouts.Values)
+                    {
+                        string output = Tools.Utils.replaceOutdatedNamespaces(layout);
+                        layoutPart = layoutManager.GetOrCreateLayoutPartByCode(output);
+                    }
+                }
+                else
+                {
+                    layoutPart = layoutManager.GetOrCreateLayoutPartByLayoutType(slideAtom.Layout.Geom, slideAtom.Layout.PlaceholderTypes);
+                }
             }
 
             this.targetPart.ReferencePart(layoutPart);

@@ -338,9 +338,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     throw new NotSupportedException("Can't find text for ClientTextbox without TextHeaderAtom and OutlineTextRefAtom");
             }
 
-            uint idx = 0;
+            uint idx = 0;                      
 
             Slide s = textbox.FirstAncestorWithType<Slide>();
+           
             if (s != null)
             {
                 try
@@ -351,9 +352,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         Slide m = _ctx.Ppt.FindMasterRecordById(a.MasterId);
                         foreach (TextMasterStyleAtom at in m.AllChildrenWithType<TextMasterStyleAtom>())
                         {
-                            if (thAtom.TextType == TextType.Other && at.Instance == 1)
+                            if (at.Instance == 1 && thAtom.TextType == TextType.Other)
                             {
-                                defaultStyle = at;
+                                //defaultStyle = at;
                                 break;
                             }
                             if (at.Instance == (int)thAtom.TextType)
@@ -369,7 +370,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 }
                 
             }
-          
+            
             if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.hspMaster))
             {
                 uint MasterID = so.OptionsByID[ShapeOptions.PropertyId.hspMaster].op;
@@ -398,13 +399,20 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     MasterTextPropRun tp = GetMasterTextPropRun(masterTextProp, idx);
 
                     String runText;
+
+                    if (runlines.Length > 0)
+                    if (runlines[0].StartsWith("\t"))
+                    {
+
+                    }
+
                     writeP(p, tp, so, ruler, defaultStyle);
 
                     uint CharacterRunStart;
                     int len;
 
                     bool first = true;
-                    
+                    bool textwritten = false;
                     foreach (string line in runlines)
                     {
                         uint offset = idx;
@@ -430,6 +438,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                         while (idx < offset + line.Length)
                         {
+                            textwritten = true;
                             len = line.Length;
                             CharacterRun r = GetCharacterRun(style, idx + (uint)internalOffset + 1);
                             if (r != null)
@@ -487,8 +496,27 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                        
                     }
 
-                    _writer.WriteStartElement("a", "endParaRPr", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteEndElement();
+                    if (!textwritten)
+                    {
+                        CharacterRun r = GetCharacterRun(style, idx + (uint)internalOffset);
+                        if (r != null)
+                        {
+                            string dummy = "";
+                            string dummy2 = "";
+                            string dummy3 = "";
+                            RegularContainer slide = textbox.FirstAncestorWithType<Slide>();
+                            if (slide == null) slide = textbox.FirstAncestorWithType<Note>();
+                            if (slide == null) slide = textbox.FirstAncestorWithType<Handout>();
+                            new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "endParaRPr", slide, ref dummy, ref dummy2, ref dummy3, lang, defaultStyle);
+                        }
+
+                    }
+                    else
+                    {
+                        _writer.WriteStartElement("a", "endParaRPr", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteEndElement();
+                    }
+
                     _writer.WriteEndElement();
 
                     idx += 1;
@@ -534,6 +562,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU(ruler.leftMargin5).ToString());
                 } else if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.dxTextLeft))
                 {
+                    TextBooleanProperties props = new TextBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.TextBooleanProperties].op);
+                    if (props.fUsefAutoTextMargin && (props.fAutoTextMargin == false))
                     if (so.OptionsByID[ShapeOptions.PropertyId.dxTextLeft].op > 0)
                     _writer.WriteAttributeString("marL", so.OptionsByID[ShapeOptions.PropertyId.dxTextLeft].op.ToString());
                 }
@@ -621,6 +651,18 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 _writer.WriteAttributeString("algn", "justLow");
                                 break;
                         }
+                    }
+                }
+
+                if (p.DefaultTabSizePresent)
+                {
+                    _writer.WriteAttributeString("defTabSz", Utils.MasterCoordToEMU((int)p.DefaultTabSize).ToString());
+                }
+                else if (defaultStyle != null && defaultStyle.PRuns.Count > p.IndentLevel)
+                {
+                    if (defaultStyle.PRuns[p.IndentLevel].DefaultTabSizePresent)
+                    {
+                        _writer.WriteAttributeString("defTabSz", Utils.MasterCoordToEMU((int)defaultStyle.PRuns[p.IndentLevel].DefaultTabSize).ToString());
                     }
                 }
 
