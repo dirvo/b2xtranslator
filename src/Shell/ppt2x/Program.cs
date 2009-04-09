@@ -84,61 +84,27 @@ namespace DIaLOGIKa.b2xtranslator.ppt2x
 
                 try
                 {
-                    // copy processing file
-                    ProcessingFile procFile = new ProcessingFile(InputFile);
-
-                    //make output file name
-                    if (ChoosenOutputFile == null)
-                    {
-                        if (InputFile.Contains("."))
-                        {
-                            ChoosenOutputFile = InputFile.Remove(InputFile.LastIndexOf(".")) + ".pptx";
-                        }
-                        else
-                        {
-                            ChoosenOutputFile = InputFile + ".pptx";
-                        }
-                    }
-
-                    //start time
-                    DateTime start = DateTime.Now;
-
-                    //open the reader
-                    using (StructuredStorageReader reader = new StructuredStorageReader(procFile.File.FullName))
+                    if (InputFile.Contains("*.ppt"))
                     {
 
-                        //parse the document
-                        PowerpointDocument ppt = new PowerpointDocument(reader);
+                        string[] files = Directory.GetFiles(InputFile.Replace("*.ppt", ""), "*.ppt");
 
-                        using (PresentationDocument pptx = PresentationDocument.Create(ChoosenOutputFile))
+                        foreach (String file in files)
                         {
-                            // Setup the writer
-                            XmlWriterSettings xws = new XmlWriterSettings();
-                            xws.OmitXmlDeclaration = false;
-                            xws.CloseOutput = true;
-                            xws.Encoding = Encoding.UTF8;
-                            xws.ConformanceLevel = ConformanceLevel.Document;
-
-                            // Setup the context
-                            ConversionContext context = new ConversionContext(ppt);
-                            context.WriterSettings = xws;
-                            context.Pptx = pptx;
-
-                            // Write presentation.xml
-                            ppt.Convert(new PresentationPartMapping(context));
-
-                            //AppMapping app = new AppMapping(pptx.AddAppPropertiesPart(), xws);
-                            //app.Apply(null);
-
-                            //CoreMapping core = new CoreMapping(pptx.AddCoreFilePropertiesPart(), xws);
-                            //core.Apply(null);
-                                                       
-                        }
-
-                        DateTime end = DateTime.Now;
-                        TimeSpan diff = end.Subtract(start);
-                        TraceLogger.Info("Conversion of file {0} finished in {1} seconds", InputFile, diff.TotalSeconds.ToString(CultureInfo.InvariantCulture));
+                            if (new FileInfo(file).Extension.ToLower().EndsWith("ppt"))
+                            {
+                                ChoosenOutputFile = null;
+                                processFile(file);
+                            }
+                        } 
+                       
                     }
+                    else
+                    {
+                        processFile(InputFile);
+                    }
+
+                    
                 }
                 catch (ZipCreationException ex)
                 {
@@ -175,6 +141,65 @@ namespace DIaLOGIKa.b2xtranslator.ppt2x
             }
 
             TraceLogger.Info("End of program");
+        }
+
+        private static void processFile(String InputFile)
+        {
+            // copy processing file
+            ProcessingFile procFile = new ProcessingFile(InputFile);
+
+            //make output file name
+            if (ChoosenOutputFile == null)
+            {
+                if (InputFile.Contains("."))
+                {
+                    ChoosenOutputFile = InputFile.Remove(InputFile.LastIndexOf(".")) + ".pptx";
+                }
+                else
+                {
+                    ChoosenOutputFile = InputFile + ".pptx";
+                }
+            }
+
+            //start time
+            DateTime start = DateTime.Now;
+
+            //open the reader
+            using (StructuredStorageReader reader = new StructuredStorageReader(procFile.File.FullName))
+            {
+
+                //parse the document
+                PowerpointDocument ppt = new PowerpointDocument(reader);
+
+                using (PresentationDocument pptx = PresentationDocument.Create(ChoosenOutputFile))
+                {
+                    // Setup the writer
+                    XmlWriterSettings xws = new XmlWriterSettings();
+                    xws.OmitXmlDeclaration = false;
+                    xws.CloseOutput = true;
+                    xws.Encoding = Encoding.UTF8;
+                    xws.ConformanceLevel = ConformanceLevel.Document;
+
+                    // Setup the context
+                    ConversionContext context = new ConversionContext(ppt);
+                    context.WriterSettings = xws;
+                    context.Pptx = pptx;
+
+                    // Write presentation.xml
+                    ppt.Convert(new PresentationPartMapping(context));
+
+                    //AppMapping app = new AppMapping(pptx.AddAppPropertiesPart(), xws);
+                    //app.Apply(null);
+
+                    //CoreMapping core = new CoreMapping(pptx.AddCoreFilePropertiesPart(), xws);
+                    //core.Apply(null);
+
+                }
+
+                DateTime end = DateTime.Now;
+                TimeSpan diff = end.Subtract(start);
+                TraceLogger.Info("Conversion of file {0} finished in {1} seconds", InputFile, diff.TotalSeconds.ToString(CultureInfo.InvariantCulture));
+            }
         }
     }
 }

@@ -222,55 +222,57 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                 if (slide == null)
                 {
-                    //TODO: what shall be used in this case (happens for default text style in presentation.xml)
-                    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("val", "000000");
+                    ////TODO: what shall be used in this case (happens for default text style in presentation.xml)
+                    //_writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                    //_writer.WriteAttributeString("val", "000000");
+                    //_writer.WriteEndElement();
+
+                    _writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
+                    switch (run.Color.Index)
+                    {
+                        case 0x00:
+                            _writer.WriteAttributeString("val", "bg1"); //background
+                            break;
+                        case 0x01:
+                            _writer.WriteAttributeString("val", "tx1"); //text
+                            break;
+                        case 0x02:
+                            _writer.WriteAttributeString("val", "dk1"); //shadow
+                            break;
+                        case 0x03:
+                            _writer.WriteAttributeString("val", "tx1"); //title text
+                            break;
+                        case 0x04:
+                            _writer.WriteAttributeString("val", "bg2"); //fill
+                            break;
+                        case 0x05:
+                            _writer.WriteAttributeString("val", "accent1"); //accent1
+                            break;
+                        case 0x06:
+                            _writer.WriteAttributeString("val", "accent2"); //accent2
+                            break;
+                        case 0x07:
+                            _writer.WriteAttributeString("val", "accent3"); //accent3
+                            break;
+                        case 0xFE: //sRGB
+                            lastColor = run.Color.Red.ToString("X").PadLeft(2, '0') + run.Color.Green.ToString("X").PadLeft(2, '0') + run.Color.Blue.ToString("X").PadLeft(2, '0');
+                            _writer.WriteAttributeString("val", lastColor);
+                            break;
+                        case 0xFF: //undefined
+                            break;
+                    }
                     _writer.WriteEndElement();
+
                 }
                 else
                 {
-                    //_writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
-                    //switch (run.Color.Index)
-                    //{
-                    //    case 0x00: 
-                    //        _writer.WriteAttributeString("val", "bg1"); //background
-                    //        break;
-                    //    case 0x01: 
-                    //        _writer.WriteAttributeString("val", "tx1"); //text
-                    //        break;
-                    //    case 0x02:
-                    //        _writer.WriteAttributeString("val", "dk1"); //shadow
-                    //        break;
-                    //    case 0x03: 
-                    //        _writer.WriteAttributeString("val", "tx1"); //title text
-                    //        break;
-                    //    case 0x04:
-                    //        _writer.WriteAttributeString("val", "bg2"); //fill
-                    //        break;
-                    //    case 0x05:
-                    //        _writer.WriteAttributeString("val", "accent1"); //accent1
-                    //        break;
-                    //    case 0x06:
-                    //        _writer.WriteAttributeString("val", "accent2"); //accent2
-                    //        break;
-                    //    case 0x07:
-                    //        _writer.WriteAttributeString("val", "accent3"); //accent3
-                    //        break;
-                    //    case 0xFE: //sRGB
-                    //        lastColor = run.Color.Red.ToString("X").PadLeft(2, '0') + run.Color.Green.ToString("X").PadLeft(2, '0') + run.Color.Blue.ToString("X").PadLeft(2, '0');
-                    //        _writer.WriteAttributeString("val", lastColor);
-                    //        break;
-                    //    case 0xFF: //undefined
-                    //        break;
-                    //}
-                    //_writer.WriteEndElement();
-
+                    
                     ColorSchemeAtom MasterScheme = null;
                     SlideAtom ato = slide.FirstChildWithType<SlideAtom>();
                     List<ColorSchemeAtom> colors;
-                    if (ato != null && Tools.Utils.BitmaskToBool(ato.Flags, 0x1 << 1))
+                    if (ato != null && Tools.Utils.BitmaskToBool(ato.Flags, 0x1 << 1) && ato.MasterId != 0)
                     {
-                        colors = _ctx.Ppt.FindMasterRecordById(ato.MasterId).AllChildrenWithType<ColorSchemeAtom>();
+                        colors = _ctx.Ppt.FindMasterRecordById(ato.MasterId).AllChildrenWithType<ColorSchemeAtom>();                      
                     }
                     else
                     {

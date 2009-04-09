@@ -347,16 +347,16 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 try
                 {
                     SlideAtom a = s.FirstChildWithType<SlideAtom>();
-                    if (a.MasterId > 0)
+                    if (Tools.Utils.BitmaskToBool(a.Flags, 0x01 << 1) && a.MasterId > 0)
                     {
                         Slide m = _ctx.Ppt.FindMasterRecordById(a.MasterId);
                         foreach (TextMasterStyleAtom at in m.AllChildrenWithType<TextMasterStyleAtom>())
                         {
-                            if (at.Instance == 1 && thAtom.TextType == TextType.Other)
-                            {
-                                //defaultStyle = at;
-                                break;
-                            }
+                            //if (at.Instance == 1 && thAtom.TextType == TextType.Other)
+                            //{
+                            //    defaultStyle = at;
+                            //    break;
+                            //}
                             if (at.Instance == (int)thAtom.TextType)
                             {
                                 defaultStyle = at;
