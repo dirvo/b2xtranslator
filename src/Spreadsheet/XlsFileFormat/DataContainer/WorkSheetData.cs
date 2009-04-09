@@ -58,6 +58,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public List<MULBLANK> MULBLANKList;
         public List<FORMULA> FORMULAList;
         public List<ARRAY> ARRAYList;
+        public List<HyperlinkData> HyperLinkList; 
         public BOUNDSHEET boundsheetRecord;
 
 
@@ -113,6 +114,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             this.rowDataTable = new SortedList<int, RowData>();
             this.sharedFormulaDataTable = new List<SharedFormulaData>();
             this.colInfoDataTable = new List<ColumnInfoData>();
+
+            this.HyperLinkList = new List<HyperlinkData>(); 
             boundsheetRecord = null;
 
             this.defaultRowHeight = -1;
@@ -476,6 +479,19 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             this.pageSetup = setup; 
         }
 
+        public void addHyperLinkData(HLINK hlink)
+        {
+            HyperlinkData hld = new HyperlinkData();
+            hld.colFirst = hlink.colFirst;
+            hld.colLast = hlink.colLast;
+            hld.rwFirst = hlink.rwFirst;
+            hld.rwLast = hlink.rwLast;
+            hld.absolute = hlink.hlstmfIsAbsolute;
+            hld.url = hlink.monikerString; 
+
+
+            this.HyperLinkList.Add(hld); 
+        }
 
         #region IVisitable Members
 

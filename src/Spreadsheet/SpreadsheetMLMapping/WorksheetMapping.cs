@@ -172,7 +172,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 {
                     _writer.WriteAttributeString("ht", Convert.ToString(row.height.ToPoints(), CultureInfo.GetCultureInfo("en-US")));
                     if (row.customHeight)
-                    {                        
+                    {
                         _writer.WriteAttributeString("customHeight", "1");
                     }
 
@@ -355,6 +355,60 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 _writer.WriteEndElement();
             }
 
+            // hyperlinks! 
+
+            if (bsd.HyperLinkList.Count != 0)
+            {
+                _writer.WriteStartElement("hyperlinks");
+                foreach (HyperlinkData link in bsd.HyperLinkList)
+                {
+                    Uri url;
+                    if (link.absolute)
+                    {
+
+                        if (!link.url.StartsWith("http"))
+                        {
+                            link.url = "file:///" + link.url;
+                        }
+                        url = new Uri(link.url, UriKind.Absolute);
+
+                    }
+                    else
+                    {
+
+                        url = new Uri(link.url, UriKind.Relative);
+
+                    }
+
+
+
+
+                    ExternalRelationship er = this.xlsContext.SpreadDoc.WorkbookPart.GetWorksheetPart().AddExternalRelationship(OpenXmlRelationshipTypes.hyperLink, url);
+
+
+
+                    _writer.WriteStartElement("hyperlink");
+                    string refstring;
+
+                    if (link.colLast == link.colFirst && link.rwLast == link.rwFirst)
+                    {
+                        refstring = ExcelHelperClass.intToABCString((int)link.colLast, (link.rwLast + 1).ToString());
+                    }
+                    else
+                    {
+                        refstring = ExcelHelperClass.intToABCString((int)link.colFirst, (link.rwFirst + 1).ToString()) + ":" + ExcelHelperClass.intToABCString((int)link.colLast, (link.rwLast + 1).ToString());
+                    }
+                    _writer.WriteAttributeString("ref", refstring);
+                    _writer.WriteAttributeString("r", "id", OpenXmlNamespaces.Relationships, er.Id.ToString());
+
+                    _writer.WriteEndElement();
+                }
+
+
+                _writer.WriteEndElement();
+            }
+
+
 
             // worksheet margins !!
             if (bsd.leftMargin != null && bsd.topMargin != null &&
@@ -378,7 +432,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             {
                 _writer.WriteStartElement("pageSetup");
 
-                if (!bsd.PageSetup.fNoPls && bsd.PageSetup.iPaperSize > 0 && bsd.PageSetup.iPaperSize <255)
+                if (!bsd.PageSetup.fNoPls && bsd.PageSetup.iPaperSize > 0 && bsd.PageSetup.iPaperSize < 255)
                 {
                     _writer.WriteAttributeString("paperSize", bsd.PageSetup.iPaperSize.ToString());
                 }

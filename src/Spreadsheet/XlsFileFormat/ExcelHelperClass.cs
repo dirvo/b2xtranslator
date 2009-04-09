@@ -370,5 +370,24 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             }
         }
 
+        /// <summary>
+        /// This method reads x bytes from a IStreamReader to get a hyperlink string from this
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="cch"></param>
+        /// <param name="grbit"></param>
+        /// <returns></returns>
+        public static string getHyperlinkStringFromBiffRecord(IStreamReader reader)
+        {
+            string value = "";
+            UInt32 length = reader.ReadUInt32(); 
+            for (int i = 0; i < length; i++)
+                {
+                    value += System.BitConverter.ToChar(reader.ReadBytes(2), 0);
+                }
+
+
+            return value.Remove(value.Length - 1); ;
+        }
     }
 }

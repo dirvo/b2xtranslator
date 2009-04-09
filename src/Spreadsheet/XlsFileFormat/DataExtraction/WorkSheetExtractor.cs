@@ -170,7 +170,24 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                     else if (bh.id == RecordNumber.SETUP)
                     {
                         SETUP setup = new SETUP(this.StreamReader, bh.id, bh.length);
-                        this.bsd.addSetupData(setup); 
+                        this.bsd.addSetupData(setup);
+                    }
+                    else if (bh.id == RecordNumber.HLINK)
+                    {
+                        long oldStreamPos = this.StreamReader.BaseStream.Position; 
+                        try
+                        {
+
+                            HLINK hlink = new HLINK(this.StreamReader, bh.id, bh.length);
+                            bsd.addHyperLinkData(hlink); 
+                        }
+                        catch (Exception ex)
+                        {
+                            this.StreamReader.BaseStream.Seek(oldStreamPos, System.IO.SeekOrigin.Begin);
+                            this.StreamReader.BaseStream.Seek(bh.length, System.IO.SeekOrigin.Current);
+                            TraceLogger.Debug("Link parse error");
+                            TraceLogger.Error(ex.StackTrace);
+                        }
                     }
 
                     else

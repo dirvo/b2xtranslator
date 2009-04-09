@@ -189,7 +189,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string sharedStrings = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings";
         public const string externalLink = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLink";
         public const string externalLinkPath = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLinkPath";
-    
+
+        public const string hyperLink = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink"; 
     }
 
     public static class MicrosoftWordRelationshipTypes

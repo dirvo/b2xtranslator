@@ -205,15 +205,23 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
                     writer.WriteAttributeString("Id", rel.Id);
                     writer.WriteAttributeString("Type", rel.RelationshipType);
 
-                    if (rel.Target.IsFile)
+                    if (rel.Target.IsAbsoluteUri)
                     {
-                        //reform the URI path for Word
-                        //Word does not accept forward slahes in the path of a local file
-                        writer.WriteAttributeString("Target", "file:///" + rel.Target.AbsolutePath.Replace("/", "\\"));
+                        if (rel.Target.IsFile)
+                        {
+                            //reform the URI path for Word
+                            //Word does not accept forward slahes in the path of a local file
+                            writer.WriteAttributeString("Target", "file:///" + rel.Target.AbsolutePath.Replace("/", "\\"));
+                        }
+                        else
+                        {
+                            writer.WriteAttributeString("Target", rel.Target.ToString());
+                        }
                     }
                     else
                     {
-                        writer.WriteAttributeString("Target", rel.Target.ToString());
+                        
+                        writer.WriteAttributeString("Target", Uri.EscapeUriString(rel.Target.ToString()));
                     }
 
                     writer.WriteAttributeString("TargetMode", "External");

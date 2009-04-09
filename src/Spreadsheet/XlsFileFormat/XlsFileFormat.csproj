@@ -305,6 +305,7 @@
     <Compile Include="DataContainer\DefinedNameData.cs" />
     <Compile Include="DataContainer\ExternSheetData.cs" />
     <Compile Include="DataContainer\FormulaCell.cs" />
+    <Compile Include="DataContainer\HyperlinkData.cs" />
     <Compile Include="DataContainer\MergeCellData.cs" />
     <Compile Include="DataContainer\NumberCell.cs" />
     <Compile Include="DataContainer\RowData.cs" />
