@@ -440,7 +440,15 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         {
                             textwritten = true;
                             len = line.Length;
-                            CharacterRun r = GetCharacterRun(style, idx + (uint)internalOffset + 1);
+                            CharacterRun r = null;
+                            if (idx + (uint)internalOffset == 0)
+                            {
+                                r = GetCharacterRun(style, 0);
+                            }
+                            else
+                            {
+                                r = GetCharacterRun(style, idx + (uint)internalOffset + 1);
+                            }
                             if (r != null)
                             {
                                 CharacterRunStart = GetCharacterRunStart(style, idx + (uint)internalOffset + 1);
@@ -544,22 +552,42 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 } 
                 else if (ruler != null && ruler.fLeftMargin1 && p.IndentLevel == 0){
                     _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU(ruler.leftMargin1).ToString());
+                    if (!(p.IndentPresent || (defaultStyle != null && defaultStyle.PRuns.Count > p.IndentLevel && defaultStyle.PRuns[p.IndentLevel].IndentPresent) || (ruler != null && ruler.fIndent1 && p.IndentLevel == 0)))
+                    {
+                        _writer.WriteAttributeString("indent", Utils.MasterCoordToEMU(-1 * ruler.leftMargin1).ToString());
+                    }
                 }
                 else if (ruler != null && ruler.fLeftMargin2 && p.IndentLevel == 1)
                 {
                     _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU(ruler.leftMargin2).ToString());
+                    if (!(p.IndentPresent || (defaultStyle != null && defaultStyle.PRuns.Count > p.IndentLevel && defaultStyle.PRuns[p.IndentLevel].IndentPresent) || (ruler != null && ruler.fIndent2 && p.IndentLevel == 1)))
+                    {
+                        _writer.WriteAttributeString("indent", Utils.MasterCoordToEMU(-1 * ruler.leftMargin1).ToString());
+                    }
                 }
                 else if (ruler != null && ruler.fLeftMargin3 && p.IndentLevel == 2)
                 {
                     _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU(ruler.leftMargin3).ToString());
+                    if (!(p.IndentPresent || (defaultStyle != null && defaultStyle.PRuns.Count > p.IndentLevel && defaultStyle.PRuns[p.IndentLevel].IndentPresent) || (ruler != null && ruler.fIndent3 && p.IndentLevel == 2)))
+                    {
+                        _writer.WriteAttributeString("indent", Utils.MasterCoordToEMU(-1 * ruler.leftMargin1).ToString());
+                    }
                 }
                 else if (ruler != null && ruler.fLeftMargin4 && p.IndentLevel == 3)
                 {
                     _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU(ruler.leftMargin4).ToString());
+                    if (!(p.IndentPresent || (defaultStyle != null && defaultStyle.PRuns.Count > p.IndentLevel && defaultStyle.PRuns[p.IndentLevel].IndentPresent) || (ruler != null && ruler.fIndent4 && p.IndentLevel == 3)))
+                    {
+                        _writer.WriteAttributeString("indent", Utils.MasterCoordToEMU(-1 * ruler.leftMargin1).ToString());
+                    }
                 }
                 else if (ruler != null && ruler.fLeftMargin5 && p.IndentLevel == 4)
                 {
                     _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU(ruler.leftMargin5).ToString());
+                    if (!(p.IndentPresent || (defaultStyle != null && defaultStyle.PRuns.Count > p.IndentLevel && defaultStyle.PRuns[p.IndentLevel].IndentPresent) || (ruler != null && ruler.fIndent5 && p.IndentLevel == 4)))
+                    {
+                        _writer.WriteAttributeString("indent", Utils.MasterCoordToEMU(-1 * ruler.leftMargin1).ToString());
+                    }
                 } else if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.dxTextLeft))
                 {
                     TextBooleanProperties props = new TextBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.TextBooleanProperties].op);
@@ -767,7 +795,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             _writer.WriteAttributeString("char", p.BulletChar.ToString());
                             _writer.WriteEndElement(); //buChar
                         }
-
+                       
                         if (parentShapeTreeMapping != null && parentShapeTreeMapping.ShapeStyleTextProp9Atom != null && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs.Count > p.IndentLevel)
                         {
                             if (parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[p.IndentLevel].fBulletHasAutoNumber == 1)
@@ -783,7 +811,13 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                     _writer.WriteEndElement();
                                 }
                             }
-                           
+
+                        }
+                        else if (!p.BulletCharPresent)
+                        {
+                            _writer.WriteStartElement("a", "buChar", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("char", "•");
+                            _writer.WriteEndElement(); //buChar
                         }
 
                     }
