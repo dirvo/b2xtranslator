@@ -588,7 +588,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     {
                         _writer.WriteAttributeString("indent", Utils.MasterCoordToEMU(-1 * ruler.leftMargin1).ToString());
                     }
-                } else if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.dxTextLeft))
+                }
+                else if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.dxTextLeft) && so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.TextBooleanProperties))
                 {
                     TextBooleanProperties props = new TextBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.TextBooleanProperties].op);
                     if (props.fUsefAutoTextMargin && (props.fAutoTextMargin == false))
@@ -767,7 +768,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             {
                                 _writer.WriteStartElement("a", "buSzPct", OpenXmlNamespaces.DrawingML);
                                 _writer.WriteAttributeString("val", (p.BulletSize * 1000).ToString());
-                                _writer.WriteEndElement(); //buChar
+                                _writer.WriteEndElement(); //buSzPct
                             }
                             else
                             {
@@ -789,29 +790,19 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             }
                             _writer.WriteEndElement(); //buChar
                         }
-                        if (p.BulletCharPresent)
+                        
+                       
+                        if (parentShapeTreeMapping != null && parentShapeTreeMapping.ShapeStyleTextProp9Atom != null && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs.Count > p.IndentLevel && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[p.IndentLevel].fBulletHasAutoNumber == 1 && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[p.IndentLevel].bulletAutoNumberScheme == -1)
+                        {
+                            _writer.WriteStartElement("a","buAutoNum",OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("type","arabicPeriod");
+                            _writer.WriteEndElement();
+                        }
+                        else if (p.BulletCharPresent)
                         {
                             _writer.WriteStartElement("a", "buChar", OpenXmlNamespaces.DrawingML);
                             _writer.WriteAttributeString("char", p.BulletChar.ToString());
                             _writer.WriteEndElement(); //buChar
-                        }
-                       
-                        if (parentShapeTreeMapping != null && parentShapeTreeMapping.ShapeStyleTextProp9Atom != null && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs.Count > p.IndentLevel)
-                        {
-                            if (parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[p.IndentLevel].fBulletHasAutoNumber == 1)
-                            {
-                                if (parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[p.IndentLevel].bulletAutoNumberScheme != -1)
-                                {
-
-                                }
-                                else
-                                {
-                                    _writer.WriteStartElement("a","buAutoNum",OpenXmlNamespaces.DrawingML);
-                                    _writer.WriteAttributeString("type","arabicPeriod");
-                                    _writer.WriteEndElement();
-                                }
-                            }
-
                         }
                         else if (!p.BulletCharPresent)
                         {

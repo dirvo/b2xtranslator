@@ -71,6 +71,16 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             {
                 SlideLayoutPart layoutPart = this.LayoutManager.AddLayoutPartWithInstanceId(slideLayout.Instance);
                 XmlNode e = slideLayout.XmlDocumentElement;
+
+                XmlNamespaceManager nsm = new XmlNamespaceManager(new NameTable());
+                nsm.AddNamespace("a", OpenXmlNamespaces.DrawingML);
+
+                //for the moment remove blips that reference pictures
+                foreach (XmlNode bublip in  e.SelectNodes("//a:buBlip",nsm))
+                {
+                    bublip.ParentNode.RemoveChild(bublip);
+                }
+
                 Tools.Utils.replaceOutdatedNamespaces(ref e);
                 e.WriteTo(layoutPart.XmlWriter);
                 layoutPart.XmlWriter.Flush();
