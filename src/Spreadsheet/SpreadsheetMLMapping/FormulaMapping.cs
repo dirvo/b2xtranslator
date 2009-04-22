@@ -91,17 +91,43 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         else if (ptg is PtgRef)
                         {
                             PtgRef ptgref = (PtgRef)ptg;
-                            resultStack.Push(ExcelHelperClass.intToABCString((int)ptgref.col, (ptgref.rw + 1).ToString(), ptgref.colRelative, ptgref.rwRelative));
+
+                            int realCol = ptgref.col;
+                            int realRw = ptgref.rw + 1;
+
+                            if (ptgref.colRelative)
+                            {
+                                realCol += col; 
+                            }
+
+                            if (ptgref.rwRelative)
+                            {
+                                realRw += rw;
+                            }
+
+                            resultStack.Push(ExcelHelperClass.intToABCString(realCol, (realRw).ToString(), ptgref.colRelative, ptgref.rwRelative));
                         }
                         else if (ptg is PtgRefN)
                         {
                             PtgRefN ptgrefn = (PtgRefN)ptg;
-                            int realCol = (int)ptgrefn.col + col;
+                            int realCol = (int)ptgrefn.col;
+                            int realRw = ptgrefn.rw + 1; 
+
+                            if (ptgrefn.colRelative)
+                            {
+                                realCol += col; 
+                            }
                             if (realCol >= 0xFF)
                             {
                                 realCol -= 0x0100;
                             }
-                            resultStack.Push(ExcelHelperClass.intToABCString(realCol, (ptgrefn.rw + 1 + rw).ToString(), ptgrefn.colRelative, ptgrefn.rwRelative));
+
+                            if (ptgrefn.rwRelative)
+                            {
+                                realRw += rw; 
+                            }
+
+                            resultStack.Push(ExcelHelperClass.intToABCString(realCol, (realRw).ToString(), ptgrefn.colRelative, ptgrefn.rwRelative));
                         }
                         else if (ptg is PtgUplus || ptg is PtgUminus)
                         {
@@ -170,19 +196,41 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         {
                             String buffer = "";
                             PtgAreaN ptgarean = (PtgAreaN)ptg;
-                            int realColFirst = (int)ptgarean.colFirst + col;
+                            int realRwFirst = ptgarean.rwFirst + 1;
+                            int realRwLast = ptgarean.rwLast + 1;
+                            int realColFirst = (int)ptgarean.colFirst;
+                            int realColLast = (int)ptgarean.colLast;
+
+                            if (ptgarean.colFirstRelative)
+                            {
+                                realColFirst += col; 
+                            }
+                            
                             if (realColFirst >= 0xFF)
                             {
                                 realColFirst -= 0x0100;
                             }
-                            int realColLast = (int)ptgarean.colLast + col;
+
+                            if (ptgarean.colLastRelative)
+                            {
+                                realColLast += col;
+                            }
                             if (realColLast >= 0xFF)
                             {
                                 realColLast -= 0x0100;
                             }
 
-                            buffer = ExcelHelperClass.intToABCString(realColFirst, (ptgarean.rwFirst + 1 + rw).ToString(), ptgarean.colFirstRelative, ptgarean.rwFirstRelative);
-                            buffer = buffer + ":" + ExcelHelperClass.intToABCString(realColLast, (ptgarean.rwLast + 1 + rw).ToString(), ptgarean.colLastRelative, ptgarean.rwLastRelative);
+                            if (ptgarean.rwFirstRelative)
+                            {
+                                realRwFirst += rw; 
+                            }
+                            if (ptgarean.rwLastRelative)
+                            {
+                                realRwLast += rw;
+                            }
+
+                            buffer = ExcelHelperClass.intToABCString(realColFirst, (realRwFirst).ToString(), ptgarean.colFirstRelative, ptgarean.rwFirstRelative);
+                            buffer = buffer + ":" + ExcelHelperClass.intToABCString(realColLast, (realRwLast).ToString(), ptgarean.colLastRelative, ptgarean.rwLastRelative);
 
 
                             resultStack.Push(buffer);

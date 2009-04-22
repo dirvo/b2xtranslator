@@ -96,7 +96,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             get{ return this.pageSetup; }
         }
         
-        
+        // this value is used for the case that the converter adds the 
+        // chartview sheets as emty sheets
+        public bool emtpyWorksheet; 
 
         /// <summary>
         /// Ctor 

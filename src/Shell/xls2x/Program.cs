@@ -131,6 +131,11 @@ namespace DIaLOGIKa.b2xtranslator.xls2x
                                 {
                                     var.Convert(new WorksheetMapping(xlsContext));
                                 }
+                                else
+                                {
+                                    var.emtpyWorksheet = true;
+                                    var.Convert(new WorksheetMapping(xlsContext)); 
+                                }
                             }
                             int sbdnumber = 1;
                             foreach (SupBookData sbd in xlsDoc.workBookData.supBookDataList)

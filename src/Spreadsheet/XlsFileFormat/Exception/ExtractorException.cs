@@ -12,7 +12,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public const string NULLPOINTEREXCEPTION = "Null pointer exception!!";
         public const string NOFILEFOUNDEXCEPTION = "No file found!!";
         public const string PARSEDFORMULAEXCEPTION = "Formula is not valid !!";
-        public const string WORKBOOKSTREAMNOTFOUND = "Workbook stream not found!!"; 
+        public const string WORKBOOKSTREAMNOTFOUND = "Workbook stream not found!!";
+        public const string FILEENCRYPTED = "This file is encrypted!!"; 
 
 
         /// <summary>

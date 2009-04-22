@@ -241,6 +241,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                             this.StreamReader.ReadBytes(bh.length);
                         }
                     }
+                    else if (bh.id == RecordNumber.FILEPASS)
+                    {
+                        throw new ExtractorException(ExtractorException.FILEENCRYPTED); 
+                    }
                     else
                     {
                         // this else statement is used to read BiffRecords which aren't implemented 

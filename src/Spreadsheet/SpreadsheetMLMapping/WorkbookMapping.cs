@@ -68,15 +68,15 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
             foreach (WorkSheetData var in bsd.boundSheetDataList)
             {
-                if (var.boundsheetRecord.sheetType == BOUNDSHEET.sheetTypes.worksheet)
-                {
+           //     if (var.boundsheetRecord.sheetType == BOUNDSHEET.sheetTypes.worksheet)
+             //   {
                     _writer.WriteStartElement("sheet");
                     _writer.WriteAttributeString("name", var.worksheetName);
                     _writer.WriteAttributeString("sheetId", var.worksheetId.ToString());
 
                     _writer.WriteAttributeString("r", "id", OpenXmlNamespaces.Relationships, var.worksheetRef);
                     _writer.WriteEndElement();
-                }
+            //    }
             }
             _writer.WriteEndElement();      // close sheetData 
 

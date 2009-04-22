@@ -164,6 +164,13 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
             return rel;
         }
 
+        public ExternalRelationship AddExternalRelationship(string relationshipType, string externalUri)
+        {
+            ExternalRelationship rel = new ExternalRelationship(EXT_PREFIX + (_externalRelationships.Count + 1).ToString(), relationshipType, externalUri);
+            _externalRelationships.Add(rel);
+            return rel;
+        }
+
         /// <summary>
         /// Add a part reference without actually managing the part.
         /// </summary>
@@ -204,24 +211,30 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
                     writer.WriteStartElement("Relationship", OpenXmlNamespaces.RelationsshipsPackage);
                     writer.WriteAttributeString("Id", rel.Id);
                     writer.WriteAttributeString("Type", rel.RelationshipType);
-
-                    if (rel.Target.IsAbsoluteUri)
+                    if (Uri.IsWellFormedUriString(rel.Target,UriKind.RelativeOrAbsolute))
                     {
-                        if (rel.Target.IsFile)
+                        if (rel.TargetUri.IsAbsoluteUri)
                         {
-                            //reform the URI path for Word
-                            //Word does not accept forward slahes in the path of a local file
-                            writer.WriteAttributeString("Target", "file:///" + rel.Target.AbsolutePath.Replace("/", "\\"));
+                            if (rel.TargetUri.IsFile)
+                            {
+                                //reform the URI path for Word
+                                //Word does not accept forward slahes in the path of a local file
+                                writer.WriteAttributeString("Target", "file:///" + rel.TargetUri.AbsolutePath.Replace("/", "\\"));
+                            }
+                            else
+                            {
+                                writer.WriteAttributeString("Target", rel.Target.ToString());
+                            }
                         }
                         else
                         {
-                            writer.WriteAttributeString("Target", rel.Target.ToString());
+
+                            writer.WriteAttributeString("Target", Uri.EscapeUriString(rel.Target.ToString()));
                         }
                     }
                     else
                     {
-                        
-                        writer.WriteAttributeString("Target", Uri.EscapeUriString(rel.Target.ToString()));
+                        writer.WriteAttributeString("Target", rel.Target);
                     }
 
                     writer.WriteAttributeString("TargetMode", "External");

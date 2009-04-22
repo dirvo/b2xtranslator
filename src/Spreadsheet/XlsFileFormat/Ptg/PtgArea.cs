@@ -59,10 +59,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg
             this.colFirst = this.Reader.ReadUInt16();
             this.colLast = this.Reader.ReadUInt16();
 
-            this.colFirstRelative = Utils.BitmaskToBool(colFirst, 0x8000);
-            this.rwFirstRelative = Utils.BitmaskToBool(colFirst, 0x4000);
-            this.colLastRelative = Utils.BitmaskToBool(colLast, 0x8000);
-            this.rwLastRelative = Utils.BitmaskToBool(colLast, 0x4000);
+            this.colFirstRelative = Utils.BitmaskToBool(colFirst, 0x4000);
+            this.rwFirstRelative = Utils.BitmaskToBool(colFirst, 0x8000);
+            this.colLastRelative = Utils.BitmaskToBool(colLast, 0x4000);
+            this.rwLastRelative = Utils.BitmaskToBool(colLast, 0x8000);
 
             colFirst = (UInt16)(colFirst & 0x3FFF);
             colLast = (UInt16)(colLast & 0x3FFF);
