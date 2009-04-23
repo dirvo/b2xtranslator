@@ -38,8 +38,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg
     {
         public const PtgNumber ID = PtgNumber.PtgAreaN;
 
-        public int rwFirst;
-        public int rwLast;
+        public uint rwFirst;
+        public uint rwLast;
         public int colFirst;
         public int colLast;
 
@@ -54,8 +54,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg
         {
             Debug.Assert(this.Id == ID);
             this.Length = 9;
-            this.rwFirst = this.Reader.ReadInt16();
-            this.rwLast = this.Reader.ReadInt16();
+            this.rwFirst = this.Reader.ReadUInt16();
+            this.rwLast = this.Reader.ReadUInt16();
             this.colFirst = this.Reader.ReadInt16();
             this.colLast = this.Reader.ReadInt16();
 

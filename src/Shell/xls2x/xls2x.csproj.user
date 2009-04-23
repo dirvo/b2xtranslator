@@ -1,8 +1,8 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <StartArguments>"C:\bugs\sample.xls" -v 4</StartArguments>
+    <StartArguments>C:\clam\b2xtranslator\working\ECTSrechner2-06_Probex.xls</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <StartArguments>"C:\clam\b2xtranslator\Excel Tests\Docs\CALENDARIO APPELLI PER ANNO DIC 06-APR 07 TRIENNALE.xls" -v 4</StartArguments>
+    <StartArguments>C:\clam\b2xtranslator\working\ECTSrechner2-06_Probex.xls</StartArguments>
   </PropertyGroup>
 </Project>

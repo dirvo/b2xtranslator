@@ -196,8 +196,8 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         {
                             String buffer = "";
                             PtgAreaN ptgarean = (PtgAreaN)ptg;
-                            int realRwFirst = ptgarean.rwFirst + 1;
-                            int realRwLast = ptgarean.rwLast + 1;
+                            uint realRwFirst = ptgarean.rwFirst + 1;
+                            uint realRwLast = ptgarean.rwLast + 1;
                             int realColFirst = (int)ptgarean.colFirst;
                             int realColLast = (int)ptgarean.colLast;
 
@@ -222,11 +222,11 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
                             if (ptgarean.rwFirstRelative)
                             {
-                                realRwFirst += rw; 
+                                realRwFirst += (uint)rw; 
                             }
                             if (ptgarean.rwLastRelative)
                             {
-                                realRwLast += rw;
+                                realRwLast += (uint)rw;
                             }
 
                             buffer = ExcelHelperClass.intToABCString(realColFirst, (realRwFirst).ToString(), ptgarean.colFirstRelative, ptgarean.rwFirstRelative);
