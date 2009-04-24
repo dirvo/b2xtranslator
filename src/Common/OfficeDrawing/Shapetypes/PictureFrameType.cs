@@ -33,6 +33,9 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
             this.Lock = new ProtectionBooleans(0);
             this.Lock.fUsefLockAspectRatio = true;
             this.Lock.fLockAspectRatio = true;
+
+            this.ShapeConcentricFill = true;
+            this.ConnectorType = "rect";
         }   
     }       
 }           

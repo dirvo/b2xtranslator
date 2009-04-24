@@ -71,6 +71,8 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
         public string ConnectorLocations;
 
 
+        public string ConnectorType;
+
         /// <summary>
         /// This section specifies the properties of each adjust handle on the shape. <br/>
         /// One adjust handle is specified per line. <br/>

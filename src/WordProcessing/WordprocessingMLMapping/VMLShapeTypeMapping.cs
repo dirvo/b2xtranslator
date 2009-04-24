@@ -48,6 +48,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     _writer.WriteAttributeString("path", shapeType.Path);
                 }
 
+                // always write this attribute 
+                // if this causes regression bugs, remove it.
+                // this was inserted due to a bug in Word 2007 (sf.net item: 2256373)
+                _writer.WriteAttributeString("o", "preferrelative",OpenXmlNamespaces.Office, "t");
+
                 //Default fill / stroke
                 if (shapeType.Filled == false)
                 {
@@ -89,10 +94,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 {
                     _writer.WriteAttributeString("limo", shapeType.Limo);
                 }
+
                 if (shapeType.ConnectorLocations != null)
                 {
                     _writer.WriteAttributeString("o", "connecttype", OpenXmlNamespaces.Office, "custom");
                     _writer.WriteAttributeString("o", "connectlocs", OpenXmlNamespaces.Office, shapeType.ConnectorLocations);
+                }
+                else if(shapeType.ConnectorType != null)
+                {
+                    _writer.WriteAttributeString("o", "connecttype", OpenXmlNamespaces.Office, shapeType.ConnectorType);
                 }
                 if (shapeType.TextboxRectangle != null)
                 {
@@ -102,6 +112,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 {
                     _writer.WriteAttributeString("o", "connectangles", OpenXmlNamespaces.Office, shapeType.ConnectorAngles);
                 }
+
+                // always write this attribute 
+                // if this causes regression bugs, remove it.
+                // this was inserted due to a bug in Word 2007 (sf.net item: 2256373)
+                _writer.WriteAttributeString("o", "extrusionok", OpenXmlNamespaces.Office, "f");
+
                 _writer.WriteEndElement();
 
                 //Lock
