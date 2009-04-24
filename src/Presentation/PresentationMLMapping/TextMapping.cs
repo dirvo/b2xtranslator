@@ -433,8 +433,17 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             }
 
                             _writer.WriteEndElement();
+                            if (line.Length == 0)
+                            {
+                               idx++;
+                               internalOffset -= 1;
+                            }
+                            
                             internalOffset += 1;
+                            
                         }
+
+                        
 
                         while (idx < offset + line.Length)
                         {
@@ -496,7 +505,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             _writer.WriteEndElement();
 
                             idx += (uint)runText.Length; // +1;
-
+                           
                         }
 
                         first = false;
@@ -536,6 +545,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         private void writeP(ParagraphRun p, MasterTextPropRun tp, ShapeOptions so, TextRulerAtom ruler, TextMasterStyleAtom defaultStyle)
         {
+            int writtenLeftMargin = -1;
             _writer.WriteStartElement("a", "p", OpenXmlNamespaces.DrawingML);
 
             _writer.WriteStartElement("a", "pPr", OpenXmlNamespaces.DrawingML);
@@ -549,9 +559,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 if (p.LeftMarginPresent)
                 {
                     _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU((int)p.LeftMargin).ToString());
+                    writtenLeftMargin = (int)p.LeftMargin;
                 } 
                 else if (ruler != null && ruler.fLeftMargin1 && p.IndentLevel == 0){
                     _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU(ruler.leftMargin1).ToString());
+                    writtenLeftMargin = ruler.leftMargin1;
                     if (!(p.IndentPresent || (defaultStyle != null && defaultStyle.PRuns.Count > p.IndentLevel && defaultStyle.PRuns[p.IndentLevel].IndentPresent) || (ruler != null && ruler.fIndent1 && p.IndentLevel == 0)))
                     {
                         _writer.WriteAttributeString("indent", Utils.MasterCoordToEMU(-1 * ruler.leftMargin1).ToString());
@@ -560,6 +572,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 else if (ruler != null && ruler.fLeftMargin2 && p.IndentLevel == 1)
                 {
                     _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU(ruler.leftMargin2).ToString());
+                    writtenLeftMargin = ruler.leftMargin2;
                     if (!(p.IndentPresent || (defaultStyle != null && defaultStyle.PRuns.Count > p.IndentLevel && defaultStyle.PRuns[p.IndentLevel].IndentPresent) || (ruler != null && ruler.fIndent2 && p.IndentLevel == 1)))
                     {
                         _writer.WriteAttributeString("indent", Utils.MasterCoordToEMU(-1 * ruler.leftMargin1).ToString());
@@ -568,6 +581,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 else if (ruler != null && ruler.fLeftMargin3 && p.IndentLevel == 2)
                 {
                     _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU(ruler.leftMargin3).ToString());
+                    writtenLeftMargin = ruler.leftMargin3;
                     if (!(p.IndentPresent || (defaultStyle != null && defaultStyle.PRuns.Count > p.IndentLevel && defaultStyle.PRuns[p.IndentLevel].IndentPresent) || (ruler != null && ruler.fIndent3 && p.IndentLevel == 2)))
                     {
                         _writer.WriteAttributeString("indent", Utils.MasterCoordToEMU(-1 * ruler.leftMargin1).ToString());
@@ -576,6 +590,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 else if (ruler != null && ruler.fLeftMargin4 && p.IndentLevel == 3)
                 {
                     _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU(ruler.leftMargin4).ToString());
+                    writtenLeftMargin = ruler.leftMargin4;
                     if (!(p.IndentPresent || (defaultStyle != null && defaultStyle.PRuns.Count > p.IndentLevel && defaultStyle.PRuns[p.IndentLevel].IndentPresent) || (ruler != null && ruler.fIndent4 && p.IndentLevel == 3)))
                     {
                         _writer.WriteAttributeString("indent", Utils.MasterCoordToEMU(-1 * ruler.leftMargin1).ToString());
@@ -584,6 +599,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 else if (ruler != null && ruler.fLeftMargin5 && p.IndentLevel == 4)
                 {
                     _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU(ruler.leftMargin5).ToString());
+                    writtenLeftMargin = ruler.leftMargin5;
                     if (!(p.IndentPresent || (defaultStyle != null && defaultStyle.PRuns.Count > p.IndentLevel && defaultStyle.PRuns[p.IndentLevel].IndentPresent) || (ruler != null && ruler.fIndent5 && p.IndentLevel == 4)))
                     {
                         _writer.WriteAttributeString("indent", Utils.MasterCoordToEMU(-1 * ruler.leftMargin1).ToString());
@@ -595,7 +611,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     if (props.fUsefAutoTextMargin && (props.fAutoTextMargin == false))
                     if (so.OptionsByID[ShapeOptions.PropertyId.dxTextLeft].op > 0)
                     _writer.WriteAttributeString("marL", so.OptionsByID[ShapeOptions.PropertyId.dxTextLeft].op.ToString());
+                    //writtenLeftMargin = Utils.EMUToMasterCoord((int)so.OptionsByID[ShapeOptions.PropertyId.dxTextLeft].op);
                 }
+                
+
                 if (p.IndentPresent)
                 {
                     _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(p.LeftMargin - p.Indent)))).ToString());
@@ -622,7 +641,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 }
                 else if (defaultStyle != null && defaultStyle.PRuns.Count > p.IndentLevel && defaultStyle.PRuns[p.IndentLevel].IndentPresent)
                 {
-                    _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(defaultStyle.PRuns[p.IndentLevel].LeftMargin - defaultStyle.PRuns[p.IndentLevel].Indent)))).ToString());
+                    if (writtenLeftMargin == -1 )
+                    {
+                        writtenLeftMargin = (int)(defaultStyle.PRuns[p.IndentLevel].LeftMargin);
+                    }
+                    _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(writtenLeftMargin - defaultStyle.PRuns[p.IndentLevel].Indent)))).ToString());
                 }
               
                 if (p.AlignmentPresent)
@@ -762,6 +785,15 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     }
                     else
                     {
+                        if (p.BulletColorPresent)
+                        {
+                            _writer.WriteStartElement("a", "buClr", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                            string s = p.BulletColor.Red.ToString("X").PadLeft(2, '0') + p.BulletColor.Green.ToString("X").PadLeft(2, '0') + p.BulletColor.Blue.ToString("X").PadLeft(2, '0');
+                            _writer.WriteAttributeString("val", s);
+                            _writer.WriteEndElement();
+                            _writer.WriteEndElement(); //buClr
+                        }
                         if (p.BulletSizePresent)
                         {
                             if (p.BulletSize > 0)

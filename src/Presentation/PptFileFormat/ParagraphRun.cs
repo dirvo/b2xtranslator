@@ -60,7 +60,9 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
         public bool BulletColorPresent
         {
-            get { return (this.Mask & ParagraphMask.BulletColor) != 0; }
+            get {
+                    return (this.Mask & ParagraphMask.BulletColor) != 0;
+            }
         }
 
         public bool BulletHasColor

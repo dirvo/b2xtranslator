@@ -1138,7 +1138,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     switch (rec.TypeCode)
                     {
                         case 3011:
-                            placeholder = (OEPlaceHolderAtom)rec; // clientData.FirstChildWithType<OEPlaceHolderAtom>();
+                            placeholder = (OEPlaceHolderAtom)rec;
 
                             if (placeholder != null)
                             {
@@ -1166,8 +1166,41 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 {
                                     _writer.WriteAttributeString("idx", placeholder.Position.ToString());
                                 }
+                                else
+                                {
+                                    try
+                                    {
+                                        Slide master = _ctx.Ppt.FindMasterRecordById(clientData.FirstAncestorWithType<Slide>().FirstChildWithType<SlideAtom>().MasterId);
+                                        foreach (ShapeContainer cont in master.FirstChildWithType<PPDrawing>().FirstChildWithType<DrawingContainer>().FirstChildWithType<GroupContainer>().AllChildrenWithType<ShapeContainer>())
+                                        {
+                                            Shape s = cont.FirstChildWithType<Shape>();
+                                            ClientData d = cont.FirstChildWithType<ClientData>();
+                                            if (d != null)
+                                            {
+                                                ms = new System.IO.MemoryStream(d.bytes);
+                                                rec = Record.ReadRecord(ms, 0);
+                                                if (rec is OEPlaceHolderAtom)
+                                                {
+                                                    OEPlaceHolderAtom placeholder2 = (OEPlaceHolderAtom)rec;
+                                                    if (placeholder2.PlacementId == PlaceholderEnum.MasterBody && (placeholder.PlacementId == PlaceholderEnum.Body || placeholder.PlacementId == PlaceholderEnum.Object))
+                                                    {
+                                                        if (placeholder2.Position != -1)
+                                                        {
+                                                            _writer.WriteAttributeString("idx", placeholder2.Position.ToString());
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
 
+                                    }
 
+                                    catch (Exception)
+                                    {
+                                       //ignore
+                                    }
+                                }
+                                
                                 _writer.WriteEndElement();
                                 phWritten = true;
                             }
