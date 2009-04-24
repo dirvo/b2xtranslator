@@ -183,6 +183,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         }
                         break;
 
+                    case ShapeOptions.PropertyId.FillStyleBooleanProperties:
+                        FillStyleBooleanProperties fillBooleans = new FillStyleBooleanProperties(entry.op);
+
+                        if (fillBooleans.fUsefFilled && fillBooleans.fFilled == false)
+                        {
+                            filled = false;
+                        }
+                        break;
+
                     case ShapeOptions.PropertyId.lineStyleBooleans:
                         LineStyleBooleans lineBooleans = new LineStyleBooleans(entry.op);
 
