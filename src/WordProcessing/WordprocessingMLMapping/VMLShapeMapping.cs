@@ -884,6 +884,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         /// <returns></returns>
         private string getWrapType(FileShapeAddress fspa)
         {
+            // spec values
+            // 0 = like 2 but doesn't equire absolute object
+            // 1 = no text next to shape
+            // 2 = wrap around absolute object
+            // 3 = wrap as if no object present
+            // 4 = wrap tightly areound object
+            // 5 = wrap tightly but allow holes
+
             switch (fspa.wr)
             {
                 case 0:
@@ -900,6 +908,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 		        default:
                     return "none";
 	        }
+
+            // what is topAndBottom ???
         }
 
         private string getArrowWidth(uint op)

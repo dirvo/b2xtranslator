@@ -317,7 +317,18 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //footnote porperties
                     case SinglePropertyModifier.OperationCode.sprmSRncFtn:
                         //restart code
-                        FootnoteRestartCode fncFtn = (FootnoteRestartCode)System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        FootnoteRestartCode fncFtn = FootnoteRestartCode.continuous;
+
+                        //open office uses 1 byte values instead of 2 bytes values:
+                        if (sprm.Arguments.Length == 2)
+                        {
+                            fncFtn = (FootnoteRestartCode)System.BitConverter.ToInt16(sprm.Arguments, 0);
+                        }
+                        if (sprm.Arguments.Length == 1)
+                        {
+                            fncFtn = (FootnoteRestartCode)sprm.Arguments[0];
+                        }
+                            
                         appendValueElement(footnotePr, "numRestart", fncFtn.ToString(), true);
                         break;
                     case SinglePropertyModifier.OperationCode.sprmSFpc:
