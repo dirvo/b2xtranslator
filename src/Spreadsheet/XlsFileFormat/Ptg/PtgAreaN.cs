@@ -38,8 +38,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg
     {
         public const PtgNumber ID = PtgNumber.PtgAreaN;
 
-        public uint rwFirst;
-        public uint rwLast;
+        public UInt16 rwFirst;
+        public UInt16 rwLast;
         public int colFirst;
         public int colLast;
 
