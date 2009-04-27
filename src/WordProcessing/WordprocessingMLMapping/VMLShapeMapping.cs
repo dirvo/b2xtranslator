@@ -898,18 +898,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 case 2:
                     return "square";
                 case 1:
-                    return "none";
+                    return "topAndBottom";
                 case 3:
                     return "through";
                 case 4:
                 case 5:
                     return "tight";
-
 		        default:
                     return "none";
 	        }
-
-            // what is topAndBottom ???
         }
 
         private string getArrowWidth(uint op)
