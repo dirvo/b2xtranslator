@@ -45,8 +45,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertySet.cs" />
+    <Compile Include="ValueProperty.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\StructuredStorage\StructuredStorage.csproj">
+      <Project>{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}</Project>
+      <Name>StructuredStorage</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
