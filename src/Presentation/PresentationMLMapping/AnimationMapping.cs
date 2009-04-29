@@ -51,9 +51,12 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         public void Apply(SlideShowSlideInfoAtom slideshow)
         {
-            _writer.WriteStartElement("p", "transition", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("advTm", slideshow.slideTime.ToString());
-            _writer.WriteEndElement();
+            if (slideshow.fAutoAdvance)
+            {
+                _writer.WriteStartElement("p", "transition", OpenXmlNamespaces.PresentationML);
+                _writer.WriteAttributeString("advTm", slideshow.slideTime.ToString());
+                _writer.WriteEndElement();
+            }
         }
 
         public void Apply(ProgBinaryTagDataBlob blob, SlideMapping parentMapping, Dictionary<AnimationInfoContainer, int> animations)
