@@ -110,6 +110,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                         this.StreamReader.BaseStream.Seek(oldOffset, SeekOrigin.Begin);
                         TraceLogger.DebugInternal(bs.ToString());
                     }
+                    else if (bh.id == RecordNumber.TEMPLATE)
+                    {
+                        this.workBookData.Template = true;
+                    }
                     else if (bh.id == RecordNumber.SST)
                     {
                         /* reads the shared string table biff record and following continue records 
@@ -233,7 +237,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                     {
                         if (firstBOF)
                         {
-                            BOF bof = new BOF(this.StreamReader, bh.id, bh.length); 
+                            BOF bof = new BOF(this.StreamReader, bh.id, bh.length);
 
                         }
                         else
@@ -243,7 +247,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                     }
                     else if (bh.id == RecordNumber.FILEPASS)
                     {
-                        throw new ExtractorException(ExtractorException.FILEENCRYPTED); 
+                        throw new ExtractorException(ExtractorException.FILEENCRYPTED);
                     }
                     else
                     {

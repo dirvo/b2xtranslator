@@ -58,6 +58,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
             set { sstData = value; }
         }
 
+
+        public bool Template { get; set; }
+
         public List<WorkSheetData> boundSheetDataList;
         public List<ExternSheetData> externSheetDataList;
         public LinkedList<SupBookData> supBookDataList;

@@ -23,7 +23,25 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 //ToDo: Find better way to detect macro type
                 if (xls.Storage.FullNameOfAllEntries.Contains("\\_VBA_PROJECT_CUR"))
                 {
-                    returnType = OpenXmlPackage.DocumentType.MacroEnabledDocument;
+                    if (xls.workBookData.Template)
+                    {
+                        returnType = OpenXmlPackage.DocumentType.MacroEnabledTemplate;
+                    }
+                    else
+                    {
+                        returnType = OpenXmlPackage.DocumentType.MacroEnabledDocument;
+                    }
+                }
+                else
+                {
+                    if (xls.workBookData.Template)
+                    {
+                        returnType = OpenXmlPackage.DocumentType.Template;
+                    }
+                    else
+                    {
+                        returnType = OpenXmlPackage.DocumentType.Document;
+                    }
                 }
             }
             catch (Exception)
@@ -44,12 +62,12 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 case OpenXmlPackage.DocumentType.MacroEnabledDocument:
                     outExt = ".xlsm";
                     break;
-                //case OpenXmlPackage.DocumentType.MacroEnabledTemplate:
-                //    outExt = ".dotm";
-                //    break;
-                //case OpenXmlPackage.DocumentType.Template:
-                //    outExt = ".dotx";
-                //    break;
+                case OpenXmlPackage.DocumentType.MacroEnabledTemplate:
+                    outExt = ".xltm";
+                    break;
+                case OpenXmlPackage.DocumentType.Template:
+                    outExt = ".xltx";
+                    break;
                 default:
                     outExt = ".xlsx";
                     break;
