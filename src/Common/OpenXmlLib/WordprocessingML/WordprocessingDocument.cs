@@ -31,35 +31,29 @@ using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
 {
-    public enum WordprocessingDocumentType
-    {
-        Document,
-        MacroEnabledDocument,
-        MacroEnabledTemplate,
-        Template
-    }
+
 
     public class WordprocessingDocument : OpenXmlPackage
     {
-        protected WordprocessingDocumentType _documentType;
+        protected OpenXmlPackage.DocumentType _documentType;
         protected CustomXmlPropertiesPart _customFilePropertiesPart;
         protected MainDocumentPart _mainDocumentPart;
-        
-        protected WordprocessingDocument(string fileName, WordprocessingDocumentType type)
+
+        protected WordprocessingDocument(string fileName, OpenXmlPackage.DocumentType type)
             : base(fileName)
         {
             switch (type)
             {
-                case WordprocessingDocumentType.Document:
+                case OpenXmlPackage.DocumentType.Document:
                     _mainDocumentPart = new MainDocumentPart(this, WordprocessingMLContentTypes.MainDocument);
                     break;
-                case WordprocessingDocumentType.MacroEnabledDocument:
+                case OpenXmlPackage.DocumentType.MacroEnabledDocument:
                     _mainDocumentPart = new MainDocumentPart(this, WordprocessingMLContentTypes.MainDocumentMacro);
                     break;
-                case WordprocessingDocumentType.Template:
+                case OpenXmlPackage.DocumentType.Template:
                     _mainDocumentPart = new MainDocumentPart(this, WordprocessingMLContentTypes.MainDocumentTemplate);
                     break;
-                case WordprocessingDocumentType.MacroEnabledTemplate:
+                case OpenXmlPackage.DocumentType.MacroEnabledTemplate:
                     _mainDocumentPart = new MainDocumentPart(this, WordprocessingMLContentTypes.MainDocumentMacroTemplate);
                     break;
             }
@@ -68,14 +62,14 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML
             this.AddPart(_mainDocumentPart);
         }
 
-        public static WordprocessingDocument Create(string fileName, WordprocessingDocumentType type)
+        public static WordprocessingDocument Create(string fileName, OpenXmlPackage.DocumentType type)
         {
             WordprocessingDocument doc = new WordprocessingDocument(fileName, type);
             
             return doc;
         }
 
-        public WordprocessingDocumentType DocumentType
+        public OpenXmlPackage.DocumentType DocumentType
         {
             get { return _documentType; }
             set { _documentType = value; }

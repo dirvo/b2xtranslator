@@ -81,7 +81,9 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
     public static class SpreadsheetMLContentTypes
     {
         // SpreadsheetML content types
-        public const string Workbook = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"; 
+        public const string Workbook = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml";
+        public const string WorkbookMacro = "application/vnd.ms-excel.sheet.macroEnabled.main+xml";
+       
         public const string Styles = "application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml";
         public const string Worksheet = "application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml";
         public const string SharedStrings = "application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml";

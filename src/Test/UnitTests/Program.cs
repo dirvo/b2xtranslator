@@ -8,12 +8,13 @@ namespace UnitTests
     {
         public static void Main(string[] args)
         {
-            DocFileFormatTests test = new DocFileFormatTests();
-            test.SetUp();
+            //DocFileFormatTests test = new DocFileFormatTests();
+            //test.SetUp();
+            //test.TestProperties();
+            //test.TearDown();
 
-            test.TestProperties();
-
-            test.TearDown();
+            DocObjectModelTests test2 = new DocObjectModelTests();
+            test2.TestParseability();
         }
     }
 }

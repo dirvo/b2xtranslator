@@ -39,18 +39,23 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
         protected WorksheetPart workSheetPart;
         protected SharedStringPart sharedStringPart;
         protected ExternalLinkPart externalLinkPart;
-        protected StylesPart stylesPart; 
+        protected VbaProjectPart _vbaProjectPart;
+        protected StylesPart stylesPart;
+        private string _type;
 
-        public WorkbookPart(OpenXmlPartContainer parent)
+        public WorkbookPart(OpenXmlPartContainer parent, string contentType)
             : base(parent, 0)
         {
             this.WorksheetNumber = 1;
-            this.ExternalLinkNumber = 1; 
+            this.ExternalLinkNumber = 1;
+            this._type = contentType;
         }
 
-        public override string ContentType
-        {
-            get { return SpreadsheetMLContentTypes.Workbook; }
+        public override string ContentType{
+            get
+            {
+                return this._type;
+            }
         }
 
         public override string RelationshipType
@@ -67,6 +72,21 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
             this.workSheetPart = new WorksheetPart(this, this.WorksheetNumber);
             this.WorksheetNumber++;
             return this.AddPart(this.workSheetPart);
+        }
+
+        /// <summary>
+        /// returns the vba project part that contains the binary macro data
+        /// </summary>
+        public VbaProjectPart VbaProjectPart
+        {
+            get
+            {
+                if (_vbaProjectPart == null)
+                {
+                    _vbaProjectPart = this.AddPart(new VbaProjectPart(this));
+                }
+                return _vbaProjectPart;
+            }
         }
 
         /// <summary>

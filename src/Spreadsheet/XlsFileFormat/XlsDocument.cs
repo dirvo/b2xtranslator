@@ -55,16 +55,21 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// <summary>
         /// This attribute stores the hole Workbookdata 
         /// </summary>
-        public WorkBookData workBookData; 
+        public WorkBookData workBookData;
 
+        /// <summary>
+        /// The StructuredStorageFile itself
+        /// </summary>
+        public StructuredStorageReader Storage;
 
         /// <summary>
         /// Ctor 
         /// </summary>
         /// <param name="file"></param>
-        public XlsDocument(IStructuredStorageReader file)
+        public XlsDocument(StructuredStorageReader file)
         {
             this.workBookData = new WorkBookData();
+            this.Storage = file;
 
             if (file.FullNameOfAllStreamEntries.Contains("\\" + WORKBOOK))
                 this.workBookStreamReader = new VirtualStreamReader(file.GetStream(WORKBOOK));

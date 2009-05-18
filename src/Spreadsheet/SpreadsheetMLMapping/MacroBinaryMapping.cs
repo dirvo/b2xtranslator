@@ -28,32 +28,41 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.DocFileFormat;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Writer;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
+using System.Xml;
 
-namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
+namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
-    public class MacroBinaryMapping : DocumentMapping
+    public class MacroBinaryMapping : AbstractOpenXmlMapping,
+        IMapping<XlsDocument>
     {
-        public MacroBinaryMapping(ConversionContext ctx)
-            : base(ctx, ctx.Docx.MainDocumentPart.VbaProjectPart)
+        private ExcelContext ctx;
+        private string projectFolder = "\\_VBA_PROJECT_CUR";
+        private string vbaFolder = "\\_VBA_PROJECT_CUR\\VBA";
+        private string projectFile = "\\_VBA_PROJECT_CUR\\PROJECT";
+        private string projectWmFile = "\\_VBA_PROJECT_CUR\\PROJECTwm";
+
+        public MacroBinaryMapping(ExcelContext ctx)
+            : base(null)
         {
-            _ctx = ctx;
+            this.ctx = ctx;
         }
 
-        public override void Apply(WordDocument doc)
+        public void Apply(XlsDocument xls)
         {
             //get the Class IDs of the directories
             Guid macroClsid = new Guid();
             Guid vbaClsid = new Guid();
-            foreach (DirectoryEntry entry in doc.Storage.AllEntries)
+            foreach (DirectoryEntry entry in xls.Storage.AllEntries)
             {
-                if (entry.Path == "\\Macros")
+                if (entry.Path == projectFolder)
                 {
                     macroClsid = entry.ClsId;
                 }
-                else if(entry.Path == "\\Macros\\VBA")
+                else if (entry.Path == vbaFolder)
                 {
                     vbaClsid = entry.ClsId;
                 }
@@ -66,20 +75,20 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //copy the VBA directory
             StorageDirectoryEntry vba = storage.RootDirectoryEntry.AddStorageDirectoryEntry("VBA");
             vba.setClsId(vbaClsid);
-            foreach (DirectoryEntry entry in doc.Storage.AllStreamEntries)
+            foreach (DirectoryEntry entry in xls.Storage.AllStreamEntries)
             {
-                if (entry.Path.StartsWith("\\Macros\\VBA"))
+                if (entry.Path.StartsWith(vbaFolder))
                 {
-                    vba.AddStreamDirectoryEntry(entry.Name, doc.Storage.GetStream(entry.Path));
+                    vba.AddStreamDirectoryEntry(entry.Name, xls.Storage.GetStream(entry.Path));
                 }
             }
 
             //copy the project streams
-            storage.RootDirectoryEntry.AddStreamDirectoryEntry("PROJECT", doc.Storage.GetStream("\\Macros\\PROJECT"));
-            storage.RootDirectoryEntry.AddStreamDirectoryEntry("PROJECTwm", doc.Storage.GetStream("\\Macros\\PROJECTwm"));
+            storage.RootDirectoryEntry.AddStreamDirectoryEntry("PROJECT", xls.Storage.GetStream(projectFile));
+            storage.RootDirectoryEntry.AddStreamDirectoryEntry("PROJECTwm", xls.Storage.GetStream(projectWmFile));
 
            //write the storage to the xml part
-            storage.write(_targetPart.GetStream());
+            storage.write(ctx.SpreadDoc.WorkbookPart.VbaProjectPart.GetStream());
         }
     }
 }

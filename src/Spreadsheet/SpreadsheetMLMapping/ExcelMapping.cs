@@ -46,7 +46,6 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         protected XlsDocument xls;
         protected ExcelContext xlscon;
 
-
         public ExcelMapping(ExcelContext xlscon, OpenXmlPart targetPart)
             : base(XmlWriter.Create(targetPart.GetStream(), xlscon.WriterSettings))
         {

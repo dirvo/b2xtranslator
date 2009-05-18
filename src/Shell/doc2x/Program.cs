@@ -42,6 +42,7 @@ using System.Reflection;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
 using Microsoft.Win32;
 using DIaLOGIKa.b2xtranslator.Shell;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 
 namespace DIaLOGIKa.b2xtranslator.doc2x
 {
@@ -102,7 +103,7 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                         WordDocument doc = new WordDocument(reader);
 
                         //prepare the output document
-                        WordprocessingDocumentType outType = Converter.DetectOutputType(doc);
+                        OpenXmlPackage.DocumentType outType = Converter.DetectOutputType(doc);
                         string conformOutputFile = Converter.GetConformFilename(ChoosenOutputFile, outType);
                         WordprocessingDocument docx = WordprocessingDocument.Create(conformOutputFile, outType);
 

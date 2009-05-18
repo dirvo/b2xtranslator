@@ -37,16 +37,31 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
     public class SpreadsheetDocument : OpenXmlPackage
     {
         protected WorkbookPart workBookPart;
-        
+        protected OpenXmlPackage.DocumentType _documentType;
 
         /// <summary>
         /// Ctor 
         /// </summary>
         /// <param name="fileName">Filename of the file which should be written</param>
-        protected SpreadsheetDocument(string fileName)
+        protected SpreadsheetDocument(string fileName, OpenXmlPackage.DocumentType type)
             : base(fileName)
         {
-            this.workBookPart = new WorkbookPart(this);
+            switch (type)
+            {
+                case OpenXmlPackage.DocumentType.Document:
+                    this.workBookPart = new WorkbookPart(this, SpreadsheetMLContentTypes.Workbook);
+                    break;
+                case OpenXmlPackage.DocumentType.MacroEnabledDocument:
+                    this.workBookPart = new WorkbookPart(this, SpreadsheetMLContentTypes.WorkbookMacro);
+                    break;
+                //case OpenXmlPackage.DocumentType.Template:
+                //    workBookPart = new WorkbookPart(this, WordprocessingMLContentTypes.MainDocumentTemplate);
+                //    break;
+                //case OpenXmlPackage.DocumentType.MacroEnabledTemplate:
+                //    workBookPart = new WorkbookPart(this, WordprocessingMLContentTypes.MainDocumentMacroTemplate);
+                    break;
+            }
+            _documentType = type;
             this.AddPart(this.workBookPart);
         }
 
@@ -55,10 +70,16 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
         /// </summary>
         /// <param name="fileName">The name of the file which should be written</param>
         /// <returns>The object itself</returns>
-        public static SpreadsheetDocument Create(string fileName)
+        public static SpreadsheetDocument Create(string fileName, OpenXmlPackage.DocumentType type)
         {
-            SpreadsheetDocument spreadsheet = new SpreadsheetDocument(fileName);
+            SpreadsheetDocument spreadsheet = new SpreadsheetDocument(fileName, type);
             return spreadsheet;
+        }
+
+        public OpenXmlPackage.DocumentType DocumentType
+        {
+            get { return _documentType; }
+            set { _documentType = value; }
         }
 
         /// <summary>

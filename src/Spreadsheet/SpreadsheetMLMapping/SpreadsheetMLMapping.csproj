@@ -38,9 +38,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converter.cs" />
     <Compile Include="ExcelContext.cs" />
     <Compile Include="ExcelMapping.cs" />
     <Compile Include="ExternalLinkMapping.cs" />
+    <Compile Include="MacroBinaryMapping.cs" />
     <Compile Include="StyleMappingHelper.cs" />
     <Compile Include="FormulaMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

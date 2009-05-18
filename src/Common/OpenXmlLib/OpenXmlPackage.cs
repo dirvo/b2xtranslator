@@ -49,6 +49,13 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         protected int _oleCounter;
         #endregion
 
+        public enum DocumentType
+        {
+            Document,
+            MacroEnabledDocument,
+            MacroEnabledTemplate,
+            Template
+        }
 
         protected OpenXmlPackage(string fileName)
         {

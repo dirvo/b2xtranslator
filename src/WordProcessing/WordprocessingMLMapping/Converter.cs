@@ -11,9 +11,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 {
     public class Converter
     {
-        public static WordprocessingDocumentType DetectOutputType(WordDocument doc)
+        public static OpenXmlPackage.DocumentType DetectOutputType(WordDocument doc)
         {
-            WordprocessingDocumentType returnType = WordprocessingDocumentType.Document;
+            OpenXmlPackage.DocumentType returnType = OpenXmlPackage.DocumentType.Document;
 
             //detect the document type
             if (doc.FIB.fDot)
@@ -22,12 +22,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 if (doc.CommandTable.MacroDatas != null && doc.CommandTable.MacroDatas.Count > 0)
                 {
                     //macro enabled template
-                    returnType = WordprocessingDocumentType.MacroEnabledTemplate;
+                    returnType = OpenXmlPackage.DocumentType.MacroEnabledTemplate;
                 }
                 else
                 {
                     //without macros
-                    returnType = WordprocessingDocumentType.Template;
+                    returnType = OpenXmlPackage.DocumentType.Template;
                 }
             }
             else
@@ -36,11 +36,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 if (doc.CommandTable.MacroDatas != null && doc.CommandTable.MacroDatas.Count > 0)
                 {
                     //macro enabled document
-                    returnType = WordprocessingDocumentType.MacroEnabledDocument;
+                    returnType = OpenXmlPackage.DocumentType.MacroEnabledDocument;
                 }
                 else
                 {
-                    returnType = WordprocessingDocumentType.Document;
+                    returnType = OpenXmlPackage.DocumentType.Document;
                 }
             }
 
@@ -48,21 +48,21 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         }
 
 
-        public static string GetConformFilename(string choosenFilename, WordprocessingDocumentType outType)
+        public static string GetConformFilename(string choosenFilename, OpenXmlPackage.DocumentType outType)
         {
             string outExt = ".docx";
             switch (outType)
             {
-                case WordprocessingDocumentType.Document:
+                case OpenXmlPackage.DocumentType.Document:
                     outExt = ".docx";
                     break;
-                case WordprocessingDocumentType.MacroEnabledDocument:
+                case OpenXmlPackage.DocumentType.MacroEnabledDocument:
                     outExt = ".docm";
                     break;
-                case WordprocessingDocumentType.MacroEnabledTemplate:
+                case OpenXmlPackage.DocumentType.MacroEnabledTemplate:
                     outExt = ".dotm";
                     break;
-                case WordprocessingDocumentType.Template:
+                case OpenXmlPackage.DocumentType.Template:
                     outExt = ".dotx";
                     break;
                 default:
@@ -99,8 +99,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 context.Docx = docx;
 
                 //convert the macros
-                if (docx.DocumentType == WordprocessingDocumentType.MacroEnabledDocument ||
-                    docx.DocumentType == WordprocessingDocumentType.MacroEnabledTemplate)
+                if (docx.DocumentType == OpenXmlPackage.DocumentType.MacroEnabledDocument ||
+                    docx.DocumentType == OpenXmlPackage.DocumentType.MacroEnabledTemplate)
                 {
                     doc.Convert(new MacroBinaryMapping(context));
                     doc.Convert(new MacroDataMapping(context));

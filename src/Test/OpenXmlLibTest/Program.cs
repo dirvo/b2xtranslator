@@ -33,6 +33,7 @@ using System.Collections;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
 using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
 {
@@ -40,7 +41,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
     {
         static void Main(string[] args)
         {
-            WordprocessingDocument doc = WordprocessingDocument.Create(@"C:\tmp\testOpenXmlLib.docx", WordprocessingDocumentType.Document);
+            WordprocessingDocument doc = WordprocessingDocument.Create(@"C:\tmp\testOpenXmlLib.docx", OpenXmlPackage.DocumentType.Document);
 
             MainDocumentPart part = doc.MainDocumentPart;
 

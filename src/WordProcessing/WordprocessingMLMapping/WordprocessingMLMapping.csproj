@@ -74,7 +74,6 @@
     <Compile Include="VMLShapeMapping.cs" />
     <Compile Include="StyleSheetMapping.cs" />
     <Compile Include="TableCellPropertiesMapping.cs" />
-    <Compile Include="TableInfo.cs" />
     <Compile Include="TablePropertiesMapping.cs" />
     <Compile Include="TableRowPropertiesMapping.cs" />
     <Compile Include="VMLShapeTypeMapping.cs" />

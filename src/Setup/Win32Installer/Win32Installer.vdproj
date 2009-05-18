@@ -1195,14 +1195,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:b2xtranslator"
-        "ProductCode" = "8:{31A6AD6B-F734-4E54-8182-B65396761260}"
-        "PackageCode" = "8:{39505BBC-30A7-4336-BD58-74A105FBE915}"
+        "ProductCode" = "8:{4A822275-D6A3-48F6-96B7-FE162B4B78B5}"
+        "PackageCode" = "8:{3DBCAF81-9ABA-40C8-8D58-1808EAA761EC}"
         "UpgradeCode" = "8:{E68E473D-387B-4BE5-A100-65E99C11CF7A}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:3.3.469"
+        "ProductVersion" = "8:3.3.478"
         "Manufacturer" = "8:DIaLOGIKa"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -2011,7 +2011,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_2D72D07F6CBB4845BA8090BDC63F17E6"
             {
-            "SourcePath" = "8:..\\..\\Shell\\ppt2x\\obj\\Debug\\ppt2x.exe"
+            "SourcePath" = "8:..\\..\\Shell\\ppt2x\\obj\\Release\\ppt2x.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_5EB118D7EC5A44419EC1F1ECCBECF1EC"
@@ -2039,7 +2039,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_705EE6B1B91744808AFF8B422272FB5C"
             {
-            "SourcePath" = "8:..\\..\\Shell\\doc2x\\obj\\Debug\\doc2x.exe"
+            "SourcePath" = "8:..\\..\\Shell\\doc2x\\obj\\Release\\doc2x.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_5EB118D7EC5A44419EC1F1ECCBECF1EC"
@@ -2067,7 +2067,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_72C04B73685A44358E3CF54DDD93CFED"
             {
-            "SourcePath" = "8:..\\..\\Shell\\xls2x\\obj\\Debug\\xls2x.exe"
+            "SourcePath" = "8:..\\..\\Shell\\xls2x\\obj\\Release\\xls2x.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_5EB118D7EC5A44419EC1F1ECCBECF1EC"

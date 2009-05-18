@@ -43,6 +43,7 @@ using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
 using System.Reflection;
 using Microsoft.Win32;
 using DIaLOGIKa.b2xtranslator.Shell;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 
 namespace DIaLOGIKa.b2xtranslator.xls2x
 {
@@ -95,66 +96,27 @@ namespace DIaLOGIKa.b2xtranslator.xls2x
                         }
                     }
 
-                    TraceLogger.Info("Converting file {0} into {1}", InputFile, ChoosenOutputFile);
-
-                    //start time
-                    DateTime start = DateTime.Now;
-
                     //parse the document
                     using (StructuredStorageReader reader = new StructuredStorageReader(procFile.File.FullName))
                     {
                         XlsDocument xlsDoc = new XlsDocument(reader);
-                        using (SpreadsheetDocument spreadx = SpreadsheetDocument.Create(ChoosenOutputFile))
-                        {
 
-                            //Setup the writer
-                            XmlWriterSettings xws = new XmlWriterSettings();
-                            xws.CloseOutput = true;
-                            xws.Encoding = Encoding.UTF8;
-                            xws.ConformanceLevel = ConformanceLevel.Document;
+                        OpenXmlPackage.DocumentType outType = Converter.DetectOutputType(xlsDoc);
+                        string conformOutputFile = Converter.GetConformFilename(ChoosenOutputFile, outType);
+                        SpreadsheetDocument spreadx = SpreadsheetDocument.Create(conformOutputFile, outType);
 
-                            ExcelContext xlsContext = new ExcelContext(xlsDoc, xws);
-                            xlsContext.SpreadDoc = spreadx;
+                        //start time
+                        DateTime start = DateTime.Now;
+                        TraceLogger.Info("Converting file {0} into {1}", InputFile, conformOutputFile);
 
-                            // Converts the sst data !!!
-                            if (xlsDoc.workBookData.SstData != null)
-                                xlsDoc.workBookData.SstData.Convert(new SSTMapping(xlsContext));
+                        Converter.Convert(xlsDoc, spreadx);
 
-                            // creates the styles.xml
-                            if (xlsDoc.workBookData.styleData != null)
-                                xlsDoc.workBookData.styleData.Convert(new StylesMapping(xlsContext));
-
-                            // creates the Spreadsheets
-                            foreach (WorkSheetData var in xlsDoc.workBookData.boundSheetDataList)
-                            {
-                                if (var.boundsheetRecord.sheetType == BOUNDSHEET.sheetTypes.worksheet)
-                                {
-                                    var.Convert(new WorksheetMapping(xlsContext));
-                                }
-                                else
-                                {
-                                    var.emtpyWorksheet = true;
-                                    var.Convert(new WorksheetMapping(xlsContext)); 
-                                }
-                            }
-                            int sbdnumber = 1;
-                            foreach (SupBookData sbd in xlsDoc.workBookData.supBookDataList)
-                            {
-                                if (!sbd.SelfRef)
-                                {
-                                    sbd.Number = sbdnumber;
-                                    sbdnumber++;
-                                    sbd.Convert(new ExternalLinkMapping(xlsContext));
-                                }
-                            }
-
-                            xlsDoc.workBookData.Convert(new WorkbookMapping(xlsContext));
-                        }
-                        reader.Close();
                         DateTime end = DateTime.Now;
                         TimeSpan diff = end.Subtract(start);
                         TraceLogger.Info("Conversion of file {0} finished in {1} seconds", InputFile, diff.TotalSeconds.ToString(CultureInfo.InvariantCulture));
+                
                     }
+
                 }
                 catch (DirectoryNotFoundException ex)
                 {

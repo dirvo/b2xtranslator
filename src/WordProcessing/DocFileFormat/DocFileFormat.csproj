@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{70A244FD-C90E-4474-9E70-82BCF5147FF9}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -139,6 +139,7 @@
     <Compile Include="SectionPropertyExceptions.cs" />
     <Compile Include="SprmTDefTable.cs" />
     <Compile Include="StringTable.cs" />
+    <Compile Include="TableInfo.cs" />
     <Compile Include="ToolbarControl.cs" />
     <Compile Include="ToolbarControlBitmap.cs" />
     <Compile Include="ToolbarCustomization.cs" />
