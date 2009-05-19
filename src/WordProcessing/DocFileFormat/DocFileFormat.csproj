@@ -139,7 +139,6 @@
     <Compile Include="SectionPropertyExceptions.cs" />
     <Compile Include="SprmTDefTable.cs" />
     <Compile Include="StringTable.cs" />
-    <Compile Include="TableInfo.cs" />
     <Compile Include="ToolbarControl.cs" />
     <Compile Include="ToolbarControlBitmap.cs" />
     <Compile Include="ToolbarCustomization.cs" />

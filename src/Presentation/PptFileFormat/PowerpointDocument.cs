@@ -123,6 +123,12 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         /// </summary>
         public List<Note> NoteRecords = new List<Note>();
 
+        /// <summary>
+        /// A VBA Project stored in the presentation.<br/>
+        /// Is null of no project is present.
+        /// </summary>
+        public VbaProjectAtom VbaProject;
+
         public PowerpointDocument(StructuredStorageReader file)
         {
             try
@@ -185,7 +191,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             this.IdentifyDocumentPersistObject();
             this.IdentifyMasterPersistObjects();
             this.IdentifySlidePersistObjects();
-
+            this.IdentifyVbaProjectObject();
         }
 
         private void ScanDocumentSummaryInformation()
@@ -366,6 +372,24 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             {
                 throw new InvalidStreamException();
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void IdentifyVbaProjectObject()
+        {
+            try
+            {
+                VBAInfoContainer vbaInfo = this.DocumentRecord.DocInfoListContainer.FirstChildWithType<VBAInfoContainer>();
+                this.VbaProject = GetPersistObject<VbaProjectAtom>(vbaInfo.objStgDataRef);
+            }
+            catch (Exception e)
+            {
+                throw new InvalidStreamException();
+            }
+
+            throw new NotImplementedException();
         }
 
         /// <summary>

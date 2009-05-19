@@ -53,9 +53,13 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
         public SlideListWithText RegularSlideListWithText;
 
+        public List DocInfoListContainer;
+
         public DocumentContainer(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {
+            
+
             foreach (SlideListWithText collection in this.AllChildrenWithType<SlideListWithText>())
             {
                 List<SlidePersistAtom> target = null;
@@ -95,6 +99,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
                 return a.PersistIdRef.CompareTo(b.PersistIdRef);
             });
 
+            this.DocInfoListContainer = FirstChildWithType<List>();
         }
 
         public SlidePersistAtom SlidePersistAtomForSlideWithIdx(uint idx)

@@ -50,6 +50,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Ionic.Zip, Version=1.7.2.20, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\Ionic.Zip.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -121,6 +125,9 @@
     <Compile Include="Theme.cs" />
     <Compile Include="TextMasterStyleAtom.cs" />
     <Compile Include="UserEditAtom.cs" />
+    <Compile Include="VbaInfoAtom.cs" />
+    <Compile Include="VBAInfoContainer.cs" />
+    <Compile Include="VbaProjectAtom.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\CommonTranslatorLib\CommonTranslatorLib.csproj">

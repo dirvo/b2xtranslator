@@ -48,6 +48,11 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Reader
             _stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
         }
 
+        public InputHandler(Stream stream)
+        {
+            _stream = stream;
+        }
+
 
         /// <summary>
         /// The size of the associated stream in bytes
