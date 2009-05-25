@@ -56,12 +56,13 @@ namespace CompoundFileReadWriteExtractTest
                     //{
                     //    Console.WriteLine(entry.Sid + ":");
                     //    Console.WriteLine("{0}: {1}", entry.Name, entry.LengthOfName);
+                    //    Console.WriteLine("CLSID: " + entry.ClsId);
                     //    string hexName = "";
                     //    for (int i = 0; i < entry.Name.Length; i++)
                     //    {
                     //        hexName += String.Format("{0:X2} ", (UInt32)entry.Name[i]);
                     //    }
-                    //    Console.WriteLine("{0}", hexName);                        
+                    //    Console.WriteLine("{0}", hexName);
                     //    UInt32 left = entry.LeftSiblingSid;
                     //    UInt32 right = entry.RightSiblingSid;
                     //    UInt32 child = entry.ChildSiblingSid;
