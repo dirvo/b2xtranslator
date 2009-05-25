@@ -1,0 +1,89 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using DIaLOGIKa.b2xtranslator.OfficeDrawing;
+using System.IO;
+
+namespace DIaLOGIKa.b2xtranslator.PptFileFormat
+{
+    [OfficeRecordAttribute(1033)]
+    public class ExObjListContainer : RegularContainer
+    {
+        public ExObjListContainer(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance) { }
+    }
+
+
+    [OfficeRecordAttribute(1034)]
+    public class ExObjListAtom : Record
+    {
+        public ExObjListAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance)
+        {
+
+        }
+    }
+
+    [OfficeRecordAttribute(4035)]
+    public class ExOleObjAtom : Record
+    {
+        public UInt32 persistIdRef;
+
+        public ExOleObjAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance)
+        {
+            Int32 drawAspect = this.Reader.ReadInt32();
+            Int32 type = this.Reader.ReadInt32();
+            Int32 exObjId = this.Reader.ReadInt32();
+            Int32 subType = this.Reader.ReadInt32();
+            persistIdRef = this.Reader.ReadUInt32();
+            Int32 unused = this.Reader.ReadInt32();            
+        }
+    }
+
+    [OfficeRecordAttribute(4044)]
+    public class ExOleEmbedContainer : RegularContainer
+    {
+        public ExOleEmbedContainer(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance) { }
+    }
+
+    [OfficeRecordAttribute(4045)]
+    public class ExOleEmbedAtom : Record
+    {
+        public ExOleEmbedAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance)
+        {
+            Int32 exColorFollow = this.Reader.ReadInt32();
+            byte fCantLockServer = this.Reader.ReadByte();
+            byte fNoSizeToServer = this.Reader.ReadByte();
+            byte fIsTable = this.Reader.ReadByte();
+
+        }
+    }
+
+    [OfficeRecordAttribute(4113)]
+    public class ExOleObjStgAtom : Record
+    {
+        public uint len = 0;
+        public UInt32 decompressedSize = 0;
+        public byte[] data;
+
+        public ExOleObjStgAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance)
+        {
+            if (instance == 0)
+            {
+                //uncompressed
+                data = this.Reader.ReadBytes((int)size);
+            }
+            else
+            {
+                //compressed
+                decompressedSize = this.Reader.ReadUInt32();
+                len = size - 4;
+                data = this.Reader.ReadBytes((int)len);
+            }
+        }
+    }
+}
