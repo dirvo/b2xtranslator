@@ -139,6 +139,27 @@ namespace DIaLOGIKa.b2xtranslator.Tools
             return xst;
         }
 
+        public static string ReadShortXlUnicodeString(Stream stream)
+        {
+            byte[] cch = new byte[1];
+            stream.Read(cch, 0, cch.Length);
+
+            byte[] fHighByte = new byte[1];
+            stream.Read(fHighByte, 0, fHighByte.Length);
+
+            int rgbLength = cch[0];
+            if (fHighByte[0] >= 0)
+            {
+                //double byte characters
+                rgbLength *= 2;
+            }
+
+            byte[] rgb = new byte[rgbLength];
+            stream.Read(rgb, 0, rgb.Length);
+
+            return Encoding.Unicode.GetString(rgb);
+        }
+
         public static int ArraySum(byte[] values)
         {
             int ret = 0;

@@ -37,6 +37,28 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     {
         public const RecordNumber ID = RecordNumber.Label;
 
+        /// <summary>
+        /// An unsigned integer that specifies a zero-based index of a row in the datasheet that contains this structure. MUST be less than or equal to 0x0F9F.
+        /// </summary>
+        public UInt16 rw;
+
+        /// <summary>
+        /// An unsigned integer that specifies a zero-based index of a column in the datasheet that contains this structure.
+        /// </summary>
+        public UInt16 col;
+
+        /// <summary>
+        /// An unsigned integer that specifies the identifier of a number format. 
+        /// The identifier specified by this field MUST be a valid built-in number format identifier 
+        /// or the identifier of a custom number format as specified using a Format record.
+        /// </summary>
+        public UInt16 ifmt;
+
+        /// <summary>
+        /// A string that contains the string constant.
+        /// </summary>
+        public string stLabel;
+        
         public Label(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
@@ -44,7 +66,11 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            this.rw = reader.ReadUInt16();
+            this.col = reader.ReadUInt16();
+            reader.ReadByte(); // reserved
+            this.ifmt = reader.ReadUInt16();
+            this.stLabel = Tools.Utils.ReadShortXlUnicodeString(reader.BaseStream);
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
