@@ -6,6 +6,21 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
     public enum RecordNumber : ushort
     {
+
+        HEADER = 0x14, 	// Print Header on Each Page
+        FOOTER = 0x15, 	// Print Footer on Each Page
+        HCENTER = 0x83, 	// Center Between Horizontal Margins
+        VCENTER = 0x84, 	// Center Between Vertical Margins
+        LEFTMARGIN = 0x26, 	// Left Margin Measurement
+        RIGHTMARGIN = 0x27, 	// Right Margin Measurement
+        TOPMARGIN = 0x28, 	// Top Margin Measurement
+        BOTTOMMARGIN = 0x29, 	// Bottom Margin Measurement
+        SETUP = 0xA1, 	// Page Setup
+        HEADERFOOTER = 0x89C, 	//  Header Footer
+        PROTECT = 0x12, 	// Protection Flag
+        MSODRAWING = 0xEC, 	// Microsoft Office Drawing
+        XLSNUMBER = 0x203,     	// Cell Value, Floating-Point Number
+
         AlRuns = 4176,
         Area = 4122,
         AreaFormat = 4106,

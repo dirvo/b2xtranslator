@@ -37,17 +37,44 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     {
         public const RecordNumber ID = RecordNumber.Number;
 
+        /// <summary>
+        /// Row 
+        /// </summary>
+        public UInt16 rw;
+        /// <summary>
+        /// Column
+        /// </summary>
+        public UInt16 col;
+        /// <summary>
+        /// Index to the XF Record 
+        /// </summary>
+        public UInt16 ixfe;
+
+        /// <summary>
+        /// The floating point number
+        /// </summary>
+        public double num;
+
+        /// <summary>
+        /// Ctor 
+        /// </summary>
+        /// <param name="reader">Streamreader</param>
+        /// <param name="id">Record ID - Recordtype</param>
+        /// <param name="length">The recordlegth</param>
         public Number(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
 
-            // initialize class members from stream
-            // TODO: place code here
-
+            this.rw = reader.ReadUInt16();
+            this.col = reader.ReadUInt16();
+            reader.ReadByte(); 
+            this.ixfe = reader.ReadUInt16();
+            this.num = reader.ReadDouble(); 
+            
             // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
+            // Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
         }
     }
 }

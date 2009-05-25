@@ -37,17 +37,25 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     {
         public const RecordNumber ID = RecordNumber.VCENTER;
 
+        public bool vcenter; 
+
         public VCENTER(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
 
-            // initialize class members from stream
-            // TODO: place code here
+            UInt16 buffer = this.Reader.ReadUInt16();
+            if (buffer == 1)
+            {
+                this.vcenter = true;
+            }
+            else
+            {
+                this.vcenter = false;
+            }
             
-            // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+
         }
     }
 }

@@ -87,7 +87,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             // TODO: currently only BIFF8 is supported
             if (vers != 0x0600)
             {
-                // throw new NotSupportedException("Only BIFF8 files are supported.");
+                throw new NotSupportedException("Only BIFF8 files are supported.");
             }
             
             dt = reader.ReadUInt16();
