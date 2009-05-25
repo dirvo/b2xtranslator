@@ -33,9 +33,39 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record specifies an empty cell with no formula or value.
+    /// </summary>
     public class Blank : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Blank;
+
+        /// <summary>
+        /// An unsigned integer that specifies a zero-based index of a row in the datasheet that contains this structure. 
+        /// 
+        /// MUST be less than or equal to 0x0F9F.
+        /// </summary>
+        public UInt16 rw;
+
+        /// <summary>
+        /// An unsigned integer that specifies a zero-based index of a column in the datasheet that contains this structure. 
+        /// 
+        /// MUST be less than or equal to 0x0F9F.
+        /// </summary>
+        public UInt16 col;
+
+        /// <summary>
+        /// An unsigned integer that specifies the identifier of a number format. 
+        /// 
+        /// The identifier specified by this field MUST be a valid built-in number format identifier 
+        /// or the identifier of a custom number format as specified using a Format record. 
+        /// 
+        /// Custom number format identifiers MUST be greater than or equal to 0x00A4 less than or equal to 0x0188, 
+        /// and SHOULD be less than or equal to 0x017E. 
+        /// 
+        /// The built-in number formats are listed in [ECMA-376] Part 4: Markup Language Reference, section 3.8.30.
+        /// </summary>
+        public UInt16 ifmt;
 
         public Blank(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
@@ -44,7 +74,13 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            this.rw = reader.ReadUInt16();
+            this.col = reader.ReadUInt16();
+
+            // ignore reserved byte
+            reader.ReadBytes(1);
+
+            this.ifmt = reader.ReadUInt16();
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

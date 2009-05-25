@@ -68,6 +68,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             // initialize class members from stream
             this.wType = (AxisType)reader.ReadUInt16();
 
+            // ignore remaining part of the record (reserved)
             reader.ReadBytes(16);
 
             // assert that the correct number of bytes has been read from the stream

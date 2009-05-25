@@ -118,7 +118,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             this.fShowValue = Utils.BitmaskToBool(flags, 0x1);
             this.fShowPercent = Utils.BitmaskToBool(flags, 0x2);
             this.fShowLabelAndPerc = Utils.BitmaskToBool(flags, 0x4);
-            
+            // Note: bit mask 0x8 is skipped
             this.fShowLabel = Utils.BitmaskToBool(flags, 0x10);
             this.fShowBubbleSizes = Utils.BitmaskToBool(flags, 0x20);
             this.fShowSeriesName = Utils.BitmaskToBool(flags, 0x40);
