@@ -4,6 +4,7 @@ using System.Text;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 using System.IO;
 using System.IO.Compression;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
@@ -78,7 +79,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
     }
 
     [OfficeRecordAttribute(4113)]
-    public class ExOleObjStgAtom : Record
+    public class ExOleObjStgAtom : Record, IVisitable
     {
         public uint len = 0;
         public UInt32 decompressedSize = 0;
@@ -117,5 +118,14 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
             return decompressedBytes;
         }
+
+        #region IVisitable Members
+
+        public void Convert<T>(T mapping)
+        {
+            ((IMapping<ExOleObjStgAtom>)mapping).Apply(this);
+        }
+
+        #endregion
     }
 }

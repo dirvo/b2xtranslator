@@ -18,15 +18,20 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML
         protected static int _noteCounter = 0;
         protected static int _themeCounter = 0;
         protected static int _mediaCounter = 0;
+
+        private string _type;
+
+        protected VbaProjectPart _vbaProjectPart;
         
-        public PresentationPart(OpenXmlPartContainer parent)
+        public PresentationPart(OpenXmlPartContainer parent, string contentType)
             : base(parent, 0)
         {
+            _type = contentType;
         }
 
         public override string ContentType
         {
-            get { return PresentationMLContentTypes.Presentation; }
+            get { return this._type; }
         }
 
         public override string RelationshipType
@@ -71,6 +76,18 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML
         public ThemePart AddThemePart()
         {
             return this.AddPart(new ThemePart(this, ++_themeCounter));
+        }
+
+        public VbaProjectPart VbaProjectPart
+        {
+            get
+            {
+                if (_vbaProjectPart == null)
+                {
+                    _vbaProjectPart = this.AddPart(new VbaProjectPart(this));
+                }
+                return _vbaProjectPart;
+            }
         }
 
         //public AppPropertiesPart AddAppPart()

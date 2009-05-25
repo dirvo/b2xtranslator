@@ -161,41 +161,27 @@ namespace DIaLOGIKa.b2xtranslator.ppt2x
                 }
             }
 
-            //start time
-            DateTime start = DateTime.Now;
-
             //open the reader
             using (StructuredStorageReader reader = new StructuredStorageReader(procFile.File.FullName))
             {
-
-                //parse the document
+                // parse the ppt document
                 PowerpointDocument ppt = new PowerpointDocument(reader);
 
-                using (PresentationDocument pptx = PresentationDocument.Create(ChoosenOutputFile))
-                {
-                    // Setup the writer
-                    XmlWriterSettings xws = new XmlWriterSettings();
-                    xws.OmitXmlDeclaration = false;
-                    xws.CloseOutput = true;
-                    xws.Encoding = Encoding.UTF8;
-                    xws.ConformanceLevel = ConformanceLevel.Document;
+                // detect document type and name
+                OpenXmlPackage.DocumentType outType = Converter.DetectOutputType(ppt);
+                string conformOutputFile = Converter.GetConformFilename(ChoosenOutputFile, outType);
 
-                    // Setup the context
-                    ConversionContext context = new ConversionContext(ppt);
-                    context.WriterSettings = xws;
-                    context.Pptx = pptx;
+                // create the pptx document
+                PresentationDocument pptx = PresentationDocument.Create(conformOutputFile, outType);
 
-                    // Write presentation.xml
-                    ppt.Convert(new PresentationPartMapping(context));
+                //start time
+                DateTime start = DateTime.Now;
+                TraceLogger.Info("Converting file {0} into {1}", InputFile, conformOutputFile);
 
-                    //AppMapping app = new AppMapping(pptx.AddAppPropertiesPart(), xws);
-                    //app.Apply(null);
+                // convert
+                Converter.Convert(ppt, pptx);
 
-                    //CoreMapping core = new CoreMapping(pptx.AddCoreFilePropertiesPart(), xws);
-                    //core.Apply(null);
-
-                }
-
+                // stop time
                 DateTime end = DateTime.Now;
                 TimeSpan diff = end.Subtract(start);
                 TraceLogger.Info("Conversion of file {0} finished in {1} seconds", InputFile, diff.TotalSeconds.ToString(CultureInfo.InvariantCulture));

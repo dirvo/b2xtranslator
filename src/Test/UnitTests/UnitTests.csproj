@@ -62,7 +62,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DocFileFormatTests.cs" />
-    <Compile Include="DocObjectModelTests.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -78,10 +77,6 @@
     <ProjectReference Include="..\..\WordProcessing\DocFileFormat\DocFileFormat.csproj">
       <Project>{70A244FD-C90E-4474-9E70-82BCF5147FF9}</Project>
       <Name>DocFileFormat</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\WordProcessing\DocObjectModel\DocObjectModel.csproj">
-      <Project>{9A9720E3-454F-459A-8650-AE624E790E65}</Project>
-      <Name>DocObjectModel</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

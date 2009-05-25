@@ -59,7 +59,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
             doc.Close();
 
 
-            PresentationDocument presentation = PresentationDocument.Create(@"C:\tmp\testOpenXmlLib.pptx");
+            PresentationDocument presentation = PresentationDocument.Create(@"C:\tmp\testOpenXmlLib.pptx", OpenXmlPackage.DocumentType.Document);
             PresentationPart presentationPart = presentation.PresentationPart;
 
             SlidePart slide = presentationPart.AddSlidePart();

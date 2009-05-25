@@ -62,11 +62,13 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             CreateMainMasters(ppt);
             CreateNotesMasters(ppt);
             CreateHandoutMasters(ppt);
+            CreateVbaProject(ppt);
             CreateSlides(ppt, documentRecord);
             //WriteOleObjects(ppt, documentRecord);
                         
             WriteMainMasters(ppt);
             WriteSlides(ppt, documentRecord);
+            
 
             // sldSz and notesSz
             WriteSizeInfo(ppt, documentRecord);
@@ -279,6 +281,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteAttributeString("r", "id", OpenXmlNamespaces.Relationships, sMapping.targetPart.RelIdToString);
 
             _writer.WriteEndElement();
+        }
+
+        private void CreateVbaProject(PowerpointDocument ppt)
+        {
+            ppt.VbaProject.Convert(new VbaProjectMapping(_ctx.Pptx.PresentationPart.VbaProjectPart));
         }
 
         private void CreateMainMasters(PowerpointDocument ppt)

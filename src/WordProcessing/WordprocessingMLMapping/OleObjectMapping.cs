@@ -119,7 +119,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             //create a new storage
             StructuredStorageWriter writer = new StructuredStorageWriter();
-            writer.RootDirectoryEntry.setClsId(ole.ClassId);
+
+            // Word will not open embedded charts if a CLSID is set.
+            if(ole.Program.StartsWith("Excel.Chart") == false)
+            {
+                writer.RootDirectoryEntry.setClsId(ole.ClassId);
+            }
 
             //copy the OLE streams from the old storage to the new storage
             foreach (string oleStream in ole.Streams.Keys)

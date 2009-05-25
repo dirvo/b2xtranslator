@@ -95,6 +95,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
     {
         // PresentationML content types
         public const string Presentation = "application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml";
+        public const string PresentationMacro = "application/vnd.ms-powerpoint.presentation.macroEnabled.main+xml";
         public const string Slide = "application/vnd.openxmlformats-officedocument.presentationml.slide+xml";
         public const string SlideMaster = "application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml";
         public const string NotesSlide = "application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml";

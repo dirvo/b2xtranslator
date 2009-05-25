@@ -13,7 +13,6 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
     public class Converter
     {
-
         public static OpenXmlPackage.DocumentType DetectOutputType(XlsDocument xls)
         {
             OpenXmlPackage.DocumentType returnType = OpenXmlPackage.DocumentType.Document;
