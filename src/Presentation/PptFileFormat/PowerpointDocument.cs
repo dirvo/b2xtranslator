@@ -436,26 +436,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
                     if (atom != null)
                     {
                         ExOleObjStgAtom stgAtom = this.GetPersistObject<ExOleObjStgAtom>(atom.persistIdRef);
-                        this.OleObjects.Add(stgAtom);
-
-                        if (stgAtom.Instance == 1)
-                        {
-
-                            byte[] decompressedBytes = new byte[stgAtom.decompressedSize];
-                            //decompress the bytes using .NET DeflateStream class.
-                            MemoryStream msCompressed = new MemoryStream(stgAtom.data);
-                            msCompressed.ReadByte();
-                            msCompressed.ReadByte();
-                            DeflateStream deflateStream = new DeflateStream(msCompressed, CompressionMode.Decompress);
-                            
-                            deflateStream.Read(decompressedBytes, 0, (int)decompressedBytes.Length);
-
-                            MemoryStream msDecompressed = new MemoryStream(decompressedBytes);
-                            StructuredStorageReader Storage = new StructuredStorageReader(msDecompressed);
-                                
-                           
-                            
-                        }
+                        this.OleObjects.Add(stgAtom);                        
                     }
                 }
             }

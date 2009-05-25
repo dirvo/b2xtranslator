@@ -786,8 +786,21 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 {
                     if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.Pib))
                     {
-                        writePic(container);
-                        continueShape = false;
+                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.BlipBooleanProperties))
+                        {
+                            BlipBooleanProperties props = new BlipBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.BlipBooleanProperties].op);
+                            if (props.fPictureActive && props.fusefPictureActive)
+                            {
+                                writeOle(container);
+                                continueShape = false;
+                            }
+                        }
+
+                        if (continueShape)
+                        {
+                            writePic(container);
+                            continueShape = false;
+                        }
                     }
                 }
                 else
@@ -1391,6 +1404,72 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     new ShadowMapping(_ctx, _writer).Apply(so);
                 }
             }
+        }
+
+        private void writeOle(ShapeContainer container)
+        {
+            Shape sh = container.FirstChildWithType<Shape>();
+            ShapeOptions so = container.FirstChildWithType<ShapeOptions>();
+
+            _writer.WriteStartElement("p", "graphicFrame", OpenXmlNamespaces.PresentationML);
+            _writer.WriteStartElement("p", "nvGraphicFramePr", OpenXmlNamespaces.PresentationML);
+            WriteCNvPr(--groupcounter, "");
+            _writer.WriteStartElement("p", "cNvGraphicFramePr", OpenXmlNamespaces.PresentationML);
+            _writer.WriteStartElement("a", "graphicFrameLocks", OpenXmlNamespaces.DrawingML);
+            _writer.WriteAttributeString("noChangeAspect", "1");
+            _writer.WriteEndElement(); //graphicFrameLocks
+            _writer.WriteEndElement(); //cNvGraphicFramePr
+            _writer.WriteElementString("p", "nvPr", OpenXmlNamespaces.PresentationML, "");
+            _writer.WriteEndElement(); //nvGraphicFramePr   
+
+            ClientAnchor anchor = container.FirstChildWithType<ClientAnchor>();
+            if (anchor != null && anchor.Right >= anchor.Left && anchor.Bottom >= anchor.Top)
+            {
+                _writer.WriteStartElement("p", "xfrm", OpenXmlNamespaces.PresentationML);
+
+                _writer.WriteStartElement("a", "off", OpenXmlNamespaces.DrawingML);
+                _writer.WriteAttributeString("x", Utils.MasterCoordToEMU(anchor.Left).ToString());
+                _writer.WriteAttributeString("y", Utils.MasterCoordToEMU(anchor.Top).ToString());
+                _writer.WriteEndElement();
+
+                _writer.WriteStartElement("a", "ext", OpenXmlNamespaces.DrawingML);
+                _writer.WriteAttributeString("cx", Utils.MasterCoordToEMU(anchor.Right - anchor.Left).ToString());
+                _writer.WriteAttributeString("cy", Utils.MasterCoordToEMU(anchor.Bottom - anchor.Top).ToString());
+                _writer.WriteEndElement();
+
+                _writer.WriteEndElement();
+            }
+
+            _writer.WriteStartElement("a", "graphic", OpenXmlNamespaces.DrawingML);
+
+            _writer.WriteStartElement("a", "graphicData", OpenXmlNamespaces.DrawingML);
+            _writer.WriteAttributeString("uri", OpenXmlRelationshipTypes.OleObject);
+
+            string spid = "";
+            string rid = "";
+            string width = "";
+            string height = "";
+
+            _writer.WriteStartElement("p", "oleObj", OpenXmlNamespaces.DrawingML);
+            _writer.WriteAttributeString("spid", spid);
+            _writer.WriteAttributeString("name", "Chart");
+            _writer.WriteAttributeString("id",OpenXmlNamespaces.Relationships, rid);
+            _writer.WriteAttributeString("imgW", width);
+            _writer.WriteAttributeString("imgH", height);
+            _writer.WriteAttributeString("progId", "MSGraph.Chart.8");
+
+            _writer.WriteStartElement("p", "embed", OpenXmlNamespaces.PresentationML);
+            _writer.WriteAttributeString("fllowColorScheme", "full");
+            _writer.WriteEndElement(); //embed
+
+            _writer.WriteEndElement(); //oleObj
+
+            _writer.WriteEndElement(); //graphicData
+
+            _writer.WriteEndElement(); //graphic
+
+
+            _writer.WriteEndElement(); //graphicFrame
         }
 
         private void writePic(ShapeContainer container)

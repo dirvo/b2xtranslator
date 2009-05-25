@@ -32,6 +32,9 @@ using DIaLOGIKa.b2xtranslator.PptFileFormat;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML;
+using System.IO;
+using System.IO.Compression;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 {
@@ -60,7 +63,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             CreateNotesMasters(ppt);
             CreateHandoutMasters(ppt);
             CreateSlides(ppt, documentRecord);
-            //CreatePictures(ppt, documentRecord);
+            WriteOleObjects(ppt, documentRecord);
                         
             WriteMainMasters(ppt);
             WriteSlides(ppt, documentRecord);
@@ -226,6 +229,30 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 }
             }
 
+       }
+
+       private void WriteOleObjects(PowerpointDocument ppt, DocumentContainer documentRecord)
+       {
+           foreach (ExOleObjStgAtom stgAtom in ppt.OleObjects)
+           {
+               if (stgAtom.Instance == 1)
+               {
+
+                   byte[] decompressedBytes = new byte[stgAtom.decompressedSize];
+                   //decompress the bytes using .NET DeflateStream class.
+                   MemoryStream msCompressed = new MemoryStream(stgAtom.data);
+                   msCompressed.ReadByte();
+                   msCompressed.ReadByte();
+                   DeflateStream deflateStream = new DeflateStream(msCompressed, CompressionMode.Decompress);
+
+                   deflateStream.Read(decompressedBytes, 0, (int)decompressedBytes.Length);
+
+                   MemoryStream msDecompressed = new MemoryStream(decompressedBytes);
+                   StructuredStorageReader Storage = new StructuredStorageReader(msDecompressed);
+
+               }
+
+           }
        }
 
         private void WriteSlides(PowerpointDocument ppt, DocumentContainer documentRecord)

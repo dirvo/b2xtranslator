@@ -107,7 +107,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             fLooping=315,
             pictureGray=317,
             pictureBiLevel=318,
-            pictureActive=319,
+            BlipBooleanProperties=319,
 
             //Geometry
             geoLeft=320,
