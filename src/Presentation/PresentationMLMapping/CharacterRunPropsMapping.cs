@@ -67,6 +67,13 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             else if (lastSize.Length > 0) {
                 _writer.WriteAttributeString("sz", lastSize);
             }
+            else if (defaultStyle != null)
+            {
+                if (defaultStyle.CRuns[0].SizePresent)
+                {
+                    _writer.WriteAttributeString("sz", (defaultStyle.CRuns[0].Size * 100).ToString());
+                }
+            }
             
             if (run.StyleFlagsFieldPresent)
             {

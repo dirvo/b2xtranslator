@@ -54,6 +54,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         public Dictionary<AnimationInfoContainer, int> animinfos = new Dictionary<AnimationInfoContainer, int>();
         public StyleTextProp9Atom ShapeStyleTextProp9Atom = null;
 
+        private SortedDictionary<int, int> ColumnWidthsByYPos;
+        private List<int> RowHeights;
+        private List<ShapeContainer> Lines;
+
         public ShapeTreeMapping(ConversionContext ctx, XmlWriter writer)
             : base(writer)
         {
@@ -100,6 +104,23 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         private int groupcounter = -10;
         public void Apply(GroupContainer group)
         {
+            GroupShapeRecord gsr = group.FirstChildWithType<ShapeContainer>().FirstChildWithType<GroupShapeRecord>();
+            ClientAnchor anchor = group.FirstChildWithType<ShapeContainer>().FirstChildWithType<ClientAnchor>();
+
+            foreach (ShapeOptions ops in group.FirstChildWithType<ShapeContainer>().AllChildrenWithType<ShapeOptions>())
+            {
+                if (ops.OptionsByID.ContainsKey(ShapeOptions.PropertyId.tableProperties))
+                {
+                    uint TABLEFLAGS = ops.OptionsByID[ShapeOptions.PropertyId.tableProperties].op;
+                    if (Tools.Utils.BitmaskToBool(TABLEFLAGS, 0x1))
+                    {
+                        //this group is a table
+                        ApplyTable(group, TABLEFLAGS);
+                        return;
+                    }
+                }
+            }
+
             _writer.WriteStartElement("p", "grpSp", OpenXmlNamespaces.PresentationML);
 
             _writer.WriteStartElement("p", "nvGrpSpPr", OpenXmlNamespaces.PresentationML);
@@ -109,8 +130,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement(); //nvGrpSpPr
 
             _writer.WriteStartElement("p", "grpSpPr", OpenXmlNamespaces.PresentationML);
-            GroupShapeRecord gsr = group.FirstChildWithType<ShapeContainer>().FirstChildWithType<GroupShapeRecord>();
-            ClientAnchor anchor = group.FirstChildWithType<ShapeContainer>().FirstChildWithType<ClientAnchor>();
 
             if (anchor != null && anchor.Right >= anchor.Left && anchor.Bottom >= anchor.Top)
             {
@@ -147,6 +166,601 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
 
             _writer.WriteEndElement(); //grpSp
+        }
+
+        private int GetGridSpanCount(ChildAnchor anch, int col)
+        {
+            int count = 0;
+            int availableWidth = anch.rcgBounds.Width;
+            int currentLeft = anch.Left;
+
+            while (availableWidth > 0)
+            {
+                availableWidth -= ColumnWidthsByYPos[currentLeft];
+                currentLeft += ColumnWidthsByYPos[currentLeft];
+                count++;
+            }            
+
+            return count;
+        }
+
+        private int GetRowSpanCount(ChildAnchor anch, int row)
+        {
+            int count = 0;
+            int availableHeight = anch.rcgBounds.Height;
+
+            while (availableHeight > 0)
+            {
+                availableHeight -= RowHeights[row + count];
+                count++;
+            }
+
+            return count;
+        }
+
+        public void ApplyTable(GroupContainer group, uint TABLEFLAGS)
+        {
+            GroupShapeRecord gsr = group.FirstChildWithType<ShapeContainer>().FirstChildWithType<GroupShapeRecord>();
+            ClientAnchor anchor = group.FirstChildWithType<ShapeContainer>().FirstChildWithType<ClientAnchor>();
+
+            RowHeights = new List<int>();
+            foreach (ShapeOptions ops in group.FirstChildWithType<ShapeContainer>().AllChildrenWithType<ShapeOptions>())
+            {
+                if (ops.OptionsByID.ContainsKey(ShapeOptions.PropertyId.tableRowProperties))
+                {
+                    uint TableRowPropertiesCount = ops.OptionsByID[ShapeOptions.PropertyId.tableRowProperties].op;
+                    byte[] data = ops.OptionsByID[ShapeOptions.PropertyId.tableRowProperties].opComplex;
+                    UInt16 nElems = BitConverter.ToUInt16(data, 0);
+                    UInt16 nElemsAlloc = BitConverter.ToUInt16(data, 2);
+                    UInt16 cbElem = BitConverter.ToUInt16(data, 4);
+                    for (int i = 0; i < nElems; i++)
+                    {
+                        Int32 height = BitConverter.ToInt32(data, 6 + i * cbElem);
+                        RowHeights.Add(height);
+                    }
+                }
+            }
+
+            List<ShapeContainer> Cells = new List<ShapeContainer>();
+            Lines = new List<ShapeContainer>();
+            Dictionary<string, ShapeContainer> LinesByPosition = new Dictionary<string, ShapeContainer>();
+           
+            SortedList<int, SortedList<int, ShapeContainer>> tablelist = new SortedList<int,SortedList<int,ShapeContainer>>();
+            foreach (ShapeContainer scontainer in group.AllChildrenWithType<ShapeContainer>())
+            {
+                ChildAnchor anch = scontainer.FirstChildWithType<ChildAnchor>();
+                foreach (Shape shape in scontainer.AllChildrenWithType<Shape>())
+                {
+                    if (Utils.getPrstForShape(shape.Instance) == "rect")
+                    {
+                        if (!tablelist.ContainsKey(anch.Top)) tablelist.Add(anch.Top, new SortedList<int, ShapeContainer>());
+                        tablelist[anch.Top].Add(anch.Left, scontainer);
+                    }
+                    else if (Utils.getPrstForShape(shape.Instance) == "line")
+                    {
+                        Lines.Add(scontainer);
+                    }
+                } 
+            }
+
+            ColumnWidthsByYPos = new SortedDictionary<int, int>();
+            Dictionary<int, int> ColumnIndices = new Dictionary<int, int>(); //this list will contain all column limits
+            foreach (SortedList<int, ShapeContainer> rowlist in tablelist.Values)
+            {
+                //rowlist contains all cells in a row
+                foreach (int y in rowlist.Keys)
+                {
+                    int w = rowlist[y].FirstChildWithType<ChildAnchor>().rcgBounds.Width;
+                    if (!ColumnWidthsByYPos.ContainsKey(y))
+                    {
+                        ColumnWidthsByYPos.Add(y, w);
+                    }
+                    else
+                    {
+                        if (w < ColumnWidthsByYPos[y]) ColumnWidthsByYPos[y] = w;
+                    }
+                    Cells.Add(rowlist[y]);
+                }
+            }
+            int counter = 0;
+            foreach (int y in ColumnWidthsByYPos.Keys)
+            {
+                ColumnIndices.Add(y, counter++);
+            }
+            
+
+            //the "real" table contains Yvalues.Count columns and rowheight.count rows
+            ShapeContainer[,] table = new ShapeContainer[RowHeights.Count, ColumnWidthsByYPos.Count];
+            int c;
+            //SortedList<int, ShapeContainer> rowlst;
+            int r = 0;
+            foreach (SortedList<int, ShapeContainer> rowlst in tablelist.Values)
+            {
+                //rowlst = tablelist[r];
+                //rowlist contains all cells in a row
+                foreach (int y in rowlst.Keys)
+                {
+                    c = ColumnIndices[y];
+                    table[r, c] = rowlst[y];
+                }
+                r++;
+            }
+           
+            _writer.WriteStartElement("p", "graphicFrame", OpenXmlNamespaces.PresentationML);
+
+            _writer.WriteStartElement("p", "nvGraphicFramePr", OpenXmlNamespaces.PresentationML);
+            WriteCNvPr(--groupcounter, "");
+            _writer.WriteStartElement("p", "cNvGraphicFramePr", OpenXmlNamespaces.PresentationML);
+            _writer.WriteStartElement("a", "graphicFrameLocks", OpenXmlNamespaces.DrawingML);
+            _writer.WriteAttributeString("noGrp", "1");
+            _writer.WriteEndElement(); //graphicFrameLocks
+            _writer.WriteEndElement(); //cNvGraphicFramePr
+            _writer.WriteElementString("p", "nvPr", OpenXmlNamespaces.PresentationML, "");
+            _writer.WriteEndElement(); //nvGraphicFramePr            
+
+            if (anchor != null && anchor.Right >= anchor.Left && anchor.Bottom >= anchor.Top)
+            {
+                _writer.WriteStartElement("p", "xfrm", OpenXmlNamespaces.PresentationML);
+
+                _writer.WriteStartElement("a", "off", OpenXmlNamespaces.DrawingML);
+                _writer.WriteAttributeString("x", Utils.MasterCoordToEMU(anchor.Left).ToString());
+                _writer.WriteAttributeString("y", Utils.MasterCoordToEMU(anchor.Top).ToString());
+                _writer.WriteEndElement();
+
+                _writer.WriteStartElement("a", "ext", OpenXmlNamespaces.DrawingML);
+                _writer.WriteAttributeString("cx", Utils.MasterCoordToEMU(anchor.Right - anchor.Left).ToString());
+                _writer.WriteAttributeString("cy", Utils.MasterCoordToEMU(anchor.Bottom - anchor.Top).ToString());
+                _writer.WriteEndElement();
+
+                _writer.WriteEndElement();
+            }
+
+            _writer.WriteStartElement("a", "graphic", OpenXmlNamespaces.DrawingML);
+            _writer.WriteStartElement("a", "graphicData", OpenXmlNamespaces.DrawingML);
+            _writer.WriteAttributeString("uri", "http://schemas.openxmlformats.org/drawingml/2006/table");
+            _writer.WriteStartElement("a", "tbl", OpenXmlNamespaces.DrawingML);
+            _writer.WriteElementString("a", "tblPr", OpenXmlNamespaces.DrawingML, "");
+            _writer.WriteStartElement("a", "tblGrid", OpenXmlNamespaces.DrawingML);
+
+            foreach (int y in ColumnWidthsByYPos.Keys)
+            {
+                 _writer.WriteStartElement("a", "gridCol", OpenXmlNamespaces.DrawingML);
+                _writer.WriteAttributeString("w", Utils.MasterCoordToEMU(ColumnWidthsByYPos[y]).ToString());
+                _writer.WriteEndElement(); //gridCol
+            }
+            _writer.WriteEndElement(); //tblGrid
+
+            for (int row = 0; row < RowHeights.Count; row++)
+            {
+                _writer.WriteStartElement("a", "tr", OpenXmlNamespaces.DrawingML);
+                _writer.WriteAttributeString("h", Utils.MasterCoordToEMU(RowHeights[row]).ToString());
+
+                for (int col = 0; col < ColumnWidthsByYPos.Count; col++)
+                {
+                    _writer.WriteStartElement("a", "tc", OpenXmlNamespaces.DrawingML);
+
+                    if (table[row, col] != null)
+                    {
+                        ShapeContainer container = table[row, col];
+
+                        ChildAnchor anch = container.FirstChildWithType<ChildAnchor>();
+                        int colWidth = ColumnWidthsByYPos[anch.Left];
+                        
+                        if (anch.rcgBounds.Height > RowHeights[row])
+                        {
+                            _writer.WriteAttributeString("rowSpan", GetRowSpanCount(anch, row).ToString());
+                        }
+                        
+                        if (anch.rcgBounds.Width > colWidth)
+                        {
+                            _writer.WriteAttributeString("gridSpan", GetGridSpanCount(anch, col).ToString());
+                        }
+                                              
+                        foreach (Record record in container.Children)
+                        {
+                            if (record is ClientTextbox)
+                            {
+                                so = container.FirstChildWithType<ShapeOptions>();
+                                Apply((ClientTextbox)record, true);
+                            }
+                        }
+
+
+                        _writer.WriteStartElement("a", "tcPr", OpenXmlNamespaces.DrawingML);
+
+                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.anchorText))
+                        {
+                            switch (so.OptionsByID[ShapeOptions.PropertyId.anchorText].op)
+                            {
+                                case 0: //Top
+                                    _writer.WriteAttributeString("anchor", "t");
+                                    break;
+                                case 1: //Middle
+                                    _writer.WriteAttributeString("anchor", "ctr");
+                                    break;
+                                case 2: //Bottom
+                                    _writer.WriteAttributeString("anchor", "b");
+                                    break;
+                                case 3: //TopCentered
+                                    _writer.WriteAttributeString("anchor", "t");
+                                    _writer.WriteAttributeString("anchorCtr", "1");
+                                    break;
+                                case 4: //MiddleCentered
+                                    _writer.WriteAttributeString("anchor", "ctr");
+                                    _writer.WriteAttributeString("anchorCtr", "1");
+                                    break;
+                                case 5: //BottomCentered
+                                    _writer.WriteAttributeString("anchor", "b");
+                                    _writer.WriteAttributeString("anchorCtr", "1");
+                                    break;
+                            }
+                        }
+
+                        _writer.WriteAttributeString("horzOverflow", "overflow");
+
+                        WriteTableLineProperties(row, col, table);
+
+                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.FillStyleBooleanProperties))
+                        {
+                            FillStyleBooleanProperties p = new FillStyleBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.FillStyleBooleanProperties].op);
+                            if (p.fUsefFilled & p.fFilled) //  so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillType))
+                            {
+                                new FillMapping(_ctx, _writer, parentSlideMapping).Apply(so);
+                            }
+                        }
+
+
+                        _writer.WriteEndElement(); //tcPr
+
+                    }
+                    else
+                    {
+                        if (col > 0 && table[row, col - 1] != null)
+                        {
+                            ShapeContainer previouscontainer = table[row, col-1];
+                            ChildAnchor anch = previouscontainer.FirstChildWithType<ChildAnchor>();
+                            if (anch.rcgBounds.Height > RowHeights[row])
+                            {
+                                _writer.WriteAttributeString("rowSpan", "2");                                
+                            }
+
+                            if (anch.rcgBounds.Width > ColumnWidthsByYPos[anch.Left])
+                            {
+                                _writer.WriteAttributeString("hMerge", "1");
+                            }
+                        }
+                        else if (row > 0 && col > 0 && table[row - 1, col - 1] != null) //this checks the cell above on the left
+                        {
+                            ShapeContainer previouscontainer = table[row - 1, col - 1];
+                            ChildAnchor anch = previouscontainer.FirstChildWithType<ChildAnchor>();
+
+                            if (anch.rcgBounds.Width > ColumnWidthsByYPos[anch.Left])
+                            {
+                                _writer.WriteAttributeString("hMerge", "1");
+                            }
+                        }
+
+                        if (row > 0 && table[row-1, col] != null) //this checks the cell on the left
+                        {
+                            ShapeContainer previouscontainer = table[row-1, col];
+                            ChildAnchor anch = previouscontainer.FirstChildWithType<ChildAnchor>();
+                            int colWidth = ColumnWidthsByYPos[anch.Left];
+
+                            if (anch.rcgBounds.Width > colWidth)
+                            {
+                                _writer.WriteAttributeString("gridSpan", "2");
+                            }
+
+                            if (anch.rcgBounds.Height > RowHeights[row-1])
+                            {
+                                _writer.WriteAttributeString("vMerge", "1");
+                            }
+                           
+                        }
+                        else if (row > 0 && col > 0  && table[row - 1, col - 1] != null) //this checks the cell above on the left
+                        {
+                            ShapeContainer previouscontainer = table[row - 1, col-1];
+                            ChildAnchor anch = previouscontainer.FirstChildWithType<ChildAnchor>();
+
+                            if (anch.rcgBounds.Height > RowHeights[row - 1])
+                            {
+                                _writer.WriteAttributeString("vMerge", "1");
+                            }
+                        }
+
+                        //insert dummy tc content
+                        _writer.WriteStartElement("a","txBody",OpenXmlNamespaces.DrawingML);
+                        _writer.WriteElementString("a","bodyPr",OpenXmlNamespaces.DrawingML,"");
+                        _writer.WriteElementString("a","lstStyle",OpenXmlNamespaces.DrawingML,"");
+                        _writer.WriteElementString("a","p",OpenXmlNamespaces.DrawingML,"");
+                        _writer.WriteEndElement(); //txBody
+
+                        _writer.WriteElementString("a", "tcPr", OpenXmlNamespaces.DrawingML,"");
+                    }
+
+                    _writer.WriteEndElement(); //tc
+
+                    //cellPointer++;
+                }
+
+
+                _writer.WriteEndElement(); //tr
+            }
+
+            _writer.WriteEndElement(); //tbl
+            _writer.WriteEndElement(); //graphicData
+            _writer.WriteEndElement(); //graphic
+            _writer.WriteEndElement(); //graphicFrame
+
+        }
+
+        private void WriteTableLineProperties(int row, int col, ShapeContainer[,] table)
+        {
+            int rows = table.GetLength(0);
+            int columns = table.GetLength(1);
+
+            //check cell position
+            bool isLeft = (col == 0);
+            bool isRight = (col == columns - 1);
+            bool isTop = (row == 0);
+            bool isBottom = (row == rows - 1);
+
+            int span;
+
+            ShapeContainer container = table[row, col];
+            ChildAnchor anch = container.FirstChildWithType<ChildAnchor>();
+            int colWidth = ColumnWidthsByYPos[anch.Left];
+            if (anch.rcgBounds.Height > RowHeights[row])
+            {
+                //recheck isBottom
+                span = GetRowSpanCount(anch, row);
+                isBottom = (row + span - 1 == rows - 1);
+            }
+            if (anch.rcgBounds.Width > colWidth)
+            {
+                //recheck isRight
+                span = GetGridSpanCount(anch, col);
+                isRight = (col + span - 1 == columns - 1);
+            }
+            
+
+            ShapeContainer outerLine = null;
+            ShapeContainer innerLine = null;
+
+            int topmost = -1;
+            int topleast = int.MaxValue;
+            foreach (ShapeContainer lineCont in Lines)
+            {
+                //first find topmost and topleast vertical lines
+                //the topmost line is used as outer line
+                foreach (ChildAnchor anchor in lineCont.AllChildrenWithType<ChildAnchor>())
+                {
+                    //vertical
+                    if (anchor.Top == anchor.Bottom)
+                    {
+                        if (anchor.Top > topmost)
+                        {
+                            outerLine = lineCont;
+                            topmost = anchor.Top;
+                        }
+                        if (anchor.Top < topleast)
+                        {
+                            topleast = anchor.Top;
+                        }
+                    }
+                }
+            }
+            foreach (ShapeContainer lineCont in Lines)
+            {
+                //a vertical line which is neither topmost nor topleast is used as inner line
+                foreach (ChildAnchor anchor in lineCont.AllChildrenWithType<ChildAnchor>())
+                {
+                    //vertical
+                    if (anchor.Top == anchor.Bottom)
+                    {
+                        if (anchor.Top < topmost & anchor.Top > topleast)
+                        {
+                            innerLine = lineCont;
+                            break;
+                        }
+                    }
+                }   
+            }
+            
+     
+            _writer.WriteStartElement("a", "lnL", OpenXmlNamespaces.DrawingML);
+            if (isLeft) WriteLineProperties(outerLine); else WriteLineProperties(innerLine); 
+            _writer.WriteEndElement(); //lnL
+
+            _writer.WriteStartElement("a", "lnR", OpenXmlNamespaces.DrawingML);
+            if (isRight) WriteLineProperties(outerLine); else WriteLineProperties(innerLine);
+            _writer.WriteEndElement(); //lnR
+
+            _writer.WriteStartElement("a", "lnT", OpenXmlNamespaces.DrawingML);
+            if (isTop) WriteLineProperties(outerLine); else WriteLineProperties(innerLine);
+            _writer.WriteEndElement(); //lnT
+
+            _writer.WriteStartElement("a", "lnB", OpenXmlNamespaces.DrawingML);
+            if (isBottom) WriteLineProperties(outerLine); else WriteLineProperties(innerLine);
+            _writer.WriteEndElement(); //lnB
+
+            _writer.WriteStartElement("a", "lnTlToBr", OpenXmlNamespaces.DrawingML);
+            _writer.WriteElementString("a", "noFill", OpenXmlNamespaces.DrawingML, "");
+            _writer.WriteEndElement(); //lnTlToBr
+
+            _writer.WriteStartElement("a", "lnBlToTr", OpenXmlNamespaces.DrawingML);
+            _writer.WriteElementString("a", "noFill", OpenXmlNamespaces.DrawingML, "");
+            _writer.WriteEndElement(); //lnBlToTr
+
+        }
+
+        private void WriteLineProperties(ShapeContainer lineCont)
+        {
+            foreach (ShapeOptions soline in lineCont.AllChildrenWithType<ShapeOptions>())
+            {
+                if (soline.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineWidth))
+                {
+                    uint w = soline.OptionsByID[ShapeOptions.PropertyId.lineWidth].op;
+                    _writer.WriteAttributeString("w", w.ToString());
+                }
+                if (soline.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineEndCapStyle))
+                {
+                    //switch (soline.OptionsByID[ShapeOptions.PropertyId.lineEndCapStyle].op)
+                    //{
+                    //    case 0: //round
+                    //        _writer.WriteAttributeString("cap", "rnd");
+                    //        break;
+                    //    case 1: //square
+                    //        _writer.WriteAttributeString("cap", "sq");
+                    //        break;
+                    //    case 2: //flat
+                            _writer.WriteAttributeString("cap", "flat");
+                            //break;
+                    //}
+                }
+
+                _writer.WriteAttributeString("cmpd", "sng");
+                _writer.WriteAttributeString("algn", "ctr");
+
+                if (soline.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineColor))
+                {
+                    _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteAttributeString("val", Utils.getRGBColorFromOfficeArtCOLORREF(soline.OptionsByID[ShapeOptions.PropertyId.lineColor].op, lineCont.FirstAncestorWithType<Slide>(), so));
+                    _writer.WriteEndElement();
+                    _writer.WriteEndElement();
+                }
+
+                if (soline.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineDashing))
+                {
+                    _writer.WriteStartElement("a", "prstDash", OpenXmlNamespaces.DrawingML);
+                    switch ((ShapeOptions.LineDashing)soline.OptionsByID[ShapeOptions.PropertyId.lineDashing].op)
+                    {
+                        case ShapeOptions.LineDashing.Solid:
+                            _writer.WriteAttributeString("val", "solid");
+                            break;
+                        case ShapeOptions.LineDashing.DashSys:
+                            _writer.WriteAttributeString("val", "sysDash");
+                            break;
+                        case ShapeOptions.LineDashing.DotSys:
+                            _writer.WriteAttributeString("val", "sysDot");
+                            break;
+                        case ShapeOptions.LineDashing.DashDotSys:
+                            _writer.WriteAttributeString("val", "sysDashDot");
+                            break;
+                        case ShapeOptions.LineDashing.DashDotDotSys:
+                            _writer.WriteAttributeString("val", "sysDashDotDot");
+                            break;
+                        case ShapeOptions.LineDashing.DotGEL:
+                            _writer.WriteAttributeString("val", "dot");
+                            break;
+                        case ShapeOptions.LineDashing.DashGEL:
+                            _writer.WriteAttributeString("val", "dash");
+                            break;
+                        case ShapeOptions.LineDashing.LongDashGEL:
+                            _writer.WriteAttributeString("val", "lgDash");
+                            break;
+                        case ShapeOptions.LineDashing.DashDotGEL:
+                            _writer.WriteAttributeString("val", "dashDot");
+                            break;
+                        case ShapeOptions.LineDashing.LongDashDotGEL:
+                            _writer.WriteAttributeString("val", "lgDashDot");
+                            break;
+                        case ShapeOptions.LineDashing.LongDashDotDotGEL:
+                            _writer.WriteAttributeString("val", "lgDashDotDot");
+                            break;
+                    }
+                    _writer.WriteEndElement();
+                }
+
+                _writer.WriteElementString("a", "round", OpenXmlNamespaces.DrawingML, "");
+
+                if (soline.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineStartArrowhead))
+                {
+                    ShapeOptions.LineEnd val = (ShapeOptions.LineEnd)soline.OptionsByID[ShapeOptions.PropertyId.lineStartArrowhead].op;
+                    if (val != ShapeOptions.LineEnd.NoEnd)
+                    {
+                        _writer.WriteStartElement("a", "headEnd", OpenXmlNamespaces.DrawingML);
+                        switch (val)
+                        {
+                            case ShapeOptions.LineEnd.ArrowEnd:
+                                _writer.WriteAttributeString("type", "triangle");
+                                break;
+                            case ShapeOptions.LineEnd.ArrowStealthEnd:
+                                _writer.WriteAttributeString("type", "stealth");
+                                break;
+                            case ShapeOptions.LineEnd.ArrowDiamondEnd:
+                                _writer.WriteAttributeString("type", "diamond");
+                                break;
+                            case ShapeOptions.LineEnd.ArrowOvalEnd:
+                                _writer.WriteAttributeString("type", "oval");
+                                break;
+                            case ShapeOptions.LineEnd.ArrowOpenEnd:
+                                _writer.WriteAttributeString("type", "arrow");
+                                break;
+                            case ShapeOptions.LineEnd.ArrowChevronEnd: //this should be ignored
+                            case ShapeOptions.LineEnd.ArrowDoubleChevronEnd:
+                                _writer.WriteAttributeString("type", "triangle");
+                                break;
+                        }
+                        _writer.WriteAttributeString("w", "med");
+                        _writer.WriteAttributeString("len", "med");
+                        _writer.WriteEndElement(); //headEnd
+                    }
+                }
+                else
+                {
+                    _writer.WriteStartElement("a", "headEnd", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteAttributeString("type", "none");
+                    _writer.WriteAttributeString("w", "med");
+                    _writer.WriteAttributeString("len", "med");
+                    _writer.WriteEndElement(); //headEnd
+                }
+
+                if (soline.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineEndArrowhead))
+                {
+                    ShapeOptions.LineEnd val = (ShapeOptions.LineEnd)soline.OptionsByID[ShapeOptions.PropertyId.lineEndArrowhead].op;
+                    if (val != ShapeOptions.LineEnd.NoEnd)
+                    {
+                        _writer.WriteStartElement("a", "tailEnd", OpenXmlNamespaces.DrawingML);
+                        switch (val)
+                        {
+                            case ShapeOptions.LineEnd.ArrowEnd:
+                                _writer.WriteAttributeString("type", "triangle");
+                                break;
+                            case ShapeOptions.LineEnd.ArrowStealthEnd:
+                                _writer.WriteAttributeString("type", "stealth");
+                                break;
+                            case ShapeOptions.LineEnd.ArrowDiamondEnd:
+                                _writer.WriteAttributeString("type", "diamond");
+                                break;
+                            case ShapeOptions.LineEnd.ArrowOvalEnd:
+                                _writer.WriteAttributeString("type", "oval");
+                                break;
+                            case ShapeOptions.LineEnd.ArrowOpenEnd:
+                                _writer.WriteAttributeString("type", "arrow");
+                                break;
+                            case ShapeOptions.LineEnd.ArrowChevronEnd: //this should be ignored
+                            case ShapeOptions.LineEnd.ArrowDoubleChevronEnd:
+                                _writer.WriteAttributeString("type", "triangle");
+                                break;
+                        }
+                        _writer.WriteAttributeString("w", "med");
+                        _writer.WriteAttributeString("len", "med");
+                        _writer.WriteEndElement(); //tailnd
+                    }
+                }
+                else
+                {
+                    _writer.WriteStartElement("a", "tailEnd", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteAttributeString("type", "none");
+                    _writer.WriteAttributeString("w", "med");
+                    _writer.WriteAttributeString("len", "med");
+                    _writer.WriteEndElement(); //tailEnd
+                }
+
+                break;  
+            }
         }
 
 
@@ -430,257 +1044,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     WritecustGeom(sh);
                 }
 
-                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.FillStyleBooleanProperties))
-                {
-                    FillStyleBooleanProperties p = new FillStyleBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.FillStyleBooleanProperties].op);
-                    if (p.fUsefFilled & p.fFilled) //  so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillType))
-                    {
-                        new FillMapping(_ctx, _writer, parentSlideMapping).Apply(so);
-                    }
-                }
-                else if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillColor))
-                {
-                    if (sh.Instance != 0xca & placeholder == null)
-                    {
-                        string colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide, so);
-                        _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("val", colorval);
-                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity))
-                        {
-                            _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
-                            _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillOpacity].op / 65536 * 100000)).ToString()); //we need the percentage of the opacity (65536 means 100%)
-                            _writer.WriteEndElement();
-                        }
-                        _writer.WriteEndElement();
-                        _writer.WriteEndElement();
-                    }
-                }
-                
-                _writer.WriteStartElement("a", "ln", OpenXmlNamespaces.DrawingML);
-                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineWidth))
-                {
-                    _writer.WriteAttributeString("w", so.OptionsByID[ShapeOptions.PropertyId.lineWidth].op.ToString());
-                }
-                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineEndCapStyle))
-                {
-                    switch (so.OptionsByID[ShapeOptions.PropertyId.lineEndCapStyle].op)
-                    {
-                        case 0: //round
-                            _writer.WriteAttributeString("cap", "rnd");
-                            break;
-                        case 1: //square
-                            _writer.WriteAttributeString("cap", "sq");
-                            break;
-                        case 2: //flat
-                            _writer.WriteAttributeString("cap", "flat");
-                            break;
-                    }
-                }
-                
-
-                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineType))
-                {
-                    switch (so.OptionsByID[ShapeOptions.PropertyId.lineType].op)
-                    {
-                        case 0: //solid
-                            break;
-                        case 1: //pattern
-                            uint blipIndex = so.OptionsByID[ShapeOptions.PropertyId.lineFillBlip].op;
-                            DrawingGroup gr = (DrawingGroup)this._ctx.Ppt.DocumentRecord.FirstChildWithType<PPDrawingGroup>().Children[0];
-                            BlipStoreEntry bse = (BlipStoreEntry)gr.FirstChildWithType<BlipStoreContainer>().Children[(int)blipIndex - 1];
-                            BitmapBlip b = (BitmapBlip)_ctx.Ppt.PicturesContainer._pictures[bse.foDelay];
-
-                            _writer.WriteStartElement("a", "pattFill", OpenXmlNamespaces.DrawingML);
-
-                            _writer.WriteAttributeString("prst", Utils.getPrstForPatternCode(b.m_bTag)); //Utils.getPrstForPattern(blipNamePattern));
-
-                            _writer.WriteStartElement("a", "fgClr", OpenXmlNamespaces.DrawingML);
-
-                            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineColor))
-                            {
-                                _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                                _writer.WriteAttributeString("val", Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.lineColor].op, container.FirstAncestorWithType<Slide>(), so));
-                                _writer.WriteEndElement();
-                            } else {
-                                _writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
-                                _writer.WriteAttributeString("val", "tx1");
-                                _writer.WriteEndElement();
-                            }
-
-                            _writer.WriteEndElement();
-
-                            _writer.WriteStartElement("a", "bgClr", OpenXmlNamespaces.DrawingML);
-
-                            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineBackColor))
-                            {
-                                _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                                _writer.WriteAttributeString("val", Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.lineBackColor].op, container.FirstAncestorWithType<Slide>(), so));
-                                _writer.WriteEndElement();
-                            }
-                            else
-                            {
-                                _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                                _writer.WriteAttributeString("val", "FFFFFF");
-                                _writer.WriteEndElement();
-                            }
-                           
-                            _writer.WriteEndElement();
-
-                            _writer.WriteEndElement();
-
-                            break;
-                        case 2: //texture
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                else
-                {
-                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineColor) & so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineStyleBooleans))
-                    {
-                        LineStyleBooleans lineStyle = new LineStyleBooleans(so.OptionsByID[ShapeOptions.PropertyId.lineStyleBooleans].op);
-                        if (lineStyle.fLine)
-                        {
-                            string colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.lineColor].op, slide, so);
-                            _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
-                            _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                            _writer.WriteAttributeString("val", colorval);
-                            _writer.WriteEndElement();
-                            _writer.WriteEndElement();
-                        }
-                    }
-                }
-
-                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineDashing))
-                {
-                    _writer.WriteStartElement("a", "prstDash", OpenXmlNamespaces.DrawingML);
-                    switch ((ShapeOptions.LineDashing)so.OptionsByID[ShapeOptions.PropertyId.lineDashing].op)
-                    {
-                        case ShapeOptions.LineDashing.Solid:
-                            _writer.WriteAttributeString("val", "solid");
-                            break;
-                        case ShapeOptions.LineDashing.DashSys:
-                            _writer.WriteAttributeString("val", "sysDash");
-                            break;
-                        case ShapeOptions.LineDashing.DotSys:
-                            _writer.WriteAttributeString("val", "sysDot");
-                            break;
-                        case ShapeOptions.LineDashing.DashDotSys:
-                            _writer.WriteAttributeString("val", "sysDashDot");
-                            break;
-                        case ShapeOptions.LineDashing.DashDotDotSys:
-                            _writer.WriteAttributeString("val", "sysDashDotDot");
-                            break;
-                        case ShapeOptions.LineDashing.DotGEL:
-                            _writer.WriteAttributeString("val", "dot");
-                            break;
-                        case ShapeOptions.LineDashing.DashGEL:
-                            _writer.WriteAttributeString("val", "dash");
-                            break;
-                        case ShapeOptions.LineDashing.LongDashGEL:
-                            _writer.WriteAttributeString("val", "lgDash");
-                            break;
-                        case ShapeOptions.LineDashing.DashDotGEL:
-                            _writer.WriteAttributeString("val", "dashDot");
-                            break;
-                        case ShapeOptions.LineDashing.LongDashDotGEL:
-                            _writer.WriteAttributeString("val", "lgDashDot");
-                            break;
-                        case ShapeOptions.LineDashing.LongDashDotDotGEL:
-                            _writer.WriteAttributeString("val", "lgDashDotDot");
-                            break;
-                    }
-                    _writer.WriteEndElement();
-                }
-                
-                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineStartArrowhead))
-                {
-                    ShapeOptions.LineEnd val = (ShapeOptions.LineEnd)so.OptionsByID[ShapeOptions.PropertyId.lineStartArrowhead].op;
-                    if (val != ShapeOptions.LineEnd.NoEnd)
-                    {
-                            _writer.WriteStartElement("a", "headEnd", OpenXmlNamespaces.DrawingML);
-                            switch (val)
-                            {
-                                case ShapeOptions.LineEnd.ArrowEnd:
-                                    _writer.WriteAttributeString("type", "triangle");
-                                    break;
-                                case ShapeOptions.LineEnd.ArrowStealthEnd:
-                                    _writer.WriteAttributeString("type", "stealth");
-                                    break;
-                                case ShapeOptions.LineEnd.ArrowDiamondEnd:
-                                    _writer.WriteAttributeString("type", "diamond");
-                                    break;
-                                case ShapeOptions.LineEnd.ArrowOvalEnd:
-                                    _writer.WriteAttributeString("type", "oval");
-                                    break;
-                                case ShapeOptions.LineEnd.ArrowOpenEnd:
-                                    _writer.WriteAttributeString("type", "arrow");
-                                    break;
-                                case ShapeOptions.LineEnd.ArrowChevronEnd: //this should be ignored
-                                case ShapeOptions.LineEnd.ArrowDoubleChevronEnd:
-                                    _writer.WriteAttributeString("type", "triangle");
-                                    break;
-                            }
-                            _writer.WriteAttributeString("w", "med");
-                            _writer.WriteAttributeString("len", "med");
-                            _writer.WriteEndElement(); //headEnd
-                        }
-                }
-
-                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineEndArrowhead))
-                {
-                    ShapeOptions.LineEnd val = (ShapeOptions.LineEnd)so.OptionsByID[ShapeOptions.PropertyId.lineEndArrowhead].op;
-                    if (val != ShapeOptions.LineEnd.NoEnd)
-                    {
-                        _writer.WriteStartElement("a", "tailEnd", OpenXmlNamespaces.DrawingML);
-                        switch (val)
-                        {
-                            case ShapeOptions.LineEnd.ArrowEnd:
-                                _writer.WriteAttributeString("type", "triangle");
-                                break;
-                            case ShapeOptions.LineEnd.ArrowStealthEnd:
-                                _writer.WriteAttributeString("type", "stealth");
-                                break;
-                            case ShapeOptions.LineEnd.ArrowDiamondEnd:
-                                _writer.WriteAttributeString("type", "diamond");
-                                break;
-                            case ShapeOptions.LineEnd.ArrowOvalEnd:
-                                _writer.WriteAttributeString("type", "oval");
-                                break;
-                            case ShapeOptions.LineEnd.ArrowOpenEnd:
-                                _writer.WriteAttributeString("type", "arrow");
-                                break;
-                            case ShapeOptions.LineEnd.ArrowChevronEnd: //this should be ignored
-                            case ShapeOptions.LineEnd.ArrowDoubleChevronEnd:
-                                _writer.WriteAttributeString("type", "triangle");
-                                break;
-                        }
-                        _writer.WriteAttributeString("w", "med");
-                        _writer.WriteAttributeString("len", "med");
-                        _writer.WriteEndElement(); //tailnd
-                    }
-                }
-
-                if (!so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineEndCapStyle))
-                {
-                //    _writer.WriteStartElement("a", "miter", OpenXmlNamespaces.DrawingML);
-                //    _writer.WriteAttributeString("lim", "800000");
-                //    _writer.WriteEndElement();
-                }
-
-                _writer.WriteEndElement(); //ln
-
-                //shadow
-                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.ShadowStyleBooleanProperties))
-                {
-                    ShadowStyleBooleanProperties sp = new ShadowStyleBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.ShadowStyleBooleanProperties].op);
-                    if (sp.fUsefShadow & sp.fShadow)
-                    {
-                        new ShadowMapping(_ctx, _writer).Apply(so);
-                    }
-                }
+                WriteShapeProperties(sh, placeholder != null, slide);
 
                 _writer.WriteEndElement();
 
@@ -772,6 +1136,265 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 }
 
                 _writer.WriteEndElement();
+            }
+        }
+
+        private void WriteShapeProperties(Shape sh, bool isPlaceholder, RegularContainer slide)
+        {
+            ShapeContainer container = (ShapeContainer)sh.ParentRecord;
+
+            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.FillStyleBooleanProperties))
+            {
+                FillStyleBooleanProperties p = new FillStyleBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.FillStyleBooleanProperties].op);
+                if (p.fUsefFilled & p.fFilled) //  so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillType))
+                {
+                    new FillMapping(_ctx, _writer, parentSlideMapping).Apply(so);
+                }
+            }
+            else if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillColor))
+            {
+                if (sh.Instance != 0xca & isPlaceholder == false)
+                {
+                    string colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide, so);
+                    _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteAttributeString("val", colorval);
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity))
+                    {
+                        _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillOpacity].op / 65536 * 100000)).ToString()); //we need the percentage of the opacity (65536 means 100%)
+                        _writer.WriteEndElement();
+                    }
+                    _writer.WriteEndElement();
+                    _writer.WriteEndElement();
+                }
+            }
+
+            _writer.WriteStartElement("a", "ln", OpenXmlNamespaces.DrawingML);
+            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineWidth))
+            {
+                _writer.WriteAttributeString("w", so.OptionsByID[ShapeOptions.PropertyId.lineWidth].op.ToString());
+            }
+            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineEndCapStyle))
+            {
+                switch (so.OptionsByID[ShapeOptions.PropertyId.lineEndCapStyle].op)
+                {
+                    case 0: //round
+                        _writer.WriteAttributeString("cap", "rnd");
+                        break;
+                    case 1: //square
+                        _writer.WriteAttributeString("cap", "sq");
+                        break;
+                    case 2: //flat
+                        _writer.WriteAttributeString("cap", "flat");
+                        break;
+                }
+            }
+
+
+            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineType))
+            {
+                switch (so.OptionsByID[ShapeOptions.PropertyId.lineType].op)
+                {
+                    case 0: //solid
+                        break;
+                    case 1: //pattern
+                        uint blipIndex = so.OptionsByID[ShapeOptions.PropertyId.lineFillBlip].op;
+                        DrawingGroup gr = (DrawingGroup)this._ctx.Ppt.DocumentRecord.FirstChildWithType<PPDrawingGroup>().Children[0];
+                        BlipStoreEntry bse = (BlipStoreEntry)gr.FirstChildWithType<BlipStoreContainer>().Children[(int)blipIndex - 1];
+                        BitmapBlip b = (BitmapBlip)_ctx.Ppt.PicturesContainer._pictures[bse.foDelay];
+
+                        _writer.WriteStartElement("a", "pattFill", OpenXmlNamespaces.DrawingML);
+
+                        _writer.WriteAttributeString("prst", Utils.getPrstForPatternCode(b.m_bTag)); //Utils.getPrstForPattern(blipNamePattern));
+
+                        _writer.WriteStartElement("a", "fgClr", OpenXmlNamespaces.DrawingML);
+
+                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineColor))
+                        {
+                            _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("val", Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.lineColor].op, container.FirstAncestorWithType<Slide>(), so));
+                            _writer.WriteEndElement();
+                        }
+                        else
+                        {
+                            _writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("val", "tx1");
+                            _writer.WriteEndElement();
+                        }
+
+                        _writer.WriteEndElement();
+
+                        _writer.WriteStartElement("a", "bgClr", OpenXmlNamespaces.DrawingML);
+
+                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineBackColor))
+                        {
+                            _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("val", Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.lineBackColor].op, container.FirstAncestorWithType<Slide>(), so));
+                            _writer.WriteEndElement();
+                        }
+                        else
+                        {
+                            _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("val", "FFFFFF");
+                            _writer.WriteEndElement();
+                        }
+
+                        _writer.WriteEndElement();
+
+                        _writer.WriteEndElement();
+
+                        break;
+                    case 2: //texture
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else
+            {
+                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineColor) & so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineStyleBooleans))
+                {
+                    LineStyleBooleans lineStyle = new LineStyleBooleans(so.OptionsByID[ShapeOptions.PropertyId.lineStyleBooleans].op);
+                    if (lineStyle.fLine)
+                    {
+                        string colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.lineColor].op, slide, so);
+                        _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("val", colorval);
+                        _writer.WriteEndElement();
+                        _writer.WriteEndElement();
+                    }
+                }
+            }
+
+            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineDashing))
+            {
+                _writer.WriteStartElement("a", "prstDash", OpenXmlNamespaces.DrawingML);
+                switch ((ShapeOptions.LineDashing)so.OptionsByID[ShapeOptions.PropertyId.lineDashing].op)
+                {
+                    case ShapeOptions.LineDashing.Solid:
+                        _writer.WriteAttributeString("val", "solid");
+                        break;
+                    case ShapeOptions.LineDashing.DashSys:
+                        _writer.WriteAttributeString("val", "sysDash");
+                        break;
+                    case ShapeOptions.LineDashing.DotSys:
+                        _writer.WriteAttributeString("val", "sysDot");
+                        break;
+                    case ShapeOptions.LineDashing.DashDotSys:
+                        _writer.WriteAttributeString("val", "sysDashDot");
+                        break;
+                    case ShapeOptions.LineDashing.DashDotDotSys:
+                        _writer.WriteAttributeString("val", "sysDashDotDot");
+                        break;
+                    case ShapeOptions.LineDashing.DotGEL:
+                        _writer.WriteAttributeString("val", "dot");
+                        break;
+                    case ShapeOptions.LineDashing.DashGEL:
+                        _writer.WriteAttributeString("val", "dash");
+                        break;
+                    case ShapeOptions.LineDashing.LongDashGEL:
+                        _writer.WriteAttributeString("val", "lgDash");
+                        break;
+                    case ShapeOptions.LineDashing.DashDotGEL:
+                        _writer.WriteAttributeString("val", "dashDot");
+                        break;
+                    case ShapeOptions.LineDashing.LongDashDotGEL:
+                        _writer.WriteAttributeString("val", "lgDashDot");
+                        break;
+                    case ShapeOptions.LineDashing.LongDashDotDotGEL:
+                        _writer.WriteAttributeString("val", "lgDashDotDot");
+                        break;
+                }
+                _writer.WriteEndElement();
+            }
+
+            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineStartArrowhead))
+            {
+                ShapeOptions.LineEnd val = (ShapeOptions.LineEnd)so.OptionsByID[ShapeOptions.PropertyId.lineStartArrowhead].op;
+                if (val != ShapeOptions.LineEnd.NoEnd)
+                {
+                    _writer.WriteStartElement("a", "headEnd", OpenXmlNamespaces.DrawingML);
+                    switch (val)
+                    {
+                        case ShapeOptions.LineEnd.ArrowEnd:
+                            _writer.WriteAttributeString("type", "triangle");
+                            break;
+                        case ShapeOptions.LineEnd.ArrowStealthEnd:
+                            _writer.WriteAttributeString("type", "stealth");
+                            break;
+                        case ShapeOptions.LineEnd.ArrowDiamondEnd:
+                            _writer.WriteAttributeString("type", "diamond");
+                            break;
+                        case ShapeOptions.LineEnd.ArrowOvalEnd:
+                            _writer.WriteAttributeString("type", "oval");
+                            break;
+                        case ShapeOptions.LineEnd.ArrowOpenEnd:
+                            _writer.WriteAttributeString("type", "arrow");
+                            break;
+                        case ShapeOptions.LineEnd.ArrowChevronEnd: //this should be ignored
+                        case ShapeOptions.LineEnd.ArrowDoubleChevronEnd:
+                            _writer.WriteAttributeString("type", "triangle");
+                            break;
+                    }
+                    _writer.WriteAttributeString("w", "med");
+                    _writer.WriteAttributeString("len", "med");
+                    _writer.WriteEndElement(); //headEnd
+                }
+            }
+
+            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineEndArrowhead))
+            {
+                ShapeOptions.LineEnd val = (ShapeOptions.LineEnd)so.OptionsByID[ShapeOptions.PropertyId.lineEndArrowhead].op;
+                if (val != ShapeOptions.LineEnd.NoEnd)
+                {
+                    _writer.WriteStartElement("a", "tailEnd", OpenXmlNamespaces.DrawingML);
+                    switch (val)
+                    {
+                        case ShapeOptions.LineEnd.ArrowEnd:
+                            _writer.WriteAttributeString("type", "triangle");
+                            break;
+                        case ShapeOptions.LineEnd.ArrowStealthEnd:
+                            _writer.WriteAttributeString("type", "stealth");
+                            break;
+                        case ShapeOptions.LineEnd.ArrowDiamondEnd:
+                            _writer.WriteAttributeString("type", "diamond");
+                            break;
+                        case ShapeOptions.LineEnd.ArrowOvalEnd:
+                            _writer.WriteAttributeString("type", "oval");
+                            break;
+                        case ShapeOptions.LineEnd.ArrowOpenEnd:
+                            _writer.WriteAttributeString("type", "arrow");
+                            break;
+                        case ShapeOptions.LineEnd.ArrowChevronEnd: //this should be ignored
+                        case ShapeOptions.LineEnd.ArrowDoubleChevronEnd:
+                            _writer.WriteAttributeString("type", "triangle");
+                            break;
+                    }
+                    _writer.WriteAttributeString("w", "med");
+                    _writer.WriteAttributeString("len", "med");
+                    _writer.WriteEndElement(); //tailnd
+                }
+            }
+
+            if (!so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineEndCapStyle))
+            {
+                //    _writer.WriteStartElement("a", "miter", OpenXmlNamespaces.DrawingML);
+                //    _writer.WriteAttributeString("lim", "800000");
+                //    _writer.WriteEndElement();
+            }
+
+            _writer.WriteEndElement(); //ln
+
+            //shadow
+            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.ShadowStyleBooleanProperties))
+            {
+                ShadowStyleBooleanProperties sp = new ShadowStyleBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.ShadowStyleBooleanProperties].op);
+                if (sp.fUsefShadow & sp.fShadow)
+                {
+                    new ShadowMapping(_ctx, _writer).Apply(so);
+                }
             }
         }
 
@@ -1268,7 +1891,19 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         public void Apply(ClientTextbox textbox)
         {
-            _writer.WriteStartElement("p", "txBody", OpenXmlNamespaces.PresentationML);
+            Apply(textbox, false);
+        }
+
+        public void Apply(ClientTextbox textbox, bool insideTable)
+        {
+            if (insideTable)
+            {
+                _writer.WriteStartElement("a", "txBody", OpenXmlNamespaces.DrawingML);
+            }
+            else
+            {
+                _writer.WriteStartElement("p", "txBody", OpenXmlNamespaces.PresentationML);
+            }
 
             writeBodyPr(textbox);
 
