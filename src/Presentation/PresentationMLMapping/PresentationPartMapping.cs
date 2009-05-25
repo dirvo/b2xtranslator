@@ -63,7 +63,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             CreateNotesMasters(ppt);
             CreateHandoutMasters(ppt);
             CreateSlides(ppt, documentRecord);
-            WriteOleObjects(ppt, documentRecord);
+            //WriteOleObjects(ppt, documentRecord);
                         
             WriteMainMasters(ppt);
             WriteSlides(ppt, documentRecord);
@@ -231,29 +231,29 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
        }
 
-       private void WriteOleObjects(PowerpointDocument ppt, DocumentContainer documentRecord)
-       {
-           foreach (ExOleObjStgAtom stgAtom in ppt.OleObjects)
-           {
-               if (stgAtom.Instance == 1)
-               {
+       //private void WriteOleObjects(PowerpointDocument ppt, DocumentContainer documentRecord)
+       //{
+       //    foreach (ExOleObjStgAtom stgAtom in ppt.OleObjects)
+       //    {
+       //        if (stgAtom.Instance == 1)
+       //        {
 
-                   byte[] decompressedBytes = new byte[stgAtom.decompressedSize];
-                   //decompress the bytes using .NET DeflateStream class.
-                   MemoryStream msCompressed = new MemoryStream(stgAtom.data);
-                   msCompressed.ReadByte();
-                   msCompressed.ReadByte();
-                   DeflateStream deflateStream = new DeflateStream(msCompressed, CompressionMode.Decompress);
+       //            byte[] decompressedBytes = new byte[stgAtom.decompressedSize];
+       //            //decompress the bytes using .NET DeflateStream class.
+       //            MemoryStream msCompressed = new MemoryStream(stgAtom.data);
+       //            msCompressed.ReadByte();
+       //            msCompressed.ReadByte();
+       //            DeflateStream deflateStream = new DeflateStream(msCompressed, CompressionMode.Decompress);
 
-                   deflateStream.Read(decompressedBytes, 0, (int)decompressedBytes.Length);
+       //            deflateStream.Read(decompressedBytes, 0, (int)decompressedBytes.Length);
 
-                   MemoryStream msDecompressed = new MemoryStream(decompressedBytes);
-                   StructuredStorageReader Storage = new StructuredStorageReader(msDecompressed);
+       //            MemoryStream msDecompressed = new MemoryStream(decompressedBytes);
+       //            StructuredStorageReader Storage = new StructuredStorageReader(msDecompressed);
 
-               }
+       //        }
 
-           }
-       }
+       //    }
+       //}
 
         private void WriteSlides(PowerpointDocument ppt, DocumentContainer documentRecord)
         {

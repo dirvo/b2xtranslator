@@ -127,7 +127,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         /// <summary>
         /// List of all external OLE object records for this document.
         /// </summary>
-        public List<ExOleObjStgAtom> OleObjects = new List<ExOleObjStgAtom>();
+        public List<ExOleEmbedContainer> OleObjects = new List<ExOleEmbedContainer>();
 
         /// <summary>
         /// The VBA Project Structured Storage
@@ -439,7 +439,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             }
             catch (Exception e)
             {
-                throw new InvalidStreamException();
+                
             }
         }
 
@@ -453,7 +453,8 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
                     if (atom != null)
                     {
                         ExOleObjStgAtom stgAtom = this.GetPersistObject<ExOleObjStgAtom>(atom.persistIdRef);
-                        this.OleObjects.Add(stgAtom);                        
+                        container.stgAtom = stgAtom;
+                        this.OleObjects.Add(container);                   
                     }
                 }
             }

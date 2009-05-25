@@ -25,6 +25,18 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         }
     }
 
+    [OfficeRecordAttribute(3009)]
+    public class ExObjRefAtom : Record
+    {
+        public Int32 exObjIdRef;
+
+        public ExObjRefAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance)
+        {
+            exObjIdRef = this.Reader.ReadInt32();
+        }
+    }
+
     [OfficeRecordAttribute(4035)]
     public class ExOleObjAtom : Record
     {
@@ -45,6 +57,8 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
     [OfficeRecordAttribute(4044)]
     public class ExOleEmbedContainer : RegularContainer
     {
+        public ExOleObjStgAtom stgAtom;
+
         public ExOleEmbedContainer(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance) { }
     }

@@ -902,8 +902,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 _writer.WriteStartElement("p", "nvPr", OpenXmlNamespaces.PresentationML);
 
                 OEPlaceHolderAtom placeholder = null;
-
-                CheckClientData(clientData, ref placeholder);
+                int exObjIdRef = 0;
+                CheckClientData(clientData, ref placeholder, ref exObjIdRef);
                 
                 _writer.WriteEndElement();
 
@@ -1445,18 +1445,27 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteStartElement("a", "graphicData", OpenXmlNamespaces.DrawingML);
             _writer.WriteAttributeString("uri", OpenXmlRelationshipTypes.OleObject);
 
+
+            OEPlaceHolderAtom placeholder = null;
+            int exObjIdRef = 0;
+            CheckClientData(container.FirstChildWithType<ClientData>(), ref placeholder, ref exObjIdRef);
+
+            ExOleEmbedContainer oleContainer = this._ctx.Ppt.OleObjects[exObjIdRef];
+           
             string spid = "";
             string rid = "";
             string width = "";
             string height = "";
+            string name = "Chart";
+            string progId = "MSGraph.Chart.8";
 
-            _writer.WriteStartElement("p", "oleObj", OpenXmlNamespaces.DrawingML);
+            _writer.WriteStartElement("p", "oleObj", OpenXmlNamespaces.PresentationML);
             _writer.WriteAttributeString("spid", spid);
-            _writer.WriteAttributeString("name", "Chart");
+            _writer.WriteAttributeString("name", name);
             _writer.WriteAttributeString("id",OpenXmlNamespaces.Relationships, rid);
             _writer.WriteAttributeString("imgW", width);
             _writer.WriteAttributeString("imgH", height);
-            _writer.WriteAttributeString("progId", "MSGraph.Chart.8");
+            _writer.WriteAttributeString("progId", progId);
 
             _writer.WriteStartElement("p", "embed", OpenXmlNamespaces.PresentationML);
             _writer.WriteAttributeString("fllowColorScheme", "full");
@@ -1811,7 +1820,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement();
         }
 
-        private void CheckClientData(ClientData clientData, ref OEPlaceHolderAtom placeholder)
+        private void CheckClientData(ClientData clientData, ref OEPlaceHolderAtom placeholder, ref int exObjIdRef)
         {
             ShapeStyleTextProp9Atom = null;
             bool phWritten = false;
@@ -1834,6 +1843,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                     switch (rec.TypeCode)
                     {
+                        case 3009:
+                            exObjIdRef = ((ExObjRefAtom)rec).exObjIdRef;
+                            break;
                         case 3011:
                             placeholder = (OEPlaceHolderAtom)rec;
 
