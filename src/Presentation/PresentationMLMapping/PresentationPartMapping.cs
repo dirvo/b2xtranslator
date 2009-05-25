@@ -285,7 +285,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         private void CreateVbaProject(PowerpointDocument ppt)
         {
-            ppt.VbaProject.Convert(new VbaProjectMapping(_ctx.Pptx.PresentationPart.VbaProjectPart));
+            if (ppt.VbaProject != null)
+            {
+                ppt.VbaProject.Convert(new VbaProjectMapping(_ctx.Pptx.PresentationPart.VbaProjectPart));
+            }
         }
 
         private void CreateMainMasters(PowerpointDocument ppt)
