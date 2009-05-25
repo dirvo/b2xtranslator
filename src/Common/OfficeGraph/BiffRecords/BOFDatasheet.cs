@@ -33,6 +33,12 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record specifies the beginning of a collection of records as 
+    /// defined by the Chart Sheet Substream ABNF. 
+    /// 
+    /// The collection of records specifies a data sheet.
+    /// </summary>
     public class BOFDatasheet : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.BOFDatasheet;
@@ -44,7 +50,9 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            
+            // the content of this record is to be ignored
+            reader.ReadBytes(4);
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

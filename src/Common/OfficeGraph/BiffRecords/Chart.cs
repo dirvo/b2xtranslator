@@ -33,9 +33,45 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record specifies the position and size of the chart area and specifies the beginning 
+    /// of a collection of records as defined by the Chart Sheet Substream ABNF. The collection of records specifies a chart.
+    /// </summary>
     public class Chart : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Chart;
+
+        /// <summary>
+        /// A FixedPoint as specified in [MS-OSHARED] section 2.2.1.6 that specifies 
+        /// the horizontal position of the upper-left corner of the chart in points. 
+        /// 
+        /// MUST be 0.
+        /// </summary>
+        FixedPointNumber x;
+
+        /// <summary>
+        /// A FixedPoint as specified in [MS-OSHARED] section 2.2.1.6 that specifies 
+        /// the vertical position of the upper-left corner of the chart in points. 
+        /// 
+        /// MUST be 0.
+        /// </summary>
+        FixedPointNumber y;
+
+        /// <summary>
+        /// A FixedPoint as specified in [MS-OSHARED] section 2.2.1.6 that specifies 
+        /// the width in points.
+        /// 
+        /// MUST be greater than or equal to 0.
+        /// </summary>
+        FixedPointNumber dx;
+
+        /// <summary>
+        /// A FixedPoint as specified in [MS-OSHARED] section 2.2.1.6 that specifies
+        /// the height in points. 
+        /// 
+        /// MUST be greater than or equal to 0.
+        /// </summary>
+        FixedPointNumber dy;
 
         public Chart(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
@@ -44,7 +80,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            this.x = new FixedPointNumber(reader);
+            this.y = new FixedPointNumber(reader);
+            this.dx = new FixedPointNumber(reader);
+            this.dy = new FixedPointNumber(reader);
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

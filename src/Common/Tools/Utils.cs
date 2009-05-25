@@ -180,7 +180,7 @@ namespace DIaLOGIKa.b2xtranslator.Tools
             return ((value & mask) == mask);
         }
 
-        public static byte BitmaskToByte(Int32 value, Int32 mask)
+        public static byte BitmaskToByte(UInt32 value, UInt32 mask)
         {
             value = value & mask;
             while ((mask & 0x1) != 0x1)

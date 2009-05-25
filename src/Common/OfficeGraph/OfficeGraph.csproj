@@ -58,6 +58,8 @@
     <Compile Include="BiffRecords\CatLab.cs" />
     <Compile Include="BiffRecords\CatSerRange.cs" />
     <Compile Include="BiffRecords\Chart.cs" />
+    <Compile Include="BiffRecords\Chart3D.cs" />
+    <Compile Include="BiffRecords\Chart3DBarShape.cs" />
     <Compile Include="BiffRecords\ChartColors.cs" />
     <Compile Include="BiffRecords\ChartFormat.cs" />
     <Compile Include="BiffRecords\ChartFrtInfo.cs" />
@@ -135,6 +137,7 @@
     <Compile Include="OfficeGraphBiffRecord.cs" />
     <Compile Include="RecordNumbers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Structures\FixedPointNumber.cs" />
     <Compile Include="Structures\FormatRun.cs" />
   </ItemGroup>
   <ItemGroup>

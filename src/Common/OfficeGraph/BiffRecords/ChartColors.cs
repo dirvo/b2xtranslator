@@ -33,9 +33,20 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record specifies the number of colors in the palette that are available.
+    /// </summary>
     public class ChartColors : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.ChartColors;
+
+        /// <summary>
+        /// A signed integer that specifies the number of colors currently available. 
+        /// 
+        /// MUST be equal to the number of items in the rgColor field of the Palette record immediately following this record. 
+        /// MUST be equal to 0x0038.
+        /// </summary>
+        public Int16 icvMac;
 
         public ChartColors(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
@@ -44,7 +55,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            this.icvMac = reader.ReadInt16();
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

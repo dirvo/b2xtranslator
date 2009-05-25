@@ -28,46 +28,26 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
-    /// <summary>
-    /// This structure specifies formatting information for a text run.
-    /// </summary>
-    public class FormatRun
+    public class Chart3DBarShape : OfficeGraphBiffRecord
     {
-        /// <summary>
-        /// An unsigned integer that specifies the zero-based index of the first character 
-        /// of the text in the TxO record that contains the text run. 
-        /// 
-        /// When FormatRun is used in an array, this value MUST be in strictly increasing order.
-        /// </summary>
-        public UInt16 ich;
+        public const RecordNumber ID = RecordNumber.Chart3DBarShape;
 
-        /// <summary>
-        /// A FontIndex record that specifies the font. 
-        /// 
-        /// If ich is equal to the length of the text, this field is undefined and MUST be ignored.
-        /// </summary>
-        public UInt16 ifnt;
-
-        public FormatRun()
+        public Chart3DBarShape(IStreamReader reader, RecordNumber id, UInt16 length)
+            : base(reader, id, length)
         {
-        }
+            // assert that the correct record type is instantiated
+            Debug.Assert(this.Id == ID);
+            
+            // initialize class members from stream
+            // TODO: place code here
 
-        public FormatRun(UInt16 ich, UInt16 ifnt)
-        {
-            this.ich = ich;
-            this.ifnt = ifnt;
-        }
-
-        public FormatRun(IStreamReader reader)
-        {
-            ich = reader.ReadUInt16();
-            ifnt = reader.ReadUInt16();
+            // assert that the correct number of bytes has been read from the stream
+            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
         }
     }
 }

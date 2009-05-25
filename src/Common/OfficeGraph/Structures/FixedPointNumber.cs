@@ -35,39 +35,38 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
     /// <summary>
-    /// This structure specifies formatting information for a text run.
+    /// Specifies an approximation of a real number, where the approximation has a fixed number of digits after the radix point. 
+    /// 
+    /// This type is specified in [MS-OSHARED] section 2.2.1.6.
+    /// 
+    /// Value of the real number = Integral + ( Fractional / 65536.0 ) 
+    /// 
+    /// Integral (2 bytes): A signed integer that specifies the integral part of the real number. 
+    /// Fractional (2 bytes): An unsigned integer that specifies the fractional part of the real number.
     /// </summary>
-    public class FormatRun
+    public class FixedPointNumber
     {
-        /// <summary>
-        /// An unsigned integer that specifies the zero-based index of the first character 
-        /// of the text in the TxO record that contains the text run. 
-        /// 
-        /// When FormatRun is used in an array, this value MUST be in strictly increasing order.
-        /// </summary>
-        public UInt16 ich;
+        private UInt16 integral;
+        private UInt16 fractional;
 
-        /// <summary>
-        /// A FontIndex record that specifies the font. 
-        /// 
-        /// If ich is equal to the length of the text, this field is undefined and MUST be ignored.
-        /// </summary>
-        public UInt16 ifnt;
-
-        public FormatRun()
+        public FixedPointNumber(UInt16 integral, UInt16 fractional)
         {
+            this.integral = integral;
+            this.fractional = fractional;
         }
 
-        public FormatRun(UInt16 ich, UInt16 ifnt)
+        public FixedPointNumber(IStreamReader reader)
         {
-            this.ich = ich;
-            this.ifnt = ifnt;
+            this.integral = reader.ReadUInt16();
+            this.fractional = reader.ReadUInt16();
         }
 
-        public FormatRun(IStreamReader reader)
+        public double Value
         {
-            ich = reader.ReadUInt16();
-            ifnt = reader.ReadUInt16();
+            get
+            {
+                return (double)this.integral + (double)this.fractional / 65536.0d;
+            }
         }
     }
 }
