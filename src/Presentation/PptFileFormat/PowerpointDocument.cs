@@ -128,6 +128,11 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         /// List of all external OLE object records for this document.
         /// </summary>
         public List<ExOleObjStgAtom> OleObjects = new List<ExOleObjStgAtom>();
+
+        /// <summary>
+        /// The VBA Project Structured Storage
+        /// </summary>
+        public ExOleObjStgAtom VbaProject;
         
         public PowerpointDocument(StructuredStorageReader file)
         {
@@ -192,7 +197,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             this.IdentifyMasterPersistObjects();
             this.IdentifySlidePersistObjects();
             this.IdentifyOlePersistObjects();
-
+            this.IdentifyVbaProjectObject();
         }
 
         private void ScanDocumentSummaryInformation()
@@ -425,11 +430,23 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             }
         }
 
+        private void IdentifyVbaProjectObject()
+        {
+            try
+            {
+                VBAInfoContainer vbaInfo = this.DocumentRecord.DocInfoListContainer.FirstChildWithType<VBAInfoContainer>();
+                this.VbaProject = GetPersistObject<ExOleObjStgAtom>(vbaInfo.objStgDataRef);
+            }
+            catch (Exception e)
+            {
+                throw new InvalidStreamException();
+            }
+        }
+
         private void IdentifyOlePersistObjects()
         {
             foreach (ExObjListContainer listcontainer in this.DocumentRecord.AllChildrenWithType<ExObjListContainer>())
             {
-                
                 foreach (ExOleEmbedContainer container in listcontainer.AllChildrenWithType<ExOleEmbedContainer>())
                 {
                     ExOleObjAtom atom = container.FirstChildWithType<ExOleObjAtom>();

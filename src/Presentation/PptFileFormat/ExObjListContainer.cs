@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 using System.IO;
+using System.IO.Compression;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
@@ -84,6 +85,23 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
                 len = size - 4;
                 data = this.Reader.ReadBytes((int)len);
             }
+        }
+
+        public byte[] DecompressData()
+        {
+            // create memory stream to the data
+            MemoryStream msCompressed = new MemoryStream(data);
+            
+            // skip the first 2 bytes
+            msCompressed.ReadByte();
+            msCompressed.ReadByte();
+
+            // decompress the bytes
+            byte[] decompressedBytes = new byte[decompressedSize];
+            DeflateStream deflateStream = new DeflateStream(msCompressed, CompressionMode.Decompress, true);
+            deflateStream.Read(decompressedBytes, 0, decompressedBytes.Length);
+
+            return decompressedBytes;
         }
     }
 }
