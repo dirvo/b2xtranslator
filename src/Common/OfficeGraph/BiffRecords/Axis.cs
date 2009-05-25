@@ -37,6 +37,28 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     {
         public const RecordNumber ID = RecordNumber.Axis;
 
+        public enum AxisType : ushort
+        {
+            /// <summary>
+            /// Axis type is a horizontal value axis for a scatter chart group or a bubble chart group, 
+            /// or category (3) axis for all other chart group types.
+            /// </summary>
+            HorizontalOrCategory = 0x0,
+
+            /// <summary>
+            /// Axis type is a vertical value axis for a scatter chart group or a bubble chart group, 
+            /// or value axis for all other chart group types.
+            /// </summary>
+            VerticalOrValue = 0x1,
+
+            /// <summary>
+            /// Axis type is a series axis.
+            /// </summary>
+            Series = 0x2
+        }
+
+        public AxisType wType;
+
         public Axis(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
@@ -44,7 +66,9 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            this.wType = (AxisType)reader.ReadUInt16();
+
+            reader.ReadBytes(16);
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

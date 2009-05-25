@@ -33,9 +33,20 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record specifies rich text formatting within chart titles, trendline, and data labels.
+    /// </summary>
     public class AlRuns : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.AlRuns;
+
+        /// <summary>
+        /// An unsigned integer that specifies the number of rich text runs. 
+        /// MUST be greater than or equal to 3 and less than or equal to 256.
+        /// </summary>
+        public UInt16 cRuns;
+
+        public FormatRun[] rgRuns;
 
         public AlRuns(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
@@ -44,7 +55,14 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            cRuns = reader.ReadUInt16();
+
+            rgRuns = new FormatRun[cRuns];
+
+            for (int i = 0; i < cRuns; i++)
+            {
+                rgRuns[i] = new FormatRun(reader);
+            }
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

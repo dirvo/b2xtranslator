@@ -33,9 +33,30 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record specifies the number of axis groups on the chart.
+    /// </summary>
     public class AxesUsed : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.AxesUsed;
+
+        public enum AxisGroupsPresent : ushort
+        {
+            /// <summary>
+            /// A single primary axis group is present
+            /// </summary>
+            Primary = 0x1,
+
+            /// <summary>
+            /// Both a primary axis group and a secondary axis group are present
+            /// </summary>
+            PrimaryAndSecondary = 0x2
+        }
+
+        /// <summary>
+        /// An unsigned integer that specifies the number of axis groups on the chart.
+        /// </summary>
+        public AxisGroupsPresent cAxes = AxisGroupsPresent.Primary;
 
         public AxesUsed(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
@@ -44,7 +65,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            cAxes = (AxisGroupsPresent)reader.ReadUInt16();
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

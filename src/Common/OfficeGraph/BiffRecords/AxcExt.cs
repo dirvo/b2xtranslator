@@ -33,6 +33,9 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record specifies additional extension properties of a date axis, along with a CatSerRange record.
+    /// </summary>
     public class AxcExt : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.AxcExt;
