@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
-namespace OfficeGraph
+namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
-    public class RecordNumbers
+    public enum RecordNumber : ushort
     {
     }
 }
