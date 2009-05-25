@@ -64,6 +64,7 @@
     <Compile Include="ColorSchemeAtom.cs" />
     <Compile Include="BlipCollection9Container.cs" />
     <Compile Include="AnimationInfoContainer.cs" />
+    <Compile Include="ExObjListContainer.cs" />
     <Compile Include="RoundTripCompositeMasterId12Atom.cs" />
     <Compile Include="TextCFExceptionAtom.cs" />
     <Compile Include="TextPFExceptionAtom.cs" />

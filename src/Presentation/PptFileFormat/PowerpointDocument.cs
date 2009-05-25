@@ -33,6 +33,7 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 using System.Reflection;
 using System.IO;
+using System.IO.Compression;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
@@ -124,11 +125,10 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         public List<Note> NoteRecords = new List<Note>();
 
         /// <summary>
-        /// A VBA Project stored in the presentation.<br/>
-        /// Is null of no project is present.
+        /// List of all external OLE object records for this document.
         /// </summary>
-        public VbaProjectAtom VbaProject;
-
+        public List<ExOleObjStgAtom> OleObjects = new List<ExOleObjStgAtom>();
+        
         public PowerpointDocument(StructuredStorageReader file)
         {
             try
@@ -191,12 +191,12 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             this.IdentifyDocumentPersistObject();
             this.IdentifyMasterPersistObjects();
             this.IdentifySlidePersistObjects();
-            this.IdentifyVbaProjectObject();
+            this.IdentifyOlePersistObjects();
+
         }
 
         private void ScanDocumentSummaryInformation()
         {
-            //VirtualStream s = this.DocumentSummaryInformationStream;
             BinaryReader s = new BinaryReader(this.DocumentSummaryInformationStream);
             int ByteOrder = s.ReadInt16();
             uint Version = s.ReadUInt16();
@@ -374,23 +374,6 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        private void IdentifyVbaProjectObject()
-        {
-            try
-            {
-                VBAInfoContainer vbaInfo = this.DocumentRecord.DocInfoListContainer.FirstChildWithType<VBAInfoContainer>();
-                this.VbaProject = GetPersistObject<VbaProjectAtom>(vbaInfo.objStgDataRef);
-            }
-            catch (Exception e)
-            {
-                throw new InvalidStreamException();
-            }
-
-            throw new NotImplementedException();
-        }
 
         /// <summary>
         /// Find all master records for this presentation.
@@ -439,6 +422,42 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
                 Note note = this.GetPersistObject<Note>(slidePersistAtom.PersistIdRef);
                 note.PersistAtom = slidePersistAtom;
                 this.NoteRecords.Add(note);
+            }
+        }
+
+        private void IdentifyOlePersistObjects()
+        {
+            foreach (ExObjListContainer listcontainer in this.DocumentRecord.AllChildrenWithType<ExObjListContainer>())
+            {
+                
+                foreach (ExOleEmbedContainer container in listcontainer.AllChildrenWithType<ExOleEmbedContainer>())
+                {
+                    ExOleObjAtom atom = container.FirstChildWithType<ExOleObjAtom>();
+                    if (atom != null)
+                    {
+                        ExOleObjStgAtom stgAtom = this.GetPersistObject<ExOleObjStgAtom>(atom.persistIdRef);
+                        this.OleObjects.Add(stgAtom);
+
+                        if (stgAtom.Instance == 1)
+                        {
+
+                            byte[] decompressedBytes = new byte[stgAtom.decompressedSize];
+                            //decompress the bytes using .NET DeflateStream class.
+                            MemoryStream msCompressed = new MemoryStream(stgAtom.data);
+                            msCompressed.ReadByte();
+                            msCompressed.ReadByte();
+                            DeflateStream deflateStream = new DeflateStream(msCompressed, CompressionMode.Decompress);
+                            
+                            deflateStream.Read(decompressedBytes, 0, (int)decompressedBytes.Length);
+
+                            MemoryStream msDecompressed = new MemoryStream(decompressedBytes);
+                            StructuredStorageReader Storage = new StructuredStorageReader(msDecompressed);
+                                
+                           
+                            
+                        }
+                    }
+                }
             }
         }
 
