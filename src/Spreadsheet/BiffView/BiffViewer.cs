@@ -35,7 +35,7 @@ using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 using System.ComponentModel;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
-using DIaLOGIKa.b2xtranslator.OfficeGraph; 
+using OfficeGraph = DIaLOGIKa.b2xtranslator.OfficeGraph; 
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
 {
@@ -228,7 +228,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
 
                         sw.WriteLine("<tr>");
                         sw.WriteLine("<td>");
-                        XlsFileFormat.BOF bof = new BOF(workbookReader, (XlsFileFormat.RecordNumber)bh.id, bh.length);
+                        XlsFileFormat.BOF bof = new XlsFileFormat.BOF(workbookReader, (XlsFileFormat.RecordNumber)bh.id, bh.length);
                         sw.WriteLine("BOF </td><td>");
                         sw.WriteLine("Type: {0}</td>  </tr>", (ChartType)bof.dt);
                         ///
