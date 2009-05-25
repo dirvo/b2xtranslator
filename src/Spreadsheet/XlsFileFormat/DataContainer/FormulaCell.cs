@@ -62,7 +62,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
 
         public bool usesArrayRecord = false;
 
-        public bool isSharedFormula = false; 
+        public bool isSharedFormula = false;
+
+        public bool alwaysCalculated = false; 
 
         /// <summary>
         /// This method is used to get the Value from this cell 

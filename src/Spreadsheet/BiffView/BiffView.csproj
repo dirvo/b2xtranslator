@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2C664677-C680-446F-805A-593B387D1D08}</ProjectGuid>
     <OutputType>WinExe</OutputType>
@@ -89,6 +89,10 @@
     <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\OfficeGraph\OfficeGraph.csproj">
+      <Project>{598B4D7A-F1DB-496F-BC79-5F7BE596A239}</Project>
+      <Name>OfficeGraph</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Common\StructuredStorage\StructuredStorage.csproj">
       <Project>{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}</Project>
       <Name>StructuredStorage</Name>

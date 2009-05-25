@@ -84,7 +84,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
         private List<BorderData> borderDataList;
         public List<BorderData> BorderDataList { get { return this.borderDataList; } }
 
-        
+        private List<RGBColor> colorDataList;
+        public List<RGBColor> ColorDataList { get { return this.colorDataList; } }
 
         /// <summary>
         /// This class stores every format from a document 
@@ -97,7 +98,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
             this.styleList = new List<STYLE>();
             this.fillDataList = new List<FillData>();
             this.fontDataList = new List<FontData>();
-            this.borderDataList = new List<BorderData>(); 
+            this.borderDataList = new List<BorderData>();
+            this.colorDataList = new List<RGBColor>(); 
 
             // fill fillList with none and grey value 
 
@@ -306,6 +308,11 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
 
             // add the value to the list 
             this.fontDataList.Add(fontdata); 
+        }
+
+        public void setColorList(List<RGBColor> colorList)
+        {
+            this.colorDataList = colorList; 
         }
 
         #region IVisitable Members

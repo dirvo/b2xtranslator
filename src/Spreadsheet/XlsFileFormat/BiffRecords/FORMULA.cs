@@ -89,7 +89,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         public double calculatedValue;
         public bool boolValueSet;
         public byte boolValue; 
-        public int errorValue; 
+        public int errorValue;
+        public bool fAlwaysCalc; 
 
         public FORMULA(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
@@ -132,6 +133,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
             this.cce = reader.ReadUInt16();
             this.ptgStack = new Stack<AbstractPtg>();
             // reader.ReadBytes(this.cce);
+
+            // check always calc mode 
+            this.fAlwaysCalc = Utils.BitmaskToBool((int)grbit, 0x01); 
 
             // check if shared formula
             this.fShrFmla = Utils.BitmaskToBool((int)grbit, 0x08);

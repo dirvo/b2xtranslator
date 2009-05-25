@@ -38,6 +38,7 @@ using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData;
 using System.Globalization;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
@@ -329,7 +330,32 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             _writer.WriteEndElement(); 
             
             // close tags 
-            
+
+
+            // write color table !!
+
+            if (sd.ColorDataList != null && sd.ColorDataList.Count > 0)
+            {
+                _writer.WriteStartElement("colors");
+
+                _writer.WriteStartElement("indexedColors");
+
+                // <rgbColor rgb="00000000"/>
+                foreach (RGBColor item in sd.ColorDataList)
+                {
+                    _writer.WriteStartElement("rgbColor");
+                    _writer.WriteAttributeString("rgb", String.Format("{0:x2}", item.Alpha).ToString() + item.SixDigitHexCode); 
+
+                    _writer.WriteEndElement(); 
+
+                }
+
+
+                _writer.WriteEndElement(); 
+                _writer.WriteEndElement();
+            }
+            // end color 
+
             _writer.WriteEndElement();      // close 
             _writer.WriteEndDocument();
 
@@ -337,15 +363,25 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             _writer.Flush();
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="color"></param>
+
         public static void WriteRgbColor(XmlWriter writer, string color)
         {
             if (!String.IsNullOrEmpty(color) && color != "Auto")
             {
                 writer.WriteStartElement("color");
+                
                 writer.WriteAttributeString("rgb", "FF" + color);
                 writer.WriteEndElement();
             }
         }
+
+        // <color indexed="63"/>
 
         public static void WriteRgbForegroundColor(XmlWriter writer, string color)
         {

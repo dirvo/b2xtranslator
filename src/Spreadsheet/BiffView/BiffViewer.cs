@@ -34,6 +34,8 @@ using System.Reflection;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 using System.ComponentModel;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
+using DIaLOGIKa.b2xtranslator.OfficeGraph; 
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
 {
@@ -41,7 +43,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
     {
         struct BiffHeader
         {
-            public RecordNumber id;
+            public ushort id;
             public UInt16 length;
         }
         
@@ -148,7 +150,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             {
                 while (workbookReader.BaseStream.Position < workbookReader.BaseStream.Length)
                 {
-                    bh.id = (RecordNumber)workbookReader.ReadUInt16();
+                    bh.id = workbookReader.ReadUInt16();
                     bh.length = workbookReader.ReadUInt16();
 
                     byte[] buffer = new byte[bh.length];
@@ -195,6 +197,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
         protected void PrintHtml(StreamWriter sw, IStreamReader workbookReader)
         {
             BiffHeader bh;
+            ChartType chartType = 0; 
 
             Uri baseUrl = new Uri(new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName);
             
@@ -214,45 +217,108 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             {
                 while (workbookReader.BaseStream.Position < workbookReader.BaseStream.Length)
                 {
-                    bh.id = (RecordNumber)workbookReader.ReadUInt16();
+                    bh.id = workbookReader.ReadUInt16();
                     bh.length = workbookReader.ReadUInt16();
 
-                    byte[] buffer = new byte[bh.length];
-                    if (bh.length != workbookReader.Read(buffer, bh.length))
-                        sw.WriteLine("EOF");
 
-                    sw.WriteLine("<tr>");
-                    sw.WriteLine("<td>");
 
-                    string url = string.Format("{0}/xlsspec/{1}.html", baseUrl, bh.id);
-                    Uri uri = new Uri(url);
-                    if (!File.Exists(uri.LocalPath))
+                    /// check if the record is the BOF record ! 
+                    if (bh.id == 0x809)
                     {
-                        // unspecified record id
-                        url = string.Format("{0}/xlsspec/404.html", baseUrl);
+
+                        sw.WriteLine("<tr>");
+                        sw.WriteLine("<td>");
+                        XlsFileFormat.BOF bof = new BOF(workbookReader, (XlsFileFormat.RecordNumber)bh.id, bh.length);
+                        sw.WriteLine("BOF </td><td>");
+                        sw.WriteLine("Type: {0}</td>  </tr>", (ChartType)bof.dt);
+                        ///
+                        ///         //    0005h = Workbook globals
+                                    //    0006h = Visual Basic module
+                                    //    0010h = Worksheet or dialog sheet
+                                    //    0020h = Chart
+                                    //    0040h = Excel 4.0 macro sheet
+                                    //    0100h = Workspace file
+                        ///
+                        chartType = (ChartType)bof.dt; 
                     }
-
-                    sw.WriteLine("BIFF <a href=\"{0}\">{1}</a> ({2:X02}h)", url, bh.id, (int)bh.id);
-                    sw.WriteLine("</td><td>");
-                    sw.WriteLine("{0}", bh.length);
-
-                    sw.WriteLine("</td><td>");
-
-
-                    //Dump(buffer);
-                    int count = 0;
-                    foreach (byte b in buffer)
+                    else
                     {
-                        sw.Write("{0:X02}&nbsp;", b);
-                        count++;
-                        if (count % 16 == 0 && count < buffer.Length)
-                            sw.Write("</br>");
-                        else if (count % 8 == 0 && count < buffer.Length)
-                            sw.Write("&nbsp;");
-                    }
-                    sw.Write("</td></tr>");
+                        if (chartType == ChartType.Chart)
+                        {
+                            OfficeGraph.RecordNumber id = (OfficeGraph.RecordNumber)bh.id; 
+                            
+                            sw.WriteLine("<tr>");
+                            sw.WriteLine("<td>");
+                            byte[] buffer = new byte[bh.length];
+                            if (bh.length != workbookReader.Read(buffer, bh.length))
+                                sw.WriteLine("EOF");
+                            string url = string.Format("{0}/xlsspec/{1}.html", baseUrl, id);
+                            Uri uri = new Uri(url);
+                            if (!File.Exists(uri.LocalPath))
+                            {
+                                // unspecified record id
+                                url = string.Format("{0}/xlsspec/404.html", baseUrl);
+                            }
 
-                    if (_backgroundWorker != null)
+                            sw.WriteLine("CHART <a href=\"{0}\">{1}</a> ({2:X02}h)", url, id, (int)bh.id);
+                            sw.WriteLine("</td><td>");
+                            sw.WriteLine("{0}", bh.length);
+
+                            sw.WriteLine("</td><td>");
+
+
+                            //Dump(buffer);
+                            int count = 0;
+                            foreach (byte b in buffer)
+                            {
+                                sw.Write("{0:X02}&nbsp;", b);
+                                count++;
+                                if (count % 16 == 0 && count < buffer.Length)
+                                    sw.Write("</br>");
+                                else if (count % 8 == 0 && count < buffer.Length)
+                                    sw.Write("&nbsp;");
+                            }
+                            sw.Write("</td></tr>");
+                        }
+                        else 
+                        {
+                            XlsFileFormat.RecordNumber id = (XlsFileFormat.RecordNumber)bh.id; 
+                            sw.WriteLine("<tr>");
+                            sw.WriteLine("<td>");
+                            byte[] buffer = new byte[bh.length];
+                            if (bh.length != workbookReader.Read(buffer, bh.length))
+                                sw.WriteLine("EOF");
+                            string url = string.Format("{0}/xlsspec/{1}.html", baseUrl, id);
+                            Uri uri = new Uri(url);
+                            if (!File.Exists(uri.LocalPath))
+                            {
+                                // unspecified record id
+                                url = string.Format("{0}/xlsspec/404.html", baseUrl);
+                            }
+
+                            sw.WriteLine("BIFF <a href=\"{0}\">{1}</a> ({2:X02}h)", url, id, (int)bh.id);
+                            sw.WriteLine("</td><td>");
+                            sw.WriteLine("{0}", bh.length);
+
+                            sw.WriteLine("</td><td>");
+
+
+                            //Dump(buffer);
+                            int count = 0;
+                            foreach (byte b in buffer)
+                            {
+                                sw.Write("{0:X02}&nbsp;", b);
+                                count++;
+                                if (count % 16 == 0 && count < buffer.Length)
+                                    sw.Write("</br>");
+                                else if (count % 8 == 0 && count < buffer.Length)
+                                    sw.Write("&nbsp;");
+                            }
+                            sw.Write("</td></tr>");
+                        }
+                    
+                    }
+                        if (_backgroundWorker != null)
                     {
                         int progress = 100;
 
@@ -280,5 +346,15 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             sw.WriteLine("</body>");
             sw.WriteLine("</html>");
         }
+    }
+
+    public enum ChartType : ushort
+    {
+       WorkBookGlobals = 0x05, 
+       VisualBasicModule = 0x06,
+       WorksheetorDialogsheet = 0x10,
+       Chart = 0x20,                            //    0020h = Chart
+       Excel40MacroSheet = 0x40,                           //    0040h = Excel 4.0 macro sheet
+       WorkspaceFile = 0x100                                    //    0100h = Workspace file
     }
 }

@@ -255,6 +255,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             cell.Col = formula.col;
             cell.Row = formula.rw;
             cell.TemplateID = formula.ixfe;
+            cell.alwaysCalculated = formula.fAlwaysCalc; 
 
             if (formula.fShrFmla)
             {

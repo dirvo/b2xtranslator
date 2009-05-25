@@ -249,6 +249,11 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                     {
                         throw new ExtractorException(ExtractorException.FILEENCRYPTED);
                     }
+                    else if (bh.id == RecordNumber.PALETTE)
+                    {
+                        PALETTE palette = new PALETTE(this.StreamReader, bh.id, bh.length);
+                        workBookData.styleData.setColorList(palette.rgbColorList); 
+                    }
                     else
                     {
                         // this else statement is used to read BiffRecords which aren't implemented 

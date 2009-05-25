@@ -268,6 +268,11 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                                     _writer.WriteAttributeString("t", "array");
                                     _writer.WriteAttributeString("ref", ExcelHelperClass.intToABCString((int)cell.Col, (cell.Row + 1).ToString()));
                                 }
+                                if (fcell.alwaysCalculated)
+                                {
+                                    _writer.WriteAttributeString("ca", "1"); 
+                                }
+
                                 if (value.Equals(""))
                                 {
                                     TraceLogger.Debug("Formula Parse Error in Row {0}\t Column {1}\t", cell.Row.ToString(), cell.Col.ToString());

@@ -16,7 +16,6 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         public static OpenXmlPackage.DocumentType DetectOutputType(XlsDocument xls)
         {
             OpenXmlPackage.DocumentType returnType = OpenXmlPackage.DocumentType.Document;
-
             try
             {
                 //ToDo: Find better way to detect macro type
