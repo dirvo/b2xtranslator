@@ -266,18 +266,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             foreach (int y in ColumnWidthsByYPos.Keys)
             {
                 ColumnIndices.Add(y, counter++);
-            }
-            
+            }            
 
-            //the "real" table contains Yvalues.Count columns and rowheight.count rows
+            //the table contains all cells at their correct position
             ShapeContainer[,] table = new ShapeContainer[RowHeights.Count, ColumnWidthsByYPos.Count];
             int c;
-            //SortedList<int, ShapeContainer> rowlst;
             int r = 0;
             foreach (SortedList<int, ShapeContainer> rowlst in tablelist.Values)
             {
-                //rowlst = tablelist[r];
-                //rowlist contains all cells in a row
                 foreach (int y in rowlst.Keys)
                 {
                     c = ColumnIndices[y];
@@ -364,7 +360,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 Apply((ClientTextbox)record, true);
                             }
                         }
-
 
                         _writer.WriteStartElement("a", "tcPr", OpenXmlNamespaces.DrawingML);
 
