@@ -30,12 +30,26 @@
 using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record specifies that the chart group is a radar chart group and specifies the chart group attributes.
+    /// </summary>
     public class Radar : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Radar;
+
+        /// <summary>
+        /// A bit that specifies whether category (3) labels are displayed.
+        /// </summary>
+        public bool fRdrAxLab;
+
+        /// <summary>
+        /// A bit that specifies whether one or more data markers in the chart group has shadows.
+        /// </summary>
+        public bool fHasShadow;
 
         public Radar(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
@@ -44,7 +58,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            UInt16 flags = reader.ReadUInt16();
+            this.fRdrAxLab = Utils.BitmaskToBool(flags, 0x1);
+            this.fHasShadow = Utils.BitmaskToBool(flags, 0x2);
+            reader.ReadBytes(2); //unused
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

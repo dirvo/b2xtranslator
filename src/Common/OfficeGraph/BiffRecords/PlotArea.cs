@@ -33,6 +33,10 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This empty record specifies that the Frame record that immediately follows this 
+    /// record specifies properties of the plot area.
+    /// </summary>
     public class PlotArea : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.PlotArea;
@@ -43,8 +47,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
 
-            // initialize class members from stream
-            // TODO: place code here
+            // Record is emty
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

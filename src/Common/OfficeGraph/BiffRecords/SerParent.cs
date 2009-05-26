@@ -33,9 +33,20 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record specifies the series to which the current trendline or error bar corresponds.
+    /// </summary>
     public class SerParent : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.SerParent;
+
+        /// <summary>
+        /// An unsigned integer that specifies the one-based index of a Series record in the collection of 
+        /// Series records in the current chart sheet substream. <br/>
+        /// The referenced Series record specifies the series associated with the current trendline or error bar. <br/>
+        /// The value MUST be greater than or equal to 0x0001 and less than or equal to 0x0FE.
+        /// </summary>
+        public UInt16 series;
 
         public SerParent(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
@@ -44,7 +55,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            this.series = reader.ReadUInt16();
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

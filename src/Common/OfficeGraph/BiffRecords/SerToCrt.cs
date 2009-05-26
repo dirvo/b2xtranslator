@@ -33,9 +33,19 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record specifies the chart group for the current series.
+    /// </summary>
     public class SerToCrt : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.SerToCrt;
+
+        /// <summary>
+        /// An unsigned integer that specifies the zero-based index of a ChartFormat 
+        /// record in the collection of ChartFormat records in the current chart sheet substream. <br/>
+        /// The referenced ChartFormat record specifies the chart group that contains the current series.
+        /// </summary>
+        public UInt16 id;
 
         public SerToCrt(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
@@ -44,7 +54,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            this.id = reader.ReadUInt16();
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

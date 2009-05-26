@@ -30,12 +30,28 @@
 using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record specifies a custom color palette.
+    /// </summary>
     public class Palette : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Palette;
+
+        /// <summary>
+        /// A signed integer that specifies the number of colors in the rgColor array. 
+        /// The value MUST be 56.
+        /// </summary>
+        public Int16 ccv;
+
+        /// <summary>
+        /// An array of LongRGB that specifies the colors of the color palette. 
+        /// The number of items in the array MUST be equal to the value specified in the ccv field.
+        /// </summary>
+        public RGBColor[] rgColor;
 
         public Palette(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
@@ -44,7 +60,12 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            this.ccv = reader.ReadInt16();
+            this.rgColor = new RGBColor[this.ccv];
+            for (int i = 0; i < this.ccv; i++)
+            {
+                this.rgColor[i] = new RGBColor(reader.ReadInt32(), RGBColor.ByteOrder.RedFirst);
+            }
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

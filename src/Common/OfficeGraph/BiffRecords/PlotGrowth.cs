@@ -37,6 +37,16 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     {
         public const RecordNumber ID = RecordNumber.PlotGrowth;
 
+        /// <summary>
+        /// A FixedPoint that specifies the horizontal growth (in points) of the plot area for font scaling.
+        /// </summary>
+        public FixedPointNumber dxPlotGrowth;
+
+        /// <summary>
+        /// A FixedPoint that specifies the vertical growth (in points) of the plot area for font scaling.
+        /// </summary>
+        public FixedPointNumber dyPlotGrowth;
+
         public PlotGrowth(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
@@ -44,7 +54,8 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            this.dxPlotGrowth = new FixedPointNumber(reader);
+            this.dyPlotGrowth = new FixedPointNumber(reader);
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

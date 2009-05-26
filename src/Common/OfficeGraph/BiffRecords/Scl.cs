@@ -33,9 +33,28 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record specifies the zoom level of the current view in the window used 
+    /// to display the chart window as a fraction given by the following formula: <br/>
+    /// Fraction = nscl / dscl<br/>
+    /// The fraction MUST be greater than or equal to 1/10 and less than or equal to 4/1. <br/>
+    /// This record MUST exist if the zoom of the current view is not equal to 1.
+    /// </summary>
     public class Scl : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Scl;
+
+        /// <summary>
+        /// A signed integer that specifies the numerator of the fraction.<br/> 
+        /// The value MUST be greater than or equal to 1.
+        /// </summary>
+        public Int16 nscl;
+
+        /// <summary>
+        /// A signed integer that specifies the denominator of the fraction. <br/>
+        /// The value MUST be greater than or equal to 1.
+        /// </summary>
+        public Int16 dscl;
 
         public Scl(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
@@ -44,7 +63,8 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            this.nscl = reader.ReadInt16();
+            this.dscl = reader.ReadInt16();
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

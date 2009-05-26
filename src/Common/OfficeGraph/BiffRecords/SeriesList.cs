@@ -33,9 +33,24 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record specifies the series for the chart.
+    /// </summary>
     public class SeriesList : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.SeriesList;
+
+        /// <summary>
+        /// An unsigned integer that specifies number of items in the rgiser field.
+        /// </summary>
+        public UInt16 cser;
+
+        /// <summary>
+        /// An array of 2-byte unsigned integers, each of which specifies a one-based index of 
+        /// a Series record in the collection of Series records in the current chart sheet substream. 
+        /// Each referenced Series specifies a series for the chart.
+        /// </summary>
+        public UInt16[] rgiser;
 
         public SeriesList(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
@@ -44,7 +59,12 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            this.cser = reader.ReadUInt16();
+            rgiser = new UInt16[this.cser];
+            for (int i = 0; i < this.cser; i++)
+            {
+                rgiser[i] = reader.ReadUInt16();
+            }
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

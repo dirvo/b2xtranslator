@@ -33,9 +33,36 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record specifies the location of the OLE server window that is contained in the parent document window when the chart data was saved.
+    /// </summary>
     public class MainWindow : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.MainWindow;
+
+        /// <summary>
+        /// A signed integer that specifies the location in twips of the left edge 
+        /// of the window relative to the left edge of the primary monitor.
+        /// </summary>
+        public Int16 wLeft;
+
+        /// <summary>
+        /// A signed integer that specifies the location in twips of the top edge 
+        /// of the window relative to the top edge of the primary monitor.
+        /// </summary>
+        public Int16 wTop;
+
+        /// <summary>
+        /// A signed integer that specifies the width of the window in twips.<br/>
+        /// MUST be greater than or equal to 0.
+        /// </summary>
+        public Int16 wWidth;
+
+        /// <summary>
+        /// A signed integer that specifies the height of the window in twips.<br/>
+        /// MUST be greater than or equal to 0.
+        /// </summary>
+        public Int16 wHeight;
 
         public MainWindow(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
@@ -44,7 +71,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            this.wLeft = reader.ReadInt16();
+            this.wTop = reader.ReadInt16();
+            this.wWidth = reader.ReadInt16();
+            this.wHeight = reader.ReadInt16();
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
