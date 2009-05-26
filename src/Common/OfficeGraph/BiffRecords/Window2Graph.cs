@@ -34,34 +34,42 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
     /// <summary>
-    /// This record specifies the font for a given text element. 
-    /// The Font referenced by iFont can be in this chart sheet substream, or in the workbook.
+    /// This record specifies the visible portion of the datasheet. It specifies the 
+    /// first row or first column to display when showing the datasheet.
     /// </summary>
-    public class FontX : OfficeGraphBiffRecord
+    public class Window2Graph : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.FontX;
+        public const RecordNumber ID = RecordNumber.Window2Graph;
 
         /// <summary>
-        /// An unsigned integer that specifies the font to use for subsequent records. 
-        /// This font can either be the default font of the chart, part of the collection 
-        /// of Font records following the FrtFontList record, or part of the collection of
-        /// Font records in the workbook. If iFont is 0x0000, this record specifies the default 
-        /// font of the chart. If iFont is less than or equal to the number of Font records in
-        /// the workbook, iFont is a one-based index to a Font record in the workbook. 
-        /// Otherwise iFont is a one-based index into the collection of Font records in 
-        /// this chart sheet substream where the index is equal to 
-        /// iFont – n, where n is the number of Font records in the workbook.
+        /// A Graph_Rw that specifies the first (top-left) visible row of the datasheet. 
+        /// 
+        /// MUST be greater than or equal to 1.
         /// </summary>
-        public UInt16 iFont;
+        public UInt16 rowFirst;
 
-        public FontX(IStreamReader reader, RecordNumber id, UInt16 length)
+        /// <summary>
+        /// A Graph_Col that specifies the first (top-left) visible column of the datasheet. 
+        /// 
+        /// MUST be greater than or equal to 1.
+        /// </summary>
+        public UInt16 colFirst;
+
+        public Window2Graph(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            this.iFont = reader.ReadUInt16();
+            // ignore reserved bytes
+            reader.ReadBytes(5);
+
+            this.rowFirst = reader.ReadUInt16();
+            this.colFirst = reader.ReadUInt16();
+
+            // ignore reserved bytes
+            reader.ReadBytes(5);
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

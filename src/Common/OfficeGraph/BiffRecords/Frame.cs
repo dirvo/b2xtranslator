@@ -30,12 +30,54 @@
 using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record specifies the type, size and position of the frame around a chart 
+    /// element as defined by the Chart Sheet Substream ABNF. 
+    /// A chart element‟s frame is specified by the Frame record following it.
+    /// </summary>
     public class Frame : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Frame;
+
+        public enum FrameStyle : ushort
+        {
+            /// <summary>
+            /// A frame surrounding the chart element.
+            /// </summary>
+            NoShadow = 0x0000,
+
+            /// <summary>
+            /// A frame with shadow surrounding the chart element.
+            /// </summary>
+            Shadow = 0x0004
+        }
+
+        /// <summary>
+        /// An unsigned integer that specifies the type of frame to be drawn.
+        /// </summary>
+        public FrameStyle frt;
+
+        /// <summary>
+        /// A bit that specifies if the size of the frame is automatically calculated. 
+        /// If the value is 1, the size of the frame is automatically calculated. 
+        /// In this case, the width and height specified by the chart element are ignored 
+        /// and the size of the frame is calculated automatically. If the value is 0, the 
+        /// width and height specified by the chart element are used as the size of the frame.
+        /// </summary>
+        public bool fAutoSize;
+
+        /// <summary>
+        /// A bit that specifies if the position of the frame is automatically calculated. 
+        /// If the value is 1, the position of the frame is automatically calculated. 
+        /// In this case, the (x, y) specified by the chart element are ignored, and the 
+        /// position of the frame is automatically calculated. If the value is 0, the (x, y) 
+        /// location specified by the chart element are used as the position of the frame.
+        /// </summary>
+        public bool fAutoPosition;
 
         public Frame(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
@@ -44,7 +86,12 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            this.frt = (FrameStyle)reader.ReadUInt16();
+
+            UInt16 flags = reader.ReadUInt16();
+
+            this.fAutoSize = Utils.BitmaskToBool(flags, 0x0001);
+            this.fAutoPosition = Utils.BitmaskToBool(flags, 0x0002);
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

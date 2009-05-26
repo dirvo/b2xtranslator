@@ -34,34 +34,53 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
     /// <summary>
-    /// This record specifies the font for a given text element. 
-    /// The Font referenced by iFont can be in this chart sheet substream, or in the workbook.
+    /// This record specifies the size and position of the data sheet window within the 
+    /// OLE server window that is contained in the parent document window. 
+    /// 
+    /// MUST immediately follow a MainWindow record.
     /// </summary>
-    public class FontX : OfficeGraphBiffRecord
+    public class Window1_10 : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.FontX;
+        public const RecordNumber ID = RecordNumber.Window1_10;
 
         /// <summary>
-        /// An unsigned integer that specifies the font to use for subsequent records. 
-        /// This font can either be the default font of the chart, part of the collection 
-        /// of Font records following the FrtFontList record, or part of the collection of
-        /// Font records in the workbook. If iFont is 0x0000, this record specifies the default 
-        /// font of the chart. If iFont is less than or equal to the number of Font records in
-        /// the workbook, iFont is a one-based index to a Font record in the workbook. 
-        /// Otherwise iFont is a one-based index into the collection of Font records in 
-        /// this chart sheet substream where the index is equal to 
-        /// iFont – n, where n is the number of Font records in the workbook.
+        /// An unsigned integer that specifies the X location of the upper-left 
+        /// corner of the data sheet window within the OLE server window, in twips.
         /// </summary>
-        public UInt16 iFont;
+        public UInt16 xWn;
 
-        public FontX(IStreamReader reader, RecordNumber id, UInt16 length)
+        /// <summary>
+        /// An unsigned integer that specifies the Y location of the upper-left 
+        /// corner of the data sheet window within the OLE server window, in twips.
+        /// </summary>
+        public UInt16 yWn;
+
+        /// <summary>
+        /// An unsigned integer that specifies the width of the data sheet window 
+        /// within the OLE server window, in twips. MUST be greater than or equal to 0x0001.
+        /// </summary>
+        public UInt16 dxWn;
+
+        /// <summary>
+        /// An unsigned integer that specifies the height of the data sheet window 
+        /// within the OLE server window, in twips. MUST be greater than or equal to 0x0001.
+        /// </summary>
+        public UInt16 dyWn;
+
+        public Window1_10(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            this.iFont = reader.ReadUInt16();
+            this.xWn = reader.ReadUInt16();
+            this.yWn = reader.ReadUInt16();
+            this.dxWn = reader.ReadUInt16();
+            this.dyWn = reader.ReadUInt16();
+
+            // skipped reserved bytes
+            reader.ReadBytes(2);
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

@@ -75,6 +75,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         Format = 1054,
         Frame = 4146,
         FrtFontList = 2138,
+        // TODO: What's with FrtWrapper records? Seems they don't have an ID specified
         GelFrame = 4198,
         IFmtRecord = 4174,
         Label = 516,
@@ -121,7 +122,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         WinDoc = 4183,
         Window1 = 61,
         Window1_10 = 61,
-        Window2 = 62,
+        Window2Graph = 62,
         YMult = 2135
 
     }

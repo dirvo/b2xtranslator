@@ -28,43 +28,30 @@
  */
 
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
     /// <summary>
-    /// This record specifies the font for a given text element. 
-    /// The Font referenced by iFont can be in this chart sheet substream, or in the workbook.
+    /// This structure specifies a Font record in the file.
     /// </summary>
-    public class FontX : OfficeGraphBiffRecord
+    public class FontInfo
     {
-        public const RecordNumber ID = RecordNumber.FontX;
-
         /// <summary>
-        /// An unsigned integer that specifies the font to use for subsequent records. 
-        /// This font can either be the default font of the chart, part of the collection 
-        /// of Font records following the FrtFontList record, or part of the collection of
-        /// Font records in the workbook. If iFont is 0x0000, this record specifies the default 
-        /// font of the chart. If iFont is less than or equal to the number of Font records in
-        /// the workbook, iFont is a one-based index to a Font record in the workbook. 
-        /// Otherwise iFont is a one-based index into the collection of Font records in 
-        /// this chart sheet substream where the index is equal to 
-        /// iFont – n, where n is the number of Font records in the workbook.
+        /// A bit that specifies whether the fonts are scaled.
         /// </summary>
-        public UInt16 iFont;
+        public bool fScaled;
 
-        public FontX(IStreamReader reader, RecordNumber id, UInt16 length)
-            : base(reader, id, length)
+        public UInt16 ifnt;
+        // TODO: implement FontIndex???
+
+        public FontInfo(IStreamReader reader)
         {
-            // assert that the correct record type is instantiated
-            Debug.Assert(this.Id == ID);
-
-            // initialize class members from stream
-            this.iFont = reader.ReadUInt16();
-
-            // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
+            this.fScaled = Utils.BitmaskToBool(reader.ReadUInt16(), 0x0001);
+            this.ifnt = reader.ReadUInt16();
         }
     }
 }

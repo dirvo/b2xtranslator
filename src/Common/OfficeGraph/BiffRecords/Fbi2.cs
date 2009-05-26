@@ -34,34 +34,57 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
     /// <summary>
-    /// This record specifies the font for a given text element. 
-    /// The Font referenced by iFont can be in this chart sheet substream, or in the workbook.
+    /// This record specifies the font information at the time the scalable font is added to the chart. <47>
     /// </summary>
-    public class FontX : OfficeGraphBiffRecord
+    public class Fbi2 : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.FontX;
+        public const RecordNumber ID = RecordNumber.Fbi2;
 
         /// <summary>
-        /// An unsigned integer that specifies the font to use for subsequent records. 
-        /// This font can either be the default font of the chart, part of the collection 
-        /// of Font records following the FrtFontList record, or part of the collection of
-        /// Font records in the workbook. If iFont is 0x0000, this record specifies the default 
-        /// font of the chart. If iFont is less than or equal to the number of Font records in
-        /// the workbook, iFont is a one-based index to a Font record in the workbook. 
-        /// Otherwise iFont is a one-based index into the collection of Font records in 
-        /// this chart sheet substream where the index is equal to 
-        /// iFont – n, where n is the number of Font records in the workbook.
+        /// An unsigned integer that specifies the font width, in twips, when the font was first applied. 
+        /// 
+        /// MUST be greater than or equal to 0 and less than or equal to 0x7FFF.
         /// </summary>
-        public UInt16 iFont;
+        public UInt16 dmixBasis;
 
-        public FontX(IStreamReader reader, RecordNumber id, UInt16 length)
+        /// <summary>
+        /// An unsigned integer that specifies the font height, in twips, when the font was first applied. 
+        /// 
+        /// MUST be greater than or equal to 0 and less than or equal to 0x7FFF.
+        /// </summary>
+        public UInt16 dmiyBasis;
+
+        /// <summary>
+        /// An unsigned integer that specifies the default font height in twips. 
+        /// 
+        /// MUST be greater than or equal to 20 and less than or equal to 8180.
+        /// </summary>
+        public UInt16 twpHeightBasis;
+
+        /// <summary>
+        /// A Boolean that specifies the scale to use. The value MUST be one of the following values: 
+        /// 
+        ///     Value       Meaning
+        ///     0x0000      Scale by chart area
+        ///     0x0001      Scale by plot area
+        /// </summary>
+        public bool scab;
+
+        public UInt16 ifnt;
+        // TODO: implement FontIndex???
+
+        public Fbi2(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            this.iFont = reader.ReadUInt16();
+            this.dmixBasis = reader.ReadUInt16();
+            this.dmiyBasis = reader.ReadUInt16();
+            this.twpHeightBasis = reader.ReadUInt16();
+            this.scab = reader.ReadUInt16() == 0x0001;
+            this.ifnt = reader.ReadUInt16();
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

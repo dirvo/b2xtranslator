@@ -66,7 +66,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         public byte[] rgb;        
 
 
-        public XLUnicodeString(IStreamReader reader, UInt16 cch)
+        public XLUnicodeString(IStreamReader reader)
         {
             this.cch = reader.ReadUInt16();
 

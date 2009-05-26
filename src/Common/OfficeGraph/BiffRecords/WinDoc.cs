@@ -37,6 +37,24 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     {
         public const RecordNumber ID = RecordNumber.WinDoc;
 
+        public enum WindowKind : byte
+        {
+            /// <summary>
+            /// The window used to display the data sheet was selected when the graph object was saved.
+            /// </summary>
+            DataSheet = 0x00,
+
+            /// <summary>
+            /// The chart window was selected when the graph object was saved.
+            /// </summary>
+            ChartWindow = 0x01
+        }
+
+        /// <summary>
+        /// A value that specifies which window was selected when the graph object was saved.
+        /// </summary>
+        public WindowKind fChartSelected;
+
         public WinDoc(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
@@ -44,7 +62,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            this.fChartSelected = (WindowKind)reader.ReadByte();
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

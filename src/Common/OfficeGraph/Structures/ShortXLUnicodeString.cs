@@ -28,66 +28,75 @@
  */
 
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
     /// <summary>
-    /// This record specifies the font information at the time the scalable font is added to the chart. <47>
+    /// This structure specifies a Unicode string. 
     /// </summary>
-    public class Fbi : OfficeGraphBiffRecord
+    public class ShortXLUnicodeString
     {
-        public const RecordNumber ID = RecordNumber.Fbi;
+        /// <summary>
+        /// An unsigned integer that specifies the count of characters in the string. 
+        /// 
+        /// MUST be equal to the number of characters in st.
+        /// </summary>
+        public byte cch;
 
         /// <summary>
-        /// An unsigned integer that specifies the font width, in twips, when the font was first applied. 
+        /// A bit that specifies whether the characters in rgb are double-byte characters. 
         /// 
-        /// MUST be greater than or equal to 0 and less than or equal to 0x7FFF.
+        /// MUST be a value from the following table: 
+        ///     Value   Meaning
+        ///     0x0     All the characters in the string have a high byte of 0x00 and only the low bytes are in rgb.
+        ///     0x1     All the characters in the string are saved as double-byte characters in rgb.
         /// </summary>
-        public UInt16 dmixBasis;
+        public bool fHighByte;
 
         /// <summary>
-        /// An unsigned integer that specifies the font height, in twips, when the font was first applied. 
+        /// An array of bytes that specifies the characters. 
         /// 
-        /// MUST be greater than or equal to 0 and less than or equal to 0x7FFF.
+        /// If fHighByte is 0x0, the size of the array MUST be equal to the count of characters in the string. 
+        /// If fHighByte is 0x1, the size of the array MUST be equal to 2 times the count of characters in the string.
         /// </summary>
-        public UInt16 dmiyBasis;
+        public byte[] rgb;
 
-        /// <summary>
-        /// An unsigned integer that specifies the default font height in twips. 
-        /// 
-        /// MUST be greater than or equal to 20 and less than or equal to 8180.
-        /// </summary>
-        public UInt16 twpHeightBasis;
 
-        /// <summary>
-        /// A Boolean that specifies the scale to use. The value MUST be one of the following values: 
-        /// 
-        ///     Value       Meaning
-        ///     0x0000      Scale by chart area
-        ///     0x0001      Scale by plot area
-        /// </summary>
-        public bool scab;
-
-        public UInt16 ifnt;
-        // TODO: implement FontIndex???
-
-        public Fbi(IStreamReader reader, RecordNumber id, UInt16 length)
-            : base(reader, id, length)
+        public ShortXLUnicodeString(IStreamReader reader)
         {
-            // assert that the correct record type is instantiated
-            Debug.Assert(this.Id == ID);
+            this.cch = reader.ReadByte();
 
-            // initialize class members from stream
-            this.dmixBasis = reader.ReadUInt16();
-            this.dmiyBasis = reader.ReadUInt16();
-            this.twpHeightBasis = reader.ReadUInt16();
-            this.scab = reader.ReadUInt16() == 0x0001;
-            this.ifnt = reader.ReadUInt16();
+            this.fHighByte = Utils.BitmaskToBool(reader.ReadByte(), 0x0001);
 
-            // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
+            if (fHighByte)
+            {
+                this.rgb = new byte[2 * cch];
+            }
+            else
+            {
+                this.rgb = new byte[cch];
+            }
+
+            this.rgb = reader.ReadBytes(this.rgb.Length);
+        }
+
+        public string Value
+        {
+            get
+            {
+                if (fHighByte)
+                {
+                    return Encoding.Unicode.GetString(this.rgb);
+                }
+                else
+                {
+                    return Encoding.GetEncoding(1252).GetString(this.rgb);
+                }
+            }
         }
     }
 }

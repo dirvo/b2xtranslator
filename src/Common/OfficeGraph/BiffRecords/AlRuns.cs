@@ -57,11 +57,14 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             // initialize class members from stream
             cRuns = reader.ReadUInt16();
 
-            rgRuns = new FormatRun[cRuns];
-
-            for (int i = 0; i < cRuns; i++)
+            if (cRuns > 0)
             {
-                rgRuns[i] = new FormatRun(reader);
+                rgRuns = new FormatRun[cRuns];
+
+                for (int i = 0; i < cRuns; i++)
+                {
+                    rgRuns[i] = new FormatRun(reader);
+                }
             }
 
             // assert that the correct number of bytes has been read from the stream

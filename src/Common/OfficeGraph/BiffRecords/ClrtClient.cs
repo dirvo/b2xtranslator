@@ -68,11 +68,14 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             // initialize class members from stream
             this.ccv = reader.ReadInt16();
 
-            this.rgColor = new RGBColor[this.ccv];
-
-            for (int i = 0; i < this.ccv; i++)
+            if (this.ccv > 0)
             {
-                this.rgColor[i] = new RGBColor(reader.ReadInt32(), RGBColor.ByteOrder.RedFirst);
+                this.rgColor = new RGBColor[this.ccv];
+
+                for (int i = 0; i < this.ccv; i++)
+                {
+                    this.rgColor[i] = new RGBColor(reader.ReadInt32(), RGBColor.ByteOrder.RedFirst);
+                }
             }
 
             // assert that the correct number of bytes has been read from the stream
