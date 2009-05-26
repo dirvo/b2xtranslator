@@ -135,6 +135,9 @@
     <Compile Include="BiffRecords\Units.cs" />
     <Compile Include="BiffRecords\ValueRange.cs" />
     <Compile Include="BiffRecords\WinDoc.cs" />
+    <Compile Include="BiffRecords\Window1.cs" />
+    <Compile Include="BiffRecords\Window1_10.cs" />
+    <Compile Include="BiffRecords\Window2Graph.cs" />
     <Compile Include="BiffRecords\YMult.cs" />
     <Compile Include="OfficeGraphBiffRecord.cs" />
     <Compile Include="RecordNumbers.cs" />

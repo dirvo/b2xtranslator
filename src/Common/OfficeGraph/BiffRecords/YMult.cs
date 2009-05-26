@@ -47,7 +47,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 
         public enum AxisMultiplier : short
         {
-            Custom = 0xFFFF,
+            Custom = -1,
             Factor1 = 0x0000,
             Factor100 = 0x0001,
             Factor1000 = 0x0002,

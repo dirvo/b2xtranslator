@@ -30,7 +30,6 @@
 using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using DIaLOGIKa.b2xtranslator.OfficeGraph.Structures;
 using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
@@ -41,6 +40,24 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     public class TxO : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.TxO;
+
+        public enum HorizontalAlignment : ushort
+        {
+            Left = 1,
+            Centered = 2,
+            Right = 3,
+            Justify = 4,
+            JustifyDistributed = 7
+        }
+
+        public enum VerticalAlignment : ushort
+        {
+            Top = 1,
+            Middle = 2,
+            Bottom = 3,
+            Justify = 4,
+            JustifyDistributed = 7
+        }
 
         /// <summary>
         /// Specifies the horizontal alignment.

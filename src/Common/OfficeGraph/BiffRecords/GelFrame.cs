@@ -33,6 +33,12 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record specifies the properties of a fill pattern for parts of a chart. 
+    /// The record consists of an OfficeArtFOPT, as specified in [MS-ODRAW] section 2.2.9, 
+    /// and an OfficeArtTertiaryFOPT, as specified in [MS-ODRAW] section 2.2.11, that both
+    /// contain properties for the fill pattern applied. <55>
+    /// </summary>
     public class GelFrame : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.GelFrame;
