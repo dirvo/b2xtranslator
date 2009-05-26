@@ -46,6 +46,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         protected AppPropertiesPart _appPropertiesPart;
 
         protected int _imageCounter;
+        protected int _vmlCounter;
         protected int _oleCounter;
         #endregion
 
@@ -63,6 +64,9 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 
             _defaultTypes.Add("rels", OpenXmlContentTypes.Relationships);
             _defaultTypes.Add("xml", OpenXmlContentTypes.Xml);
+            _defaultTypes.Add("bin", OpenXmlContentTypes.OleObject);
+            _defaultTypes.Add("vml", OpenXmlContentTypes.Vml);
+            _defaultTypes.Add("emf", OpenXmlContentTypes.Emf);
         }
 
         public void Dispose()
@@ -128,6 +132,12 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         {
             _imageCounter++;
             return _imageCounter;
+        }
+
+        internal int GetNextVmlId()
+        {
+            _vmlCounter++;
+            return _vmlCounter;
         }
 
         internal int GetNextOleId()

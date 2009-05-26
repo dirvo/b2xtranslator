@@ -64,7 +64,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             CreateHandoutMasters(ppt);
             CreateVbaProject(ppt);
             CreateSlides(ppt, documentRecord);
-            //WriteOleObjects(ppt, documentRecord);
                         
             WriteMainMasters(ppt);
             WriteSlides(ppt, documentRecord);
@@ -150,33 +149,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         }
 
-        //private void CreatePictures(PowerpointDocument ppt, DocumentContainer documentRecord)
-        //{
-        //    foreach (Record rec in ppt.PicturesContainer._pictures.Values)
-        //    {
-        //        switch (rec.TypeCode)
-        //        {
-
-        //            case 0xF01D:
-        //            case 0xF01E:
-        //            case 0xF01F:
-        //            case 0xF020:
-        //            case 0xF021:
-        //                BitmapBlip b = (BitmapBlip)rec;
-        //                ImagePart imgPart = null;
-        //                imgPart = this.targetPart.AddImagePart(ImagePart.ImageType.Png);
-        //                System.IO.Stream outStream = imgPart.GetStream();
-        //                outStream.Write(b.m_pvBits, 0, b.m_pvBits.Length);
-
-        //                break;
-
-        //            default:
-        //                break;
-        //        }
-        //    }
-        //}
-
-        
+       
        private void CreateSlides(PowerpointDocument ppt, DocumentContainer documentRecord)
         {
             foreach (SlideListWithText lst in ppt.DocumentRecord.AllChildrenWithType<SlideListWithText>())
@@ -232,30 +205,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
 
        }
-
-       //private void WriteOleObjects(PowerpointDocument ppt, DocumentContainer documentRecord)
-       //{
-       //    foreach (ExOleObjStgAtom stgAtom in ppt.OleObjects)
-       //    {
-       //        if (stgAtom.Instance == 1)
-       //        {
-
-       //            byte[] decompressedBytes = new byte[stgAtom.decompressedSize];
-       //            //decompress the bytes using .NET DeflateStream class.
-       //            MemoryStream msCompressed = new MemoryStream(stgAtom.data);
-       //            msCompressed.ReadByte();
-       //            msCompressed.ReadByte();
-       //            DeflateStream deflateStream = new DeflateStream(msCompressed, CompressionMode.Decompress);
-
-       //            deflateStream.Read(decompressedBytes, 0, (int)decompressedBytes.Length);
-
-       //            MemoryStream msDecompressed = new MemoryStream(decompressedBytes);
-       //            StructuredStorageReader Storage = new StructuredStorageReader(msDecompressed);
-
-       //        }
-
-       //    }
-       //}
 
         private void WriteSlides(PowerpointDocument ppt, DocumentContainer documentRecord)
         {

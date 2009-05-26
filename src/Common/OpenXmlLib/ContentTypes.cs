@@ -47,6 +47,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string CustomXmlProperties = "application/vnd.openxmlformats-officedocument.customXmlProperties+xml";
 
         public const string OleObject = "application/vnd.openxmlformats-officedocument.oleObject";
+        public const string Vml = "application/vnd.openxmlformats-officedocument.vmlDrawing";
+        public const string Emf = "image/x-emf";
 
         public const string MSExcel = "application/vnd.ms-excel";
         public const string MSWord = "application/msword";
@@ -173,6 +175,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string Footer = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer";
 
         public const string Image = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image";
+        public const string Vml = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/vmlDrawing";
 
         public const string OleObject = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject";
 

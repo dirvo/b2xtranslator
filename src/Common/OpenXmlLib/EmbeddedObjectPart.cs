@@ -40,6 +40,13 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
                 }
             }
         }
+
+        internal override bool HasDefaultContentType { 
+            get {
+                return true;
+            }         
+        }
+
         public override string RelationshipType
         {
             get { return OpenXmlRelationshipTypes.OleObject; }
@@ -47,7 +54,22 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 
         public override string TargetName { get { return "oleObject" + this.PartIndex; } }
 
-        public override string TargetDirectory { get { return "embeddings"; } }
+        //public override string TargetDirectory { get { return "embeddings"; } }
+
+        private string targetdirectory = "embeddings";
+        public override string TargetDirectory
+        {
+            get
+            {
+                return targetdirectory;
+            }
+
+            set
+            {
+                targetdirectory = value;
+            }
+
+        }
 
         public override string TargetExt 
         { 

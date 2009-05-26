@@ -76,6 +76,8 @@
     <Compile Include="TitleMasterMapping.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VMLPictureMapping.cs" />
+    <Compile Include="VMLShapeTypeMapping.cs" />
     <Compile Include="VbaProjectMapping.cs" />
   </ItemGroup>
   <ItemGroup>

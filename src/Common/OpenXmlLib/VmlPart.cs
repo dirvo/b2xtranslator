@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2008, DIaLOGIKa
  * All rights reserved.
  *
@@ -24,38 +24,61 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 {
-    public abstract class ContentPart : OpenXmlPart
+    public class VmlPart : ContentPart
     {
-        public ContentPart(OpenXmlPartContainer parent)
-            : base(parent, 0)
-        {
-        }
+        
 
-        public ContentPart(OpenXmlPartContainer parent, int partIndex)
+        internal VmlPart(OpenXmlPartContainer parent, int partIndex)
             : base(parent, partIndex)
         {
+           
         }
 
-        public ImagePart AddImagePart(ImagePart.ImageType type)
+        public override string ContentType
         {
-            return this.AddPart(new ImagePart(type, this, Package.GetNextImageId()));
+            get 
+            {
+                return "application/vnd.openxmlformats-officedocument.vmlDrawing";
+            }
         }
 
-        public EmbeddedObjectPart AddEmbeddedObjectPart(EmbeddedObjectPart.ObjectType type)
+        internal override bool HasDefaultContentType { get { return true; } }
+
+        public override string RelationshipType
         {
-            return this.AddPart(new EmbeddedObjectPart(type, this, Package.GetNextOleId()));
+            get { return OpenXmlRelationshipTypes.Vml; }
         }
 
-        public VmlPart AddVmlPart()
+        public override string TargetName { get { return "vmlDrawing" + this.PartIndex; } }
+
+        private string targetdirectory = "drawings";
+        public override string TargetDirectory
         {
-            return this.AddPart(new VmlPart(this, Package.GetNextVmlId()));
+            get
+            {
+                return targetdirectory;
+            }
+
+            set
+            {
+                targetdirectory = value;
+            }
+
+        }
+
+        public override string TargetExt
+        {
+            get
+            {
+                return ".vml";
+            }
         }
     }
 }

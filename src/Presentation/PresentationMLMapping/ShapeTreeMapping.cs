@@ -1413,7 +1413,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteStartElement("p", "graphicFrame", OpenXmlNamespaces.PresentationML);
             _writer.WriteStartElement("p", "nvGraphicFramePr", OpenXmlNamespaces.PresentationML);
-            WriteCNvPr(--groupcounter, "");
+            string id = WriteCNvPr(--groupcounter, "");
             _writer.WriteStartElement("p", "cNvGraphicFramePr", OpenXmlNamespaces.PresentationML);
             _writer.WriteStartElement("a", "graphicFrameLocks", OpenXmlNamespaces.DrawingML);
             _writer.WriteAttributeString("noChangeAspect", "1");
@@ -1443,32 +1443,52 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteStartElement("a", "graphic", OpenXmlNamespaces.DrawingML);
 
             _writer.WriteStartElement("a", "graphicData", OpenXmlNamespaces.DrawingML);
-            _writer.WriteAttributeString("uri", OpenXmlRelationshipTypes.OleObject);
+            _writer.WriteAttributeString("uri", "http://schemas.openxmlformats.org/presentationml/2006/ole");
 
 
             OEPlaceHolderAtom placeholder = null;
             int exObjIdRef = 0;
             CheckClientData(container.FirstChildWithType<ClientData>(), ref placeholder, ref exObjIdRef);
 
-            ExOleEmbedContainer oleContainer = this._ctx.Ppt.OleObjects[exObjIdRef];
+            ExOleEmbedContainer oleContainer = this._ctx.Ppt.OleObjects[exObjIdRef-1];
+
+            EmbeddedObjectPart embPart = null;
+            embPart = parentSlideMapping.targetPart.AddEmbeddedObjectPart(EmbeddedObjectPart.ObjectType.Other);
+            embPart.TargetDirectory = "..\\embeddings";
+            System.IO.Stream outStream = embPart.GetStream();
+
+            outStream.Write(oleContainer.stgAtom.DecompressData(), 0, (int)oleContainer.stgAtom.decompressedSize);
+
+            string rId = embPart.RelIdToString;
            
-            string spid = "";
-            string rid = "";
-            string width = "";
-            string height = "";
-            string name = "Chart";
-            string progId = "MSGraph.Chart.8";
+            string spid = "_x0000_s" + id;
+            string width = Utils.MasterCoordToEMU(anchor.Right - anchor.Left).ToString();
+            string height = Utils.MasterCoordToEMU(anchor.Bottom - anchor.Top).ToString();
+            string name = oleContainer.AllChildrenWithType<CStringAtom>()[0].Text;
+            string progId = oleContainer.AllChildrenWithType<CStringAtom>()[1].Text;
+
+            DrawingGroup gr = (DrawingGroup)this._ctx.Ppt.DocumentRecord.FirstChildWithType<PPDrawingGroup>().Children[0];
+            BlipStoreEntry bse = (BlipStoreEntry)gr.FirstChildWithType<BlipStoreContainer>().Children[(int)so.OptionsByID[ShapeOptions.PropertyId.Pib].op - 1];
+
+            VmlPart vmlPart = null;
+            vmlPart = parentSlideMapping.targetPart.AddVmlPart();
+            vmlPart.TargetDirectory = "..\\drawings";
+            System.IO.Stream vmlStream = vmlPart.GetStream();
+
+
+            VMLPictureMapping vm = new VMLPictureMapping(vmlPart, _ctx.WriterSettings);
+            vm.Apply(bse, sh, so, 1000, 1000, anchor.Right - anchor.Left, anchor.Bottom - anchor.Top, _ctx, spid);
 
             _writer.WriteStartElement("p", "oleObj", OpenXmlNamespaces.PresentationML);
             _writer.WriteAttributeString("spid", spid);
             _writer.WriteAttributeString("name", name);
-            _writer.WriteAttributeString("id",OpenXmlNamespaces.Relationships, rid);
+            _writer.WriteAttributeString("id",OpenXmlNamespaces.Relationships, rId);
             _writer.WriteAttributeString("imgW", width);
             _writer.WriteAttributeString("imgH", height);
             _writer.WriteAttributeString("progId", progId);
 
             _writer.WriteStartElement("p", "embed", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("fllowColorScheme", "full");
+            _writer.WriteAttributeString("followColorScheme", "full");
             _writer.WriteEndElement(); //embed
 
             _writer.WriteEndElement(); //oleObj
@@ -2424,19 +2444,20 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         
 
         public Dictionary<int, int> spidToId = new Dictionary<int, int>();
-        private void WriteCNvPr(int spid, string name)
+        private string WriteCNvPr(int spid, string name)
         {
-
+            string id = "";
             if (!spidToId.ContainsKey(spid))
             {
                 spidToId.Add(spid, ++_idCnt);
             }
 
             _writer.WriteStartElement("p", "cNvPr", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("id", spidToId[spid].ToString());
+            id = spidToId[spid].ToString();
+            _writer.WriteAttributeString("id", id);
             _writer.WriteAttributeString("name", name);
             _writer.WriteEndElement();
-            //if (!spidToId.ContainsKey(spid)) spidToId.Add(spid, _idCnt);
+            return id;
         }
 
         private void WriteXFrm(XmlWriter _writer, Rectangle rect)

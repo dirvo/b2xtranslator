@@ -95,6 +95,15 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
                 if (path == "ppt\\slideMasters\\..\\media") return "ppt\\media";
                 if (path == "ppt\\notesSlides\\..\\media") return "ppt\\media";
                 if (path == "ppt\\notesMasters\\..\\media") return "ppt\\media";
+                if (path == "ppt\\slides\\..\\drawings\\..\\media") return "ppt\\media";
+                if (path == "ppt\\slides\\..\\embeddings") return "ppt\\embeddings";
+                if (path == "ppt\\notesSlides\\embeddings") return "ppt\\embeddings";
+                if (path == "ppt\\slideMasters\\..\\slideLayouts\\..\\embeddings") return "ppt\\embeddings";
+                if (path == "ppt\\slides\\..\\embeddings") return "ppt\\embeddings";
+                if (path == "ppt\\slideMasters\\..\\embeddings") return "ppt\\embeddings";
+                if (path == "ppt\\notesSlides\\..\\embeddings") return "ppt\\embeddings";
+                if (path == "ppt\\notesMasters\\..\\embeddings") return "ppt\\embeddings";
+                if (path == "ppt\\slides\\..\\drawings") return "ppt\\drawings";
                 return path;
             }
         }
@@ -150,7 +159,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
             else
             {
                 string path = "/" + part.TargetFullName.Replace('\\', '/');
-                path = path.Replace("/ppt/slideMasters/media/", "/ppt/media/").Replace("/ppt/slideMasters/../slideLayouts/media/", "/ppt/media/").Replace("/ppt/notesSlides/../media/", "/ppt/media/");
+                path = path.Replace("/ppt/slideMasters/media/", "/ppt/media/").Replace("/ppt/slideMasters/../slideLayouts/media/", "/ppt/media/").Replace("/ppt/notesSlides/../media/", "/ppt/media/").Replace("/ppt/slides/../drawings/../media", "ppt/media/").Replace("/ppt/slides/../drawings","/ppt/drawings");
                 part.Package.AddContentTypeOverride(path , part.ContentType);
             }
 

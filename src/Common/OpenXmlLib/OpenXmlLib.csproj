@@ -40,6 +40,7 @@
   <ItemGroup>
     <Compile Include="AppPropertiesPart.cs" />
     <Compile Include="ContentPart.cs" />
+    <Compile Include="VmlPart.cs" />
     <Compile Include="ExternalRelationship.cs" />
     <Compile Include="PresentationML\HandoutMasterPart.cs" />
     <Compile Include="PresentationML\NotesMasterPart.cs" />
