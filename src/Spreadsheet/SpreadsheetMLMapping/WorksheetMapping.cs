@@ -149,7 +149,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         if (col.style > 15)
                         {
 
-                            _writer.WriteAttributeString("style", Convert.ToString(col.style - this.xlsContext.XlsDoc.workBookData.styleData.XFCellStyleDataList.Count, CultureInfo.GetCultureInfo("en-US")));
+                            _writer.WriteAttributeString("style", Convert.ToString(col.style - this.xlsContext.XlsDoc.WorkBookData.styleData.XFCellStyleDataList.Count, CultureInfo.GetCultureInfo("en-US")));
                         }
 
                         _writer.WriteEndElement();
@@ -201,7 +201,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         _writer.WriteAttributeString("customFormat", "1");
                         if (row.style > 15)
                         {
-                            _writer.WriteAttributeString("s", (row.style - this.xlsContext.XlsDoc.workBookData.styleData.XFCellStyleDataList.Count).ToString());
+                            _writer.WriteAttributeString("s", (row.style - this.xlsContext.XlsDoc.WorkBookData.styleData.XFCellStyleDataList.Count).ToString());
                         }
                     }
                     if (row.thickBot)
@@ -226,7 +226,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
                         if (cell.TemplateID > 15)
                         {
-                            _writer.WriteAttributeString("s", (cell.TemplateID - this.xlsContext.XlsDoc.workBookData.styleData.XFCellStyleDataList.Count).ToString());
+                            _writer.WriteAttributeString("s", (cell.TemplateID - this.xlsContext.XlsDoc.WorkBookData.styleData.XFCellStyleDataList.Count).ToString());
                         }
 
                         if (cell is StringCell)

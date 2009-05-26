@@ -106,7 +106,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                         this.StreamReader.BaseStream.Seek(bs.lbPlyPos, SeekOrigin.Begin);
                         bsd.worksheetName = bs.getBoundsheetName();
                         bsd.boundsheetRecord = bs;
-                        WorkSheetExtractor se = new WorkSheetExtractor(this.StreamReader, bsd);
+                        WorksheetExtractor se = new WorksheetExtractor(this.StreamReader, bsd);
                         this.StreamReader.BaseStream.Seek(oldOffset, SeekOrigin.Begin);
                         TraceLogger.DebugInternal(bs.ToString());
                     }

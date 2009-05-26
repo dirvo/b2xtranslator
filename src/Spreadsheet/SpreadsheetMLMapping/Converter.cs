@@ -21,7 +21,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 //ToDo: Find better way to detect macro type
                 if (xls.Storage.FullNameOfAllEntries.Contains("\\_VBA_PROJECT_CUR"))
                 {
-                    if (xls.workBookData.Template)
+                    if (xls.WorkBookData.Template)
                     {
                         returnType = OpenXmlPackage.DocumentType.MacroEnabledTemplate;
                     }
@@ -32,7 +32,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 }
                 else
                 {
-                    if (xls.workBookData.Template)
+                    if (xls.WorkBookData.Template)
                     {
                         returnType = OpenXmlPackage.DocumentType.Template;
                     }
@@ -96,15 +96,15 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 xlsContext.SpreadDoc = xlsx;
 
                 // Converts the sst data !!!
-                if (xls.workBookData.SstData != null)
-                    xls.workBookData.SstData.Convert(new SSTMapping(xlsContext));
+                if (xls.WorkBookData.SstData != null)
+                    xls.WorkBookData.SstData.Convert(new SSTMapping(xlsContext));
 
                 // creates the styles.xml
-                if (xls.workBookData.styleData != null)
-                    xls.workBookData.styleData.Convert(new StylesMapping(xlsContext));
+                if (xls.WorkBookData.styleData != null)
+                    xls.WorkBookData.styleData.Convert(new StylesMapping(xlsContext));
 
                 // creates the Spreadsheets
-                foreach (WorkSheetData var in xls.workBookData.boundSheetDataList)
+                foreach (WorkSheetData var in xls.WorkBookData.boundSheetDataList)
                 {
                     if (var.boundsheetRecord.sheetType == BOUNDSHEET.sheetTypes.worksheet)
                     {
@@ -117,7 +117,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     }
                 }
                 int sbdnumber = 1;
-                foreach (SupBookData sbd in xls.workBookData.supBookDataList)
+                foreach (SupBookData sbd in xls.WorkBookData.supBookDataList)
                 {
                     if (!sbd.SelfRef)
                     {
@@ -127,7 +127,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     }
                 }
 
-                xls.workBookData.Convert(new WorkbookMapping(xlsContext));
+                xls.WorkBookData.Convert(new WorkbookMapping(xlsContext));
 
                 // convert the macros
                 if (xlsx.DocumentType == OpenXmlPackage.DocumentType.MacroEnabledDocument ||

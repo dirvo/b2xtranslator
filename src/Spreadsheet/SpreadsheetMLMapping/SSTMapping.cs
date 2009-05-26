@@ -103,7 +103,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     {
                         _writer.WriteStartElement("r");
 
-                        fd = this.xlsContext.XlsDoc.workBookData.styleData.FontDataList[list[i].FontRecord];
+                        fd = this.xlsContext.XlsDoc.WorkBookData.styleData.FontDataList[list[i].FontRecord];
                         StyleMappingHelper.addFontElement(_writer, fd, FontElementType.String);
 
                         writeTextNode(_writer, var.Substring(list[i].CharNumber, list[i + 1].CharNumber - list[i].CharNumber));
@@ -111,7 +111,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     }
                     _writer.WriteStartElement("r");
 
-                    fd = this.xlsContext.XlsDoc.workBookData.styleData.FontDataList[list[list.Count - 1].FontRecord];
+                    fd = this.xlsContext.XlsDoc.WorkBookData.styleData.FontDataList[list[list.Count - 1].FontRecord];
                     StyleMappingHelper.addFontElement(_writer, fd, FontElementType.String);
 
                     writeTextNode(_writer, var.Substring(list[list.Count - 1].CharNumber));

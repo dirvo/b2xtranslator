@@ -55,7 +55,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// <summary>
         /// This attribute stores the hole Workbookdata 
         /// </summary>
-        public WorkBookData workBookData;
+        public WorkBookData WorkBookData;
 
         /// <summary>
         /// The StructuredStorageFile itself
@@ -66,19 +66,25 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// Ctor 
         /// </summary>
         /// <param name="file"></param>
-        public XlsDocument(StructuredStorageReader file)
+        public XlsDocument(StructuredStorageReader reader)
         {
-            this.workBookData = new WorkBookData();
-            this.Storage = file;
+            this.WorkBookData = new WorkBookData();
+            this.Storage = reader;
 
-            if (file.FullNameOfAllStreamEntries.Contains("\\" + WORKBOOK))
-                this.workBookStreamReader = new VirtualStreamReader(file.GetStream(WORKBOOK));
-            else if (file.FullNameOfAllStreamEntries.Contains("\\" + ALTERNATE1))
-                this.workBookStreamReader = new VirtualStreamReader(file.GetStream(ALTERNATE1));
+            if (reader.FullNameOfAllStreamEntries.Contains("\\" + WORKBOOK))
+            {
+                this.workBookStreamReader = new VirtualStreamReader(reader.GetStream(WORKBOOK));
+            }
+            else if (reader.FullNameOfAllStreamEntries.Contains("\\" + ALTERNATE1))
+            {
+                this.workBookStreamReader = new VirtualStreamReader(reader.GetStream(ALTERNATE1));
+            }
             else
-                throw new ExtractorException(ExtractorException.WORKBOOKSTREAMNOTFOUND); 
+            {
+                throw new ExtractorException(ExtractorException.WORKBOOKSTREAMNOTFOUND);
+            }
 
-            this.workBookExtr = new WorkbookExtractor(this.workBookStreamReader, this.workBookData); 
+            this.workBookExtr = new WorkbookExtractor(this.workBookStreamReader, this.WorkBookData); 
         }
 
 

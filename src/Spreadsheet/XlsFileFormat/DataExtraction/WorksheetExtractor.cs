@@ -15,7 +15,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
     /// <summary>
     /// This class should extract the specific worksheet data. 
     /// </summary>
-    public class WorkSheetExtractor : Extractor
+    public class WorksheetExtractor : Extractor
     {
         /// <summary>
         /// Datacontainer for the worksheet
@@ -27,7 +27,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="bsd"> Boundsheetdata container</param>
-        public WorkSheetExtractor(VirtualStreamReader reader, WorkSheetData bsd)
+        public WorksheetExtractor(VirtualStreamReader reader, WorkSheetData bsd)
             : base(reader) 
         {
             this.bsd = bsd;

@@ -275,7 +275,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             try
                             {
                                 PtgRef3d ptgr3d = (PtgRef3d)ptg;
-                                String refstring = xlsContext.XlsDoc.workBookData.getIXTIString(ptgr3d.ixti);
+                                String refstring = xlsContext.XlsDoc.WorkBookData.getIXTIString(ptgr3d.ixti);
                                 String cellref = ExcelHelperClass.intToABCString((int)ptgr3d.col, (ptgr3d.rw + 1).ToString(), ptgr3d.colRelative, ptgr3d.rwRelative);
 
                                 resultStack.Push("'" + refstring + "'" + "!" + cellref);
@@ -290,7 +290,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             try
                             {
                                 PtgArea3d ptga3d = (PtgArea3d)ptg;
-                                String refstring = xlsContext.XlsDoc.workBookData.getIXTIString(ptga3d.ixti);
+                                String refstring = xlsContext.XlsDoc.WorkBookData.getIXTIString(ptga3d.ixti);
                                 String buffer = "";
                                 buffer = ExcelHelperClass.intToABCString((int)ptga3d.colFirst, (ptga3d.rwFirst + 1).ToString(), ptga3d.colFirstRelative, ptga3d.rwFirstRelative);
                                 buffer = buffer + ":" + ExcelHelperClass.intToABCString((int)ptga3d.colLast, (ptga3d.rwLast + 1).ToString(), ptga3d.colLastRelative, ptga3d.rwLastRelative);
@@ -306,14 +306,14 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         else if (ptg is PtgNameX)
                         {
                             PtgNameX ptgnx = (PtgNameX)ptg;
-                            String opstring = xlsContext.XlsDoc.workBookData.getExternNameByRef(ptgnx.ixti, ptgnx.nameindex);
+                            String opstring = xlsContext.XlsDoc.WorkBookData.getExternNameByRef(ptgnx.ixti, ptgnx.nameindex);
                             namexValue = opstring;
                             resultStack.Push(opstring);
                         }
                         else if (ptg is PtgName)
                         {
                             PtgName ptgn = (PtgName)ptg;
-                            String opstring = xlsContext.XlsDoc.workBookData.getDefinedNameByRef(ptgn.nameindex);
+                            String opstring = xlsContext.XlsDoc.WorkBookData.getDefinedNameByRef(ptgn.nameindex);
                             namexValue = opstring;
                             resultStack.Push(opstring);
                         }
@@ -328,7 +328,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             {
                                 PtgRefErr3d ptgreferr3d = (PtgRefErr3d)ptg;
 
-                                String refstring = xlsContext.XlsDoc.workBookData.getIXTIString(ptgreferr3d.ixti);
+                                String refstring = xlsContext.XlsDoc.WorkBookData.getIXTIString(ptgreferr3d.ixti);
                                 resultStack.Push("'" + refstring + "'" + "!" + ptgreferr3d.getData());
                             }
                             catch (Exception)
@@ -341,7 +341,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             try
                             {
                                 PtgAreaErr3d ptgareaerr3d = (PtgAreaErr3d)ptg;
-                                String refstring = xlsContext.XlsDoc.workBookData.getIXTIString(ptgareaerr3d.ixti);
+                                String refstring = xlsContext.XlsDoc.WorkBookData.getIXTIString(ptgareaerr3d.ixti);
                                 resultStack.Push("'" + refstring + "'" + "!" + ptgareaerr3d.getData());
                             }
                             catch (Exception)
