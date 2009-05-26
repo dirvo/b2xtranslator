@@ -30,12 +30,54 @@
 using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.OfficeGraph.Structures;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record specifies the text in a text box or a form control.
+    /// </summary>
     public class TxO : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.TxO;
+
+        /// <summary>
+        /// Specifies the horizontal alignment.
+        /// </summary>
+        public HorizontalAlignment hAlignment;
+
+        /// <summary>
+        /// Specifies the vertical alignment.
+        /// </summary>
+        public VerticalAlignment vAlignment;
+
+        /// <summary>
+        /// Specifies the orientation of the text within the object boundary.
+        /// </summary>
+        public TextRotation rot;
+
+        /// <summary>
+        /// An unsigned integer that specifies the number of characters in the text string 
+        /// contained in the Continue records immediately following this record. <br/>
+        /// MUST be less than or equal to 255.
+        /// </summary>
+        public UInt16 cchText;
+
+        /// <summary>
+        /// An unsigned integer that specifies the number of bytes of formatting run information in the 
+        /// TxORuns structure contained in the Continue records following this record.<br/>
+        /// If cchText is 0, this value MUST be 0.<br/>
+        /// Otherwise the value MUST be greater than or equal to 16 and MUST be a multiple of 8.
+        /// </summary>
+        public UInt16 cbRuns;
+
+        /// <summary>
+        /// A FontIndex that specifies the font when cchText is 0.<br/>
+        /// </summary>
+        public UInt16 ifntEmpty;
+
+
 
         public TxO(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
@@ -44,7 +86,15 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            UInt16 flags = reader.ReadUInt16();
+            this.hAlignment = (HorizontalAlignment)Utils.BitmaskToInt(flags, 0xE);
+            this.vAlignment = (VerticalAlignment)Utils.BitmaskToInt(flags, 0x70);
+            this.rot = (TextRotation)reader.ReadUInt16();
+            reader.ReadBytes(6); // reserved
+            this.cchText = reader.ReadUInt16();
+            this.cbRuns = reader.ReadUInt16();
+            this.ifntEmpty = reader.ReadUInt16();
+            reader.ReadBytes(2); // reserved
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

@@ -35,7 +35,38 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
     public class StartBlock : OfficeGraphBiffRecord
     {
+        public enum ObjectType
+        {
+            AxisGroup = 0x0,
+            AttachedLabel = 0x2,
+            Axis = 0x4,
+            ChartGroup = 0x5,
+            Sheet = 0xD
+        }
+
         public const RecordNumber ID = RecordNumber.StartBlock;
+
+        public FrtHeaderOld frtHeaderOld;
+
+        public ObjectType iObjectKind;
+
+        /// <summary>
+        /// An unsigned integer that specifies the context of the object. 
+        /// This value further specifies the object specified in iObjectKind.
+        /// </summary>
+        public UInt16 iObjectContext;
+
+        /// <summary>
+        /// An unsigned integer that specifies additional information about the context 
+        /// of the object, along with iObjectContext, iObjectInstance2 and iObjectKind.
+        /// </summary>
+        public UInt16 iObjectInstance1;
+
+        /// <summary>
+        /// An unsigned integer that specifies more information about the object context, 
+        /// along with iObjectContext, iObjectInstance1 and iObjectKind.
+        /// </summary>
+        public UInt16 iObjectInstance2;
 
         public StartBlock(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
@@ -44,7 +75,11 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            this.frtHeaderOld = new FrtHeaderOld(reader);
+            this.iObjectKind= (ObjectType)reader.ReadUInt16();
+            this.iObjectContext = reader.ReadUInt16();
+            this.iObjectInstance1 = reader.ReadUInt16();
+            this.iObjectInstance2 = reader.ReadUInt16();
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

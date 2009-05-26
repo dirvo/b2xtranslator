@@ -30,12 +30,28 @@
 using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record specifies that the chart group is a surface chart group and specifies the chart group attributes.
+    /// </summary>
     public class Surf : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Surf;
+
+        /// <summary>
+        /// A bit that specifies whether the surface chart group is wireframe or has a fill.<br/>
+        /// true = Surface chart group has a fill.<br/>
+        /// false = Surface chart group is wireframe.
+        /// </summary>
+        public bool fFillSurface;
+
+        /// <summary>
+        /// A bit that specifies whether 3-D Phong shading is displayed.
+        /// </summary>
+        public bool f3DPhongShade;
 
         public Surf(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
@@ -44,7 +60,9 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            UInt16 flags = reader.ReadUInt16();
+            this.fFillSurface = Utils.BitmaskToBool(flags, 0x1);
+            this.f3DPhongShade = Utils.BitmaskToBool(flags, 0x2);
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

@@ -33,6 +33,9 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record specifies the properties of a value axis.
+    /// </summary>
     public class ValueRange : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.ValueRange;

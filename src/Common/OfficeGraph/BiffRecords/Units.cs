@@ -33,6 +33,9 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record MUST be zero, and MUST be ignored.
+    /// </summary>
     public class Units : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Units;
@@ -44,7 +47,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            reader.ReadBytes(2); // reserved
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
