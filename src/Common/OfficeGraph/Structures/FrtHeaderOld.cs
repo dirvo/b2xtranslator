@@ -28,30 +28,35 @@
  */
 
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
     /// <summary>
-    /// This record specifies the end of a collection of records as defined by the 
-    /// Chart Sheet Substream ABNF. The collection of records specifies properties of a chart.
+    /// This structure specifies a future record.
     /// </summary>
-    public class End : OfficeGraphBiffRecord
+    public class FrtHeaderOld
     {
-        public const RecordNumber ID = RecordNumber.End;
+        /// <summary>
+        /// An unsigned integer that specifies the record type identifier. 
+        /// 
+        /// MUST be identical to the record type identifier of the containing record.
+        /// </summary>
+        public UInt16 rt;
 
-        public End(IStreamReader reader, RecordNumber id, UInt16 length)
-            : base(reader, id, length)
+        /// <summary>
+        /// A FrtFlags that specifies attributes for this record. 
+        /// 
+        /// The value of grbitFrt.fFrtRef MUST be zero.
+        /// </summary>
+        public UInt16 grbitFrt;
+
+        public FrtHeaderOld(IStreamReader reader)
         {
-            // assert that the correct record type is instantiated
-            Debug.Assert(this.Id == ID);
-
-            // initialize class members from stream
-            // NOTE: This record is empty
-
-            // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
+            this.rt = reader.ReadUInt16();
+            this.grbitFrt = reader.ReadUInt16();
         }
     }
 }

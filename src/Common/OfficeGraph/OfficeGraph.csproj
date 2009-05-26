@@ -74,6 +74,7 @@
     <Compile Include="BiffRecords\DataFormat.cs" />
     <Compile Include="BiffRecords\DataLabExt.cs" />
     <Compile Include="BiffRecords\DataLabExtContents.cs" />
+    <Compile Include="BiffRecords\Date1904.cs" />
     <Compile Include="BiffRecords\DefaultText.cs" />
     <Compile Include="BiffRecords\Dimensions.cs" />
     <Compile Include="BiffRecords\DropBar.cs" />
@@ -139,6 +140,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Structures\FixedPointNumber.cs" />
     <Compile Include="Structures\FormatRun.cs" />
+    <Compile Include="Structures\FrtHeader.cs" />
+    <Compile Include="Structures\FrtHeaderOld.cs" />
+    <Compile Include="Structures\XlUnicodeString.cs" />
+    <Compile Include="Structures\XLUnicodeStringMin2.cs" />
+    <Compile Include="Structures\XLUnicodeStringNoCch.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\StructuredStorage\StructuredStorage.csproj">

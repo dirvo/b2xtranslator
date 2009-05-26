@@ -157,7 +157,15 @@ namespace DIaLOGIKa.b2xtranslator.Tools
             byte[] rgb = new byte[rgbLength];
             stream.Read(rgb, 0, rgb.Length);
 
-            return Encoding.Unicode.GetString(rgb);
+            if (fHighByte[0] >= 0)
+            {
+                return Encoding.Unicode.GetString(rgb);
+            }
+            else
+            {
+                Encoding enc = Encoding.GetEncoding(1252);
+                return enc.GetString(rgb);
+            }
         }
 
         public static int ArraySum(byte[] values)

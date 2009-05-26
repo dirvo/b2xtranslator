@@ -33,9 +33,20 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record specifies code page information for the graph object.
+    /// </summary>
     public class CodePage : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.CodePage;
+
+        /// <summary>
+        /// An unsigned integer that specifies the code page of the graph object. 
+        /// 
+        /// The value MUST be one of the code page values specified in [CODEPG] 
+        /// or the special value 1200, which means that the text of the graph object is Unicode.
+        /// </summary>
+        public UInt16 cv;
 
         public CodePage(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
@@ -44,7 +55,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            this.cv = reader.ReadUInt16();
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

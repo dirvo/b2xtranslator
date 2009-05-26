@@ -33,6 +33,9 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record specifies the country value that is unused and MUST be ignored.
+    /// </summary>
     public class Country : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Country;
@@ -44,7 +47,8 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            // content is completely ignored
+            reader.ReadBytes(4);
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

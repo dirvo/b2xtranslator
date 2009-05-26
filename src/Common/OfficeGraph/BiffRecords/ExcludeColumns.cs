@@ -33,9 +33,26 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record specifies which columns of the data sheet are to be included or excluded from the chart.
+    /// </summary>
     public class ExcludeColumns : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.ExcludeColumns;
+
+        /// <summary>
+        /// An array of unsigned short integers indicating which data sheet columns 
+        /// are included or excluded from the chart. 
+        /// 
+        /// MUST be empty if no columns are included as part of the chart. The array contains zero-based 
+        /// column numbers at which the included or excluded status changes. The first number of the array 
+        /// is the first column included in the chart; the next number is the following column which is 
+        /// excluded from the chart; the next number is the following column which is included 
+        /// in the chart; and so on. 
+        /// 
+        /// There MUST be an even number of unsigned short integers in this field.
+        /// </summary>
+        public byte[] bData = null;
 
         public ExcludeColumns(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
@@ -44,7 +61,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            if (length > 0)
+            {
+                this.bData = reader.ReadBytes(length);
+            }
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

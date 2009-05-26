@@ -33,6 +33,15 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record specifies a continuation of the data of the preceding record. 
+    /// Records with data longer than 8,224 bytes MUST be split into several records. 
+    /// The first section of the data appears in the base record and subsequent sections appear 
+    /// in one or more Continue records that appear after the base record. Records with data 
+    /// shorter than 8,225 bytes can also store data in the base record and following Continue 
+    /// records. For example, the size of TxO record is less than 8,225 bytes, but it is 
+    /// always followed by Continue records that store the string data and formatting runs.
+    /// </summary>
     public class Continue : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Continue;
@@ -44,10 +53,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            // no special fields in this record as it is just a continuation of the previous record
 
             // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
+            //Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
         }
     }
 }

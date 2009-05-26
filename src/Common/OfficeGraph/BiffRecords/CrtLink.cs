@@ -33,6 +33,9 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record is written but unused.
+    /// </summary>
     public class CrtLink : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.CrtLink;
@@ -44,7 +47,8 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            // This record is written but unused.
+            reader.ReadBytes(10);
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

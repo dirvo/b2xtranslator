@@ -30,25 +30,39 @@
 using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
     /// <summary>
-    /// This record specifies the end of a collection of records as defined by the 
-    /// Chart Sheet Substream ABNF. The collection of records specifies properties of a chart.
+    /// This record specifies the date system that the workbook uses.
     /// </summary>
-    public class End : OfficeGraphBiffRecord
+    public class Date1904 : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.End;
+        public const RecordNumber ID = RecordNumber.Date1904;
 
-        public End(IStreamReader reader, RecordNumber id, UInt16 length)
+        /// <summary>
+        /// A Boolean that specifies the date system used in this workbook. 
+        /// 
+        /// MUST be a value from the following table: 
+        /// 
+        ///     Value       Meaning
+        ///     0x0000      The workbook uses the 1900 date system. The first date of the 1900 date 
+        ///                 system is 00:00:00 on January 1, 1900, specified by a serial value of 1.
+        ///                 
+        ///     0x0001      The workbook uses the 1904 date system. The first date of the 1904 date 
+        ///                 system is 00:00:00 on January 1, 1904, specified by a serial value of 0.
+        /// </summary>
+        public bool f1904DateSystem;
+
+        public Date1904(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // NOTE: This record is empty
+            this.f1904DateSystem = reader.ReadUInt16() == 0x0001;
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

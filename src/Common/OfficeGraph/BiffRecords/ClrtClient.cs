@@ -30,12 +30,34 @@
 using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record specifies a custom color palette for a chart sheet.
+    /// </summary>
     public class ClrtClient : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.ClrtClient;
+
+        /// <summary>
+        /// A signed integer that specifies the number of colors in the rgColor array. 
+        /// 
+        /// MUST be 0x0003.
+        /// </summary>
+        public Int16 ccv;
+
+        /// <summary>
+        /// An array of LongRGB. The array specifies the colors of the color palette. 
+        /// 
+        /// MUST contain the following values: 
+        ///     Index       Element             Value
+        ///     0           Foreground color    This value MUST be equal to the system window text color of the system palette
+        ///     1           Background color    This value MUST be equal to the system window color of the system palette
+        ///     2           Neutral color       This value MUST be black
+        /// </summary>
+        RGBColor[] rgColor;
 
         public ClrtClient(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
@@ -44,7 +66,14 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            this.ccv = reader.ReadInt16();
+
+            this.rgColor = new RGBColor[this.ccv];
+
+            for (int i = 0; i < this.ccv; i++)
+            {
+                this.rgColor[i] = new RGBColor(reader.ReadInt32(), RGBColor.ByteOrder.RedFirst);
+            }
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

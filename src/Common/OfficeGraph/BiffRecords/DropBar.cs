@@ -33,9 +33,28 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    /// <summary>
+    /// This record specifies the attributes of the up bars or the down bars between multiple
+    /// series of a line chart group and specifies the beginning of a collection of records 
+    /// as defined by the Chart Sheet Substream ABNF. The first of these collections in the 
+    /// line chart group specifies the attributes of the up bars. The second specifies the 
+    /// attributes of the down bars. If this record exists, then the chart group type 
+    /// MUST be line and the field cSer in the record SeriesList MUST be greater than 1.
+    /// </summary>
     public class DropBar : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.DropBar;
+
+        /// <summary>
+        /// A signed integer that specifies the width of the gap between the up bars or the down bars. 
+        /// 
+        /// MUST be a value between 0 and 500. 
+        /// 
+        /// The width of the gap in SPRCs can be calculated by the following formula:
+        /// 
+        ///     Width of the gap in SPRCs = 1 + pcGap
+        /// </summary>
+        public Int16 pcGap;
 
         public DropBar(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
@@ -44,7 +63,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            this.pcGap = reader.ReadInt16();
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

@@ -28,49 +28,75 @@
  */
 
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
     /// <summary>
-    /// This record specifies the width of one or more columns of the datasheet.
+    /// This structure specifies a Unicode string. 
     /// </summary>
-    public class ColumnWidth : OfficeGraphBiffRecord
+    public class XLUnicodeString
     {
-        public const RecordNumber ID = RecordNumber.ColumnWidth;
-
         /// <summary>
-        /// A Graph_Col that specifies the first column of the range of columns having their width specified by colWidth.
-        /// </summary>
-        public UInt16 colFirst;
-
-        /// <summary>
-        /// A Graph_Col that specifies the last column of the range of columns having their width specified by colWidth. 
+        /// An unsigned integer that specifies the count of characters in the string. 
         /// 
-        /// MUST be more than, or equal to colFirst.
+        /// MUST be equal to the number of characters in st.
         /// </summary>
-        public UInt16 colLast;
+        public UInt16 cch;
 
         /// <summary>
-        /// An unsigned integer that specifies the column width for all the columns between colFirst and colLast, inclusively. 
-        /// The width is calculated in 1/256 of the width of an average character of the current datasheet font.
+        /// A bit that specifies whether the characters in rgb are double-byte characters. 
+        /// 
+        /// MUST be a value from the following table: 
+        ///     Value   Meaning
+        ///     0x0     All the characters in the string have a high byte of 0x00 and only the low bytes are in rgb.
+        ///     0x1     All the characters in the string are saved as double-byte characters in rgb.
         /// </summary>
-        public UInt16 colWidth;
+        public bool fHighByte;
 
-        public ColumnWidth(IStreamReader reader, RecordNumber id, UInt16 length)
-            : base(reader, id, length)
+        /// <summary>
+        /// An array of bytes that specifies the characters. 
+        /// 
+        /// If fHighByte is 0x0, the size of the array MUST be equal to the count of characters in the string. 
+        /// If fHighByte is 0x1, the size of the array MUST be equal to 2 times the count of characters in the string.
+        /// </summary>
+        public byte[] rgb;        
+
+
+        public XLUnicodeString(IStreamReader reader, UInt16 cch)
         {
-            // assert that the correct record type is instantiated
-            Debug.Assert(this.Id == ID);
+            this.cch = reader.ReadUInt16();
 
-            // initialize class members from stream
-            this.colFirst = reader.ReadUInt16();
-            this.colLast = reader.ReadUInt16();
-            this.colWidth = reader.ReadUInt16();
+            this.fHighByte = Utils.BitmaskToBool(reader.ReadByte(), 0x0001);
 
-            // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
+            if (fHighByte)
+            {
+                this.rgb = new byte[2 * cch];
+            }
+            else
+            {
+                this.rgb = new byte[cch];
+            }
+
+            this.rgb = reader.ReadBytes(this.rgb.Length);
+        }
+
+        public string Value
+        {
+            get
+            {
+                if (fHighByte)
+                {
+                    return Encoding.Unicode.GetString(this.rgb);
+                }
+                else
+                {
+                    return Encoding.GetEncoding(1252).GetString(this.rgb);
+                }
+            }
         }
     }
 }

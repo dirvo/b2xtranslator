@@ -28,30 +28,40 @@
  */
 
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
     /// <summary>
-    /// This record specifies the end of a collection of records as defined by the 
-    /// Chart Sheet Substream ABNF. The collection of records specifies properties of a chart.
+    /// This structure specifies a Unicode string.
     /// </summary>
-    public class End : OfficeGraphBiffRecord
+    public class XLUnicodeStringMin2
     {
-        public const RecordNumber ID = RecordNumber.End;
+        /// <summary>
+        /// An unsigned integer that specifies the count of characters in the string. 
+        /// 
+        /// MUST be equal to the number of characters in st.
+        /// </summary>
+        public UInt16 cch;
 
-        public End(IStreamReader reader, RecordNumber id, UInt16 length)
-            : base(reader, id, length)
+        /// <summary>
+        /// An optional XLUnicodeStringNoCch that specifies the string. 
+        /// 
+        /// MUST exist if and only if cch is greater than zero.
+        /// </summary>
+        public XLUnicodeStringNoCch st;
+
+        public XLUnicodeStringMin2(IStreamReader reader)
         {
-            // assert that the correct record type is instantiated
-            Debug.Assert(this.Id == ID);
+            this.cch = reader.ReadUInt16();
 
-            // initialize class members from stream
-            // NOTE: This record is empty
-
-            // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
+            //st MUST exist if and only if cch is greater than zero.
+            if (this.cch > 0)
+            {
+                this.st = new XLUnicodeStringNoCch(reader, this.cch);
+            }
         }
     }
 }
