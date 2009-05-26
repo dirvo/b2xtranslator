@@ -127,7 +127,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         /// <summary>
         /// List of all external OLE object records for this document.
         /// </summary>
-        public List<ExOleEmbedContainer> OleObjects = new List<ExOleEmbedContainer>();
+        public Dictionary<int, ExOleEmbedContainer> OleObjects = new Dictionary<int, ExOleEmbedContainer>();
 
         /// <summary>
         /// The VBA Project Structured Storage
@@ -454,7 +454,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
                     {
                         ExOleObjStgAtom stgAtom = this.GetPersistObject<ExOleObjStgAtom>(atom.persistIdRef);
                         container.stgAtom = stgAtom;
-                        this.OleObjects.Add(container);                   
+                        this.OleObjects.Add(atom.exObjId, container);                   
                     }
                 }
             }

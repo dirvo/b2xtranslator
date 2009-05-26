@@ -19,21 +19,15 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         : AbstractOpenXmlMapping
     {
         ContentPart _targetPart;
-        bool _olePreview;
         private ConversionContext _ctx;
-        //private XmlElement _imageData = null;
 
         public VMLPictureMapping(VmlPart vmlPart, XmlWriterSettings xws)
             : base(XmlWriter.Create(vmlPart.GetStream(), xws))
         {
-            _targetPart = vmlPart;  //targetPart;
-            //_olePreview = olePreview;
-            //_ctx = ctx;
-            //_writer = writer;
-            //_imageData = _nodeFactory.CreateElement("v", "imageData", OpenXmlNamespaces.VectorML);
+            _targetPart = vmlPart;
         }
         
-        public void Apply(BlipStoreEntry bse, Shape shape, ShapeOptions options, int mx, int my, int dxaGoal, int dyaGoal, ConversionContext ctx, string spid)
+        public void Apply(BlipStoreEntry bse, Shape shape, ShapeOptions options, double mx, double my, ConversionContext ctx, string spid)
         {
             _ctx = ctx;
             Rectangle bounds = new Rectangle();
@@ -47,21 +41,17 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                 _writer.WriteStartElement("o", "shapelayout", OpenXmlNamespaces.Office);
                 _writer.WriteAttributeString("v", "ext", OpenXmlNamespaces.VectorML, "edit");
-
                 _writer.WriteStartElement("o", "idmap", OpenXmlNamespaces.Office);
                 _writer.WriteAttributeString("v", "ext", OpenXmlNamespaces.VectorML, "edit");
                 _writer.WriteAttributeString("data", "2");
                 _writer.WriteEndElement(); //idmap
-
                 _writer.WriteEndElement(); //shapelayout
 
 
                 //v:shapetype
                 PictureFrameType type = new PictureFrameType();
                 type.Convert(new VMLShapeTypeMapping(_ctx, _writer));
-
-            
-                
+                                            
                 //v:shape
                 _writer.WriteStartElement("v", "shape", OpenXmlNamespaces.VectorML);
                 _writer.WriteAttributeString("id", spid);
@@ -69,21 +59,15 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                 StringBuilder style = new StringBuilder();
                 
-                string widthString = Convert.ToString(bounds.Width, CultureInfo.GetCultureInfo("en-US"));
-                string heightString = Convert.ToString(bounds.Height, CultureInfo.GetCultureInfo("en-US"));
+                string widthString = Convert.ToString(bounds.Width / mx, CultureInfo.GetCultureInfo("en-US"));
+                string heightString = Convert.ToString(bounds.Height / my, CultureInfo.GetCultureInfo("en-US"));
                 style.Append("position:absolute;");
-                style.Append("left:").Append(Convert.ToString(bounds.Left, CultureInfo.GetCultureInfo("en-US"))).Append("px;");
-                style.Append("top:").Append(Convert.ToString(bounds.Top, CultureInfo.GetCultureInfo("en-US"))).Append("px;");
+                style.Append("left:" + (120 / mx).ToString() + "pt;");
+                style.Append("top:" + (109.875 / my).ToString() + "pt;");
                 style.Append("width:").Append(widthString).Append("px;");
                 style.Append("height:").Append(heightString).Append("px;");
                 _writer.WriteAttributeString("style", style.ToString());
                                
-
-                if (_olePreview)
-                {
-                    _writer.WriteAttributeString("o", "ole", OpenXmlNamespaces.Office, "");
-                }
-
                 foreach (ShapeOptions.OptionEntry entry in options.OptionsByID.Values)
                 {
                     switch (entry.pid)
@@ -106,29 +90,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             RGBColor topColor = new RGBColor((int)entry.op, RGBColor.ByteOrder.RedFirst);
                             _writer.WriteAttributeString("o", "bordertopcolor", OpenXmlNamespaces.Office, "#" + topColor.SixDigitHexCode);
                             break;
-
-                        //CROPPING
-
-                        //case ShapeOptions.PropertyId.cropFromBottom:
-                        //    //cast to signed integer
-                        //    int cropBottom = (int)entry.op;
-                        //    appendValueAttribute(_imageData, null, "cropbottom", cropBottom + "f", null);
-                        //    break;
-                        //case ShapeOptions.PropertyId.cropFromLeft:
-                        //    //cast to signed integer
-                        //    int cropLeft = (int)entry.op;
-                        //    appendValueAttribute(_imageData, null, "cropleft", cropLeft + "f", null);
-                        //    break;
-                        //case ShapeOptions.PropertyId.cropFromRight:
-                        //    //cast to signed integer
-                        //    int cropRight = (int)entry.op;
-                        //    appendValueAttribute(_imageData, null, "cropright", cropRight + "f", null);
-                        //    break;
-                        //case ShapeOptions.PropertyId.cropFromTop:
-                        //    //cast to signed integer
-                        //    int cropTop = (int)entry.op;
-                        //    appendValueAttribute(_imageData, null, "croptop", cropTop + "f", null);
-                        //    break;
                     }
                 }
 
@@ -137,16 +98,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 _writer.WriteAttributeString("o", "relid", OpenXmlNamespaces.Office, imgPart.RelIdToString);
                 _writer.WriteAttributeString("o", "title", OpenXmlNamespaces.Office, "");
                 _writer.WriteEndElement(); //imagedata
-                //appendValueAttribute(_imageData, "r", "id", imgPart.RelIdToString, OpenXmlNamespaces.Relationships);
-                //appendValueAttribute(_imageData, "o", "title", "", OpenXmlNamespaces.Office);
-                //_imageData.WriteTo(_writer);
-
-                //borders
-                ClientAnchor anch = shape.FirstAncestorWithType<ShapeContainer>().FirstChildWithType<ClientAnchor>();
-                //writePictureBorder("bordertop", anch.Top);
-                //writePictureBorder("borderleft", anch.Left);
-                //writePictureBorder("borderbottom", anch.Bottom);
-                //writePictureBorder("borderright", anch.Right);
 
                 //close v:shape
                 _writer.WriteEndElement();
@@ -156,20 +107,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 _writer.Flush();
             }
         }
-
-        ///// <summary>
-        ///// Writes a border element
-        ///// </summary>
-        ///// <param name="name">The name of the element</param>
-        ///// <param name="brc">The BorderCode object</param>
-        //private void writePictureBorder(string name, BorderCode brc)
-        //{
-        //    //_writer.WriteStartElement("w10", name, OpenXmlNamespaces.OfficeWord);
-        //    //_writer.WriteAttributeString("type", getBorderType(brc.brcType));
-        //    //_writer.WriteAttributeString("width", brc.dptLineWidth.ToString());
-        //    //_writer.WriteEndElement();
-        //}
-
 
         /// <summary>
         /// Copies the picture from the binary stream to the zip archive 

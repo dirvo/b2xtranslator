@@ -42,13 +42,14 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
     public class ExOleObjAtom : Record
     {
         public UInt32 persistIdRef;
+        public Int32 exObjId;
 
         public ExOleObjAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {
             Int32 drawAspect = this.Reader.ReadInt32();
             Int32 type = this.Reader.ReadInt32();
-            Int32 exObjId = this.Reader.ReadInt32();
+            exObjId = this.Reader.ReadInt32();
             Int32 subType = this.Reader.ReadInt32();
             persistIdRef = this.Reader.ReadUInt32();
             Int32 unused = this.Reader.ReadInt32();            

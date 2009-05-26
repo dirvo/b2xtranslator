@@ -786,14 +786,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 {
                     if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.Pib))
                     {
-                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.BlipBooleanProperties))
+                        if (sh.fOleShape)
                         {
-                            BlipBooleanProperties props = new BlipBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.BlipBooleanProperties].op);
-                            if (props.fPictureActive && props.fusefPictureActive)
-                            {
-                                writeOle(container);
-                                continueShape = false;
-                            }
+                            writeOle(container);
+                            continueShape = false;
                         }
 
                         if (continueShape)
@@ -1450,7 +1446,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             int exObjIdRef = 0;
             CheckClientData(container.FirstChildWithType<ClientData>(), ref placeholder, ref exObjIdRef);
 
-            ExOleEmbedContainer oleContainer = this._ctx.Ppt.OleObjects[exObjIdRef-1];
+            ExOleEmbedContainer oleContainer = this._ctx.Ppt.OleObjects[exObjIdRef];
 
             EmbeddedObjectPart embPart = null;
             embPart = parentSlideMapping.targetPart.AddEmbeddedObjectPart(EmbeddedObjectPart.ObjectType.Other);
@@ -1462,8 +1458,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             string rId = embPart.RelIdToString;
            
             string spid = "_x0000_s" + id;
-            string width = Utils.MasterCoordToEMU(anchor.Right - anchor.Left).ToString();
-            string height = Utils.MasterCoordToEMU(anchor.Bottom - anchor.Top).ToString();
+            double width = 6096000; //Utils.MasterCoordToEMU(anchor.Right - anchor.Left).ToString();
+            double height = 4067348; //Utils.MasterCoordToEMU(anchor.Bottom - anchor.Top).ToString();
             string name = oleContainer.AllChildrenWithType<CStringAtom>()[0].Text;
             string progId = oleContainer.AllChildrenWithType<CStringAtom>()[1].Text;
 
@@ -1477,14 +1473,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
 
             VMLPictureMapping vm = new VMLPictureMapping(vmlPart, _ctx.WriterSettings);
-            vm.Apply(bse, sh, so, 1000, 1000, anchor.Right - anchor.Left, anchor.Bottom - anchor.Top, _ctx, spid);
+            vm.Apply(bse, sh, so, width / (double)Utils.MasterCoordToEMU(anchor.Right - anchor.Left), height / (double)Utils.MasterCoordToEMU(anchor.Bottom - anchor.Top), _ctx, spid);
 
             _writer.WriteStartElement("p", "oleObj", OpenXmlNamespaces.PresentationML);
             _writer.WriteAttributeString("spid", spid);
             _writer.WriteAttributeString("name", name);
             _writer.WriteAttributeString("id",OpenXmlNamespaces.Relationships, rId);
-            _writer.WriteAttributeString("imgW", width);
-            _writer.WriteAttributeString("imgH", height);
+            _writer.WriteAttributeString("imgW", width.ToString());
+            _writer.WriteAttributeString("imgH", height.ToString());
             _writer.WriteAttributeString("progId", progId);
 
             _writer.WriteStartElement("p", "embed", OpenXmlNamespaces.PresentationML);
