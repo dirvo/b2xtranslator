@@ -298,6 +298,34 @@
     <Compile Include="BiffRecords\XFEXT.cs" />
     <Compile Include="BiffRecords\XL5MODIFY.cs" />
     <Compile Include="BiffString.cs" />
+    <Compile Include="ChartSequences\AiSequence.cs" />
+    <Compile Include="ChartSequences\AttachedLabelSequence.cs" />
+    <Compile Include="ChartSequences\AxesSequence.cs" />
+    <Compile Include="ChartSequences\AxisParentSequence.cs" />
+    <Compile Include="ChartSequences\AxmSequence.cs" />
+    <Compile Include="ChartSequences\AxsSequence.cs" />
+    <Compile Include="ChartSequences\ChartFormatsSequence.cs" />
+    <Compile Include="ChartSequences\ChartSheetContentSequence.cs" />
+    <Compile Include="ChartSequences\ChartSheetSequence.cs" />
+    <Compile Include="ChartSequences\CrtSequence.cs" />
+    <Compile Include="ChartSequences\DataSheetSequence.cs" />
+    <Compile Include="ChartSequences\DatSequence.cs" />
+    <Compile Include="ChartSequences\DftTextSequence.cs" />
+    <Compile Include="ChartSequences\DropBarSequence.cs" />
+    <Compile Include="ChartSequences\DvAxisSequence.cs" />
+    <Compile Include="ChartSequences\FontListSequence.cs" />
+    <Compile Include="ChartSequences\FrameSequence.cs" />
+    <Compile Include="ChartSequences\GelFrameSequence.cs" />
+    <Compile Include="ChartSequences\IvAxisSequence.cs" />
+    <Compile Include="ChartSequences\LdSequence.cs" />
+    <Compile Include="ChartSequences\ObjectsSequence.cs" />
+    <Compile Include="ChartSequences\ObjSequence.cs" />
+    <Compile Include="ChartSequences\OfficeGraphBiffRecordSequence.cs" />
+    <Compile Include="ChartSequences\PicfSequence.cs" />
+    <Compile Include="ChartSequences\SeriesAxisSequence.cs" />
+    <Compile Include="ChartSequences\SeriesFormatSequence.cs" />
+    <Compile Include="ChartSequences\SsSequence.cs" />
+    <Compile Include="ChartSequences\TextObjectSequence.cs" />
     <Compile Include="DataContainer\AbstractCellData.cs" />
     <Compile Include="DataContainer\BlankCell.cs" />
     <Compile Include="DataContainer\ColumnInfoData.cs" />
@@ -395,6 +423,10 @@
     <ProjectReference Include="..\..\Common\CommonTranslatorLib\CommonTranslatorLib.csproj">
       <Project>{0F0F6BAF-BC5D-4DC6-AE53-8257305EE5CA}</Project>
       <Name>CommonTranslatorLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\OfficeGraph\OfficeGraph.csproj">
+      <Project>{598B4D7A-F1DB-496F-BC79-5F7BE596A239}</Project>
+      <Name>OfficeGraph</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Common\StructuredStorage\StructuredStorage.csproj">
       <Project>{CBD9BEE2-1E01-477A-BB44-1EC9F8C91AB7}</Project>

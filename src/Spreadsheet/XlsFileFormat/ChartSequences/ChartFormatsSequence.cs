@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using OfficeGraph = DIaLOGIKa.b2xtranslator.OfficeGraph;
+using DIaLOGIKa.b2xtranslator.OfficeGraph;
 
-namespace DIaLOGIKa.b2xtranslator.OfficeGraph
+namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
     public class ChartFormatsSequence : OfficeGraphBiffRecordSequence
     {
@@ -55,7 +57,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         private FrameSequence checkForFrameSequence(IStreamReader reader)
         {
             FrameSequence result = null;
-            if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == RecordNumber.Frame)
+            if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == OfficeGraph.RecordNumber.Frame)
             {
                 result = new FrameSequence(reader);
             }
@@ -72,7 +74,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         private FontListSequence checkForFontList(IStreamReader reader)
         {
             FontListSequence result = null;
-            if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == RecordNumber.FrtFontList)
+            if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == OfficeGraph.RecordNumber.FrtFontList)
             {
                 // parse FontListSequence
                 result = new FontListSequence(reader);
