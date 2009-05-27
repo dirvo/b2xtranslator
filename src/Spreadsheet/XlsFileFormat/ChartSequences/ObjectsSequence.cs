@@ -11,7 +11,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public ObjectsSequence(IStreamReader reader)
             : base(reader)
         {
-            //ToDo: Implement body
+            // OBJECTS = *(MsoDrawing *Continue [OBJ / TEXTOBJECT]) [MsoDrawingSelection]
+
         }
     }
 }
