@@ -73,7 +73,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             RecordNumber nextRecord = (RecordNumber)reader.ReadUInt16();
 
             // seek back
-            reader.BaseStream.Seek(-2, System.IO.SeekOrigin.Current);
+            reader.BaseStream.Seek(-sizeof(UInt16), System.IO.SeekOrigin.Current);
 
             return nextRecord;
         }
