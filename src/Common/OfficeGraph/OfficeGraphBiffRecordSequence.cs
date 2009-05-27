@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
-namespace DIaLOGIKa.b2xtranslator.OfficeGraph.Sequences
+namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
-    public class RecordSequence
+    public class OfficeGraphBiffRecordSequence
     {
         IStreamReader _reader;
         public IStreamReader Reader
@@ -14,7 +14,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph.Sequences
             set { this._reader = value; }
         }
 
-        public RecordSequence(IStreamReader reader)
+        public OfficeGraphBiffRecordSequence(IStreamReader reader)
         {
             _reader = reader;
         }
