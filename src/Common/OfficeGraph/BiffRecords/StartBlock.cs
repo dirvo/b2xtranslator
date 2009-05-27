@@ -33,7 +33,7 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
-    [OfficeGraphBiffRecordAttribute(RecordNumber.StartBlock)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.StartBlock)]
     public class StartBlock : OfficeGraphBiffRecord
     {
         public enum ObjectType
@@ -45,7 +45,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Sheet = 0xD
         }
 
-        public const RecordNumber ID = RecordNumber.StartBlock;
+        public const GraphRecordNumber ID = GraphRecordNumber.StartBlock;
 
         public FrtHeaderOld frtHeaderOld;
 
@@ -69,7 +69,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public UInt16 iObjectInstance2;
 
-        public StartBlock(IStreamReader reader, RecordNumber id, UInt16 length)
+        public StartBlock(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

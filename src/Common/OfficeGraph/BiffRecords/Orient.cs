@@ -37,10 +37,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies how the series data of a chart is arranged.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Orient)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Orient)]
     public class Orient : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Orient;
+        public const GraphRecordNumber ID = GraphRecordNumber.Orient;
 
         /// <summary>
         /// A Boolean that specifies whether series are arranged by rows or columns from the 
@@ -67,7 +67,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public UInt16 colSeriesX;
 
-        public Orient(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Orient(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

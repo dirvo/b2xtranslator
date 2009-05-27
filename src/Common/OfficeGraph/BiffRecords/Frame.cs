@@ -39,10 +39,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// element as defined by the Chart Sheet Substream ABNF. 
     /// A chart element‟s frame is specified by the Frame record following it.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Frame)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Frame)]
     public class Frame : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Frame;
+        public const GraphRecordNumber ID = GraphRecordNumber.Frame;
 
         public enum FrameStyle : ushort
         {
@@ -80,7 +80,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public bool fAutoPosition;
 
-        public Frame(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Frame(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

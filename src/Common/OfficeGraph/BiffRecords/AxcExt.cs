@@ -36,12 +36,12 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies additional extension properties of a date axis, along with a CatSerRange record.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.AxcExt)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.AxcExt)]
     public class AxcExt : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.AxcExt;
+        public const GraphRecordNumber ID = GraphRecordNumber.AxcExt;
 
-        public AxcExt(IStreamReader reader, RecordNumber id, UInt16 length)
+        public AxcExt(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

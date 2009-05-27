@@ -43,10 +43,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// as defined in the legend overview, there MUST be zero or one instances of this record 
     /// in the sequence of records that conforms to the SERIESFORMAT rule.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.LegendException)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.LegendException)]
     public class LegendException : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.LegendException;
+        public const GraphRecordNumber ID = GraphRecordNumber.LegendException;
 
         /// <summary>
         /// An unsigned integer that specifies the legend entry.<br/>
@@ -72,7 +72,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public bool fLabel;
 
-        public LegendException(IStreamReader reader, RecordNumber id, UInt16 length)
+        public LegendException(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

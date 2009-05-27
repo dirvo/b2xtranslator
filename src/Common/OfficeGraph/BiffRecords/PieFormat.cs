@@ -33,10 +33,10 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
-    [OfficeGraphBiffRecordAttribute(RecordNumber.PieFormat)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.PieFormat)]
     public class PieFormat : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.PieFormat;
+        public const GraphRecordNumber ID = GraphRecordNumber.PieFormat;
 
         /// <summary>
         /// A signed integer that specifies the distance of a 
@@ -56,7 +56,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public Int16 pcExplode;
 
-        public PieFormat(IStreamReader reader, RecordNumber id, UInt16 length)
+        public PieFormat(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

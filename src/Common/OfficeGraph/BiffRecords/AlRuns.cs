@@ -36,10 +36,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies rich text formatting within chart titles, trendline, and data labels.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.AlRuns)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.AlRuns)]
     public class AlRuns : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.AlRuns;
+        public const GraphRecordNumber ID = GraphRecordNumber.AlRuns;
 
         /// <summary>
         /// An unsigned integer that specifies the number of rich text runs. 
@@ -49,7 +49,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 
         public FormatRun[] rgRuns;
 
-        public AlRuns(IStreamReader reader, RecordNumber id, UInt16 length)
+        public AlRuns(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

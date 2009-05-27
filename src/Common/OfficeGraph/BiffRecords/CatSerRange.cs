@@ -37,10 +37,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the properties of a category (3) axis, a date axis, or a series axis.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.CatSerRange)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.CatSerRange)]
     public class CatSerRange : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.CatSerRange;
+        public const GraphRecordNumber ID = GraphRecordNumber.CatSerRange;
 
         /// <summary>
         /// A signed integer that specifies where the value axis crosses this axis, based on the following table. 
@@ -92,7 +92,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public bool fReverse;
 
-        public CatSerRange(IStreamReader reader, RecordNumber id, UInt16 length)
+        public CatSerRange(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

@@ -33,10 +33,10 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Number)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Number)]
     public class Number : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Number;
+        public const GraphRecordNumber ID = GraphRecordNumber.Number;
 
         /// <summary>
         /// Row 
@@ -62,7 +62,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// <param name="reader">Streamreader</param>
         /// <param name="id">Record ID - Recordtype</param>
         /// <param name="length">The recordlegth</param>
-        public Number(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Number(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

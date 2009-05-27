@@ -37,12 +37,12 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// This empty record specifies that the Frame record that immediately follows this 
     /// record specifies properties of the plot area.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.PlotArea)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.PlotArea)]
     public class PlotArea : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.PlotArea;
+        public const GraphRecordNumber ID = GraphRecordNumber.PlotArea;
 
-        public PlotArea(IStreamReader reader, RecordNumber id, UInt16 length)
+        public PlotArea(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

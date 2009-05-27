@@ -37,12 +37,12 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// This record specifies the end of a collection of records as defined by the 
     /// Chart Sheet Substream ABNF. The collection of records specifies properties of a chart.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.End)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.End)]
     public class End : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.End;
+        public const GraphRecordNumber ID = GraphRecordNumber.End;
 
-        public End(IStreamReader reader, RecordNumber id, UInt16 length)
+        public End(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

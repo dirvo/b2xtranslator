@@ -36,10 +36,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the number of colors in the palette that are available.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.ChartColors)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.ChartColors)]
     public class ChartColors : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.ChartColors;
+        public const GraphRecordNumber ID = GraphRecordNumber.ChartColors;
 
         /// <summary>
         /// A signed integer that specifies the number of colors currently available. 
@@ -49,7 +49,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public Int16 icvMac;
 
-        public ChartColors(IStreamReader reader, RecordNumber id, UInt16 length)
+        public ChartColors(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

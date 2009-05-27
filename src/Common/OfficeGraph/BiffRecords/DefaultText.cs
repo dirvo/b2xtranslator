@@ -37,10 +37,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// This record specifies the text elements that are formatted using the 
     /// information specified by the Text record immediately following this record.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.DefaultText)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.DefaultText)]
     public class DefaultText : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.DefaultText;
+        public const GraphRecordNumber ID = GraphRecordNumber.DefaultText;
 
         public enum DefaultTextType : ushort
         {
@@ -71,7 +71,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public DefaultTextType defaultTextId;
 
-        public DefaultText(IStreamReader reader, RecordNumber id, UInt16 length)
+        public DefaultText(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

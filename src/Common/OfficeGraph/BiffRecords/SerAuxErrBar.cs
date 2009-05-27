@@ -37,10 +37,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies properties of an error bar.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.SerAuxErrBar)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.SerAuxErrBar)]
     public class SerAuxErrBar : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.SerAuxErrBar;
+        public const GraphRecordNumber ID = GraphRecordNumber.SerAuxErrBar;
 
         public enum ErrorBarDirection
         {
@@ -79,7 +79,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public double numValue;
 
-        public SerAuxErrBar(IStreamReader reader, RecordNumber id, UInt16 length)
+        public SerAuxErrBar(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

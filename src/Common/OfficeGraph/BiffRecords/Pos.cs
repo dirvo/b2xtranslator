@@ -38,7 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// or the plot area, as specified by the primary axis group. <br/>
     /// This record MUST be ignored for the plot area when the fManPlotArea field of ShtProps is set to 1.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Pos)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Pos)]
     public class Pos : OfficeGraphBiffRecord
     {
         public enum PositionMode
@@ -50,7 +50,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             MDCHART
         }
 
-        public const RecordNumber ID = RecordNumber.Pos;
+        public const GraphRecordNumber ID = GraphRecordNumber.Pos;
 
         /// <summary>
         /// A PositionMode that specifies the positioning mode for the upper-left corner of a legend, 
@@ -88,7 +88,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public Int16 y2;
 
-        public Pos(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Pos(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

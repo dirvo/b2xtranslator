@@ -36,10 +36,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the series for the chart.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.SeriesList)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.SeriesList)]
     public class SeriesList : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.SeriesList;
+        public const GraphRecordNumber ID = GraphRecordNumber.SeriesList;
 
         /// <summary>
         /// An unsigned integer that specifies number of items in the rgiser field.
@@ -53,7 +53,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public UInt16[] rgiser;
 
-        public SeriesList(IStreamReader reader, RecordNumber id, UInt16 length)
+        public SeriesList(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

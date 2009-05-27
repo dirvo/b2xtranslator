@@ -37,10 +37,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// This record specifies the position and size of the chart area and specifies the beginning 
     /// of a collection of records as defined by the Chart Sheet Substream ABNF. The collection of records specifies a chart.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Chart)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Chart)]
     public class Chart : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Chart;
+        public const GraphRecordNumber ID = GraphRecordNumber.Chart;
 
         /// <summary>
         /// A FixedPoint as specified in [MS-OSHARED] section 2.2.1.6 that specifies 
@@ -74,7 +74,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         FixedPointNumber dy;
 
-        public Chart(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Chart(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

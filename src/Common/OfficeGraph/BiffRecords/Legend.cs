@@ -34,10 +34,10 @@ using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Legend)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Legend)]
     public class Legend : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Legend;
+        public const GraphRecordNumber ID = GraphRecordNumber.Legend;
 
         /// <summary>
         /// An unsigned integer that specifies the x-position, in SPRC, 
@@ -99,7 +99,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public bool fWasDataTable;
 
-        public Legend(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Legend(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

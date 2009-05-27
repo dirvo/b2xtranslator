@@ -36,10 +36,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies a number format.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Format)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Format)]
     public class Format : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Format;
+        public const GraphRecordNumber ID = GraphRecordNumber.Format;
 
         /// <summary>
         /// An IFmt that specifies the identifier of the format string specified by stFormat. 
@@ -66,7 +66,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public XLUnicodeString stFormat;
 
-        public Format(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Format(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

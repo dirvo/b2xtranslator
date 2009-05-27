@@ -37,10 +37,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the contents of an extended data label.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.DataLabExtContents)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.DataLabExtContents)]
     public class DataLabExtContents : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.DataLabExtContents;
+        public const GraphRecordNumber ID = GraphRecordNumber.DataLabExtContents;
 
         /// <summary>
         /// An FrtHeader. The FrtHeader.rt field MUST be 0x086B.
@@ -104,7 +104,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public XLUnicodeStringMin2 rgchSep;
 
-        public DataLabExtContents(IStreamReader reader, RecordNumber id, UInt16 length)
+        public DataLabExtContents(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

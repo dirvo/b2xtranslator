@@ -39,10 +39,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// as defined by the Chart Sheet Substream ABNF. This collection of records 
     /// specifies formatting properties for the data point and series.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.DataFormat)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.DataFormat)]
     public class DataFormat : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.DataFormat;
+        public const GraphRecordNumber ID = GraphRecordNumber.DataFormat;
 
         /// <summary>
         /// An unsigned integer that specifies the zero-based index into the data point within 
@@ -84,7 +84,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public UInt16 iss;
 
-        public DataFormat(IStreamReader reader, RecordNumber id, UInt16 length)
+        public DataFormat(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

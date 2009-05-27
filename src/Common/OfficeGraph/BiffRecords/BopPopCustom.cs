@@ -33,12 +33,12 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
-    [OfficeGraphBiffRecordAttribute(RecordNumber.BopPopCustom)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.BopPopCustom)]
     public class BopPopCustom : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.BopPopCustom;
+        public const GraphRecordNumber ID = GraphRecordNumber.BopPopCustom;
 
-        public BopPopCustom(IStreamReader reader, RecordNumber id, UInt16 length)
+        public BopPopCustom(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

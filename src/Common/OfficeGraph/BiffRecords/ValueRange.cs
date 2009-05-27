@@ -37,10 +37,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the properties of a value axis.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.ValueRange)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.ValueRange)]
     public class ValueRange : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.ValueRange;
+        public const GraphRecordNumber ID = GraphRecordNumber.ValueRange;
 
         /// <summary>
         /// An Xnum that specifies the minimum value of the value axis. 
@@ -170,7 +170,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         public bool fMaxCross;
 
 
-        public ValueRange(IStreamReader reader, RecordNumber id, UInt16 length)
+        public ValueRange(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

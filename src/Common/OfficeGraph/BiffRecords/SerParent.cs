@@ -36,10 +36,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the series to which the current trendline or error bar corresponds.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.SerParent)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.SerParent)]
     public class SerParent : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.SerParent;
+        public const GraphRecordNumber ID = GraphRecordNumber.SerParent;
 
         /// <summary>
         /// An unsigned integer that specifies the one-based index of a Series record in the collection of 
@@ -49,7 +49,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public UInt16 series;
 
-        public SerParent(IStreamReader reader, RecordNumber id, UInt16 length)
+        public SerParent(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

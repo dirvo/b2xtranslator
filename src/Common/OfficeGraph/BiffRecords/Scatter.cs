@@ -38,10 +38,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// This record specifies that the chart group is a scatter chart group or a bubble chart group, 
     /// and specifies the chart group attributes.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Scatter)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Scatter)]
     public class Scatter : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Scatter;
+        public const GraphRecordNumber ID = GraphRecordNumber.Scatter;
 
         /// <summary>
         /// An unsigned integer that specifies the size of the data points as a percentage of their default size. <br/>
@@ -81,7 +81,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public bool fHasShadow;
 
-        public Scatter(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Scatter(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

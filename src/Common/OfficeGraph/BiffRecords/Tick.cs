@@ -37,7 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the attributes of the axis labels, major tick marks, and minor tick marks associated with an axis.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Tick)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Tick)]
     public class Tick : OfficeGraphBiffRecord
     {
         public enum MarkLocation
@@ -56,7 +56,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             NextToAxis
         }
 
-        public const RecordNumber ID = RecordNumber.Tick;
+        public const GraphRecordNumber ID = GraphRecordNumber.Tick;
 
         /// <summary>
         /// Specifies the location of major tick marks.
@@ -122,7 +122,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public UInt16 trot;
 
-        public Tick(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Tick(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

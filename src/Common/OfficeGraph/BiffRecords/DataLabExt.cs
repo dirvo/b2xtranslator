@@ -37,14 +37,14 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// This record specifies the beginning of a collection of records as defined by 
     /// the Chart Sheet Substream ABNF. The collection specifies an extended data label.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.DataLabExt)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.DataLabExt)]
     public class DataLabExt : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.DataLabExt;
+        public const GraphRecordNumber ID = GraphRecordNumber.DataLabExt;
 
         public FrtHeader frtHeader;
 
-        public DataLabExt(IStreamReader reader, RecordNumber id, UInt16 length)
+        public DataLabExt(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

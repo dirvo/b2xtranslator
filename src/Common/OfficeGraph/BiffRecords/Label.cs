@@ -33,10 +33,10 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Label)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Label)]
     public class Label : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Label;
+        public const GraphRecordNumber ID = GraphRecordNumber.Label;
 
         /// <summary>
         /// An unsigned integer that specifies a zero-based index of a row in the datasheet that contains this structure. MUST be less than or equal to 0x0F9F.
@@ -60,7 +60,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public string stLabel;
         
-        public Label(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Label(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

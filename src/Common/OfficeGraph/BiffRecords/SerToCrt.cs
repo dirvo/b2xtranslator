@@ -36,10 +36,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the chart group for the current series.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.SerToCrt)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.SerToCrt)]
     public class SerToCrt : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.SerToCrt;
+        public const GraphRecordNumber ID = GraphRecordNumber.SerToCrt;
 
         /// <summary>
         /// An unsigned integer that specifies the zero-based index of a ChartFormat 
@@ -48,7 +48,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public UInt16 id;
 
-        public SerToCrt(IStreamReader reader, RecordNumber id, UInt16 length)
+        public SerToCrt(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

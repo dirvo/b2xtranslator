@@ -36,10 +36,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the number of non-empty rows and the number of non-empty cells in the longest row of a Graph object.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Dimensions)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Dimensions)]
     public class Dimensions : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Dimensions;
+        public const GraphRecordNumber ID = GraphRecordNumber.Dimensions;
 
         /// <summary>
         /// An unsigned integer that specifies the number of non-empty cells in the 
@@ -57,7 +57,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public UInt16 colMac;
 
-        public Dimensions(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Dimensions(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

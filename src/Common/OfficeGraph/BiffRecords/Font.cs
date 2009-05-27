@@ -37,10 +37,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies a font and font formatting information.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Font)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Font)]
     public class Font : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Font;
+        public const GraphRecordNumber ID = GraphRecordNumber.Font;
 
         public enum FontWeight : ushort
         {
@@ -149,7 +149,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public ShortXLUnicodeString fontName;
 
-        public Font(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Font(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

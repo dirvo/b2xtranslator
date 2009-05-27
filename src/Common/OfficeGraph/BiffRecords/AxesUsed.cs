@@ -36,10 +36,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the number of axis groups on the chart.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.AxesUsed)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.AxesUsed)]
     public class AxesUsed : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.AxesUsed;
+        public const GraphRecordNumber ID = GraphRecordNumber.AxesUsed;
 
         public enum AxisGroupsPresent : ushort
         {
@@ -59,7 +59,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public AxisGroupsPresent cAxes = AxisGroupsPresent.Primary;
 
-        public AxesUsed(IStreamReader reader, RecordNumber id, UInt16 length)
+        public AxesUsed(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

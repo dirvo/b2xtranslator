@@ -38,10 +38,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// This record specifies that the chart group is a bar chart group or 
     /// a column chart group, and specifies the chart group attributes.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Bar)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Bar)]
     public class Bar : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Bar;
+        public const GraphRecordNumber ID = GraphRecordNumber.Bar;
 
         /// <summary>
         /// A signed integer that specifies the overlap between data points in the same category 
@@ -101,7 +101,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public bool fHasShadow;
 
-        public Bar(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Bar(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

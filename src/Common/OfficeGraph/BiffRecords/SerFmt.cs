@@ -40,10 +40,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// DataFormat record. If this record is not present in the sequence of records that conforms to the 
     /// SS rule then all the fields will have default values otherwise all the fields MUST contain a value.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.SerFmt)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.SerFmt)]
     public class SerFmt : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.SerFmt;
+        public const GraphRecordNumber ID = GraphRecordNumber.SerFmt;
 
         /// <summary>
         /// A bit that specifies whether the lines of the series are displayed with a 
@@ -67,7 +67,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public bool fArShadow;
 
-        public SerFmt(IStreamReader reader, RecordNumber id, UInt16 length)
+        public SerFmt(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

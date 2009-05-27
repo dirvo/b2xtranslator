@@ -33,10 +33,10 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Axis)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Axis)]
     public class Axis : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Axis;
+        public const GraphRecordNumber ID = GraphRecordNumber.Axis;
 
         public enum AxisType : ushort
         {
@@ -60,7 +60,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 
         public AxisType wType;
 
-        public Axis(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Axis(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

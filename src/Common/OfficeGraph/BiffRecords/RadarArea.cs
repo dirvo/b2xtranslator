@@ -37,10 +37,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies that the chart group is a filled radar chart group and specifies the chart group attributes.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.RadarArea)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.RadarArea)]
     public class RadarArea : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.RadarArea;
+        public const GraphRecordNumber ID = GraphRecordNumber.RadarArea;
 
         /// <summary>
         /// A bit that specifies whether category (3) labels are displayed.
@@ -52,7 +52,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public bool fHasShadow;
 
-        public RadarArea(IStreamReader reader, RecordNumber id, UInt16 length)
+        public RadarArea(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

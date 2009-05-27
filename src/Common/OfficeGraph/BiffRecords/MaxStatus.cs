@@ -36,12 +36,12 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record is unused.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.MaxStatus)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.MaxStatus)]
     public class MaxStatus : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.MaxStatus;
+        public const GraphRecordNumber ID = GraphRecordNumber.MaxStatus;
 
-        public MaxStatus(IStreamReader reader, RecordNumber id, UInt16 length)
+        public MaxStatus(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

@@ -33,10 +33,10 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
-    [OfficeGraphBiffRecordAttribute(RecordNumber.WinDoc)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.WinDoc)]
     public class WinDoc : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.WinDoc;
+        public const GraphRecordNumber ID = GraphRecordNumber.WinDoc;
 
         public enum WindowKind : byte
         {
@@ -56,7 +56,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public WindowKind fChartSelected;
 
-        public WinDoc(IStreamReader reader, RecordNumber id, UInt16 length)
+        public WinDoc(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

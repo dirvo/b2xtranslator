@@ -36,12 +36,12 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the country value that is unused and MUST be ignored.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Country)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Country)]
     public class Country : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Country;
+        public const GraphRecordNumber ID = GraphRecordNumber.Country;
 
-        public Country(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Country(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

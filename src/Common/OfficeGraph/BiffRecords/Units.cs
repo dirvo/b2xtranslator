@@ -36,12 +36,12 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record MUST be zero, and MUST be ignored.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Units)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Units)]
     public class Units : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Units;
+        public const GraphRecordNumber ID = GraphRecordNumber.Units;
 
-        public Units(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Units(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

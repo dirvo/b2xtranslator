@@ -36,7 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
     public abstract class OfficeGraphBiffRecord
     {
-        RecordNumber _id;
+        GraphRecordNumber _id;
         UInt32 _length;
         long _offset;
 
@@ -46,7 +46,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// <param name="reader">Streamreader</param>
         /// <param name="id">Record ID - Recordtype</param>
         /// <param name="length">The recordlegth</param>
-        public OfficeGraphBiffRecord(IStreamReader reader, RecordNumber id, UInt32 length)
+        public OfficeGraphBiffRecord(IStreamReader reader, GraphRecordNumber id, UInt32 length)
         {
             _reader = reader;
             _offset = _reader.BaseStream.Position;
@@ -95,10 +95,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             }
         }
 
-        public static RecordNumber GetNextRecordNumber(IStreamReader reader)
+        public static GraphRecordNumber GetNextRecordNumber(IStreamReader reader)
         {
             // read next id
-            RecordNumber nextRecord = (RecordNumber)reader.ReadUInt16();
+            GraphRecordNumber nextRecord = (GraphRecordNumber)reader.ReadUInt16();
 
             // seek back
             reader.BaseStream.Seek(-sizeof(UInt16), System.IO.SeekOrigin.Current);
@@ -117,7 +117,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
                 if (TypeToRecordClassMapping.TryGetValue(id, out cls))
                 {
                     ConstructorInfo constructor = cls.GetConstructor(
-                        new Type[] { typeof(IStreamReader), typeof(RecordNumber), typeof(UInt16) }
+                        new Type[] { typeof(IStreamReader), typeof(GraphRecordNumber), typeof(UInt16) }
                         );
 
                     try
@@ -144,7 +144,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             }
         }
 
-        public RecordNumber Id
+        public GraphRecordNumber Id
         {
             get { return _id; }
         }

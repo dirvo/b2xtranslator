@@ -36,10 +36,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies which rows of the data sheet are to be included or excluded from the chart.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.ExcludeRows)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.ExcludeRows)]
     public class ExcludeRows : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.ExcludeRows;
+        public const GraphRecordNumber ID = GraphRecordNumber.ExcludeRows;
 
         /// <summary>
         /// An array of unsigned short integers indicating which data sheet rows are included 
@@ -52,7 +52,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public byte[] bData;
 
-        public ExcludeRows(IStreamReader reader, RecordNumber id, UInt16 length)
+        public ExcludeRows(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

@@ -36,10 +36,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies an object on a chart, or the entire chart, to which Text is linked.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.ObjectLink)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.ObjectLink)]
     public class ObjectLink : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.ObjectLink;
+        public const GraphRecordNumber ID = GraphRecordNumber.ObjectLink;
 
         /// <summary>
         /// An unsigned integer that specifies the object that the Text is linked to. <br/>
@@ -72,7 +72,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public UInt16 wLinkVar2;
 
-        public ObjectLink(IStreamReader reader, RecordNumber id, UInt16 length)
+        public ObjectLink(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

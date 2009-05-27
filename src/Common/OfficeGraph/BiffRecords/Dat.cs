@@ -39,10 +39,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// the Chart Sheet Substream ABNF. The collection of records specifies the options 
     /// of the data table which can be displayed within a chart area.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Dat)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Dat)]
     public class Dat : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Dat;
+        public const GraphRecordNumber ID = GraphRecordNumber.Dat;
 
         /// <summary>
         /// A bit that specifies whether horizontal cell borders are displayed within the data table.
@@ -65,7 +65,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public bool fShowSeriesKey;
 
-        public Dat(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Dat(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

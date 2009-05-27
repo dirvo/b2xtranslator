@@ -39,10 +39,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// 
     /// Refer to the data label overview for additional information on how this record is used and when this record is ignored.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.AttachedLabel)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.AttachedLabel)]
     public class AttachedLabel : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.AttachedLabel;
+        public const GraphRecordNumber ID = GraphRecordNumber.AttachedLabel;
 
         /// <summary>
         /// A bit that specifies whether the value, or the vertical value on bubble or scatter chart groups, is displayed in the data label.
@@ -108,7 +108,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         public bool fShowSeriesName;
 
 
-        public AttachedLabel(IStreamReader reader, RecordNumber id, UInt16 length)
+        public AttachedLabel(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

@@ -37,10 +37,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// This record specifies the font for a given text element. 
     /// The Font referenced by iFont can be in this chart sheet substream, or in the workbook.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.FontX)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.FontX)]
     public class FontX : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.FontX;
+        public const GraphRecordNumber ID = GraphRecordNumber.FontX;
 
         /// <summary>
         /// An unsigned integer that specifies the font to use for subsequent records. 
@@ -55,7 +55,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public UInt16 iFont;
 
-        public FontX(IStreamReader reader, RecordNumber id, UInt16 length)
+        public FontX(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

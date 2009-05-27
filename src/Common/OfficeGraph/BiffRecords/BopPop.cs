@@ -37,10 +37,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies that the chart group is a bar of pie chart group or a pie of pie chart group and specifies the chart group attributes.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.BopPop)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.BopPop)]
     public class BopPop : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.BopPop;
+        public const GraphRecordNumber ID = GraphRecordNumber.BopPop;
 
         public enum Subtype : byte
         {
@@ -135,7 +135,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public bool fHasShadow;
 
-        public BopPop(IStreamReader reader, RecordNumber id, UInt16 length)
+        public BopPop(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

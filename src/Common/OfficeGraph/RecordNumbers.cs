@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
-    public enum RecordNumber : ushort
+    public enum GraphRecordNumber : ushort
     {
 
         HEADER = 0x14, 	// Print Header on Each Page

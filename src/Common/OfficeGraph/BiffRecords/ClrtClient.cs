@@ -37,10 +37,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies a custom color palette for a chart sheet.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.ClrtClient)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.ClrtClient)]
     public class ClrtClient : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.ClrtClient;
+        public const GraphRecordNumber ID = GraphRecordNumber.ClrtClient;
 
         /// <summary>
         /// A signed integer that specifies the number of colors in the rgColor array. 
@@ -60,7 +60,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         RGBColor[] rgColor;
 
-        public ClrtClient(IStreamReader reader, RecordNumber id, UInt16 length)
+        public ClrtClient(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

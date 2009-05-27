@@ -39,12 +39,12 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// and an OfficeArtTertiaryFOPT, as specified in [MS-ODRAW] section 2.2.11, that both
     /// contain properties for the fill pattern applied. <55>
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.GelFrame)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.GelFrame)]
     public class GelFrame : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.GelFrame;
+        public const GraphRecordNumber ID = GraphRecordNumber.GelFrame;
 
-        public GelFrame(IStreamReader reader, RecordNumber id, UInt16 length)
+        public GelFrame(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

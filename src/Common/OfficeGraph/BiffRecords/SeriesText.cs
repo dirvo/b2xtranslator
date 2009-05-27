@@ -37,14 +37,14 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the text for a series, trendline name, trendline label, axis title or chart title.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.SeriesText)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.SeriesText)]
     public class SeriesText : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.SeriesText;
+        public const GraphRecordNumber ID = GraphRecordNumber.SeriesText;
 
         public string stText;
 
-        public SeriesText(IStreamReader reader, RecordNumber id, UInt16 length)
+        public SeriesText(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

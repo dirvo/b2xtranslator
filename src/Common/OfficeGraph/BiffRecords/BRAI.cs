@@ -37,10 +37,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies a reference to data in a sheet that is used by a part of a series or by a legend entry.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.BRAI)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.BRAI)]
     public class BRAI : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.BRAI;
+        public const GraphRecordNumber ID = GraphRecordNumber.BRAI;
 
         public enum BraiId : byte
         {
@@ -117,7 +117,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public UInt16 rowcol;
         
-        public BRAI(IStreamReader reader, RecordNumber id, UInt16 length)
+        public BRAI(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

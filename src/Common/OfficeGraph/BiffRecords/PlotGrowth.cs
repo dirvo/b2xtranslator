@@ -33,10 +33,10 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
-    [OfficeGraphBiffRecordAttribute(RecordNumber.PlotGrowth)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.PlotGrowth)]
     public class PlotGrowth : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.PlotGrowth;
+        public const GraphRecordNumber ID = GraphRecordNumber.PlotGrowth;
 
         /// <summary>
         /// A FixedPoint that specifies the horizontal growth (in points) of the plot area for font scaling.
@@ -48,7 +48,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public FixedPointNumber dyPlotGrowth;
 
-        public PlotGrowth(IStreamReader reader, RecordNumber id, UInt16 length)
+        public PlotGrowth(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

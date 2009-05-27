@@ -37,10 +37,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the date system that the workbook uses.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Date1904)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Date1904)]
     public class Date1904 : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Date1904;
+        public const GraphRecordNumber ID = GraphRecordNumber.Date1904;
 
         /// <summary>
         /// A Boolean that specifies the date system used in this workbook. 
@@ -56,7 +56,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public bool f1904DateSystem;
 
-        public Date1904(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Date1904(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

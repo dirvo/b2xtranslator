@@ -38,10 +38,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// is contained in the parent document window. When this record follows a MainWindow record, 
     /// to define the position of the data sheet window, the Window1_10 record MUST be used.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Window1)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Window1)]
     public class Window1 : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Window1;
+        public const GraphRecordNumber ID = GraphRecordNumber.Window1;
 
         /// <summary>
         /// A signed integer that specifies the X location of the upper-left corner of the chart 
@@ -67,7 +67,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public UInt16 dyWn;
 
-        public Window1(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Window1(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

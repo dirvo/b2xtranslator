@@ -36,10 +36,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the width of one or more columns of the datasheet.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.ColumnWidth)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.ColumnWidth)]
     public class ColumnWidth : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.ColumnWidth;
+        public const GraphRecordNumber ID = GraphRecordNumber.ColumnWidth;
 
         /// <summary>
         /// A Graph_Col that specifies the first column of the range of columns having their width specified by colWidth.
@@ -59,7 +59,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public UInt16 colWidth;
 
-        public ColumnWidth(IStreamReader reader, RecordNumber id, UInt16 length)
+        public ColumnWidth(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

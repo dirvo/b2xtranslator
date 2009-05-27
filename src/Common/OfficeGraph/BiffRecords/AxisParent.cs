@@ -37,10 +37,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// This record specifies properties of an axis group and specifies the beginning 
     /// of a collection of records as defined by the Chart Sheet Substream ABNF that specifies an axis group.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.AxisParent)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.AxisParent)]
     public class AxisParent : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.AxisParent;
+        public const GraphRecordNumber ID = GraphRecordNumber.AxisParent;
 
         /// <summary>
         /// A Boolean that specifies whether the axis group is primary or secondary. 
@@ -50,7 +50,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public bool iax;
 
-        public AxisParent(IStreamReader reader, RecordNumber id, UInt16 length)
+        public AxisParent(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

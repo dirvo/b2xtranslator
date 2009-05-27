@@ -36,10 +36,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the location of the OLE server window that is contained in the parent document window when the chart data was saved.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.MainWindow)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.MainWindow)]
     public class MainWindow : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.MainWindow;
+        public const GraphRecordNumber ID = GraphRecordNumber.MainWindow;
 
         /// <summary>
         /// A signed integer that specifies the location in twips of the left edge 
@@ -65,7 +65,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public Int16 wHeight;
 
-        public MainWindow(IStreamReader reader, RecordNumber id, UInt16 length)
+        public MainWindow(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

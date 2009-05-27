@@ -36,10 +36,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies where in the data sheet window to paste the selection from the OLE stream.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.LinkedSelection)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.LinkedSelection)]
     public class LinkedSelection : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.LinkedSelection;
+        public const GraphRecordNumber ID = GraphRecordNumber.LinkedSelection;
 
         /// <summary>
         /// Specifies the first row in the data sheet window in which to paste the selection from the OLE stream.<br/>
@@ -65,7 +65,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public UInt16 colLast;
 
-        public LinkedSelection(IStreamReader reader, RecordNumber id, UInt16 length)
+        public LinkedSelection(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

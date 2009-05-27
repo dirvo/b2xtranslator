@@ -36,10 +36,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the font information at the time the scalable font is added to the chart. <47>
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Fbi)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Fbi)]
     public class Fbi : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Fbi;
+        public const GraphRecordNumber ID = GraphRecordNumber.Fbi;
 
         /// <summary>
         /// An unsigned integer that specifies the font width, in twips, when the font was first applied. 
@@ -74,7 +74,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         public UInt16 ifnt;
         // TODO: implement FontIndex???
 
-        public Fbi(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Fbi(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

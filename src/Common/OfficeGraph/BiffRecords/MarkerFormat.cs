@@ -41,7 +41,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// that conforms to the SS rule then all the fields will have default values otherwise all 
     /// the fields MUST contain a value.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.MarkerFormat)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.MarkerFormat)]
     public class MarkerFormat : OfficeGraphBiffRecord
     {
         public enum MarkerType
@@ -58,7 +58,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             SquareMarkersWithPlus
         }
 
-        public const RecordNumber ID = RecordNumber.MarkerFormat;
+        public const GraphRecordNumber ID = GraphRecordNumber.MarkerFormat;
 
         /// <summary>
         /// Specifies the border color of the data marker. <br/>
@@ -120,7 +120,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public UInt32 miSize;
 
-        public MarkerFormat(IStreamReader reader, RecordNumber id, UInt16 length)
+        public MarkerFormat(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

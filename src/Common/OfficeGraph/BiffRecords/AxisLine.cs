@@ -36,10 +36,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies which part of the axis is specified by the LineFormat record that follows.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.AxisLine)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.AxisLine)]
     public class AxisLine : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.AxisLine;
+        public const GraphRecordNumber ID = GraphRecordNumber.AxisLine;
 
         public enum AxisPart : ushort
         {
@@ -73,7 +73,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public AxisPart axisId;
 
-        public AxisLine(IStreamReader reader, RecordNumber id, UInt16 length)
+        public AxisLine(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

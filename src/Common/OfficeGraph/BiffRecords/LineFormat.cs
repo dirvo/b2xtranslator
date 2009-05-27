@@ -37,7 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the appearance of a line.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.LineFormat)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.LineFormat)]
     public class LineFormat : OfficeGraphBiffRecord
     {
         public enum LineStyle
@@ -61,7 +61,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Wide = 2
         }
 
-        public const RecordNumber ID = RecordNumber.LineFormat;
+        public const GraphRecordNumber ID = GraphRecordNumber.LineFormat;
 
         /// <summary>
         /// Specifies the color of the line.
@@ -109,7 +109,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public UInt16 icv;
 
-        public LineFormat(IStreamReader reader, RecordNumber id, UInt16 length)
+        public LineFormat(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

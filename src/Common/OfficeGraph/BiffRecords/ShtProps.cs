@@ -37,10 +37,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies properties of a chart as defined by the Chart Sheet Substream ABNF.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.ShtProps)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.ShtProps)]
     public class ShtProps : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.ShtProps;
+        public const GraphRecordNumber ID = GraphRecordNumber.ShtProps;
 
         public enum EmptyCellPlotMode
         {
@@ -71,7 +71,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public EmptyCellPlotMode mdBlank;
 
-        public ShtProps(IStreamReader reader, RecordNumber id, UInt16 length)
+        public ShtProps(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

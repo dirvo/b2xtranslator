@@ -36,10 +36,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the number format to use for the text on an axis.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.IFmtRecord)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.IFmtRecord)]
     public class IFmtRecord : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.IFmtRecord;
+        public const GraphRecordNumber ID = GraphRecordNumber.IFmtRecord;
 
         /// <summary>
         /// An unsigned integer that specifies the identifier of a number format. 
@@ -52,7 +52,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public UInt16 ifmt;
 
-        public IFmtRecord(IStreamReader reader, RecordNumber id, UInt16 length)
+        public IFmtRecord(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

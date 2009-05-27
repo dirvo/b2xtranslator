@@ -39,10 +39,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// collection of records as defined by the chart sheet substream ABNF. 
     /// This collection of records specifies an attached label.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Text)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Text)]
     public class Text : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Text;
+        public const GraphRecordNumber ID = GraphRecordNumber.Text;
 
         /// <summary>
         /// Specifies the horizontal alignment of the text.
@@ -185,7 +185,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public UInt16 trot;
 
-        public Text(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Text(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

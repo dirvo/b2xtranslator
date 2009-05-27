@@ -42,10 +42,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// This record MUST have an associated StartObject record. StartObject and 
     /// EndObject pairs can be nested. Up to 100 levels of blocks can be nested.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.EndObject)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.EndObject)]
     public class EndObject : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.EndObject;
+        public const GraphRecordNumber ID = GraphRecordNumber.EndObject;
 
         public enum ObjectKind : ushort
         {
@@ -67,7 +67,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         public ObjectKind iObjectKind;
 
 
-        public EndObject(IStreamReader reader, RecordNumber id, UInt16 length)
+        public EndObject(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

@@ -37,10 +37,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// This record specifies font information used on the chart and specifies 
     /// the beginning of a collection of Font records as defined by the Chart Sheet Substream ABNF.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.FrtFontList)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.FrtFontList)]
     public class FrtFontList : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.FrtFontList;
+        public const GraphRecordNumber ID = GraphRecordNumber.FrtFontList;
 
         /// <summary>
         /// An FrtHeaderOld. The frtHeaderOld.rt field MUST be 0x085A.
@@ -78,7 +78,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public FontInfo[] rgFontInfo;
         
-        public FrtFontList(IStreamReader reader, RecordNumber id, UInt16 length)
+        public FrtFontList(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

@@ -41,10 +41,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// attributes of the down bars. If this record exists, then the chart group type 
     /// MUST be line and the field cSer in the record SeriesList MUST be greater than 1.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.DropBar)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.DropBar)]
     public class DropBar : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.DropBar;
+        public const GraphRecordNumber ID = GraphRecordNumber.DropBar;
 
         /// <summary>
         /// A signed integer that specifies the width of the gap between the up bars or the down bars. 
@@ -57,7 +57,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public Int16 pcGap;
 
-        public DropBar(IStreamReader reader, RecordNumber id, UInt16 length)
+        public DropBar(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

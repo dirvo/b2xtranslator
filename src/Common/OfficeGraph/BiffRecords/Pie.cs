@@ -38,10 +38,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// This record specifies that the chart group is a pie chart group or a doughnut chart group, 
     /// and specifies the chart group attributes.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Pie)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Pie)]
     public class Pie : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Pie;
+        public const GraphRecordNumber ID = GraphRecordNumber.Pie;
 
         /// <summary>
         /// An unsigned integer that specifies the starting angle of the first data point, 
@@ -69,7 +69,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public bool fShowLdrLines;
 
-        public Pie(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Pie(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

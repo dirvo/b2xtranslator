@@ -41,16 +41,16 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     {
         public OfficeGraphBiffRecordAttribute() { }
 
-        public OfficeGraphBiffRecordAttribute(params RecordNumber[] typecodes)
+        public OfficeGraphBiffRecordAttribute(params GraphRecordNumber[] typecodes)
         {
             this._typeCodes = typecodes;
         }
 
-        public RecordNumber[] TypeCodes
+        public GraphRecordNumber[] TypeCodes
         {
             get { return _typeCodes; }
         }
 
-        private RecordNumber[] _typeCodes = new RecordNumber[0];
+        private GraphRecordNumber[] _typeCodes = new GraphRecordNumber[0];
     }
 }

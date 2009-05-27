@@ -37,10 +37,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies that the chart group is a surface chart group and specifies the chart group attributes.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Surf)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Surf)]
     public class Surf : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Surf;
+        public const GraphRecordNumber ID = GraphRecordNumber.Surf;
 
         /// <summary>
         /// A bit that specifies whether the surface chart group is wireframe or has a fill.<br/>
@@ -54,7 +54,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public bool f3DPhongShade;
 
-        public Surf(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Surf(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

@@ -38,10 +38,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// This record specifies properties about the substream and specifies the beginning 
     /// of a collection of records as defined by the Workbook Stream ABNF and the Chart Sheet Substream ABNF.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.BOF)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.BOF)]
     public class BOF : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.BOF;
+        public const GraphRecordNumber ID = GraphRecordNumber.BOF;
 
         public enum DocType : ushort
         {
@@ -161,7 +161,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public Byte verLastXLSaved;
         
-        public BOF(IStreamReader reader, RecordNumber id, UInt16 length)
+        public BOF(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

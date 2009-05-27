@@ -50,12 +50,12 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// which is a record that has a record number greater than or equal to 2048 and less 
     /// than or equal to 2303 according to Record Enumeration.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.ChartFrtInfo)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.ChartFrtInfo)]
     public class ChartFrtInfo : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.ChartFrtInfo;
+        public const GraphRecordNumber ID = GraphRecordNumber.ChartFrtInfo;
 
-        public ChartFrtInfo(IStreamReader reader, RecordNumber id, UInt16 length)
+        public ChartFrtInfo(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

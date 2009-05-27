@@ -36,10 +36,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies an empty cell with no formula or value.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Blank)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Blank)]
     public class Blank : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Blank;
+        public const GraphRecordNumber ID = GraphRecordNumber.Blank;
 
         /// <summary>
         /// An unsigned integer that specifies a zero-based index of a row in the datasheet that contains this structure. 
@@ -68,7 +68,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public UInt16 ifmt;
 
-        public Blank(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Blank(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

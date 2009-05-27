@@ -42,12 +42,12 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// records. For example, the size of TxO record is less than 8,225 bytes, but it is 
     /// always followed by Continue records that store the string data and formatting runs.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Continue)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Continue)]
     public class Continue : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Continue;
+        public const GraphRecordNumber ID = GraphRecordNumber.Continue;
 
-        public Continue(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Continue(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

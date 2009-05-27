@@ -41,10 +41,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// 
     /// The collection of records specifies a display units label.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.YMult)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.YMult)]
     public class YMult : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.YMult;
+        public const GraphRecordNumber ID = GraphRecordNumber.YMult;
 
         public enum AxisMultiplier : short
         {
@@ -89,7 +89,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public bool fBeingEdited;
 
-        public YMult(IStreamReader reader, RecordNumber id, UInt16 length)
+        public YMult(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

@@ -40,10 +40,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// 
     /// The preceding chart group type MUST be of type bar, pie, line, area, or surface.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Chart3D)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Chart3D)]
     public class Chart3D : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Chart3D;
+        public const GraphRecordNumber ID = GraphRecordNumber.Chart3D;
 
         public enum ScalingType : ushort
         {
@@ -168,7 +168,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         public bool fWalls2D;
 
 
-        public Chart3D(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Chart3D(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

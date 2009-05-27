@@ -245,7 +245,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
                     {
                         if (chartType == ChartType.Chart)
                         {
-                            OfficeGraph.RecordNumber id = (OfficeGraph.RecordNumber)bh.id; 
+                            OfficeGraph.GraphRecordNumber id = (OfficeGraph.GraphRecordNumber)bh.id; 
                             
                             sw.WriteLine("<tr>");
                             sw.WriteLine("<td>");

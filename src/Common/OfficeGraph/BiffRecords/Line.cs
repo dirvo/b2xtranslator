@@ -37,10 +37,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies that the chart group is a line chart group and specifies the chart group attributes.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Line)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Line)]
     public class Line : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Line;
+        public const GraphRecordNumber ID = GraphRecordNumber.Line;
 
         /// <summary>
         /// A bit that specifies whether the data points in the chart group that share the same 
@@ -60,7 +60,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public bool fHasShadow;
 
-        public Line(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Line(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

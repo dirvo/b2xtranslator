@@ -38,7 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// specifies the beginning of a collection of records as defined by the Chart Sheet Substream ABNF.<br/> 
     /// The collection of records specifies a series, a trendline, or error bars.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Series)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Series)]
     public class Series : OfficeGraphBiffRecord
     {
         public enum SeriesDataType
@@ -47,7 +47,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Numeric = 1
         }
 
-        public const RecordNumber ID = RecordNumber.Series;
+        public const GraphRecordNumber ID = GraphRecordNumber.Series;
 
         /// <summary>
         /// specifies the type of data in categories (3), or horizontal values on 
@@ -88,7 +88,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public UInt16 cValBSize;
 
-        public Series(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Series(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

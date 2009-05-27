@@ -36,12 +36,12 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record is written but unused.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.CrtLink)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.CrtLink)]
     public class CrtLink : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.CrtLink;
+        public const GraphRecordNumber ID = GraphRecordNumber.CrtLink;
 
-        public CrtLink(IStreamReader reader, RecordNumber id, UInt16 length)
+        public CrtLink(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

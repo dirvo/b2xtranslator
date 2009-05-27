@@ -31,9 +31,24 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
         public AxesUsed AxesUsed;
 
+        public List<AxisParentSequence> AxisParentSequences;
+
+        public List<AttachedLabel> AttachedLabels;
+
+        public List<DataLabelGroup> DataLabelGroups;
+
+        public Dat Dat;
+
+        public End End;
+
         public ChartFormatsSequence(IStreamReader reader)
             : base(reader)
         {
+           // CHARTFOMATS = Chart Begin *2FONTLIST Scl PlotGrowth [FRAME] *SERIESFORMAT *SS ShtProps 
+           //     *2DFTTEXT AxesUsed 1*2AXISPARENT [CrtLayout12A] [DAT] *ATTACHEDLABEL [CRTMLFRT]
+           //     *([DataLabExt StartObject] ATTACHEDLABEL [EndObject]) [TEXTPROPS] *2CRTMLFRT End
+
+
             // Chart
             this.Chart = (Chart)OfficeGraphBiffRecord.ReadRecord(reader);
 
@@ -42,8 +57,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
             // *2FONTLIST
             this.FontListSequences = new List<FontListSequence>();
-            while (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == 
-                DIaLOGIKa.b2xtranslator.OfficeGraph.RecordNumber.FrtFontList)
+            while (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == GraphRecordNumber.FrtFontList)
             {
                 this.FontListSequences.Add(new FontListSequence(reader));
             }
@@ -55,24 +69,21 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             this.PlotGrowth = (PlotGrowth)OfficeGraphBiffRecord.ReadRecord(reader);
 
             // [FRAME]
-            if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == 
-                DIaLOGIKa.b2xtranslator.OfficeGraph.RecordNumber.Frame)
+            if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == GraphRecordNumber.Frame)
             {
                 this.FrameSequence = new FrameSequence(reader);
             }
 
             // *SERIESFORMAT
             this.SeriesFormatSequences = new List<SeriesFormatSequence>();
-            while (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == 
-                DIaLOGIKa.b2xtranslator.OfficeGraph.RecordNumber.Series)
+            while (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == GraphRecordNumber.Series)
             {
                 this.SeriesFormatSequences.Add(new SeriesFormatSequence(reader));
             }
 
             // *SS
             this.SsSequences = new List<SsSequence>();
-            while (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == 
-                DIaLOGIKa.b2xtranslator.OfficeGraph.RecordNumber.DataFormat)
+            while (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == GraphRecordNumber.DataFormat)
             {
                 this.SsSequences.Add(new SsSequence(reader));
             }
@@ -82,14 +93,78 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
             // *2DFTTEXT
             this.DftTextSequences = new List<DftTextSequence>();
-            while (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == 
-                DIaLOGIKa.b2xtranslator.OfficeGraph.RecordNumber.DataLabExt)
+            while (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == GraphRecordNumber.DataLabExt)
             {
                 this.DftTextSequences.Add(new DftTextSequence(reader));
             }
 
             // AxesUsed
             this.AxesUsed = (AxesUsed)OfficeGraphBiffRecord.ReadRecord(reader);
+
+            // 1*2AXISPARENT
+            this.AxisParentSequences = new List<AxisParentSequence>();
+            while (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == GraphRecordNumber.AxisParent)
+            {
+                this.AxisParentSequences.Add(new AxisParentSequence(reader));
+            }
+
+            // [CrtLayout12A]
+
+            // [DAT]
+            if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == GraphRecordNumber.Dat)
+            {
+                this.Dat = (Dat)OfficeGraphBiffRecord.ReadRecord(reader);
+            }
+
+            // *ATTACHEDLABEL
+            this.AttachedLabels = new List<AttachedLabel>();
+            while (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == GraphRecordNumber.AttachedLabel)
+            {
+                this.AttachedLabels.Add((AttachedLabel)OfficeGraphBiffRecord.ReadRecord(reader));
+            }
+
+            // [CRTMLFRT]
+
+            // *([DataLabExt StartObject] ATTACHEDLABEL [EndObject])
+            this.DataLabelGroups = new List<DataLabelGroup>();
+            while (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == GraphRecordNumber.DataLabExt)
+            {
+               this.DataLabelGroups.Add(new DataLabelGroup(reader));
+            }
+
+            // [TEXTPROPS]
+
+            // *2CRTMLFRT
+
+            // End
+            this.End = (End)OfficeGraphBiffRecord.ReadRecord(reader);
+        }
+
+        public class DataLabelGroup
+        {
+            public DataLabExt DataLabExt;
+            public StartObject StartObject;
+            public AttachedLabel AttachedLabel;
+            public EndObject EndObject;
+
+            public DataLabelGroup(IStreamReader reader)
+            {
+                // *([DataLabExt StartObject] ATTACHEDLABEL [EndObject])
+
+                if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == GraphRecordNumber.DataLabExt)
+                {
+                    this.DataLabExt = (DataLabExt)OfficeGraphBiffRecord.ReadRecord(reader);
+                    this.StartObject = (StartObject)OfficeGraphBiffRecord.ReadRecord(reader);
+                }
+
+                this.AttachedLabel = (AttachedLabel)OfficeGraphBiffRecord.ReadRecord(reader);
+
+                if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == GraphRecordNumber.EndObject)
+                {
+                    this.EndObject = (EndObject)OfficeGraphBiffRecord.ReadRecord(reader);
+                }
+            }
         }
     }
+
 }

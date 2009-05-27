@@ -36,10 +36,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies code page information for the graph object.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.CodePage)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.CodePage)]
     public class CodePage : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.CodePage;
+        public const GraphRecordNumber ID = GraphRecordNumber.CodePage;
 
         /// <summary>
         /// An unsigned integer that specifies the code page of the graph object. 
@@ -49,7 +49,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public UInt16 cv;
 
-        public CodePage(IStreamReader reader, RecordNumber id, UInt16 length)
+        public CodePage(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

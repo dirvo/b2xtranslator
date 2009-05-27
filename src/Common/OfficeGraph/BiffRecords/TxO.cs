@@ -37,10 +37,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the text in a text box or a form control.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.TxO)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.TxO)]
     public class TxO : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.TxO;
+        public const GraphRecordNumber ID = GraphRecordNumber.TxO;
 
         public enum HorizontalAlignment : ushort
         {
@@ -97,7 +97,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 
 
 
-        public TxO(IStreamReader reader, RecordNumber id, UInt16 length)
+        public TxO(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

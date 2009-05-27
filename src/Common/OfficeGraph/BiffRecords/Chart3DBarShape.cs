@@ -34,10 +34,10 @@ using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Chart3DBarShape)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Chart3DBarShape)]
     public class Chart3DBarShape : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Chart3DBarShape;
+        public const GraphRecordNumber ID = GraphRecordNumber.Chart3DBarShape;
 
         /// <summary>
         /// A Boolean that specifies the shape of the base of the data points in a bar or column chart group. <br/>
@@ -57,7 +57,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public byte taper;
 
-        public Chart3DBarShape(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Chart3DBarShape(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

@@ -40,10 +40,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// If this record is not present in the SS rule of the chart sheet substream ABNF 
     /// then all the fields will have default values otherwise all the fields MUST contain a value.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.AreaFormat)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.AreaFormat)]
     public class AreaFormat : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.AreaFormat;
+        public const GraphRecordNumber ID = GraphRecordNumber.AreaFormat;
 
         /// <summary>
         /// A LongRGB that specifies the foreground color of the fill pattern. 
@@ -90,7 +90,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         public UInt16 icvFore;
         public UInt16 icvBack;
 
-        public AreaFormat(IStreamReader reader, RecordNumber id, UInt16 length)
+        public AreaFormat(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

@@ -36,10 +36,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the selection within the data sheet window.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Selection)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Selection)]
     public class Selection : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Selection;
+        public const GraphRecordNumber ID = GraphRecordNumber.Selection;
 
         /// <summary>
         /// An unsigned integer that MUST be 0x03.
@@ -80,7 +80,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public UInt16 colLast;
 
-        public Selection(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Selection(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

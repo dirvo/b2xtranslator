@@ -37,7 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the layout of a picture attached to a picture-filled chart element.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.PicF)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.PicF)]
     public class PicF : OfficeGraphBiffRecord
     {
         public enum LayoutType
@@ -47,7 +47,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             StackedAndScaled = 3
         }
 
-        public const RecordNumber ID = RecordNumber.PicF;
+        public const GraphRecordNumber ID = GraphRecordNumber.PicF;
 
         /// <summary>
         /// An unsigned integer that specifies the picture layout. 
@@ -90,7 +90,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public double numScale;
 
-        public PicF(IStreamReader reader, RecordNumber id, UInt16 length)
+        public PicF(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

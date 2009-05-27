@@ -40,10 +40,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// The fraction MUST be greater than or equal to 1/10 and less than or equal to 4/1. <br/>
     /// This record MUST exist if the zoom of the current view is not equal to 1.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Scl)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Scl)]
     public class Scl : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Scl;
+        public const GraphRecordNumber ID = GraphRecordNumber.Scl;
 
         /// <summary>
         /// A signed integer that specifies the numerator of the fraction.<br/> 
@@ -57,7 +57,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public Int16 dscl;
 
-        public Scl(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Scl(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

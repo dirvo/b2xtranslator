@@ -37,10 +37,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// This record specifies the visible portion of the datasheet. It specifies the 
     /// first row or first column to display when showing the datasheet.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Window2Graph)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Window2Graph)]
     public class Window2Graph : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Window2Graph;
+        public const GraphRecordNumber ID = GraphRecordNumber.Window2Graph;
 
         /// <summary>
         /// A Graph_Rw that specifies the first (top-left) visible row of the datasheet. 
@@ -56,7 +56,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public UInt16 colFirst;
 
-        public Window2Graph(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Window2Graph(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

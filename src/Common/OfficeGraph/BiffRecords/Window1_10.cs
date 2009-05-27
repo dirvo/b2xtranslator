@@ -39,10 +39,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// 
     /// MUST immediately follow a MainWindow record.
     /// </summary>
-    [OfficeGraphBiffRecordAttribute(RecordNumber.Window1_10)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.Window1_10)]
     public class Window1_10 : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.Window1_10;
+        public const GraphRecordNumber ID = GraphRecordNumber.Window1_10;
 
         /// <summary>
         /// An unsigned integer that specifies the X location of the upper-left 
@@ -68,7 +68,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public UInt16 dyWn;
 
-        public Window1_10(IStreamReader reader, RecordNumber id, UInt16 length)
+        public Window1_10(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

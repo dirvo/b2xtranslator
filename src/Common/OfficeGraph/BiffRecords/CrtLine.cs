@@ -33,10 +33,10 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
-    [OfficeGraphBiffRecordAttribute(RecordNumber.CrtLine)]
+    [OfficeGraphBiffRecordAttribute(GraphRecordNumber.CrtLine)]
     public class CrtLine : OfficeGraphBiffRecord
     {
-        public const RecordNumber ID = RecordNumber.CrtLine;
+        public const GraphRecordNumber ID = GraphRecordNumber.CrtLine;
 
         public enum LineType : ushort
         {
@@ -82,7 +82,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         public LineType lineId;
         
-        public CrtLine(IStreamReader reader, RecordNumber id, UInt16 length)
+        public CrtLine(IStreamReader reader, GraphRecordNumber id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated
