@@ -133,6 +133,7 @@
     <Compile Include="BiffRecords\Tick.cs" />
     <Compile Include="BiffRecords\TxO.cs" />
     <Compile Include="BiffRecords\Units.cs" />
+    <Compile Include="BiffRecords\UnknownGraphRecord.cs" />
     <Compile Include="BiffRecords\ValueRange.cs" />
     <Compile Include="BiffRecords\WinDoc.cs" />
     <Compile Include="BiffRecords\Window1.cs" />
