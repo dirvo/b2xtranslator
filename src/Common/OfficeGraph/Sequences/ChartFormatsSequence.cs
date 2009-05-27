@@ -5,17 +5,21 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
-    public class ChartFormats : OfficeGraphBiffRecordSequence
+    public class ChartFormatsSequence : OfficeGraphBiffRecordSequence
     {
         public Chart Chart;
 
         public Begin Begin;
 
-        public List<FontList> FontLists;
+        public List<FontListSequence> FontListSequences;
 
         public Scl Scl;
 
-        public ChartFormats(IStreamReader reader) : base(reader)
+        public PlotGrowth PlotGrowth;
+
+        public FrameSequence FrameSequence;
+
+        public ChartFormatsSequence(IStreamReader reader) : base(reader)
         {
             // Chart
             this.Chart = (Chart)OfficeGraphBiffRecord.ReadRecord(reader);
@@ -24,13 +28,13 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             this.Begin = (Begin)OfficeGraphBiffRecord.ReadRecord(reader);
 
             // *2 FONTLIST
-            this.FontLists = new List<FontList>();
+            this.FontListSequences = new List<FontListSequence>();
             while(true)
             {
-                FontList fl = checkForFontList(reader);
+                FontListSequence fl = checkForFontList(reader);
                 if(fl != null)
                 {
-                    this.FontLists.Add(fl);
+                    this.FontListSequences.Add(fl);
                 }
                 else
                 {
@@ -40,6 +44,22 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             
             // Scl
             this.Scl = (Scl)OfficeGraphBiffRecord.ReadRecord(reader);
+
+            // PlotGrowth
+            this.PlotGrowth = (PlotGrowth)OfficeGraphBiffRecord.ReadRecord(reader);
+
+            // [FRAME]
+            this.FrameSequence = checkForFrameSequence(reader);
+        }
+
+        private FrameSequence checkForFrameSequence(IStreamReader reader)
+        {
+            FrameSequence result = null;
+            if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == RecordNumber.Frame)
+            {
+                result = new FrameSequence(reader);
+            }
+            return result;
         }
 
         /// <summary>
@@ -49,16 +69,14 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         /// </summary>
         /// <param name="reader"></param>
         /// <returns></returns>
-        private FontList checkForFontList(IStreamReader reader)
+        private FontListSequence checkForFontList(IStreamReader reader)
         {
-            FontList result = null;
-
+            FontListSequence result = null;
             if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == RecordNumber.FrtFontList)
             {
-                // parse FontList Sequence
-                result = new FontList(reader);
+                // parse FontListSequence
+                result = new FontListSequence(reader);
             }
-
             return result;
         }
     }

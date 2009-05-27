@@ -5,9 +5,9 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
-    public class FontList : OfficeGraphBiffRecordSequence
+    public class AttachedLabelSequence : OfficeGraphBiffRecordSequence
     {
-        public FontList(IStreamReader reader)
+        public AttachedLabelSequence(IStreamReader reader)
             : base(reader)
         {
 
