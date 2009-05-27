@@ -19,6 +19,16 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 
         public FrameSequence FrameSequence;
 
+        public List<SeriesFormatSequence> SeriesFormatSequences;
+
+        public List<SsSequence> SsSequences;
+
+        public ShtProps ShtProps;
+
+        public List<DftTextSequence> DftTextSequences;
+
+        public AxesUsed AxesUsed;
+
         public ChartFormatsSequence(IStreamReader reader) : base(reader)
         {
             // Chart
@@ -27,19 +37,11 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             // Begin
             this.Begin = (Begin)OfficeGraphBiffRecord.ReadRecord(reader);
 
-            // *2 FONTLIST
+            // *2FONTLIST
             this.FontListSequences = new List<FontListSequence>();
-            while(true)
+            while (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == RecordNumber.FrtFontList)
             {
-                FontListSequence fl = checkForFontList(reader);
-                if(fl != null)
-                {
-                    this.FontListSequences.Add(fl);
-                }
-                else
-                {
-                    break;
-                }
+                this.FontListSequences.Add(new FontListSequence(reader));
             }
             
             // Scl
@@ -49,35 +51,40 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             this.PlotGrowth = (PlotGrowth)OfficeGraphBiffRecord.ReadRecord(reader);
 
             // [FRAME]
-            this.FrameSequence = checkForFrameSequence(reader);
-        }
-
-        private FrameSequence checkForFrameSequence(IStreamReader reader)
-        {
-            FrameSequence result = null;
             if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == RecordNumber.Frame)
             {
-                result = new FrameSequence(reader);
+                this.FrameSequence = new FrameSequence(reader);
             }
-            return result;
+
+            // *SERIESFORMAT
+            this.SeriesFormatSequences = new List<SeriesFormatSequence>();
+            while (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == RecordNumber.Series)
+            {
+                this.SeriesFormatSequences.Add(new SeriesFormatSequence(reader));
+            }
+
+            // *SS
+            this.SsSequences = new List<SsSequence>();
+            while (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == RecordNumber.DataFormat)
+            {
+                this.SsSequences.Add(new SsSequence(reader));
+            }
+
+            // ShtProps
+            this.ShtProps = (ShtProps)OfficeGraphBiffRecord.ReadRecord(reader);
+
+            // *2DFTTEXT
+            this.DftTextSequences = new List<DftTextSequence>();
+            while (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == RecordNumber.DataLabExt)
+            {
+                this.DftTextSequences.Add(new DftTextSequence(reader));
+            }
+
+            // AxesUsed
+            this.AxesUsed = (AxesUsed)OfficeGraphBiffRecord.ReadRecord(reader);
+
+
         }
 
-        /// <summary>
-        /// If the next record initializes a FontList sequence, the sequence is parsed and returned.<br/>
-        /// The position of the stream is right after the FontList sequence.<br/>
-        /// Otherwise the return value is null and the position of the stream didn't changed.
-        /// </summary>
-        /// <param name="reader"></param>
-        /// <returns></returns>
-        private FontListSequence checkForFontList(IStreamReader reader)
-        {
-            FontListSequence result = null;
-            if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == RecordNumber.FrtFontList)
-            {
-                // parse FontListSequence
-                result = new FontListSequence(reader);
-            }
-            return result;
-        }
     }
 }
