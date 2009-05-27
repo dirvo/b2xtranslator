@@ -7,8 +7,6 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
     public abstract class OfficeGraphBiffRecord
     {
-        IStreamReader _reader;
-
         RecordNumber _id;
         UInt32 _length;
         long _offset;
@@ -43,6 +41,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             get { return _offset; }
         }
 
+        IStreamReader _reader;
         public IStreamReader Reader
         {
             get { return _reader; }

@@ -56,7 +56,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                     {
                         this.StreamReader.BaseStream.Seek(0, SeekOrigin.End);
                         
-                    } else if (bh.id == RecordNumber.BOF)
+                    } 
+                    else if (bh.id == RecordNumber.BOF)
                     {
                         BOF bof = new BOF(this.StreamReader, bh.id, bh.length);
                         if (firstBOF == null)

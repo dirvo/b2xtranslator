@@ -238,7 +238,6 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                         if (firstBOF)
                         {
                             BOF bof = new BOF(this.StreamReader, bh.id, bh.length);
-
                         }
                         else
                         {
