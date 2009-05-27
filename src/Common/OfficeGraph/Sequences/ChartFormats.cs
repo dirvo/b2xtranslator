@@ -53,13 +53,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
         {
             FontList result = null;
 
-            // read next id
-            RecordNumber nextRecord = (RecordNumber)reader.ReadUInt16();
-
-            // seek back
-            reader.BaseStream.Seek(-2, System.IO.SeekOrigin.Current);
-
-            if (nextRecord == RecordNumber.FrtFontList)
+            if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == RecordNumber.FrtFontList)
             {
                 // parse FontList Sequence
                 result = new FontList(reader);

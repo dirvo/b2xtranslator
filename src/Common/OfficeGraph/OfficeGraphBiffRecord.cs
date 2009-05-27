@@ -67,6 +67,17 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             }
         }
 
+        public static RecordNumber GetNextRecordNumber(IStreamReader reader)
+        {
+            // read next id
+            RecordNumber nextRecord = (RecordNumber)reader.ReadUInt16();
+
+            // seek back
+            reader.BaseStream.Seek(-2, System.IO.SeekOrigin.Current);
+
+            return nextRecord;
+        }
+
         public static OfficeGraphBiffRecord ReadRecord(IStreamReader reader)
         {
             OfficeGraphBiffRecord result = null;
