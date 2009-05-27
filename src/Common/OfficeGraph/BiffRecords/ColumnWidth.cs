@@ -36,6 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the width of one or more columns of the datasheet.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.ColumnWidth)]
     public class ColumnWidth : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.ColumnWidth;

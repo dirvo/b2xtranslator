@@ -37,6 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies that the chart group is a bar of pie chart group or a pie of pie chart group and specifies the chart group attributes.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.BopPop)]
     public class BopPop : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.BopPop;

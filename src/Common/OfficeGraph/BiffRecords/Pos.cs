@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// or the plot area, as specified by the primary axis group. <br/>
     /// This record MUST be ignored for the plot area when the fManPlotArea field of ShtProps is set to 1.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Pos)]
     public class Pos : OfficeGraphBiffRecord
     {
         public enum PositionMode

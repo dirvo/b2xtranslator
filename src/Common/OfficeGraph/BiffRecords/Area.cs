@@ -37,6 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies that the chart group is an area chart group and specifies the chart group attributes.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Area)]
     public class Area : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Area;

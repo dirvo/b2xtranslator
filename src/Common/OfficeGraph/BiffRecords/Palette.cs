@@ -37,6 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies a custom color palette.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Palette)]
     public class Palette : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Palette;

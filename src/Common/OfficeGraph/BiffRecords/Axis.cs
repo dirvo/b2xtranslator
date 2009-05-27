@@ -33,6 +33,7 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Axis)]
     public class Axis : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Axis;

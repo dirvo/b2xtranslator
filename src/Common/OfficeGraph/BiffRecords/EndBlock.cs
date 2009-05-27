@@ -63,6 +63,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     ///        matching EndBlock, then the matching EndBlock record MUST be written immediately
     ///        before writing the End record of the current Sheet.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.EndBlock)]
     public class EndBlock : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.EndBlock;

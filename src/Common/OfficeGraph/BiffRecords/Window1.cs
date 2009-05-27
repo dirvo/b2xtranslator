@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// is contained in the parent document window. When this record follows a MainWindow record, 
     /// to define the position of the data sheet window, the Window1_10 record MUST be used.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Window1)]
     public class Window1 : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Window1;

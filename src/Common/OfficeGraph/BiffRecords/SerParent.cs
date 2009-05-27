@@ -36,6 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the series to which the current trendline or error bar corresponds.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.SerParent)]
     public class SerParent : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.SerParent;

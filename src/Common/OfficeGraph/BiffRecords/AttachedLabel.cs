@@ -39,6 +39,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// 
     /// Refer to the data label overview for additional information on how this record is used and when this record is ignored.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.AttachedLabel)]
     public class AttachedLabel : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.AttachedLabel;

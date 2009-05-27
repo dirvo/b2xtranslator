@@ -37,6 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies a reference to data in a sheet that is used by a part of a series or by a legend entry.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.BRAI)]
     public class BRAI : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.BRAI;

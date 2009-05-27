@@ -37,6 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies properties of an error bar.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.SerAuxErrBar)]
     public class SerAuxErrBar : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.SerAuxErrBar;

@@ -37,6 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the layout of a picture attached to a picture-filled chart element.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.PicF)]
     public class PicF : OfficeGraphBiffRecord
     {
         public enum LayoutType

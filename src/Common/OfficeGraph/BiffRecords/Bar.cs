@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// This record specifies that the chart group is a bar chart group or 
     /// a column chart group, and specifies the chart group attributes.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Bar)]
     public class Bar : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Bar;

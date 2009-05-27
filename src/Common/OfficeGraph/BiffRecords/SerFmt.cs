@@ -40,6 +40,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// DataFormat record. If this record is not present in the sequence of records that conforms to the 
     /// SS rule then all the fields will have default values otherwise all the fields MUST contain a value.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.SerFmt)]
     public class SerFmt : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.SerFmt;

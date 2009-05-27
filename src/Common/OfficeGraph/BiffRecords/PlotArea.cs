@@ -37,6 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// This empty record specifies that the Frame record that immediately follows this 
     /// record specifies properties of the plot area.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.PlotArea)]
     public class PlotArea : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.PlotArea;

@@ -36,6 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record is unused.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.MaxStatus)]
     public class MaxStatus : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.MaxStatus;

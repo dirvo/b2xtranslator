@@ -37,6 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the appearance of a line.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.LineFormat)]
     public class LineFormat : OfficeGraphBiffRecord
     {
         public enum LineStyle

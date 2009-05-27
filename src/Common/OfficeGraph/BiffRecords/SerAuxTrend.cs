@@ -37,6 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies a trendline.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.SerAuxTrend)]
     public class SerAuxTrend : OfficeGraphBiffRecord
     {
         public enum TrendlineType

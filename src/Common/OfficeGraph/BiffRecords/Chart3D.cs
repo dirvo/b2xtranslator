@@ -40,6 +40,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// 
     /// The preceding chart group type MUST be of type bar, pie, line, area, or surface.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Chart3D)]
     public class Chart3D : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Chart3D;

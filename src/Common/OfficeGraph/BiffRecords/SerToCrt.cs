@@ -36,6 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the chart group for the current series.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.SerToCrt)]
     public class SerToCrt : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.SerToCrt;

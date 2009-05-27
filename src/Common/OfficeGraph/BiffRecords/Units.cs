@@ -36,6 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record MUST be zero, and MUST be ignored.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Units)]
     public class Units : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Units;

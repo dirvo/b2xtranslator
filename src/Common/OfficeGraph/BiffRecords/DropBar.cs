@@ -41,6 +41,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// attributes of the down bars. If this record exists, then the chart group type 
     /// MUST be line and the field cSer in the record SeriesList MUST be greater than 1.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.DropBar)]
     public class DropBar : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.DropBar;

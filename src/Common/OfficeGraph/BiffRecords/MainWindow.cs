@@ -36,6 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the location of the OLE server window that is contained in the parent document window when the chart data was saved.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.MainWindow)]
     public class MainWindow : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.MainWindow;

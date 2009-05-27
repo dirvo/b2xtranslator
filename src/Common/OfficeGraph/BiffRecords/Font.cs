@@ -37,6 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies a font and font formatting information.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Font)]
     public class Font : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Font;

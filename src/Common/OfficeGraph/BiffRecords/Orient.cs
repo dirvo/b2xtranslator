@@ -37,6 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies how the series data of a chart is arranged.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Orient)]
     public class Orient : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Orient;

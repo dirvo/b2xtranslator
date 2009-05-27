@@ -40,6 +40,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// The fraction MUST be greater than or equal to 1/10 and less than or equal to 4/1. <br/>
     /// This record MUST exist if the zoom of the current view is not equal to 1.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Scl)]
     public class Scl : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Scl;

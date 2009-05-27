@@ -36,6 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies which part of the axis is specified by the LineFormat record that follows.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.AxisLine)]
     public class AxisLine : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.AxisLine;

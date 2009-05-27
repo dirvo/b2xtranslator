@@ -36,6 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies an empty cell with no formula or value.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Blank)]
     public class Blank : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Blank;

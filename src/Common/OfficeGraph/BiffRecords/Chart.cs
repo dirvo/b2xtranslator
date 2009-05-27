@@ -37,6 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// This record specifies the position and size of the chart area and specifies the beginning 
     /// of a collection of records as defined by the Chart Sheet Substream ABNF. The collection of records specifies a chart.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Chart)]
     public class Chart : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Chart;

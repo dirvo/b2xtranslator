@@ -40,6 +40,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// collection of records as defined by the chart sheet substream ABNF. 
     /// This collection of records specifies an attached label.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Text)]
     public class Text : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Text;

@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the text in a text box or a form control.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.TxO)]
     public class TxO : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.TxO;

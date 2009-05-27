@@ -36,6 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies an object on a chart, or the entire chart, to which Text is linked.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.ObjectLink)]
     public class ObjectLink : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.ObjectLink;

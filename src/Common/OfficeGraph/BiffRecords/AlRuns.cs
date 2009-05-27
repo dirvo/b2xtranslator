@@ -36,6 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies rich text formatting within chart titles, trendline, and data labels.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.AlRuns)]
     public class AlRuns : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.AlRuns;

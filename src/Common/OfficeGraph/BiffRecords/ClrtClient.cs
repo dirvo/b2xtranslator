@@ -37,6 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies a custom color palette for a chart sheet.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.ClrtClient)]
     public class ClrtClient : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.ClrtClient;

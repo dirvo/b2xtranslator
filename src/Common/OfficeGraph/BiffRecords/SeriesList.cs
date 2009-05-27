@@ -36,6 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the series for the chart.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.SeriesList)]
     public class SeriesList : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.SeriesList;

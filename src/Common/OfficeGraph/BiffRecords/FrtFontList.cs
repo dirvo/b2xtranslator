@@ -37,6 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// This record specifies font information used on the chart and specifies 
     /// the beginning of a collection of Font records as defined by the Chart Sheet Substream ABNF.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.FrtFontList)]
     public class FrtFontList : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.FrtFontList;

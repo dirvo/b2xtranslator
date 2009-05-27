@@ -36,6 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the font information at the time the scalable font is added to the chart. <47>
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Fbi)]
     public class Fbi : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Fbi;

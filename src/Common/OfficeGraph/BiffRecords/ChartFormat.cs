@@ -39,6 +39,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// of a collection of records as defined by the Chart Sheet Substream ABNF. 
     /// The collection of records specifies a chart group.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.ChartFormat)]
     public class ChartFormat : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.ChartFormat;

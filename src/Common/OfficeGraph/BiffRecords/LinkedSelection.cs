@@ -36,6 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies where in the data sheet window to paste the selection from the OLE stream.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.LinkedSelection)]
     public class LinkedSelection : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.LinkedSelection;

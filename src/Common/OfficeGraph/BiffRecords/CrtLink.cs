@@ -36,6 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record is written but unused.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.CrtLink)]
     public class CrtLink : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.CrtLink;

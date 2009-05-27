@@ -39,6 +39,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// 
     /// MUST immediately follow a MainWindow record.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Window1_10)]
     public class Window1_10 : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Window1_10;

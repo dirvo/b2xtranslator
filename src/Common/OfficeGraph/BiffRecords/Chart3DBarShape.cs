@@ -34,6 +34,7 @@ using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Chart3DBarShape)]
     public class Chart3DBarShape : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Chart3DBarShape;

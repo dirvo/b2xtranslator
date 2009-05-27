@@ -37,6 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the date system that the workbook uses.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Date1904)]
     public class Date1904 : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Date1904;

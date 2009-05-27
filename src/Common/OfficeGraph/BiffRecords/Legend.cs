@@ -34,6 +34,7 @@ using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Legend)]
     public class Legend : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Legend;

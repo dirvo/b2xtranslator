@@ -37,6 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// This record specifies the text elements that are formatted using the 
     /// information specified by the Text record immediately following this record.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.DefaultText)]
     public class DefaultText : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.DefaultText;

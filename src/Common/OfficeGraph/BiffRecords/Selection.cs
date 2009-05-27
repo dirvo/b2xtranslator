@@ -36,6 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the selection within the data sheet window.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Selection)]
     public class Selection : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Selection;

@@ -39,6 +39,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// as defined by the Chart Sheet Substream ABNF. This collection of records 
     /// specifies formatting properties for the data point and series.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.DataFormat)]
     public class DataFormat : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.DataFormat;

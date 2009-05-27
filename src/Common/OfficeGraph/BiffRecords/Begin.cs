@@ -36,6 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the beginning of a collection of records as defined by the Chart Sheet Substream ABNF. The collection of records specifies properties of a chart.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Begin)]
     public class Begin : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Begin;

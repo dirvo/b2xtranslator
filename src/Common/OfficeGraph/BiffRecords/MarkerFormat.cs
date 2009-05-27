@@ -41,6 +41,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// that conforms to the SS rule then all the fields will have default values otherwise all 
     /// the fields MUST contain a value.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.MarkerFormat)]
     public class MarkerFormat : OfficeGraphBiffRecord
     {
         public enum MarkerType

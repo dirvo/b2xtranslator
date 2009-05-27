@@ -36,6 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies code page information for the graph object.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.CodePage)]
     public class CodePage : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.CodePage;

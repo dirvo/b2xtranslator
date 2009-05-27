@@ -37,6 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the attributes of the axis label.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.CatLab)]
     public class CatLab : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.CatLab;

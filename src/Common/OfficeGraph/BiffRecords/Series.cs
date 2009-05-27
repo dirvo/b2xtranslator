@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// specifies the beginning of a collection of records as defined by the Chart Sheet Substream ABNF.<br/> 
     /// The collection of records specifies a series, a trendline, or error bars.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Series)]
     public class Series : OfficeGraphBiffRecord
     {
         public enum SeriesDataType

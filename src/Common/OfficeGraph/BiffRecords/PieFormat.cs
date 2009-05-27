@@ -33,6 +33,7 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
+    [OfficeGraphBiffRecordAttribute(RecordNumber.PieFormat)]
     public class PieFormat : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.PieFormat;

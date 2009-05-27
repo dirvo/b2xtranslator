@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// This record specifies properties about the substream and specifies the beginning 
     /// of a collection of records as defined by the Workbook Stream ABNF and the Chart Sheet Substream ABNF.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.BOF)]
     public class BOF : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.BOF;

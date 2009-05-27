@@ -140,6 +140,7 @@
     <Compile Include="BiffRecords\Window2Graph.cs" />
     <Compile Include="BiffRecords\YMult.cs" />
     <Compile Include="OfficeGraphBiffRecord.cs" />
+    <Compile Include="OfficeGraphBiffRecordAttribute.cs" />
     <Compile Include="RecordNumbers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sequences\ChartFormats.cs" />

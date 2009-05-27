@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// This record specifies that the chart group is a scatter chart group or a bubble chart group, 
     /// and specifies the chart group attributes.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Scatter)]
     public class Scatter : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Scatter;

@@ -36,6 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the end of the chart sheet substream in the workbook stream.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.EOF)]
     public class EOF : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.EOF;

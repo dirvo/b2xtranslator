@@ -39,6 +39,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// element as defined by the Chart Sheet Substream ABNF. 
     /// A chart element‟s frame is specified by the Frame record following it.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Frame)]
     public class Frame : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Frame;

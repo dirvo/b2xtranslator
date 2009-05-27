@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// This record specifies that the chart group is a pie chart group or a doughnut chart group, 
     /// and specifies the chart group attributes.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Pie)]
     public class Pie : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Pie;

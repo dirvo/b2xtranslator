@@ -40,6 +40,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// If this record is not present in the SS rule of the chart sheet substream ABNF 
     /// then all the fields will have default values otherwise all the fields MUST contain a value.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.AreaFormat)]
     public class AreaFormat : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.AreaFormat;

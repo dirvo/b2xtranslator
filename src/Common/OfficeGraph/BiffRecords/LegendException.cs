@@ -43,6 +43,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// as defined in the legend overview, there MUST be zero or one instances of this record 
     /// in the sequence of records that conforms to the SERIESFORMAT rule.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.LegendException)]
     public class LegendException : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.LegendException;

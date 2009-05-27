@@ -39,6 +39,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// 
     /// The collection of records specifies a data sheet.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.BOFDatasheet)]
     public class BOFDatasheet : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.BOFDatasheet;

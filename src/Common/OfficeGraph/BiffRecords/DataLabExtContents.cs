@@ -37,6 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the contents of an extended data label.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.DataLabExtContents)]
     public class DataLabExtContents : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.DataLabExtContents;

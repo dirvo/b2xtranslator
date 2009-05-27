@@ -41,6 +41,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// 
     /// The collection of records specifies a display units label.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.YMult)]
     public class YMult : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.YMult;

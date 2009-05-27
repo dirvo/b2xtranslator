@@ -37,6 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// This record specifies properties of an axis group and specifies the beginning 
     /// of a collection of records as defined by the Chart Sheet Substream ABNF that specifies an axis group.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.AxisParent)]
     public class AxisParent : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.AxisParent;

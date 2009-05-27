@@ -37,6 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies properties of a chart as defined by the Chart Sheet Substream ABNF.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.ShtProps)]
     public class ShtProps : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.ShtProps;

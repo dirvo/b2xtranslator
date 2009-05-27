@@ -36,6 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies a number format.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Format)]
     public class Format : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Format;

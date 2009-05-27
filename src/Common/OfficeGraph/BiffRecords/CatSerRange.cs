@@ -37,6 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the properties of a category (3) axis, a date axis, or a series axis.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.CatSerRange)]
     public class CatSerRange : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.CatSerRange;

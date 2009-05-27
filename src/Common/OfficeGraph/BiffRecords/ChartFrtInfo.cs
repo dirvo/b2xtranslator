@@ -50,6 +50,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// which is a record that has a record number greater than or equal to 2048 and less 
     /// than or equal to 2303 according to Record Enumeration.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.ChartFrtInfo)]
     public class ChartFrtInfo : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.ChartFrtInfo;

@@ -36,6 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the number of colors in the palette that are available.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.ChartColors)]
     public class ChartColors : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.ChartColors;

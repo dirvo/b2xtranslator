@@ -42,6 +42,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// This record MUST have an associated StartObject record. StartObject and 
     /// EndObject pairs can be nested. Up to 100 levels of blocks can be nested.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.EndObject)]
     public class EndObject : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.EndObject;

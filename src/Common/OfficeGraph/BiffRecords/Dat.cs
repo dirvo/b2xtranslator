@@ -39,6 +39,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// the Chart Sheet Substream ABNF. The collection of records specifies the options 
     /// of the data table which can be displayed within a chart area.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.Dat)]
     public class Dat : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Dat;

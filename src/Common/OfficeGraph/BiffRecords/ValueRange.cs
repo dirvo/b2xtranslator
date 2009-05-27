@@ -37,6 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
     /// <summary>
     /// This record specifies the properties of a value axis.
     /// </summary>
+    [OfficeGraphBiffRecordAttribute(RecordNumber.ValueRange)]
     public class ValueRange : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.ValueRange;
