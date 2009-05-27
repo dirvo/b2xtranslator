@@ -358,7 +358,6 @@
     <Compile Include="DataExtraction\FileInformationExtractor.cs" />
     <Compile Include="BiffRecords\FORMAT.cs" />
     <Compile Include="ExcelHelperClass.cs" />
-    <Compile Include="BiffRecordAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Ptg\AbstractPtg.cs" />
     <Compile Include="Ptg\FtabValues.cs" />
