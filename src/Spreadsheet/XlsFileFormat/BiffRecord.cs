@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
@@ -55,6 +56,84 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             _length = length;
         }
 
+        private static Dictionary<UInt16, Type> TypeToRecordClassMapping = new Dictionary<UInt16, Type>();
+
+        static BiffRecord()
+        {
+            UpdateTypeToRecordClassMapping(
+                Assembly.GetExecutingAssembly(),
+                typeof(BiffRecord).Namespace);
+        }
+
+        public static void UpdateTypeToRecordClassMapping(Assembly assembly, String ns)
+        {
+            foreach (Type t in assembly.GetTypes())
+            {
+                if (ns == null || t.Namespace == ns)
+                {
+                    object[] attrs = t.GetCustomAttributes(typeof(BiffRecordAttribute), false);
+
+                    BiffRecordAttribute attr = null;
+
+                    if (attrs.Length > 0)
+                        attr = attrs[0] as BiffRecordAttribute;
+
+                    if (attr != null)
+                    {
+                        // Add the type codes of the array
+                        foreach (UInt16 typeCode in attr.TypeCodes)
+                        {
+                            if (TypeToRecordClassMapping.ContainsKey(typeCode))
+                            {
+                                throw new Exception(String.Format(
+                                    "Tried to register TypeCode {0} to {1}, but it is already registered to {2}",
+                                    typeCode, t, TypeToRecordClassMapping[typeCode]));
+                            }
+                            TypeToRecordClassMapping.Add(typeCode, t);
+                        }
+                    }
+                }
+            }
+        }
+
+        public static BiffRecord ReadRecord(IStreamReader reader)
+        {
+            BiffRecord result = null;
+            try
+            {
+                UInt16 id = reader.ReadUInt16();
+                UInt16 size = reader.ReadUInt16();
+                Type cls;
+                if (TypeToRecordClassMapping.TryGetValue(id, out cls))
+                {
+                    ConstructorInfo constructor = cls.GetConstructor(
+                        new Type[] { typeof(IStreamReader), typeof(RecordNumber), typeof(UInt16) }
+                        );
+
+                    try
+                    {
+                        result = (BiffRecord)constructor.Invoke(
+                            new object[] { reader, id, size }
+                            );
+                    }
+                    catch (TargetInvocationException e)
+                    {
+                        throw e.InnerException;
+                    }
+                }
+                else
+                {
+                    result = new UnknownBiffRecord(reader, (RecordNumber)id, size);
+                }
+
+                return result;
+            }
+            catch (OutOfMemoryException e)
+            {
+                throw new Exception("Invalid BIFF record", e);
+            }
+        }
+
         public RecordNumber Id
         {
             get { return _id; }
@@ -75,5 +154,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             get { return _reader; }
             set { this._reader = value; }
         }
+
+
     }
 }

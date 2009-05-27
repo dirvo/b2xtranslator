@@ -37,7 +37,11 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
         public List<DataLabelGroup> DataLabelGroups;
 
+        public TextPropsSequence TextPropsSequence;
+
         public Dat Dat;
+
+        public List<FutureRecordSequence> FutureRecordSequences;
 
         public End End;
 
@@ -133,8 +137,14 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             }
 
             // [TEXTPROPS]
+            //if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) )
+            //{
+            //    this.TextPropsSequence = new TextPropsSequence(reader);
+            //}
 
             // *2CRTMLFRT
+            this.FutureRecordSequences = new List<FutureRecordSequence>();
+
 
             // End
             this.End = (End)OfficeGraphBiffRecord.ReadRecord(reader);
