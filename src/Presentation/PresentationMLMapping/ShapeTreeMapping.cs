@@ -146,13 +146,13 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 _writer.WriteEndElement();
 
                 _writer.WriteStartElement("a", "chOff", OpenXmlNamespaces.DrawingML);
-                _writer.WriteAttributeString("x", Utils.MasterCoordToEMU(gsr.rcgBounds.Left).ToString());
-                _writer.WriteAttributeString("y", Utils.MasterCoordToEMU(gsr.rcgBounds.Top).ToString());
+                _writer.WriteAttributeString("x", gsr.rcgBounds.Left.ToString());
+                _writer.WriteAttributeString("y", gsr.rcgBounds.Top.ToString());
                 _writer.WriteEndElement();
 
                 _writer.WriteStartElement("a", "chExt", OpenXmlNamespaces.DrawingML);
-                _writer.WriteAttributeString("cx", Utils.MasterCoordToEMU(gsr.rcgBounds.Right - gsr.rcgBounds.Left).ToString());
-                _writer.WriteAttributeString("cy", Utils.MasterCoordToEMU(gsr.rcgBounds.Bottom - gsr.rcgBounds.Top).ToString());
+                _writer.WriteAttributeString("cx", (gsr.rcgBounds.Right - gsr.rcgBounds.Left).ToString());
+                _writer.WriteAttributeString("cy", (gsr.rcgBounds.Bottom - gsr.rcgBounds.Top).ToString());
                 _writer.WriteEndElement();       
 
                 _writer.WriteEndElement();
@@ -788,8 +788,15 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     {
                         if (sh.fOleShape)
                         {
-                            writeOle(container);
-                            continueShape = false;
+                            OEPlaceHolderAtom placeholder = null;
+                            int exObjIdRef = -1;
+                            CheckClientData(container.FirstChildWithType<ClientData>(), ref placeholder, ref exObjIdRef);
+                            ExOleEmbedContainer oleContainer = this._ctx.Ppt.OleObjects[exObjIdRef];
+                            if (oleContainer.FirstChildWithType<CStringAtom>().Text == "Chart")
+                            {
+                                writeOle(container, oleContainer);
+                                continueShape = false;
+                            }
                         }
 
                         if (continueShape)
@@ -1027,13 +1034,13 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     if (sh.fFlipV) _writer.WriteAttributeString("flipV", "1");
 
                     _writer.WriteStartElement("a", "off", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("x", Utils.MasterCoordToEMU(chAnchor.Left).ToString());
-                    _writer.WriteAttributeString("y", Utils.MasterCoordToEMU(chAnchor.Top).ToString());
+                    _writer.WriteAttributeString("x", (chAnchor.Left).ToString());
+                    _writer.WriteAttributeString("y", (chAnchor.Top).ToString());
                     _writer.WriteEndElement();
 
                     _writer.WriteStartElement("a", "ext", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("cx", Utils.MasterCoordToEMU(chAnchor.Right - chAnchor.Left).ToString());
-                    _writer.WriteAttributeString("cy", Utils.MasterCoordToEMU(chAnchor.Bottom - chAnchor.Top).ToString());
+                    _writer.WriteAttributeString("cx", (chAnchor.Right - chAnchor.Left).ToString());
+                    _writer.WriteAttributeString("cy", (chAnchor.Bottom - chAnchor.Top).ToString());
                     _writer.WriteEndElement();
 
                     _writer.WriteEndElement();
@@ -1402,7 +1409,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
         }
 
-        private void writeOle(ShapeContainer container)
+        private void writeOle(ShapeContainer container, ExOleEmbedContainer oleContainer)
         {
             Shape sh = container.FirstChildWithType<Shape>();
             ShapeOptions so = container.FirstChildWithType<ShapeOptions>();
@@ -1418,48 +1425,68 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteElementString("p", "nvPr", OpenXmlNamespaces.PresentationML, "");
             _writer.WriteEndElement(); //nvGraphicFramePr   
 
-            ClientAnchor anchor = container.FirstChildWithType<ClientAnchor>();
-            if (anchor != null && anchor.Right >= anchor.Left && anchor.Bottom >= anchor.Top)
+            Rectangle anchor = new Rectangle();
+            ClientAnchor clanchor = container.FirstChildWithType<ClientAnchor>();
+            if (clanchor == null)
             {
-                _writer.WriteStartElement("p", "xfrm", OpenXmlNamespaces.PresentationML);
+                 ChildAnchor chanchor = container.FirstChildWithType<ChildAnchor>();
+                 anchor = new Rectangle(chanchor.Left, chanchor.Top, chanchor.rcgBounds.Width, chanchor.rcgBounds.Height);
+                 if (anchor != null && anchor.Right >= anchor.Left && anchor.Bottom >= anchor.Top)
+                 {
+                     _writer.WriteStartElement("p", "xfrm", OpenXmlNamespaces.PresentationML);
 
-                _writer.WriteStartElement("a", "off", OpenXmlNamespaces.DrawingML);
-                _writer.WriteAttributeString("x", Utils.MasterCoordToEMU(anchor.Left).ToString());
-                _writer.WriteAttributeString("y", Utils.MasterCoordToEMU(anchor.Top).ToString());
-                _writer.WriteEndElement();
+                     _writer.WriteStartElement("a", "off", OpenXmlNamespaces.DrawingML);
+                     _writer.WriteAttributeString("x", anchor.Left.ToString());
+                     _writer.WriteAttributeString("y", anchor.Top.ToString());
+                     _writer.WriteEndElement();
 
-                _writer.WriteStartElement("a", "ext", OpenXmlNamespaces.DrawingML);
-                _writer.WriteAttributeString("cx", Utils.MasterCoordToEMU(anchor.Right - anchor.Left).ToString());
-                _writer.WriteAttributeString("cy", Utils.MasterCoordToEMU(anchor.Bottom - anchor.Top).ToString());
-                _writer.WriteEndElement();
+                     _writer.WriteStartElement("a", "ext", OpenXmlNamespaces.DrawingML);
+                     _writer.WriteAttributeString("cx", (anchor.Right - anchor.Left).ToString());
+                     _writer.WriteAttributeString("cy", (anchor.Bottom - anchor.Top).ToString());
+                     _writer.WriteEndElement();
 
-                _writer.WriteEndElement();
+                     _writer.WriteEndElement();
+                 }
             }
+            else
+            {
+                anchor = new Rectangle(clanchor.Left, clanchor.Top,clanchor.Right - clanchor.Left,clanchor.Bottom - clanchor.Top);
+                if (anchor != null && anchor.Right >= anchor.Left && anchor.Bottom >= anchor.Top)
+                {
+                    _writer.WriteStartElement("p", "xfrm", OpenXmlNamespaces.PresentationML);
+
+                    _writer.WriteStartElement("a", "off", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteAttributeString("x", Utils.MasterCoordToEMU(anchor.Left).ToString());
+                    _writer.WriteAttributeString("y", Utils.MasterCoordToEMU(anchor.Top).ToString());
+                    _writer.WriteEndElement();
+
+                    _writer.WriteStartElement("a", "ext", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteAttributeString("cx", Utils.MasterCoordToEMU(anchor.Right - anchor.Left).ToString());
+                    _writer.WriteAttributeString("cy", Utils.MasterCoordToEMU(anchor.Bottom - anchor.Top).ToString());
+                    _writer.WriteEndElement();
+
+                    _writer.WriteEndElement();
+                }
+            }
+
+           
 
             _writer.WriteStartElement("a", "graphic", OpenXmlNamespaces.DrawingML);
 
             _writer.WriteStartElement("a", "graphicData", OpenXmlNamespaces.DrawingML);
             _writer.WriteAttributeString("uri", "http://schemas.openxmlformats.org/presentationml/2006/ole");
 
-
-            OEPlaceHolderAtom placeholder = null;
-            int exObjIdRef = 0;
-            CheckClientData(container.FirstChildWithType<ClientData>(), ref placeholder, ref exObjIdRef);
-
-            ExOleEmbedContainer oleContainer = this._ctx.Ppt.OleObjects[exObjIdRef];
-
             EmbeddedObjectPart embPart = null;
             embPart = parentSlideMapping.targetPart.AddEmbeddedObjectPart(EmbeddedObjectPart.ObjectType.Other);
             embPart.TargetDirectory = "..\\embeddings";
             System.IO.Stream outStream = embPart.GetStream();
-
             outStream.Write(oleContainer.stgAtom.DecompressData(), 0, (int)oleContainer.stgAtom.decompressedSize);
 
             string rId = embPart.RelIdToString;
            
             string spid = "_x0000_s" + id;
-            double width = 6096000; //Utils.MasterCoordToEMU(anchor.Right - anchor.Left).ToString();
-            double height = 4067348; //Utils.MasterCoordToEMU(anchor.Bottom - anchor.Top).ToString();
+            double width = 6096000; 
+            double height = 4067348; 
             string name = oleContainer.AllChildrenWithType<CStringAtom>()[0].Text;
             string progId = oleContainer.AllChildrenWithType<CStringAtom>()[1].Text;
 
@@ -1471,16 +1498,36 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             vmlPart.TargetDirectory = "..\\drawings";
             System.IO.Stream vmlStream = vmlPart.GetStream();
 
+            GroupShapeRecord gsr = container.FirstAncestorWithType<GroupContainer>().FirstChildWithType<ShapeContainer>().FirstChildWithType<GroupShapeRecord>();
+
+            ClientAnchor anch = container.FirstChildWithType<ClientAnchor>();
+            if (anch == null) anch = container.FirstAncestorWithType<GroupContainer>().FirstChildWithType<ShapeContainer>().FirstChildWithType<ClientAnchor>();
+            ChildAnchor chanch = container.FirstChildWithType<ChildAnchor>();
+
+            Rectangle rec;
+            if (chanch != null)
+            {
+                rec = new Rectangle(chanch.Left, chanch.Top, chanch.Right - anch.Left,chanch.Bottom - anch.Top);
+            }
+            else if (anch != null)
+            {
+                rec = new Rectangle(anch.Left, anch.Top, anch.Right - anch.Left, anch.Bottom - anch.Top);
+            }
+            else
+            {
+                rec = new Rectangle(chanch.Left, chanch.Top, chanch.Right - chanch.Left, chanch.Bottom - chanch.Top);
+            }
 
             VMLPictureMapping vm = new VMLPictureMapping(vmlPart, _ctx.WriterSettings);
-            vm.Apply(bse, sh, so, width / (double)Utils.MasterCoordToEMU(anchor.Right - anchor.Left), height / (double)Utils.MasterCoordToEMU(anchor.Bottom - anchor.Top), _ctx, spid);
+            Point size = new Point();
+            vm.Apply(bse, sh, so, rec, _ctx, spid, ref size);
 
             _writer.WriteStartElement("p", "oleObj", OpenXmlNamespaces.PresentationML);
             _writer.WriteAttributeString("spid", spid);
             _writer.WriteAttributeString("name", name);
             _writer.WriteAttributeString("id",OpenXmlNamespaces.Relationships, rId);
-            _writer.WriteAttributeString("imgW", width.ToString());
-            _writer.WriteAttributeString("imgH", height.ToString());
+            _writer.WriteAttributeString("imgW", size.X.ToString());
+            _writer.WriteAttributeString("imgH", size.Y.ToString());
             _writer.WriteAttributeString("progId", progId);
 
             _writer.WriteStartElement("p", "embed", OpenXmlNamespaces.PresentationML);
@@ -1492,8 +1539,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement(); //graphicData
 
             _writer.WriteEndElement(); //graphic
-
-
+            
             _writer.WriteEndElement(); //graphicFrame
         }
 
@@ -1505,13 +1551,12 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             uint indexOfPicture = 0;
             //TODO: read these infos from so
             ++_ctx.lastImageID;
-            int id = _ctx.lastImageID; // "213";
+            int id = _ctx.lastImageID;
             string name = "";
             string descr = "";
             string rId = "";
             foreach (ShapeOptions.OptionEntry en in so.Options)
             {
-
                 switch (en.pid)
                 {
                     case ShapeOptions.PropertyId.Pib:
@@ -1847,10 +1892,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                 if (ms.Length > 0)
                 {
-
                     Record rec = Record.ReadRecord(ms, 0);
 
-                    if (rec.TypeCode == 4116)
+                    if (rec.TypeCode == 4116 && exObjIdRef > -1)
                     {
                         AnimationInfoContainer animinfo = (AnimationInfoContainer)rec;
                         animinfos.Add(animinfo, _idCnt);
@@ -1865,7 +1909,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         case 3011:
                             placeholder = (OEPlaceHolderAtom)rec;
 
-                            if (placeholder != null)
+                            if (placeholder != null && exObjIdRef > -1)
                             {
 
                                 _writer.WriteStartElement("p", "ph", OpenXmlNamespaces.PresentationML);
@@ -1970,7 +2014,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                
                                 break;
                             case 0xff7: //DateTimeMCAtom
-                                if (!phWritten)
+                                if (!phWritten && exObjIdRef > -1)
                                 {
                                     _writer.WriteStartElement("p", "ph", OpenXmlNamespaces.PresentationML);
                                     _writer.WriteAttributeString("type", "dt");

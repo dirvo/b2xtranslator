@@ -12,14 +12,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
     public class VMLShapeTypeMapping : AbstractOpenXmlMapping,
         IMapping<ShapeType>
     {
-        //private XmlElement _lock = null;
 
         public VMLShapeTypeMapping(ConversionContext ctx, XmlWriter writer)
             : base(writer)
-        {
-            //_lock = _nodeFactory.CreateElement("o", "lock", OpenXmlNamespaces.Office);
-            //appendValueAttribute(_lock, "v", "ext", "edit", OpenXmlNamespaces.VectorML);
-        }
+        {}
 
         public void Apply(ShapeType shapeType)
         {
@@ -121,20 +117,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 _writer.WriteEndElement(); //path
 
                 //Lock
-                if (shapeType.Lock.fUsefLockAspectRatio && shapeType.Lock.fLockAspectRatio)
-                {
-                    //appendValueAttribute(_lock, null, "aspectratio", "t", null);
-                }
-                //if (_lock.Attributes.Count > 1)
-                //{
-                //    _lock.WriteTo(_writer);
-                //}
                 _writer.WriteStartElement("o","lock",OpenXmlNamespaces.Office);
                 _writer.WriteAttributeString("v", "ext", OpenXmlNamespaces.VectorML, "edit");
                 _writer.WriteAttributeString("aspectratio","f");
                 _writer.WriteEndElement(); //lock
-               
-
 
                 //Handles
                 if (shapeType.Handles != null && shapeType.Handles.Count > 0)
@@ -168,8 +154,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                     _writer.WriteEndElement(); //handles
                 }
-
-
 
                 _writer.WriteEndElement(); //shapetype
 

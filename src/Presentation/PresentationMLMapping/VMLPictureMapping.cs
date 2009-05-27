@@ -27,11 +27,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _targetPart = vmlPart;
         }
         
-        public void Apply(BlipStoreEntry bse, Shape shape, ShapeOptions options, double mx, double my, ConversionContext ctx, string spid)
+        public void Apply(BlipStoreEntry bse, Shape shape, ShapeOptions options, Rectangle bounds, ConversionContext ctx, string spid, ref Point size)
         {
             _ctx = ctx;
-            Rectangle bounds = new Rectangle();
-            ImagePart imgPart = copyPicture(bse, ref bounds);
+            ImagePart imgPart = copyPicture(bse, ref size);
             if (imgPart != null)
             {
 
@@ -58,14 +57,13 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 _writer.WriteAttributeString("type", "#" + VMLShapeTypeMapping.GenerateTypeId(type));
 
                 StringBuilder style = new StringBuilder();
+            
                 
-                string widthString = Convert.ToString(bounds.Width / mx, CultureInfo.GetCultureInfo("en-US"));
-                string heightString = Convert.ToString(bounds.Height / my, CultureInfo.GetCultureInfo("en-US"));
                 style.Append("position:absolute;");
-                style.Append("left:" + (120 / mx).ToString() + "pt;");
-                style.Append("top:" + (109.875 / my).ToString() + "pt;");
-                style.Append("width:").Append(widthString).Append("px;");
-                style.Append("height:").Append(heightString).Append("px;");
+                style.Append("left:" + (new EmuValue(Utils.MasterCoordToEMU(bounds.Left)).ToPoints()).ToString() + "pt;");
+                style.Append("top:" + (new EmuValue(Utils.MasterCoordToEMU(bounds.Top)).ToPoints()).ToString() + "pt;");
+                style.Append("width:").Append(new EmuValue(Utils.MasterCoordToEMU(bounds.Width)).ToPoints()).Append("pt;");
+                style.Append("height:").Append(new EmuValue(Utils.MasterCoordToEMU(bounds.Height)).ToPoints()).Append("pt;");
                 _writer.WriteAttributeString("style", style.ToString());
                                
                 foreach (ShapeOptions.OptionEntry entry in options.OptionsByID.Values)
@@ -114,7 +112,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         /// </summary>
         /// <param name="pict">The PictureDescriptor</param>
         /// <returns>The created ImagePart</returns>
-        protected ImagePart copyPicture(BlipStoreEntry bse, ref Rectangle bounds)
+        protected ImagePart copyPicture(BlipStoreEntry bse, ref Point size)
         {
             //create the image part
             ImagePart imgPart = null;
@@ -162,7 +160,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                             //it's a meta image
                             MetafilePictBlip metaBlip = (MetafilePictBlip)mb;
-                            bounds = metaBlip.m_rcBounds;
+                            size = metaBlip.m_ptSize;
 
                             //meta images can be compressed
                             byte[] decompressed = metaBlip.Decrompress();
