@@ -31,6 +31,7 @@ using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Tools;
+using DIaLOGIKa.b2xtranslator.OfficeGraph.Structures;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {

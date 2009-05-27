@@ -30,12 +30,31 @@
 using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeGraph
 {
     public class Chart3DBarShape : OfficeGraphBiffRecord
     {
         public const RecordNumber ID = RecordNumber.Chart3DBarShape;
+
+        /// <summary>
+        /// A Boolean that specifies the shape of the base of the data points in a bar or column chart group. <br/>
+        /// MUST be a value from the following table:<br/>
+        /// false = The base of the data point is a rectangle.<br/>
+        /// true = The base of the data point is an ellipse.
+        /// </summary>
+        public bool riser;
+
+        /// <summary>
+        /// An unsigned integer that specifies how the data points in a bar or column chart 
+        /// group taper from base to tip. <br/>
+        /// MUST be a value from the following table:<br/>
+        /// 0 = The data points of the bar or column chart group do not taper. <br/>
+        /// 1 = The data points of the bar or column chart group taper to a point at the maximum value of each data point.<br/>
+        /// 2 = The data points of the bar or column chart group taper towards a projected point
+        /// </summary>
+        public byte taper;
 
         public Chart3DBarShape(IStreamReader reader, RecordNumber id, UInt16 length)
             : base(reader, id, length)
@@ -44,7 +63,8 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             Debug.Assert(this.Id == ID);
             
             // initialize class members from stream
-            // TODO: place code here
+            this.riser = Utils.ByteToBool(reader.ReadByte());
+            this.taper = reader.ReadByte();
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
