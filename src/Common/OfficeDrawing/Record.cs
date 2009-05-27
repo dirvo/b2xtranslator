@@ -296,8 +296,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
                 if (TypeToRecordClassMapping.TryGetValue(typeCode, out cls))
                 {
                     ConstructorInfo constructor = cls.GetConstructor(new Type[] {
-                    typeof(BinaryReader), typeof(uint), typeof(uint), typeof(uint), typeof(uint) 
-                });
+                    typeof(BinaryReader), typeof(uint), typeof(uint), typeof(uint), typeof(uint) });
 
                     if (constructor == null)
                     {
