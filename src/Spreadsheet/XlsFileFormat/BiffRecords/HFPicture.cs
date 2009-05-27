@@ -33,6 +33,7 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
+    [BiffRecordAttribute(RecordNumber.HFPicture)] 
     public class HFPicture : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.HFPicture;

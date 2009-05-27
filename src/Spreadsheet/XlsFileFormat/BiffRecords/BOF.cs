@@ -44,6 +44,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
     /// record number field, as shown in the following table. For BIFF5/BIFF7, 
     /// and BIFF8 use the vers field at offset 4 to determine the BIFF version.
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.BOF)] 
     public class BOF : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.BOF; 

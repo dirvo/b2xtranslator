@@ -33,6 +33,7 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
+    [BiffRecordAttribute(RecordNumber.TABLE)] 
     public class TABLE : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.TABLE;

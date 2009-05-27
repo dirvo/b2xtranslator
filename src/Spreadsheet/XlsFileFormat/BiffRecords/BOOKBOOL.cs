@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// This record saves a workbook option flag.
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.BOOKBOOL)] 
     public class BOOKBOOL : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.BOOKBOOL;

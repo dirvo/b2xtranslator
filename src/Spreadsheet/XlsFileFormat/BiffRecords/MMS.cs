@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// This record stores the number of ADDMENU  groups and DELMENU  groups in the Book  stream.
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.MMS)] 
     public class MMS : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.MMS;

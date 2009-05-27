@@ -34,6 +34,7 @@ using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
+    [BiffRecordAttribute(RecordNumber.FORMULA)] 
     public class FORMULA : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.FORMULA;

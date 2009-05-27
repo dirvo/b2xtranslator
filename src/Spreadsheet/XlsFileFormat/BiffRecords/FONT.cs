@@ -48,6 +48,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     ///     This is for backward-compatibility with previous versions of Excel. 
     ///     If you read FONT records, remember to index the table correctly, skipping ifnt=04h.
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.FONT)] 
     public class FONT : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.FONT2;

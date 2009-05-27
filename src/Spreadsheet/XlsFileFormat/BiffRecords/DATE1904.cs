@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// The 1904 record stores the date system used by Excel.
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.DATE1904)] 
     public class DATE1904 : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.DATE1904;

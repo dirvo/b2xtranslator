@@ -33,6 +33,7 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
+    [BiffRecordAttribute(RecordNumber.FILTERMODE)] 
     public class FILTERMODE : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.FILTERMODE;

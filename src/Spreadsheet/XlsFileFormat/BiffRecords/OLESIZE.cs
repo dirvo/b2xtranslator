@@ -33,6 +33,7 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
+    [BiffRecordAttribute(RecordNumber.OLESIZE)] 
     public class OLESIZE : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.OLESIZE;

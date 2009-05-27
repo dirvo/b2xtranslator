@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// The HIDEOBJ record stores options selected in the Options dialog box, View tab.
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.HIDEOBJ)] 
     public class HIDEOBJ : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.HIDEOBJ;

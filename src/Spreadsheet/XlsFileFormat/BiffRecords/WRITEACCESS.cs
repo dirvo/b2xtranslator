@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// This record contains the user name, which is the name entered when installing Excel.
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.WRITEACCESS)] 
     public class WRITEACCESS : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.WRITEACCESS;

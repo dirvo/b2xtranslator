@@ -49,6 +49,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 12 	colFirst 	2 	The first column of the range associated with the record 
     /// 14 	colLast 	2 	The last column of the range associated with the record 
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.MERGECELLS)] 
     public class MERGECELLS : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.MERGECELLS;

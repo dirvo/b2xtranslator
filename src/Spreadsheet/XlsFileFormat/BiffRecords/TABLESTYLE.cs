@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// This record is used for each custom Table style in use in the document.
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.TABLESTYLE)] 
     public class TABLESTYLE : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.TABLESTYLE;

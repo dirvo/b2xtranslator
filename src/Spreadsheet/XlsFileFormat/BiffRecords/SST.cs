@@ -41,6 +41,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// <summary>
     /// This class extracts the SST-Record Data from the specific biffrecord 
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.SST)] 
     public class SST : BiffRecord
     {
         public LinkedList<VirtualStreamReader> contStreamlist; 

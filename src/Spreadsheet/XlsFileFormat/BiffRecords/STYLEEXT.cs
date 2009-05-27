@@ -46,6 +46,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// formatting properties can be associated with the style XF by name and the style’s formatting 
     /// can be updated on load (Office Excel 2007 or later).
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.STYLEEXT)] 
     public class STYLEEXT : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.STYLEEXT;

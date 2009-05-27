@@ -41,6 +41,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// Note: this record specifies a sheet-level or workbook-level protection password, 
     /// as opposed to the FILEPASS record, which specifies a file password.
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.PASSWORD)] 
     public class PASSWORD : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.PASSWORD;

@@ -33,6 +33,7 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
+    [BiffRecordAttribute(RecordNumber.DEFAULTROWHEIGHT)] 
     public class DEFAULTROWHEIGHT : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.DEFAULTROWHEIGHT;

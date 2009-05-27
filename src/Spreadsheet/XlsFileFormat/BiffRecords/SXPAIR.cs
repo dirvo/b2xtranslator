@@ -33,6 +33,7 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
+    [BiffRecordAttribute(RecordNumber.SXPAIR)] 
     public class SXPAIR : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.SXPAIR;

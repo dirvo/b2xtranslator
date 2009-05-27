@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// The PROTECT record stores the protection state for a sheet or workbook.
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.PROTECT)] 
     public class PROTECT : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.PROTECT;

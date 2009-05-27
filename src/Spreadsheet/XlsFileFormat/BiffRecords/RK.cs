@@ -36,6 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// <summary>
     /// This Biffrecord stores some microsoft specific number data 
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.RK)] 
     public class RK : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.NUMBER;

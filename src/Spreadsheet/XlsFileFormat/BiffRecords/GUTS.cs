@@ -33,6 +33,7 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
+    [BiffRecordAttribute(RecordNumber.GUTS)] 
     public class GUTS : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.GUTS;

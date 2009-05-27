@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// The CODEPAGE record stores the default code page (character set) used when the workbook was saved.
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.CODEPAGE)] 
     public class CODEPAGE : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.CODEPAGE;

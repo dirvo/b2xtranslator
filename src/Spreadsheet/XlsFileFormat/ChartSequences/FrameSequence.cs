@@ -8,8 +8,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
     public class FrameSequence : OfficeGraphBiffRecordSequence
     {
-        public FrameSequence(IStreamReader reader)
-            : base(reader)
+        public FrameSequence(IStreamReader reader) : base(reader)
         {
 
         }

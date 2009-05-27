@@ -45,6 +45,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// This record does not appear in BIFF5 files.
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.TABID)] 
     public class TABID : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.TABID;

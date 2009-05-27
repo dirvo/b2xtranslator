@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BiffRecord.cs" />
+    <Compile Include="BiffRecordAttribute.cs" />
     <Compile Include="BiffRecords\RK.cs" />
     <Compile Include="BiffRecords\ADDIN.cs" />
     <Compile Include="BiffRecords\ADDMENU.cs" />

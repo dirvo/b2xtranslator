@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// This record stores the sheet name, sheet type, and stream position.
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.BOUNDSHEET)] 
     public class BOUNDSHEET : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.BOUNDSHEET;

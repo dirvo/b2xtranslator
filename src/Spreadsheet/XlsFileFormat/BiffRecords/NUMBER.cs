@@ -36,6 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// <summary>
     /// This class is used to read data from a NUMBER BiffRecord 
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.NUMBER)] 
     public class NUMBER : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.NUMBER;

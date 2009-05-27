@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// The PROT4REV record stores an encrypted password for shared-workbook protection.
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.PROT4REVPASS)] 
     public class PROT4REVPASS : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.PROT4REVPASS;

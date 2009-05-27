@@ -43,6 +43,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// The dxWn and dyWn fields contain the window size, also in units of 1/20th  of a point.
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.WINDOW1)] 
     public class WINDOW1 : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.WINDOW1;

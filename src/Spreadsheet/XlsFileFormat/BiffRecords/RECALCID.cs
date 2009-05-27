@@ -33,6 +33,7 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
+    [BiffRecordAttribute(RecordNumber.RECALCID)] 
     public class RECALCID : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.RECALCID;

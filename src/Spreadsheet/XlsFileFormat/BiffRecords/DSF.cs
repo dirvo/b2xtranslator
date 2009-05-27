@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// The DSF  record stores a flag that indicates if the workbook is a double stream file.
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.DSF)] 
     public class DSF : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.DSF;

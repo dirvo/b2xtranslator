@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// This record marks the end of the user interface section of the Book stream. It has no record data field.
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.INTERFACEEND)] 
     public class INTERFACEEND : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.INTERFACEEND;

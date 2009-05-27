@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// This record stores an option flag.
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.REFRESHALL)] 
     public class REFRESHALL : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.REFRESHALL;

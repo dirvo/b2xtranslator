@@ -31,44 +31,26 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DIaLOGIKa.b2xtranslator.OfficeGraph
+namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
-    public enum HorizontalAlignment
+    /// <summary>
+    /// Used for mapping Office record TypeCodes to the classes implementing them.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class)]
+    public class BiffRecordAttribute : Attribute
     {
-        Left = 0x01,
-        Center = 0x02,
-        Right = 0x03,
-        Justify = 0x04,
-        Distributed = 0x07
-    }
+        public BiffRecordAttribute() { }
 
-    public enum VerticalAlignment
-    {
-        Top = 0x01,
-        Middle = 0x02,
-        Bottom = 0x03,
-        Justify = 0x04,
-        Distributed = 0x07
-    }
+        public BiffRecordAttribute(params RecordNumber[] typecodes)
+        {
+            this._typeCodes = typecodes;
+        }
 
-    public enum BackgroundMode
-    {
-        Transparent = 1,
-        Opaque = 2
-    }
+        public RecordNumber[] TypeCodes
+        {
+            get { return _typeCodes; }
+        }
 
-    public enum ReadingOrder
-    {
-        Complex,
-        LeftToRight,
-        RightToLeft
-    }
-
-    public enum TextRotation
-    {
-        Custom,
-        Stacked,
-        CounterClockwise,
-        Clockwise
+        private RecordNumber[] _typeCodes = new RecordNumber[0];
     }
 }

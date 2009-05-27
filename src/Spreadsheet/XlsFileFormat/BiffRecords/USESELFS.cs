@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// This record stores a flag bit.
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.USESELFS)] 
     public class USESELFS : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.USESELFS;

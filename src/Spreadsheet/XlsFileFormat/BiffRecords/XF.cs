@@ -49,6 +49,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// Use the ifmt to associate the built-in number formats with an XF record. However, 
     /// the internal number formats are no longer visible in the BIFF file. 
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.XF)] 
     public class XF : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.XF;

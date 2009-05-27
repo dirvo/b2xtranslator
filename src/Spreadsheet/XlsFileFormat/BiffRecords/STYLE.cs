@@ -40,6 +40,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// record in the BIFF file. When Excel saves the workbook, it writes the STYLE records 
     /// in alphabetical order, which is the order in which the styles appear in the drop-down list box.
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.STYLE)] 
     public class STYLE : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.STYLE;

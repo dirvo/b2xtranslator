@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// The PROT4REV  record stores a shared-workbook protection flag.
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.PROT4REV)] 
     public class PROT4REV : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.PROT4REV;

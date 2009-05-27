@@ -38,6 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// The WINDOWPROTECT record stores an option from the Protect Workbook dialog box.
     /// </summary>
+    [BiffRecordAttribute(RecordNumber.WINDOWPROTECT)] 
     public class WINDOWPROTECT : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.WINDOWPROTECT;

@@ -34,6 +34,7 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
+    [BiffRecordAttribute(RecordNumber.HLINK)] 
     public class HLINK : BiffRecord
     {
         public const RecordNumber ID = RecordNumber.HLINK;
