@@ -213,6 +213,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         NamePublish = 2195,
         Note = 28,
         Number = 515,
+        NumberChart = 3,
         Obj = 93,
         ObjectLink = 4135,
         ObjProtect = 99,
