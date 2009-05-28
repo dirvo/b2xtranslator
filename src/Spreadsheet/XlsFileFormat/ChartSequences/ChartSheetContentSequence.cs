@@ -104,15 +104,20 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             }
 
             // [BACKGROUND]
-            this.BackgroundSequence = new BackgroundSequence(reader);
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.BkHim)
+            {
+                this.BackgroundSequence = new BackgroundSequence(reader);
+            }
 
             // *Fbi
+            this.Fbis = new List<Fbi>();
             while (BiffRecord.GetNextRecordType(reader) == RecordType.Fbi)
             {
                 this.Fbis.Add((Fbi)BiffRecord.ReadRecord(reader));
             }
 
             // *Fbi2
+            this.Fbi2s = new List<Fbi2>();
             while (BiffRecord.GetNextRecordType(reader) == RecordType.Fbi2)
             {
                 this.Fbi2s.Add((Fbi2)BiffRecord.ReadRecord(reader));

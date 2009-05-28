@@ -32,6 +32,9 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
+    /// <summary>
+    /// This record specifies image data for a sheet background.
+    /// </summary>
     [BiffRecordAttribute(RecordType.BkHim)]
     public class BkHim : BiffRecord
     {

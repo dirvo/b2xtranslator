@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
@@ -60,7 +61,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         {
             UpdateTypeToRecordClassMapping(
                 Assembly.GetExecutingAssembly(),
-                typeof(BiffRecord).Namespace);
+                typeof(BOF).Namespace);
         }
 
         public static void UpdateTypeToRecordClassMapping(Assembly assembly, String ns)

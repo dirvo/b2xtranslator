@@ -32,6 +32,7 @@ using System.Windows.Forms;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
 {
@@ -221,7 +222,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
                     string documentType = "";
                     if (bh.id == RecordType.BOF)
                     {
-                        XlsFileFormat.BOF bof = new XlsFileFormat.BOF(workbookReader, (XlsFileFormat.RecordType)bh.id, bh.length);
+                        BOF bof = new BOF(workbookReader, (XlsFileFormat.RecordType)bh.id, bh.length);
                         documentType = bof.docType.ToString();
                         // seek back
                         workbookReader.BaseStream.Seek(-bh.length, System.IO.SeekOrigin.Current);

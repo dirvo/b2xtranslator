@@ -31,11 +31,13 @@ using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Tools;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
     /// <summary>
-    /// This record specifies a reference to data in a sheet that is used by a part of a series or by a legend entry.
+    /// This record specifies a reference to data in a sheet that is used by a 
+    /// part of a series, legend entry, trendline or error bars.
     /// </summary>
     [BiffRecordAttribute(RecordType.BRAI)]
     public class BRAI : BiffRecord
@@ -45,17 +47,21 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
         public enum BraiId : byte
         {
             /// <summary>
-            /// Referenced data is used for series name or text of a legend entry.
+            /// Referenced data specifies the series, legend entry, or trendline name. 
+            /// 
+            /// Error bars name MUST be empty
             /// </summary>
             SeriesNameOrLegendText = 0x00,
 
             /// <summary>
-            /// Referenced data is used for series values
+            /// Referenced data specifies the values or horizontal values on bubble 
+            /// and scatter chart groups of the series and error bars.
             /// </summary>
             SeriesValues = 0x01,
 
             /// <summary>
-            /// Referenced data is used for series category (3) name.
+            /// Referenced data specifies the categories or vertical values on 
+            /// bubble and scatter chart groups of the series and error bars.
             /// </summary>
             SeriesCategory = 0x02,
 
@@ -65,28 +71,50 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             BubbleSizeValues = 0x03
         }
 
+        public enum DataSource : byte
+        {
+            /// <summary>
+            /// The data source is a category (3) name, series name or 
+            /// bubble size that was automatically generated.
+            /// </summary>
+            Automatic = 0x00,
+
+            /// <summary>
+            /// The data source is the text or value as specified 
+            /// by the formula field.
+            /// </summary>
+            Formula = 0x01,
+
+            /// <summary>
+            /// The data source is the value from a range of cells 
+            /// in a sheet specified by the formula field.
+            /// </summary>
+            Range = 0x02
+        }
+
         public enum Formatting : ushort
         {
+            /// <summary>
+            /// The data uses the number formatting of the referenced data.
+            /// </summary>
             FromReference = 0x00,
+
+            /// <summary>
+            /// The data uses the custom number formatting specified in the ifmt field.
+            /// </summary>
             Custom = 0x01
         }
 
         /// <summary>
-        /// An unsigned integer that specifies the part of the chart for which the referenced data is used for.
+        /// An unsigned integer that specifies the part of the series, trendline, or 
+        /// error bars the referenced data specifies.
         /// </summary>
         public BraiId braiId;
 
         /// <summary>
         /// An unsigned integer that specifies the type of data that is being referenced. 
-        /// 
-        /// MUST be a value from the following table: 
-        /// 
-        ///     Value      Meaning
-        ///     0x00       The data source is a category (3) name or bubble size that is automatically generated.
-        ///     0x01       The data source as specified by rowcol.
-        ///     0x02       The data source as specified by rowcol.
         /// </summary>
-        public byte rt;
+        public DataSource rt;
 
         /// <summary>
         /// A bit that specifies whether the part of the chart specified by the id field uses number formatting from the referenced data.
@@ -107,15 +135,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
         public UInt16 ifmt;
 
         /// <summary>
-        /// An unsigned integer that specifies the row or column information of the reference. 
-        /// 
-        /// If the fSeriesInRows field of the Orient record is 1, it MUST contain the row number of the 
-        /// specified information. If the fSeriesInRows field of the Orient record is 0, it 
-        /// MUST contain the column number of the specified information. Row number is a zero-based 
-        /// index of the row in the datasheet and column number is a zero-based index of the 
-        /// column of the data sheet. MUST be less than or equal to 0x0F9F.
+        /// A ChartParsedFormula that specifies the formula that specifies the reference.
         /// </summary>
-        public UInt16 rowcol;
+        public ChartParsedFormula formula;
         
         public BRAI(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
@@ -125,10 +147,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 
             // initialize class members from stream
             this.braiId = (BraiId)reader.ReadByte();
-            this.rt = reader.ReadByte();
+            this.rt = (DataSource)reader.ReadByte();
             this.fUnlinkedIfmt = (Formatting)Utils.BitmaskToUInt16(reader.ReadUInt16(), 0x1);
             this.ifmt = reader.ReadUInt16();
-            this.rowcol = reader.ReadUInt16();
+            this.formula = new ChartParsedFormula(reader);
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

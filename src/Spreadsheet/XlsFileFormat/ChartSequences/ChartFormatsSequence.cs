@@ -97,7 +97,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
             // *2DFTTEXT
             this.DftTextSequences = new List<DftTextSequence>();
-            while (BiffRecord.GetNextRecordType(reader) == RecordType.DataLabExt)
+            while (BiffRecord.GetNextRecordType(reader) == RecordType.DataLabExt
+                || BiffRecord.GetNextRecordType(reader) == RecordType.DefaultText)
             {
                 this.DftTextSequences.Add(new DftTextSequence(reader));
             }

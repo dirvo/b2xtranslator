@@ -117,7 +117,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
 
             // *(LegendException [Begin ATTACHEDLABEL End])  
-            this.LegendExceptionSequence = new LegendExceptionGroup(reader); 
+            while (BiffRecord.GetNextRecordType(reader) == RecordType.LegendException)
+            {
+                this.LegendExceptionSequence = new LegendExceptionGroup(reader);
+            }
 
             // End 
             this.End = (End)BiffRecord.ReadRecord(reader);

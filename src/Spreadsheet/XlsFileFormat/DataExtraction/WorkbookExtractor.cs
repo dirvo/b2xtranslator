@@ -108,24 +108,25 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                                         break;
 
                                     case BoundSheet8.SheetType.ChartSheet:
-                                        sheetData = new ChartSheetData();
+                                        ChartSheetData chartSheetData = new ChartSheetData();
+
                                         this.oldOffset = this.StreamReader.BaseStream.Position;
                                         this.StreamReader.BaseStream.Seek(bs.lbPlyPos, SeekOrigin.Begin);
-                                        
-
-
+                                        chartSheetData.ChartSheetSequence = new ChartSheetSequence(this.StreamReader);
                                         this.StreamReader.BaseStream.Seek(oldOffset, SeekOrigin.Begin);
+
+                                        sheetData = chartSheetData;
                                         break;
 
                                     default:
                                         TraceLogger.Info("Unsupported sheet type: {0}", bs.dt);
                                         break;
                                 }
-                                //WorkSheetData 
-
+                                
                                 if (sheetData != null)
                                 {
-                                    sheetData.worksheetName = bs.getBoundsheetName();
+                                    // add general sheet info
+                                    sheetData.worksheetName = bs.stName.Value;
                                     sheetData.boundsheetRecord = bs;
                                 }
                                 this.workBookData.addBoundSheetData(sheetData);

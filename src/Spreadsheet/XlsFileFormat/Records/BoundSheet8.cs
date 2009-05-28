@@ -28,6 +28,7 @@ using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Tools;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
@@ -41,10 +42,23 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
     {
         public const RecordType ID = RecordType.BoundSheet8;
 
-        /// <summary>
-        /// Some enum definitions 
-        /// </summary>
-        public enum hiddenFlags:int {visible=0, hidden=1, veryhidden=2 };
+        public enum HiddenState : byte
+        {
+            /// <summary>
+            /// Visible
+            /// </summary>
+            Visible = 0x00,
+ 
+            /// <summary>
+            /// Hidden
+            /// </summary>
+            Hidden = 0x01, 
+
+            /// <summary>
+            /// Very Hidden; the sheet is hidden and cannot be displayed using the user interface.
+            /// </summary>
+            VeryHidden = 0x02
+        }
 
         public enum SheetType : ushort
         {
@@ -71,30 +85,37 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 
 
         /// <summary>
-        /// Stream position of the start of the BOF record for the sheet
+        /// A FilePointer as specified in [MS-OSHARED] section 2.2.1.5 that specifies the 
+        /// stream position of the start of the BOF record for the sheet.
         /// </summary>
         public UInt32 lbPlyPos;
 
         /// <summary>
-        /// Option flags
+        /// A ShortXLUnicodeString that specifies the unique case-insensitive name of the sheet. 
+        /// The character count of this string, stName.ch, MUST be greater than or equal to 1 
+        /// and less than or equal to 31. 
+        /// 
+        /// The string MUST NOT contain the any of the following characters: 
+        /// 
+        ///     - 0x0000 
+        ///     - 0x0003 
+        ///     - colon (:) 
+        ///     - backslash (\) 
+        ///     - asterisk (*) 
+        ///     - question mark (?) 
+        ///     - forward slash (/) 
+        ///     - opening square bracket ([) 
+        ///     - closing square bracket (]) 
+        ///     
+        /// The string MUST NOT begin or end with the single quote (') character.
         /// </summary>
-        private UInt16 grbit;
-
-        /// <summary>
-        /// Length of the sheet name (in characters)
-        /// </summary>
-        public byte cch;
-
-        /// <summary>
-        /// Sheet name (grbit/rgb fields of Unicode String)
-        /// </summary>
-        public byte[] rgch;
+        public ShortXLUnicodeString stName;
         // TODO: check for correct interpretation of Unicode strings
 
         /// <summary>
         /// The hidden status of the workbook 
         /// </summary>
-        public int hiddenState;
+        public HiddenState hsState;
 
         /// <summary>
         /// The sheet type value
@@ -113,30 +134,19 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
             
-            this.lbPlyPos = this.Reader.ReadUInt32(); 
-            this.grbit = this.Reader.ReadUInt16();
-           
-            this.cch = this.Reader.ReadByte(); 
+            this.lbPlyPos = this.Reader.ReadUInt32();
 
-            this.rgch = new byte[this.cch];
-            
-            byte fHighByte = this.Reader.ReadByte();
-            int isCompressed = fHighByte & 0x0001;
-            for (int i = 0; i < this.cch; i++)
-            {
-                this.rgch[i] = this.Reader.ReadByte(); 
-            }
-            
-            
-            // Setting the hidden state value 
+            byte flags = reader.ReadByte();
+
             // Bitmask is 0003h -> first two bits 
-            this.hiddenState = Utils.BitmaskToInt(this.grbit, 0x0003); 
+            this.hsState = (HiddenState)Utils.BitmaskToByte(flags, 0x0003); 
 
-            // Setting the sheet type value 
-            this.dt = (SheetType)Utils.BitmaskToInt(this.grbit, 0xFF00);
-            
+            this.dt = (SheetType)reader.ReadByte();
+
+            this.stName = new ShortXLUnicodeString(reader);
+
             // assert that the correct number of bytes has been read from the stream
-            // Debug.trace(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
         }
 
         /// <summary>
@@ -146,27 +156,11 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
         public override String ToString()
         {
             String returnvalue = "BOUNDSHEET - RECORD: \n";
-            returnvalue += "-- Name: " + this.getBoundsheetName() + "\n";
+            returnvalue += "-- Name: " + this.stName.Value + "\n";
             returnvalue += "-- Offset: " + this.lbPlyPos + "\n";
-            returnvalue += "-- HiddenState: " + (hiddenFlags)this.hiddenState + "\n";
-            returnvalue += "-- Sheettype: " + (SheetType)this.dt + "\n"; 
+            returnvalue += "-- HiddenState: " + this.hsState + "\n";
+            returnvalue += "-- SheetType: " + this.dt + "\n"; 
             return returnvalue; 
         }
-
-
-        /// <summary>
-        /// Helper Method to get the boundsheetname 
-        /// </summary>
-        /// <returns>Boundsheetname </returns>
-        public String getBoundsheetName()
-        {
-            String returnvalue = ""; 
-            for (int i = 0; i < this.rgch.Length; i++)
-            {
-                returnvalue += (char)this.rgch[i];
-            }
-            return returnvalue; 
-        }
-
     }
 }
