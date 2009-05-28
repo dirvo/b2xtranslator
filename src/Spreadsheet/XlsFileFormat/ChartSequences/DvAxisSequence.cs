@@ -10,7 +10,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public ValueRange ValueRange;
         public AxmSequence AxmSequence;
         public AxsSequence AxsSequence;
-        public FutureRecordSequence FutureRecordSequence;
+        public CrtMlfrtSequence CrtMlfrtSequence;
         public End End;
 
         public DvAxisSequence(IStreamReader reader)
@@ -42,7 +42,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             // [CRTMLFRT]
             if(BiffRecord.GetNextRecordType(reader) == RecordType.CrtMlFrt)
             {
-                this.FutureRecordSequence = new FutureRecordSequence(reader);
+                this.CrtMlfrtSequence = new CrtMlfrtSequence(reader);
             }
 
             // End

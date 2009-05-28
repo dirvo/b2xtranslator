@@ -40,9 +40,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
         public CrtLayout12 CrtLayout12A;
 
-        public FutureRecordSequence FutureRecordSequence;
+        public CrtMlfrtSequence CrtMlfrtSequence;
 
-        public List<FutureRecordSequence> FutureRecordSequences;
+        public List<CrtMlfrtSequence> CrtMlfrtSequences;
 
         public End End;
 
@@ -134,7 +134,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             // [CRTMLFRT]
             if (BiffRecord.GetNextRecordType(reader) == RecordType.CrtMlFrt)
             {
-                this.FutureRecordSequence = new FutureRecordSequence(reader);
+                this.CrtMlfrtSequence = new CrtMlfrtSequence(reader);
             }
 
             // *([DataLabExt StartObject] ATTACHEDLABEL [EndObject])
@@ -151,10 +151,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             }
 
             // *2CRTMLFRT
-            this.FutureRecordSequences = new List<FutureRecordSequence>();
+            this.CrtMlfrtSequences = new List<CrtMlfrtSequence>();
             while (BiffRecord.GetNextRecordType(reader) == RecordType.CrtMlFrt)
             {
-                this.FutureRecordSequences.Add(new FutureRecordSequence(reader));
+                this.CrtMlfrtSequences.Add(new CrtMlfrtSequence(reader));
             }
 
             // End

@@ -45,6 +45,7 @@
     <Compile Include="BiffString.cs" />
     <Compile Include="ChartSequences\AiSequence.cs" />
     <Compile Include="ChartSequences\AttachedLabelSequence.cs" />
+    <Compile Include="ChartSequences\AutoFilterSequence.cs" />
     <Compile Include="ChartSequences\AxesSequence.cs" />
     <Compile Include="ChartSequences\AxisParentSequence.cs" />
     <Compile Include="ChartSequences\AxmSequence.cs" />
@@ -64,7 +65,6 @@
     <Compile Include="ChartSequences\DvAxisSequence.cs" />
     <Compile Include="ChartSequences\FontListSequence.cs" />
     <Compile Include="ChartSequences\FrameSequence.cs" />
-    <Compile Include="ChartSequences\FutureRecordSequence.cs" />
     <Compile Include="ChartSequences\GelFrameSequence.cs" />
     <Compile Include="ChartSequences\IvAxisSequence.cs" />
     <Compile Include="ChartSequences\LdSequence.cs" />
@@ -77,6 +77,7 @@
     <Compile Include="ChartSequences\SeriesDataSequence.cs" />
     <Compile Include="ChartSequences\SeriesFormatSequence.cs" />
     <Compile Include="ChartSequences\ShapePropsSequence.cs" />
+    <Compile Include="ChartSequences\SortData12Sequence.cs" />
     <Compile Include="ChartSequences\SsSequence.cs" />
     <Compile Include="ChartSequences\TextObjectSequence.cs" />
     <Compile Include="ChartSequences\TextPropsSequence.cs" />
@@ -417,6 +418,7 @@
     <Compile Include="Records\SheetExt.cs" />
     <Compile Include="Records\ShrFmla.cs" />
     <Compile Include="Records\ShtProps.cs" />
+    <Compile Include="Records\SIIndex.cs" />
     <Compile Include="Records\Sort.cs" />
     <Compile Include="Records\SortData.cs" />
     <Compile Include="Records\SOUND.cs" />

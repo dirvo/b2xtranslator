@@ -7,7 +7,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public DataSheetSequence(IStreamReader reader)
             : base(reader)
         {
-            //ToDo: Implement body
+            //
         }
     }
 }

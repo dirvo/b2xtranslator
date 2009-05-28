@@ -15,6 +15,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             : base(reader)
         {
             // PICF = Begin PicF End
+
             // Begin
             this.Begin = (Begin)BiffRecord.ReadRecord(reader);
 

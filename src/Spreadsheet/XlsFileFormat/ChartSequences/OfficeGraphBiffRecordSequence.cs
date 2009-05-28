@@ -16,10 +16,5 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         {
             _reader = reader;
         }
-
-        public BiffRecord GetNextRecord()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
