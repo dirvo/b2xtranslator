@@ -2,7 +2,7 @@
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
-namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.ChartSequences
+namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
     public class ChartFormatsSequence : BiffRecordSequence
     {

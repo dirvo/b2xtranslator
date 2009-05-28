@@ -53,6 +53,7 @@
     <Compile Include="ChartSequences\ChartSheetContentSequence.cs" />
     <Compile Include="ChartSequences\ChartSheetSequence.cs" />
     <Compile Include="ChartSequences\BackgroundSequence.cs" />
+    <Compile Include="ChartSequences\CustomViewSequence.cs" />
     <Compile Include="ChartSequences\ProtectionSequence.cs" />
     <Compile Include="ChartSequences\CrtMlfrtSequence.cs" />
     <Compile Include="ChartSequences\CrtSequence.cs" />
@@ -73,11 +74,13 @@
     <Compile Include="ChartSequences\PageSetupSequence.cs" />
     <Compile Include="ChartSequences\PicfSequence.cs" />
     <Compile Include="ChartSequences\SeriesAxisSequence.cs" />
+    <Compile Include="ChartSequences\SeriesDataSequence.cs" />
     <Compile Include="ChartSequences\SeriesFormatSequence.cs" />
     <Compile Include="ChartSequences\ShapePropsSequence.cs" />
     <Compile Include="ChartSequences\SsSequence.cs" />
     <Compile Include="ChartSequences\TextObjectSequence.cs" />
     <Compile Include="ChartSequences\TextPropsSequence.cs" />
+    <Compile Include="ChartSequences\WindowSequence.cs" />
     <Compile Include="DataContainer\AbstractCellData.cs" />
     <Compile Include="DataContainer\BlankCell.cs" />
     <Compile Include="DataContainer\ColumnInfoData.cs" />
@@ -359,6 +362,7 @@
     <Compile Include="Records\PicF.cs" />
     <Compile Include="Records\Pie.cs" />
     <Compile Include="Records\PieFormat.cs" />
+    <Compile Include="Records\PivotChartBits.cs" />
     <Compile Include="Records\PlotArea.cs" />
     <Compile Include="Records\PlotGrowth.cs" />
     <Compile Include="Records\Pls.cs" />
@@ -389,6 +393,7 @@
     <Compile Include="Records\Row.cs" />
     <Compile Include="Records\RSTRING.cs" />
     <Compile Include="Records\CalcSaveRecalc.cs" />
+    <Compile Include="Records\SBaseRef.cs" />
     <Compile Include="Records\Scatter.cs" />
     <Compile Include="Records\SCENARIO.cs" />
     <Compile Include="Records\ScenMan.cs" />
@@ -455,6 +460,7 @@
     <Compile Include="Records\SxView.cs" />
     <Compile Include="Records\SXViewEx.cs" />
     <Compile Include="Records\SXViewEx9.cs" />
+    <Compile Include="Records\SXViewLink.cs" />
     <Compile Include="Records\SXVS.cs" />
     <Compile Include="Records\RRTabId.cs" />
     <Compile Include="Records\TABIDCONF.cs" />
