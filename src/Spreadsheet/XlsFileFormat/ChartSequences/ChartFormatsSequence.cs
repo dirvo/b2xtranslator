@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using OfficeGraph = DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.ChartSequences
 {
@@ -42,6 +41,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.ChartSequences
 
         public Dat Dat;
 
+        public CrtLayout12 CrtLayout12A;
+
         public List<FutureRecordSequence> FutureRecordSequences;
 
         public End End;
@@ -49,10 +50,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.ChartSequences
         public ChartFormatsSequence(IStreamReader reader)
             : base(reader)
         {
-           // CHARTFOMATS = Chart Begin *2FONTLIST Scl PlotGrowth [FRAME] *SERIESFORMAT *SS ShtProps 
-           //     *2DFTTEXT AxesUsed 1*2AXISPARENT [CrtLayout12A] [DAT] *ATTACHEDLABEL [CRTMLFRT]
-           //     *([DataLabExt StartObject] ATTACHEDLABEL [EndObject]) [TEXTPROPS] *2CRTMLFRT End
-
+            // CHARTFOMATS = Chart Begin *2FONTLIST Scl PlotGrowth [FRAME] *SERIESFORMAT *SS ShtProps 
+            //    *2DFTTEXT AxesUsed 1*2AXISPARENT [CrtLayout12A] [DAT] *ATTACHEDLABEL [CRTMLFRT] 
+            //    *([DataLabExt StartObject] ATTACHEDLABEL [EndObject]) [TEXTPROPS] *2CRTMLFRT End
 
             // Chart
             this.Chart = (Chart)BiffRecord.ReadRecord(reader);
@@ -114,7 +114,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.ChartSequences
             }
 
             // [CrtLayout12A]
-            // ToDo: 
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.CrtLayout12A)
+            {
+                this.CrtLayout12A = (CrtLayout12)BiffRecord.ReadRecord(reader);
+            }
 
             // [DAT]
             if (BiffRecord.GetNextRecordType(reader) == RecordType.Dat)

@@ -52,8 +52,6 @@
     <Compile Include="ChartSequences\ChartFormatsSequence.cs" />
     <Compile Include="ChartSequences\ChartSheetContentSequence.cs" />
     <Compile Include="ChartSequences\ChartSheetSequence.cs" />
-    <Compile Include="ChartSequences\CrtMlfrtSequence.cs" />
-    <Compile Include="ChartSequences\SeriesDataSequence.cs" />
     <Compile Include="ChartSequences\CrtSequence.cs" />
     <Compile Include="ChartSequences\DataSheetSequence.cs" />
     <Compile Include="ChartSequences\DatSequence.cs" />
@@ -217,6 +215,7 @@
     <Compile Include="Records\CrErr.cs" />
     <Compile Include="Records\CRN.cs" />
     <Compile Include="Records\CRTCOOPT.cs" />
+    <Compile Include="Records\CrtLayout12.cs" />
     <Compile Include="Records\CrtLine.cs" />
     <Compile Include="Records\CrtLink.cs" />
     <Compile Include="Records\Dat.cs" />
