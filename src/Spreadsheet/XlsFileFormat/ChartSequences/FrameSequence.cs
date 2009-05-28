@@ -54,27 +54,33 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
         public FrameSequence(IStreamReader reader) : base(reader)
         {
-            //Frame 
+            // FRAME = Frame Begin LineFormat AreaFormat [GELFRAME] [SHAPEPROPS] End
+
+            // Frame 
             this.Frame = (Frame)BiffRecord.ReadRecord(reader);
             
-            //Begin 
+            // Begin 
             this.Begin = (Begin)BiffRecord.ReadRecord(reader); 
             
-            //LineFormat 
+            // LineFormat 
             this.LineFormat = (LineFormat)BiffRecord.ReadRecord(reader);
             
-            //AreaFormat 
+            // AreaFormat 
             this.AreaFormat = (AreaFormat)BiffRecord.ReadRecord(reader);
             
-            //[GELFRAME] 
-            if (BiffRecord.GetNextRecordType(reader) == 0)
+            // [GELFRAME] 
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.GelFrame)
             {
-                // TODO: Complete
+                this.GelFrameSequence = new GelFrameSequence(reader);
             }
             
-            //[SHAPEPROPS] 
+            // [SHAPEPROPS] 
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.ShapePropsStream)
+            {
+               this.ShapePropsSequence = new ShapePropsSequence(reader);
+            }
             
-            //End
+            // End
             this.End = (End)BiffRecord.ReadRecord(reader);
         }
     }
