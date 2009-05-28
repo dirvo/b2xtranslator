@@ -53,6 +53,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         BigName = 1048,
         BkHim = 233,
         Blank = 513,
+        BlankGraph = 1,
         BOF = 2057,
         BookBool = 218,
         BookExt = 2147,

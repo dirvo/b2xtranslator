@@ -49,7 +49,6 @@
     <Compile Include="BiffRecords\AxisParent.cs" />
     <Compile Include="BiffRecords\Bar.cs" />
     <Compile Include="BiffRecords\Begin.cs" />
-    <Compile Include="BiffRecords\Blank.cs" />
     <Compile Include="BiffRecords\BOF.cs" />
     <Compile Include="BiffRecords\BOFDatasheet.cs" />
     <Compile Include="BiffRecords\BopPop.cs" />
