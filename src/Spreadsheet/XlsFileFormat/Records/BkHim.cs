@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2008, DIaLOGIKa
  * All rights reserved.
  *
@@ -26,27 +26,44 @@
  */
 
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
-    [BiffRecordAttribute(RecordType.AutoFilter)] 
-    public class AutoFilter : BiffRecord
+    [BiffRecordAttribute(RecordType.BkHim)]
+    public class BkHim : BiffRecord
     {
-        public const RecordType ID = RecordType.AutoFilter;
+        public enum ImageFormat
+        {
+            Bitmap = 0x0009,
+            Native = 0x000E
+        }
 
-        public AutoFilter(IStreamReader reader, RecordType id, UInt16 length)
+        /// <summary>
+        /// Specifies the image format.
+        /// </summary>
+        public ImageFormat cf;
+
+        /// <summary>
+        /// A signed integer that specifies the size of imageBlob in bytes. <br/>
+        /// MUST be greater than or equal to 1.
+        /// </summary>
+        public Int32 lcb;
+
+        /// <summary>
+        /// An array of bytes that specifies the image data for the given format.
+        /// </summary>
+        public byte[] imageBlob;
+
+        public BkHim(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
-            // assert that the correct record type is instantiated
-            Debug.Assert(this.Id == ID);
-
-            // initialize class members from stream
-            // TODO: place code here
-            
-            // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            this.cf = (ImageFormat)reader.ReadInt16();
+            reader.ReadBytes(2); // skip 2 bytes
+            this.lcb = reader.ReadInt32();
+            this.imageBlob = reader.ReadBytes(lcb);
         }
     }
 }

@@ -178,6 +178,7 @@
     <Compile Include="Records\Backup.cs" />
     <Compile Include="Records\Bar.cs" />
     <Compile Include="Records\Begin.cs" />
+    <Compile Include="Records\BkHim.cs" />
     <Compile Include="Records\Blank.cs" />
     <Compile Include="Records\BlankGraph.cs" />
     <Compile Include="Records\BOF.cs" />
