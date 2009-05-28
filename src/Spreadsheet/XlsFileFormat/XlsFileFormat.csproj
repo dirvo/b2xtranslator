@@ -230,7 +230,6 @@
     <Compile Include="Records\CrtLayout12.cs" />
     <Compile Include="Records\CrtLine.cs" />
     <Compile Include="Records\CrtLink.cs" />
-    <Compile Include="Records\CrtMlFrt.cs" />
     <Compile Include="Records\Dat.cs" />
     <Compile Include="Records\DataFormat.cs" />
     <Compile Include="Records\DataLabExt.cs" />
