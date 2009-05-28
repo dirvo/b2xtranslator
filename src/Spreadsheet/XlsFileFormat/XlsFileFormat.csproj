@@ -52,6 +52,8 @@
     <Compile Include="ChartSequences\ChartFormatsSequence.cs" />
     <Compile Include="ChartSequences\ChartSheetContentSequence.cs" />
     <Compile Include="ChartSequences\ChartSheetSequence.cs" />
+    <Compile Include="ChartSequences\BackgroundSequence.cs" />
+    <Compile Include="ChartSequences\ProtectionSequence.cs" />
     <Compile Include="ChartSequences\CrtMlfrtSequence.cs" />
     <Compile Include="ChartSequences\CrtSequence.cs" />
     <Compile Include="ChartSequences\DataSheetSequence.cs" />
@@ -68,6 +70,7 @@
     <Compile Include="ChartSequences\ObjectsSequence.cs" />
     <Compile Include="ChartSequences\ObjSequence.cs" />
     <Compile Include="ChartSequences\OfficeGraphBiffRecordSequence.cs" />
+    <Compile Include="ChartSequences\PageSetupSequence.cs" />
     <Compile Include="ChartSequences\PicfSequence.cs" />
     <Compile Include="ChartSequences\SeriesAxisSequence.cs" />
     <Compile Include="ChartSequences\SeriesFormatSequence.cs" />
@@ -363,6 +366,7 @@
     <Compile Include="Records\CalcPrecision.cs" />
     <Compile Include="Records\PrintGrid.cs" />
     <Compile Include="Records\PrintRowCol.cs" />
+    <Compile Include="Records\PrintSize.cs" />
     <Compile Include="Records\Prot4Rev.cs" />
     <Compile Include="Records\Prot4RevPass.cs" />
     <Compile Include="Records\Protect.cs" />
