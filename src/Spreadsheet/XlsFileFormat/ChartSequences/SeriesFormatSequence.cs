@@ -43,7 +43,6 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
         }
 
-
         public Series Series;
 
         public Begin Begin;
