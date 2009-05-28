@@ -39,7 +39,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
     /// <summary>
     /// This class stores the data from every Boundsheet 
     /// </summary>
-    public class WorkSheetData : IVisitable
+    public class WorkSheetData : SheetData, IVisitable
     {
         /// <summary>
         /// List with the cellrecords from the boundsheet 
@@ -54,11 +54,6 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         // TODO
         public List<ARRAY> ARRAYList;
         public List<HyperlinkData> HyperLinkList; 
-        public BoundSheet8 boundsheetRecord;
-
-
-        public String worksheetName;
-        public int worksheetId;
         public String worksheetRef;
         public SortedList<Int32, RowData> rowDataTable;
         public List<ColumnInfoData> colInfoDataTable;

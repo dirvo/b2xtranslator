@@ -45,7 +45,29 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
         /// Some enum definitions 
         /// </summary>
         public enum hiddenFlags:int {visible=0, hidden=1, veryhidden=2 };
-        public enum sheetTypes:int { worksheet=0, macrosheet=1, chart=2, visualbasic=6 }; 
+
+        public enum SheetType : ushort
+        {
+            /// <summary>
+            /// Worksheet or dialog sheet
+            /// </summary>
+            Worksheet = 0x0000,
+
+            /// <summary>
+            /// Excel 4.0 macro sheet
+            /// </summary>
+            MacroSheet = 0x0001,
+
+            /// <summary>
+            /// Chart sheet
+            /// </summary>
+            ChartSheet = 0x0002,
+
+            /// <summary>
+            /// Visual Basic module
+            /// </summary>
+            VisualBasicModule = 0x0006
+        } 
 
 
         /// <summary>
@@ -77,7 +99,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
         /// <summary>
         /// The sheet type value
         /// </summary>
-        public sheetTypes sheetType; 
+        public SheetType dt; 
 
         /// <summary>
         /// extracts the boundsheetdata from the biffrecord  
@@ -111,7 +133,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             this.hiddenState = Utils.BitmaskToInt(this.grbit, 0x0003); 
 
             // Setting the sheet type value 
-            this.sheetType = (sheetTypes)Utils.BitmaskToInt(this.grbit, 0xFF00);
+            this.dt = (SheetType)Utils.BitmaskToInt(this.grbit, 0xFF00);
             
             // assert that the correct number of bytes has been read from the stream
             // Debug.trace(this.Offset + this.Length == this.Reader.BaseStream.Position); 
@@ -127,7 +149,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             returnvalue += "-- Name: " + this.getBoundsheetName() + "\n";
             returnvalue += "-- Offset: " + this.lbPlyPos + "\n";
             returnvalue += "-- HiddenState: " + (hiddenFlags)this.hiddenState + "\n";
-            returnvalue += "-- Sheettype: " + (sheetTypes)this.sheetType + "\n"; 
+            returnvalue += "-- Sheettype: " + (SheetType)this.dt + "\n"; 
             return returnvalue; 
         }
 

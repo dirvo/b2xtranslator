@@ -53,7 +53,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
 
         public bool Template { get; set; }
 
-        public List<WorkSheetData> boundSheetDataList;
+        public List<SheetData> boundSheetDataList;
         public List<ExternSheetData> externSheetDataList;
         public LinkedList<SupBookData> supBookDataList;
         public LinkedList<XTIData> xtiDataList;
@@ -68,7 +68,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         /// </summary>
         public WorkBookData()
         {
-            this.boundSheetDataList = new List<WorkSheetData>();
+            this.boundSheetDataList = new List<SheetData>();
             this.externSheetDataList = new List<ExternSheetData>();
             this.supBookDataList = new LinkedList<SupBookData>();
             this.xtiDataList = new LinkedList<XTIData>();
@@ -82,7 +82,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         /// Adds a WorkSheetData Element to the internal list 
         /// </summary>
         /// <param name="bsd">The Boundsheetdata element</param>
-        public void addBoundSheetData(WorkSheetData bsd)
+        public void addBoundSheetData(SheetData bsd)
         {
             this.boundSheetDataList.Add(bsd); 
         }

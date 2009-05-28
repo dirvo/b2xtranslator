@@ -192,7 +192,10 @@ namespace DIaLOGIKa.b2xtranslator.Tools
         {
             value = value & mask;
             while ((mask & 0x1) != 0x1)
+            {
                 value = value >> 1;
+                mask = mask >> 1;
+            }
             return Convert.ToByte(value);
         }
 
@@ -211,25 +214,28 @@ namespace DIaLOGIKa.b2xtranslator.Tools
             return ret;
         }
 
-        [Obsolete("Causes endless loops, use BitmaskToInt instead")]
         public static Int32 BitmaskToInt32(Int32 value, Int32 mask)
         {
             value = value & mask;
             while ((mask & 0x1) != 0x1)
+            {
                 value = value >> 1;
+                mask = mask >> 1;
+            }
             return value;
         }
 
-        [Obsolete("Causes endless loops, use BitmaskToInt instead")]
         public static UInt32 BitmaskToUInt32(UInt32 value, UInt32 mask)
         {
             value = value & mask;
             while ((mask & 0x1) != 0x1)
+            {
                 value = value >> 1;
+                mask = mask >> 1;
+            }
             return value;
         }
 
-        [Obsolete("Causes endless loops, use BitmaskToInt instead")]
         public static UInt16 BitmaskToUInt16(UInt32 value, UInt32 mask)
         {
             return Convert.ToUInt16(BitmaskToUInt32(value, mask));

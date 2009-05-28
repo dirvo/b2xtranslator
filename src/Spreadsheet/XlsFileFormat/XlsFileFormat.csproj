@@ -83,6 +83,7 @@
     <Compile Include="ChartSequences\WindowSequence.cs" />
     <Compile Include="DataContainer\AbstractCellData.cs" />
     <Compile Include="DataContainer\BlankCell.cs" />
+    <Compile Include="DataContainer\ChartSheetData.cs" />
     <Compile Include="DataContainer\ColumnInfoData.cs" />
     <Compile Include="DataContainer\CRNData.cs" />
     <Compile Include="DataContainer\DefinedNameData.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="DataContainer\NumberCell.cs" />
     <Compile Include="DataContainer\RowData.cs" />
     <Compile Include="DataContainer\SharedFormulaData.cs" />
+    <Compile Include="DataContainer\SheetData.cs" />
     <Compile Include="DataContainer\SSTData.cs" />
     <Compile Include="DataContainer\StringCell.cs" />
     <Compile Include="DataContainer\StringFormatAssignment.cs" />

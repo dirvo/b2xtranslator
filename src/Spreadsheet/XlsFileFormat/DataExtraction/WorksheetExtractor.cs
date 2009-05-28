@@ -54,13 +54,22 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                     else if (bh.id == RecordType.BOF)
                     {
                         BOF bof = new BOF(this.StreamReader, bh.id, bh.length);
-                        if (firstBOF == null)
+                        
+                        switch (bof.docType)
                         {
-                            firstBOF = bof;
-                        }
-                        else
-                        {
-                            this.readUnkownFile(); 
+                            case BOF.DocumentType.WorkbookGlobals:
+                            case BOF.DocumentType.Worksheet:
+                                firstBOF = bof;
+                                break;
+
+                            case BOF.DocumentType.Chart:
+                                // parse chart 
+
+                                break;
+
+                            default:
+                                this.readUnkownFile();
+                                break;
                         }
                     }
                     else if (bh.id == RecordType.LabelSst)
