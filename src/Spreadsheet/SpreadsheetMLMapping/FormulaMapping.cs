@@ -35,7 +35,7 @@ using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
 using DIaLOGIKa.b2xtranslator.Tools;
 using DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer;
 

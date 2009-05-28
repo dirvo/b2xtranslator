@@ -32,7 +32,7 @@ using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Tools;
 
-namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
+namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
     /// <summary>
     /// This record specifies that the plot area of the chart group is rendered in a 3-D scene 

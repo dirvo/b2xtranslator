@@ -6,7 +6,7 @@ using System.IO;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet;
 using System.Xml;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer;
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping

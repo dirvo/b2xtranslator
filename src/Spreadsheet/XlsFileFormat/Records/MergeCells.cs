@@ -32,7 +32,7 @@ using DIaLOGIKa.b2xtranslator.Tools;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer; 
 
-namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
+namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
     /// <summary>
     /// This class extracts the data from a mergecell biffrecord 

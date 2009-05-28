@@ -31,7 +31,7 @@ using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
-namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
+namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
     /// <summary>
     /// This record specifies which part of the axis is specified by the LineFormat record that follows.

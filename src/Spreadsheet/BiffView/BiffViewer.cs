@@ -34,7 +34,7 @@ using System.Reflection;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 using System.ComponentModel;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 using OfficeGraph = DIaLOGIKa.b2xtranslator.OfficeGraph; 
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView

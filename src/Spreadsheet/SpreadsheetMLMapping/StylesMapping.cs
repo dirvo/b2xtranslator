@@ -35,7 +35,7 @@ using DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData;
 using System.Globalization;
 using DIaLOGIKa.b2xtranslator.Tools;

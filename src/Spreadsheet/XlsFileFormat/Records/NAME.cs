@@ -32,7 +32,7 @@ using DIaLOGIKa.b2xtranslator.Tools;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg;
 
-namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
+namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
     [BiffRecordAttribute(RecordType.NAME)] 
     public class NAME : BiffRecord

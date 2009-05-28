@@ -39,7 +39,7 @@ using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 using DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 using System.Reflection;
 using Microsoft.Win32;
 using DIaLOGIKa.b2xtranslator.Shell;
