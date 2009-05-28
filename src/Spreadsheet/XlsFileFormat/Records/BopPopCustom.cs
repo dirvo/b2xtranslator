@@ -33,6 +33,12 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
+    /// <summary>
+    /// This record specifies which data points in the series are contained 
+    /// in the secondary bar/pie instead of the primary pie. 
+    /// 
+    /// MUST follow a BopPop record that has its split field set to Custom (0x0003).
+    /// </summary>
     [BiffRecordAttribute(RecordType.BopPopCustom)]
     public class BopPopCustom : BiffRecord
     {

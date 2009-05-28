@@ -18,13 +18,14 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
         public PlotArea PlotArea;
 
-        public Frame Frame;
+        public FrameSequence Frame;
 
         public AxesSequence(IStreamReader reader)
             : base(reader)
         {
             //AXES = [IVAXIS DVAXIS [SERIESAXIS] / DVAXIS DVAXIS] *3ATTACHEDLABEL [PlotArea FRAME]
 
+            // [IVAXIS DVAXIS [SERIESAXIS] / DVAXIS DVAXIS]
             if (BiffRecord.GetNextRecordType(reader) == RecordType.Axis)
             {
                 long position = reader.BaseStream.Position;
@@ -33,7 +34,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
                 Begin begin = (Begin)BiffRecord.ReadRecord(reader);
 
-                if (BiffRecord.GetNextRecordType(reader) == RecordType.CatSerRange || BiffRecord.GetNextRecordType(reader) == RecordType.AxcExt)
+                if (BiffRecord.GetNextRecordType(reader) == RecordType.CatSerRange)
                 {
                     reader.BaseStream.Position = position;
 
@@ -42,13 +43,12 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
                     //DVAXIS 
                     this.DvAxisSequence = new DvAxisSequence(reader);
-
+                    
                     //[SERIESAXIS]  
                     if (BiffRecord.GetNextRecordType(reader) == RecordType.Axis)
                     {
                         this.SeriesAxisSequence = new SeriesAxisSequence(reader);
                     }
-
                 }
                 else
                 {
@@ -56,26 +56,25 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
                     //DVAXIS 
                     this.DvAxisSequence = new DvAxisSequence(reader);
-
-                    //DVAXIS
+                    
+                    //DVAXIS 
                     this.DvAxisSequence2 = new DvAxisSequence(reader);
-
                 }
+            }
 
-                //*3ATTACHEDLABEL 
-                while (BiffRecord.GetNextRecordType(reader) == RecordType.Text)
-                {
-                    this.AttachedLabelSequences.Add(new AttachedLabelSequence(reader));
-                }
+            //*3ATTACHEDLABEL 
+            while (BiffRecord.GetNextRecordType(reader) == RecordType.Text)
+            {
+                this.AttachedLabelSequences.Add(new AttachedLabelSequence(reader));
+            }
 
-                //[PlotArea FRAME]
-                if (BiffRecord.GetNextRecordType(reader) == RecordType.PlotArea)
-                {
-                    this.PlotArea = (PlotArea)BiffRecord.ReadRecord(reader);
+            //[PlotArea FRAME]
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.PlotArea)
+            {
+                this.PlotArea = (PlotArea)BiffRecord.ReadRecord(reader);
 
-                    this.Frame = (Frame)BiffRecord.ReadRecord(reader);
-                }
-            }   
+                this.Frame = new FrameSequence(reader);
+            }
         }
     }
 }

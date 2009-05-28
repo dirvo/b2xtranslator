@@ -29,15 +29,25 @@
 
 using System;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
-    public abstract class SheetData
+    public abstract class SheetData : IVisitable
     {
         public BoundSheet8 boundsheetRecord;
 
         public String worksheetName;
         public int worksheetId;
+
+        // this value is used for the case that the converter adds the 
+        // chartview sheets as emty sheets
+        // TODO: remove
+        public bool emtpyWorksheet;
+
+        public String worksheetRef;
         
+
+        public abstract void Convert<T>(T mapping);
     }
 }

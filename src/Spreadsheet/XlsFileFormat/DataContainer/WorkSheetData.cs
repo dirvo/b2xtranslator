@@ -39,7 +39,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
     /// <summary>
     /// This class stores the data from every Boundsheet 
     /// </summary>
-    public class WorkSheetData : SheetData, IVisitable
+    public class WorkSheetData : SheetData
     {
         /// <summary>
         /// List with the cellrecords from the boundsheet 
@@ -86,10 +86,6 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             get{ return this.pageSetup; }
         }
         
-        // this value is used for the case that the converter adds the 
-        // chartview sheets as emty sheets
-        public bool emtpyWorksheet; 
-
         /// <summary>
         /// Ctor 
         /// </summary>
@@ -487,15 +483,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             this.HyperLinkList.Add(hld); 
         }
 
-        #region IVisitable Members
-
-        public void Convert<T>(T mapping)
+        public override void Convert<T>(T mapping)
         {
             ((IMapping<WorkSheetData>)mapping).Apply(this);
         }
-
-        #endregion
-
-
     }
 }

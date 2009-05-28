@@ -511,6 +511,8 @@
     <Compile Include="RecordType.cs" />
     <Compile Include="Structures\ChartParsedFormula.cs" />
     <Compile Include="Structures\DateUnit.cs" />
+    <Compile Include="Structures\PaneType.cs" />
+    <Compile Include="Structures\RefU.cs" />
     <Compile Include="Structures\XmlTkChain.cs" />
     <Compile Include="Structures\FixedPointNumber.cs" />
     <Compile Include="Structures\FontInfo.cs" />

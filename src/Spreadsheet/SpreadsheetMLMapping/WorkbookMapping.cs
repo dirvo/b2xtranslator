@@ -60,7 +60,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             _writer.WriteAttributeString("xmlns", "r", "", OpenXmlNamespaces.Relationships); 
             _writer.WriteStartElement("sheets");
 
-            foreach (WorkSheetData var in bsd.boundSheetDataList)
+            foreach (SheetData var in bsd.boundSheetDataList)
             {
            //     if (var.boundsheetRecord.sheetType == BOUNDSHEET.sheetTypes.worksheet)
              //   {

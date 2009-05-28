@@ -27,10 +27,16 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
  */
 
+using System;
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
     public class ChartSheetData : SheetData
     {
         public ChartSheetSequence ChartSheetSequence;
+
+        public override void Convert<T>(T mapping)
+        {
+            //throw new NotImplementedException();
+        }
     }
 }

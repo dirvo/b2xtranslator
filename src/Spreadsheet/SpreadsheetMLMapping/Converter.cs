@@ -103,7 +103,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     xls.WorkBookData.styleData.Convert(new StylesMapping(xlsContext));
 
                 // creates the Spreadsheets
-                foreach (WorkSheetData var in xls.WorkBookData.boundSheetDataList)
+                foreach (SheetData var in xls.WorkBookData.boundSheetDataList)
                 {
                     if (var.boundsheetRecord.dt == BoundSheet8.SheetType.Worksheet)
                     {

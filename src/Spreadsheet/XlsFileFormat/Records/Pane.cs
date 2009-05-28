@@ -27,6 +27,7 @@
 using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
@@ -35,6 +36,16 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
     {
         public const RecordType ID = RecordType.Pane;
 
+        public UInt16 x;
+
+        public UInt16 y;
+
+        public UInt16 rwTop;
+
+        public UInt16 colLeft;
+
+        public PaneType pnnAcct;
+
         public Pane(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
@@ -42,7 +53,12 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            this.x = reader.ReadUInt16();
+            this.y = reader.ReadUInt16();
+            this.rwTop = reader.ReadUInt16();
+            this.colLeft = reader.ReadUInt16();
+            this.pnnAcct = (PaneType)reader.ReadByte();
+            reader.ReadByte();
             
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 

@@ -195,7 +195,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             }
             
             // [CRTMLFRT] 
-            this.CrtMlfrtSequence = new CrtMlfrtSequence(reader);
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.CrtMlFrt)
+            {
+                this.CrtMlfrtSequence = new CrtMlfrtSequence(reader);
+            }
             
             // EOF
             this.EOF = (EOF)BiffRecord.ReadRecord(reader);

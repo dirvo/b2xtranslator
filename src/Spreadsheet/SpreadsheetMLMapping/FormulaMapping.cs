@@ -257,9 +257,9 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         else if (ptg is PtgExp)
                         {
                             PtgExp ptgexp = (PtgExp)ptg;
-                            Stack<AbstractPtg> newptgstack = xlsContext.CurrentSheet.getArrayData(ptgexp.rw, ptgexp.col);
+                            Stack<AbstractPtg> newptgstack = ((WorkSheetData)xlsContext.CurrentSheet).getArrayData(ptgexp.rw, ptgexp.col);
                             resultStack.Push(FormulaInfixMapping.mapFormula(newptgstack, xlsContext));
-                            xlsContext.CurrentSheet.setFormulaUsesArray(ptgexp.rw, ptgexp.col);
+                            ((WorkSheetData)xlsContext.CurrentSheet).setFormulaUsesArray(ptgexp.rw, ptgexp.col);
 
                         }
                         else if (ptg is PtgRef3d)
