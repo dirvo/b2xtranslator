@@ -26,12 +26,7 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Collections;
-using System.Text;
 using System.IO;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Tools;
 

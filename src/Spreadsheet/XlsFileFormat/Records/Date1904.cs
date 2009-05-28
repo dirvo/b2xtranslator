@@ -1,5 +1,4 @@
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
-﻿/*
+/*
  * Copyright (c) 2009, DIaLOGIKa
  *
  * All rights reserved.
@@ -31,7 +30,6 @@ using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
