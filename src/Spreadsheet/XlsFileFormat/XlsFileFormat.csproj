@@ -382,6 +382,7 @@
     <Compile Include="Records\RecipName.cs" />
     <Compile Include="Records\CalcRefMode.cs" />
     <Compile Include="Records\RefreshAll.cs" />
+    <Compile Include="Records\RichTextStream.cs" />
     <Compile Include="Records\RightMargin.cs" />
     <Compile Include="Records\RK.cs" />
     <Compile Include="Records\Row.cs" />
