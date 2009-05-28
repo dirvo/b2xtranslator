@@ -458,6 +458,7 @@
     <Compile Include="Records\TableStyles.cs" />
     <Compile Include="Records\Template.cs" />
     <Compile Include="Records\Text.cs" />
+    <Compile Include="Records\TextPropsStream.cs" />
     <Compile Include="Records\Theme.cs" />
     <Compile Include="Records\Tick.cs" />
     <Compile Include="Records\TopMargin.cs" />

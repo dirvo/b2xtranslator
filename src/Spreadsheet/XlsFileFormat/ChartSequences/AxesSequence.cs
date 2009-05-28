@@ -63,6 +63,20 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                     this.DvAxisSequence2 = new DvAxisSequence(reader);
 
                 }
+
+                //*3ATTACHEDLABEL 
+                while (BiffRecord.GetNextRecordType(reader) == RecordType.Text)
+                {
+                    this.AttachedLabelSequences.Add(new AttachedLabelSequence(reader));
+                }
+
+                //[PlotArea FRAME]
+                if (BiffRecord.GetNextRecordType(reader) == RecordType.PlotArea)
+                {
+                    this.PlotArea = (PlotArea)BiffRecord.ReadRecord(reader);
+
+                    this.Frame = (Frame)BiffRecord.ReadRecord(reader);
+                }
             }   
         }
     }
