@@ -43,6 +43,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.ChartSequences
 
         public CrtLayout12 CrtLayout12A;
 
+        public FutureRecordSequence FutureRecordSequence;
+
         public List<FutureRecordSequence> FutureRecordSequences;
 
         public End End;
@@ -133,6 +135,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.ChartSequences
             }
 
             // [CRTMLFRT]
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.CrtMlFrt)
+            {
+                this.FutureRecordSequence = new FutureRecordSequence(reader);
+            }
 
             // *([DataLabExt StartObject] ATTACHEDLABEL [EndObject])
             this.DataLabelGroups = new List<DataLabelGroup>();
@@ -142,14 +148,17 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.ChartSequences
             }
 
             // [TEXTPROPS]
-            //if (BiffRecord.GetNextRecordType(reader) )
-            //{
-            //    this.TextPropsSequence = new TextPropsSequence(reader);
-            //}
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.RichTextStream)
+            {
+                this.TextPropsSequence = new TextPropsSequence(reader);
+            }
 
             // *2CRTMLFRT
             this.FutureRecordSequences = new List<FutureRecordSequence>();
-
+            while (BiffRecord.GetNextRecordType(reader) == RecordType.CrtMlFrt)
+            {
+                this.FutureRecordSequences.Add(new FutureRecordSequence(reader));
+            }
 
             // End
             this.End = (End)BiffRecord.ReadRecord(reader);
