@@ -229,6 +229,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             this.Name = "MainWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "BiffView++";
+            this.Shown += new System.EventHandler(this.MainWindow_Shown);
             this.tableLayoutPanel.ResumeLayout(false);
             this.tableLayoutPanel.PerformLayout();
             this.statusStrip1.ResumeLayout(false);

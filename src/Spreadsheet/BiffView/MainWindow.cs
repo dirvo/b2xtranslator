@@ -43,6 +43,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 txtFileName.Text = openFileDialog.FileName;
+                cmdCreate.Focus();
             }
         }
 
@@ -163,6 +164,11 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
         private void toolStripStatusLabelAbout_Click(object sender, EventArgs e)
         {
             new About().Show();
+        }
+
+        private void MainWindow_Shown(object sender, EventArgs e)
+        {
+            cmdBrowse.Focus();
         }
     }
 }
