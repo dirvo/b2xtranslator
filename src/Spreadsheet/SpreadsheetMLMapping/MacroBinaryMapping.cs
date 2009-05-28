@@ -26,13 +26,10 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using DIaLOGIKa.b2xtranslator.StructuredStorage.Writer;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
-using System.Xml;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Writer;
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {

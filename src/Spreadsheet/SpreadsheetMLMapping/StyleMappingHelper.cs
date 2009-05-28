@@ -25,11 +25,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 using System;
-using System.Collections.Generic;
-using System.Text;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData;
-using System.Xml;
 using System.Globalization;
+using System.Xml;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData;
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {

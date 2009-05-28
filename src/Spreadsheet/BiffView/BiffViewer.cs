@@ -25,17 +25,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 using System;
-using System.Collections.Generic;
-using System.Text;
-using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using System.Windows.Forms;
+using System.ComponentModel;
 using System.IO;
 using System.Reflection;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
-using System.ComponentModel;
+using System.Windows.Forms;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
-using OfficeGraph = DIaLOGIKa.b2xtranslator.OfficeGraph; 
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
 {
