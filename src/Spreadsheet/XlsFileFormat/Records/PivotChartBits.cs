@@ -1,37 +1,62 @@
-﻿using System;
+/*
+ * Copyright (c) 2008, DIaLOGIKa
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of DIaLOGIKa nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY DIaLOGIKa ''AS IS'' AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL DIaLOGIKa BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+using System;
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Tools;
+using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
     [BiffRecordAttribute(RecordType.PivotChartBits)]
     public class PivotChartBits : BiffRecord
     {
-        /// <summary>
-        /// An unsigned integer that specifies the FRT record type. <br/>
-        /// MUST be 0x0859.
-        /// </summary>
+        public const RecordType ID = RecordType.PivotChartBits;
+
         public UInt16 rt;
 
-        /// <summary>
-        /// A bit that specifies whether to hide the pivot field captions in the Pivot Chart.
-        /// </summary>
         public bool fGXHide;
 
         public PivotChartBits(IStreamReader reader, RecordType id, UInt16 length)
-            : base(reader, id, length)
+            :base(reader, id, length)
         {
-            long startPos = reader.BaseStream.Position;
+            // assert that the correct record type is instantiated
+            Debug.Assert(this.Id == ID);
 
             this.rt = reader.ReadUInt16();
-            reader.ReadBytes(2);
-            UInt16 flags = reader.ReadUInt16();
-            this.fGXHide = Utils.BitmaskToBool(flags, 0x1);
 
-            reader.BaseStream.Seek(startPos, System.IO.SeekOrigin.Begin);
-            reader.BaseStream.Seek(length, System.IO.SeekOrigin.Current);
+            //unused
+            reader.ReadBytes(2);
+
+            byte[] bytes = reader.ReadBytes(2);
+
+            fGXHide = BitConverter.ToBoolean(bytes, 0x1);
+
         }
     }
 }

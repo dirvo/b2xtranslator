@@ -219,6 +219,8 @@
     <Compile Include="Records\ContinueFrt11.cs" />
     <Compile Include="Records\ContinueFrt12.cs" />
     <Compile Include="Records\COORDLIST.cs" />
+    <Compile Include="Records\CrtMlFrtContinue.cs" />
+    <Compile Include="Records\CrtMlFrt.cs" />
     <Compile Include="Records\Country.cs" />
     <Compile Include="Records\CrErr.cs" />
     <Compile Include="Records\CRN.cs" />
@@ -503,6 +505,7 @@
     <Compile Include="Records\XL5MODIFY.cs" />
     <Compile Include="Records\YMult.cs" />
     <Compile Include="RecordType.cs" />
+    <Compile Include="Structures\XmlTkChain.cs" />
     <Compile Include="Structures\FixedPointNumber.cs" />
     <Compile Include="Structures\FontInfo.cs" />
     <Compile Include="Structures\FormatRun.cs" />
