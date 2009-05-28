@@ -33,10 +33,10 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.EXTERNNAME)] 
+    [BiffRecordAttribute(RecordType.EXTERNNAME)] 
     public class EXTERNNAME : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.EXTERNNAME;
+        public const RecordType ID = RecordType.EXTERNNAME;
 
         public UInt16 ixals;
         public bool fOle;
@@ -49,7 +49,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 
         public String nameDefinition; 
 
-        public EXTERNNAME(IStreamReader reader, RecordNumber id, UInt16 length)
+        public EXTERNNAME(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

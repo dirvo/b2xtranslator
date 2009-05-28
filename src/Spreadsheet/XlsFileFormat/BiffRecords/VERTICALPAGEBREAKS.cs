@@ -33,12 +33,12 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.VERTICALPAGEBREAKS)] 
+    [BiffRecordAttribute(RecordType.VERTICALPAGEBREAKS)] 
     public class VERTICALPAGEBREAKS : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.VERTICALPAGEBREAKS;
+        public const RecordType ID = RecordType.VERTICALPAGEBREAKS;
 
-        public VERTICALPAGEBREAKS(IStreamReader reader, RecordNumber id, UInt16 length)
+        public VERTICALPAGEBREAKS(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

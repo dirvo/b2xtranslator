@@ -40,12 +40,12 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// It has no record data field and is C0010000h. Any application other 
     /// than Excel 2000 that edits the file should not write out this record.
     /// </summary>
-    [BiffRecordAttribute(RecordNumber.EXCEL9FILE)] 
+    [BiffRecordAttribute(RecordType.EXCEL9FILE)] 
     public class EXCEL9FILE : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.EXCEL9FILE;
+        public const RecordType ID = RecordType.EXCEL9FILE;
 
-        public EXCEL9FILE(IStreamReader reader, RecordNumber id, UInt16 length)
+        public EXCEL9FILE(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

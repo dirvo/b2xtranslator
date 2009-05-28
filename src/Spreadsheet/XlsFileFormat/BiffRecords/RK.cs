@@ -36,10 +36,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// <summary>
     /// This Biffrecord stores some microsoft specific number data 
     /// </summary>
-    [BiffRecordAttribute(RecordNumber.RK)] 
+    [BiffRecordAttribute(RecordType.RK)] 
     public class RK : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.NUMBER;
+        public const RecordType ID = RecordType.NUMBER;
 
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         /// <param name="reader">Streamreader</param>
         /// <param name="id">Record ID - Recordtype</param>
         /// <param name="length">The recordlegth</param>
-        public RK(IStreamReader reader, RecordNumber id, UInt16 length)
+        public RK(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

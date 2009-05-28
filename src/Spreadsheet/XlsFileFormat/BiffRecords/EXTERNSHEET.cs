@@ -33,10 +33,10 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.EXTERNSHEET)] 
+    [BiffRecordAttribute(RecordType.EXTERNSHEET)] 
     public class EXTERNSHEET : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.EXTERNSHEET;
+        public const RecordType ID = RecordType.EXTERNSHEET;
 
         public UInt16 cXTI;
 
@@ -46,7 +46,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 
         public UInt16[] itabLast;
 
-        public EXTERNSHEET(IStreamReader reader, RecordNumber id, UInt16 length)
+        public EXTERNSHEET(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

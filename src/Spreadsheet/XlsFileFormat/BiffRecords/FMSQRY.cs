@@ -33,12 +33,12 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.FMSQRY)] 
+    [BiffRecordAttribute(RecordType.FMSQRY)] 
     public class FMSQRY : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.FMSQRY;
+        public const RecordType ID = RecordType.FMSQRY;
 
-        public FMSQRY(IStreamReader reader, RecordNumber id, UInt16 length)
+        public FMSQRY(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

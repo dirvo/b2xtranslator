@@ -38,10 +38,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// This class extracts the data from a LABELSST Record
     /// This record describes a cell that contains a string constant from the shared string table 
     /// </summary>
-    [BiffRecordAttribute(RecordNumber.LABELSST)] 
+    [BiffRecordAttribute(RecordType.LABELSST)] 
     public class LABELSST : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.LABELSST;
+        public const RecordType ID = RecordType.LABELSST;
 
         /// <summary>
         /// Some public attributes to store the data from this record 
@@ -73,7 +73,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         /// <param name="reader"></param>
         /// <param name="id"></param>
         /// <param name="length"></param>
-        public LABELSST(IStreamReader reader, RecordNumber id, UInt16 length)
+        public LABELSST(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

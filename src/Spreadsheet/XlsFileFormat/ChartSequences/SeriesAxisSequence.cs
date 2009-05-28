@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using DIaLOGIKa.b2xtranslator.OfficeGraph;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords.Graph;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
-    public class SeriesAxisSequence : OfficeGraphBiffRecordSequence
+    public class SeriesAxisSequence : BiffRecordSequence
     {
         public Axis Axis; 
 
@@ -24,23 +24,22 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             // SERIESAXIS = Axis Begin [CatSerRange] AXS End 
 
             // Axis
-            this.Axis = (Axis)OfficeGraphBiffRecord.ReadRecord(reader);
+            this.Axis = (Axis)BiffRecord.ReadRecord(reader);
 
             // Begin
-            this.Begin = (Begin)OfficeGraphBiffRecord.ReadRecord(reader);
+            this.Begin = (Begin)BiffRecord.ReadRecord(reader);
 
             // [CatSerRange]
-            if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) ==
-                DIaLOGIKa.b2xtranslator.OfficeGraph.GraphRecordNumber.CatSerRange)
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.CatSerRange)
             {
-                this.CatSerRange = (CatSerRange)OfficeGraphBiffRecord.ReadRecord(reader);
+                this.CatSerRange = (CatSerRange)BiffRecord.ReadRecord(reader);
             }
 
             // AXS
             this.AxsSequence = new AxsSequence(reader); 
             
             // End 
-            this.End = (End)OfficeGraphBiffRecord.ReadRecord(reader); 
+            this.End = (End)BiffRecord.ReadRecord(reader); 
         }
     }
 }

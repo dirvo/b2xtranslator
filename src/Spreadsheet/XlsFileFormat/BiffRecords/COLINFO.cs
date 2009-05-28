@@ -33,10 +33,10 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.COLINFO)] 
+    [BiffRecordAttribute(RecordType.COLINFO)] 
     public class COLINFO : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.COLINFO;
+        public const RecordType ID = RecordType.COLINFO;
 
         public int colFirst;
         public int colLast;
@@ -52,7 +52,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 
         public int ixfe; 
 
-        public COLINFO(IStreamReader reader, RecordNumber id, UInt16 length)
+        public COLINFO(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

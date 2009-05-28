@@ -43,10 +43,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// The dxWn and dyWn fields contain the window size, also in units of 1/20th  of a point.
     /// </summary>
-    [BiffRecordAttribute(RecordNumber.WINDOW1)] 
+    [BiffRecordAttribute(RecordType.WINDOW1)] 
     public class WINDOW1 : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.WINDOW1;
+        public const RecordType ID = RecordType.WINDOW1;
 
         /// <summary>
         /// Horizontal position of the window in units of 1/20th of a point.
@@ -106,7 +106,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         public bool reserved1;      //     	    7	    80h
         public byte reserved2;      //  1       7–0	    FFh	
         
-        public WINDOW1(IStreamReader reader, RecordNumber id, UInt16 length)
+        public WINDOW1(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

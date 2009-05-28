@@ -47,17 +47,17 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             {
                 while (this.StreamReader.BaseStream.Position < this.StreamReader.BaseStream.Length)
                 {
-                    bh.id = (RecordNumber)this.StreamReader.ReadUInt16();
+                    bh.id = (RecordType)this.StreamReader.ReadUInt16();
                     bh.length = this.StreamReader.ReadUInt16();
 
                     TraceLogger.DebugInternal("BIFF {0}\t{1}\t", bh.id, bh.length);
                     
-                    if (bh.id == RecordNumber.EOF)
+                    if (bh.id == RecordType.EOF)
                     {
                         this.StreamReader.BaseStream.Seek(0, SeekOrigin.End);
                         
                     } 
-                    else if (bh.id == RecordNumber.BOF)
+                    else if (bh.id == RecordType.BOF)
                     {
                         BOF bof = new BOF(this.StreamReader, bh.id, bh.length);
                         if (firstBOF == null)
@@ -69,117 +69,117 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                             this.readUnkownFile(); 
                         }
                     }
-                    else if (bh.id == RecordNumber.LABELSST)
+                    else if (bh.id == RecordType.LabelSst)
                     {
-                        LABELSST labelsst = new LABELSST(this.StreamReader, bh.id, bh.length);
+                        LabelSst labelsst = new LabelSst(this.StreamReader, bh.id, bh.length);
                         this.bsd.addLabelSST(labelsst); 
                     }
-                    else if (bh.id == RecordNumber.MULRK) 
+                    else if (bh.id == RecordType.MulRk) 
                     {
-                        MULRK mulrk = new MULRK(this.StreamReader, bh.id, bh.length);
+                        MulRk mulrk = new MulRk(this.StreamReader, bh.id, bh.length);
                         this.bsd.addMULRK(mulrk);
                     }
-                    else if (bh.id == RecordNumber.NUMBER)
+                    else if (bh.id == RecordType.Number)
                     {
-                        NUMBER number = new NUMBER(this.StreamReader, bh.id, bh.length);
+                        Number number = new Number(this.StreamReader, bh.id, bh.length);
                         this.bsd.addNUMBER(number);
                     }
-                    else if (bh.id == RecordNumber.RK)
+                    else if (bh.id == RecordType.RK)
                     {
                         RK rk = new RK(this.StreamReader, bh.id, bh.length);
                         this.bsd.addRK(rk);
                     }
-                    else if (bh.id == RecordNumber.MERGECELLS)
+                    else if (bh.id == RecordType.MergeCells)
                     {
-                        MERGECELLS mergecells = new MERGECELLS(this.StreamReader, bh.id, bh.length);
+                        MergeCells mergecells = new MergeCells(this.StreamReader, bh.id, bh.length);
                         this.bsd.MERGECELLSData = mergecells;
                     }
-                    else if (bh.id == RecordNumber.BLANK)
+                    else if (bh.id == RecordType.Blank)
                     {
-                        BLANK blankcell = new BLANK(this.StreamReader, bh.id, bh.length);
+                        Blank blankcell = new Blank(this.StreamReader, bh.id, bh.length);
                         this.bsd.addBLANK(blankcell);
                     }
-                    else if (bh.id == RecordNumber.MULBLANK)
+                    else if (bh.id == RecordType.MulBlank)
                     {
-                        MULBLANK mulblank = new MULBLANK(this.StreamReader, bh.id, bh.length);
+                        MulBlank mulblank = new MulBlank(this.StreamReader, bh.id, bh.length);
                         this.bsd.addMULBLANK(mulblank);
                     }
-                    else if (bh.id == RecordNumber.FORMULA)
+                    else if (bh.id == RecordType.Formula)
                     {
-                        FORMULA formula = new FORMULA(this.StreamReader, bh.id, bh.length);
+                        Formula formula = new Formula(this.StreamReader, bh.id, bh.length);
                         this.bsd.addFORMULA(formula);
                         TraceLogger.DebugInternal(formula.ToString());
                     }
-                    else if (bh.id == RecordNumber.ARRAY)
+                    else if (bh.id == RecordType.Array)
                     {
                         ARRAY array = new ARRAY(this.StreamReader, bh.id, bh.length);
                         this.bsd.addARRAY(array); 
                     }
-                    else if (bh.id == RecordNumber.SHRFMLA)
+                    else if (bh.id == RecordType.ShrFmla)
                     {
-                        SHRFMLA shrfmla = new SHRFMLA(this.StreamReader, bh.id, bh.length);
+                        ShrFmla shrfmla = new ShrFmla(this.StreamReader, bh.id, bh.length);
                         this.bsd.addSharedFormula(shrfmla); 
 
                     }
-                    else if (bh.id == RecordNumber.STRING)
+                    else if (bh.id == RecordType.String)
                     {
                         STRING formulaString = new STRING(this.StreamReader, bh.id, bh.length);
                         this.bsd.addFormulaString(formulaString.value); 
 
                     }
-                    else if (bh.id == RecordNumber.ROW)
+                    else if (bh.id == RecordType.Row)
                     {
-                        ROW row = new ROW(this.StreamReader, bh.id, bh.length);
+                        Row row = new Row(this.StreamReader, bh.id, bh.length);
                         this.bsd.addRowData(row); 
 
                     }
-                    else if (bh.id == RecordNumber.COLINFO)
+                    else if (bh.id == RecordType.ColInfo)
                     {
-                        COLINFO colinfo = new COLINFO(this.StreamReader, bh.id, bh.length);
+                        ColInfo colinfo = new ColInfo(this.StreamReader, bh.id, bh.length);
                         this.bsd.addColData(colinfo);
                     }
-                    else if (bh.id == RecordNumber.DEFCOLWIDTH)
+                    else if (bh.id == RecordType.DefColWidth)
                     {
-                        DEFCOLWIDTH defcolwidth = new DEFCOLWIDTH(this.StreamReader, bh.id, bh.length);
+                        DefColWidth defcolwidth = new DefColWidth(this.StreamReader, bh.id, bh.length);
                         this.bsd.addDefaultColWidth(defcolwidth.cchdefColWidth);
                     }
-                    else if (bh.id == RecordNumber.DEFAULTROWHEIGHT)
+                    else if (bh.id == RecordType.DefaultRowHeight)
                     {
-                        DEFAULTROWHEIGHT defrowheigth = new DEFAULTROWHEIGHT(this.StreamReader, bh.id, bh.length);
+                        DefaultRowHeight defrowheigth = new DefaultRowHeight(this.StreamReader, bh.id, bh.length);
                         this.bsd.addDefaultRowData(defrowheigth); 
                     }
-                    else if (bh.id == RecordNumber.LEFTMARGIN)
+                    else if (bh.id == RecordType.LeftMargin)
                     {
-                        LEFTMARGIN leftm = new LEFTMARGIN(this.StreamReader, bh.id, bh.length);
+                        LeftMargin leftm = new LeftMargin(this.StreamReader, bh.id, bh.length);
                         this.bsd.leftMargin = leftm.value; 
                     }
-                    else if (bh.id == RecordNumber.RIGHTMARGIN)
+                    else if (bh.id == RecordType.RightMargin)
                     {
-                        RIGHTMARGIN rightm = new RIGHTMARGIN(this.StreamReader, bh.id, bh.length);
+                        RightMargin rightm = new RightMargin(this.StreamReader, bh.id, bh.length);
                         this.bsd.rightMargin = rightm.value; 
                     }
-                    else if (bh.id == RecordNumber.TOPMARGIN)
+                    else if (bh.id == RecordType.TopMargin)
                     {
-                        TOPMARGIN topm = new TOPMARGIN(this.StreamReader, bh.id, bh.length);
+                        TopMargin topm = new TopMargin(this.StreamReader, bh.id, bh.length);
                         this.bsd.topMargin = topm.value; 
                     }
-                    else if (bh.id == RecordNumber.BOTTOMMARGIN)
+                    else if (bh.id == RecordType.BottomMargin)
                     {
-                        BOTTOMMARGIN bottomm = new BOTTOMMARGIN(this.StreamReader, bh.id, bh.length);
+                        BottomMargin bottomm = new BottomMargin(this.StreamReader, bh.id, bh.length);
                         this.bsd.bottomMargin = bottomm.value; 
                     }
-                    else if (bh.id == RecordNumber.SETUP)
+                    else if (bh.id == RecordType.Setup)
                     {
-                        SETUP setup = new SETUP(this.StreamReader, bh.id, bh.length);
+                        Setup setup = new Setup(this.StreamReader, bh.id, bh.length);
                         this.bsd.addSetupData(setup);
                     }
-                    else if (bh.id == RecordNumber.HLINK)
+                    else if (bh.id == RecordType.HLink)
                     {
                         long oldStreamPos = this.StreamReader.BaseStream.Position; 
                         try
                         {
 
-                            HLINK hlink = new HLINK(this.StreamReader, bh.id, bh.length);
+                            HLink hlink = new HLink(this.StreamReader, bh.id, bh.length);
                             bsd.addHyperLinkData(hlink); 
                         }
                         catch (Exception ex)
@@ -221,10 +221,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             {
                 do
                 {
-                    bh.id = (RecordNumber)this.StreamReader.ReadUInt16();
+                    bh.id = (RecordType)this.StreamReader.ReadUInt16();
                     bh.length = this.StreamReader.ReadUInt16();
                     this.StreamReader.ReadBytes(bh.length);
-                } while (bh.id != RecordNumber.EOF); 
+                } while (bh.id != RecordType.EOF); 
             }
             catch (Exception ex)
             {

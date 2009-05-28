@@ -12,7 +12,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
     public class ExcelHelperClass
     {
         /// <summary>
-        /// This method is used to parse a RK Recordnumber  
+        /// This method is used to parse a RK RecordType  
         /// This is a special MS Excel format that is used to store floatingpoint and integer values 
         /// The floatingpoint arithmetic is a little bit different to the IEEE standard format.  
         /// 

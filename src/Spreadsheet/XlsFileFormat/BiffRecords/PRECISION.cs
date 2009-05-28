@@ -38,17 +38,17 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// The PRECISION record stores the Precision As Displayed option from the Options dialog box, Calculation tab.
     /// </summary>
-    [BiffRecordAttribute(RecordNumber.PRECISION)] 
+    [BiffRecordAttribute(RecordType.PRECISION)] 
     public class PRECISION : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.PRECISION;
+        public const RecordType ID = RecordType.PRECISION;
 
         /// <summary>
         /// =0 if Precision As Displayed  option is selected
         /// </summary>
         public UInt16 fFullPrec;
 
-        public PRECISION(IStreamReader reader, RecordNumber id, UInt16 length)
+        public PRECISION(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

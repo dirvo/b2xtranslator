@@ -106,7 +106,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 // creates the Spreadsheets
                 foreach (WorkSheetData var in xls.WorkBookData.boundSheetDataList)
                 {
-                    if (var.boundsheetRecord.sheetType == BOUNDSHEET.sheetTypes.worksheet)
+                    if (var.boundsheetRecord.sheetType == BoundSheet8.sheetTypes.worksheet)
                     {
                         var.Convert(new WorksheetMapping(xlsContext));
                     }

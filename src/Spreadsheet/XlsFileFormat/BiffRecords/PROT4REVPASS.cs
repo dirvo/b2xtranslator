@@ -38,10 +38,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// The PROT4REV record stores an encrypted password for shared-workbook protection.
     /// </summary>
-    [BiffRecordAttribute(RecordNumber.PROT4REVPASS)] 
+    [BiffRecordAttribute(RecordType.PROT4REVPASS)] 
     public class PROT4REVPASS : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.PROT4REVPASS;
+        public const RecordType ID = RecordType.PROT4REVPASS;
 
         /// <summary>
         /// Encrypted password (if this field is 0 (zero), there is no 
@@ -50,7 +50,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         /// </summary>
         public UInt16 wRevPass;
 
-        public PROT4REVPASS(IStreamReader reader, RecordNumber id, UInt16 length)
+        public PROT4REVPASS(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

@@ -1,168 +1,188 @@
-/*
- * Copyright (c) 2008, DIaLOGIKa
+ï»¿/*
+ * Copyright (c) 2009, DIaLOGIKa
+ *
  * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
+ * 
+ * Redistribution and use in source and binary forms, with or without 
  * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
+ * 
+ *     * Redistributions of source code must retain the above copyright 
  *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
+ *     * Redistributions in binary form must reproduce the above copyright 
+ *       notice, this list of conditions and the following disclaimer in the 
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of DIaLOGIKa nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY DIaLOGIKa ''AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL DIaLOGIKa BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *     * Neither the names of copyright holders, nor the names of its contributors 
+ *       may be used to endorse or promote products derived from this software 
+ *       without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+ * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
  */
+
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Tools;
-using System.Diagnostics;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    
     /// <summary>
-    /// FONT: Font Description (231h)
-    /// 
-    /// The workbook font table contains at least five FONT records. 
-    /// FONT records are numbered as follows: 
-    ///     ifnt=00h (the first FONT record in the table), 
-    ///     ifnt=01h, ifnt=02h, ifnt=03h, ifnt=05h (minimum table), 
-    /// and then ifnt=06h, ifnt=07h, and so on.  
-    /// 
-    /// Note: ifnt=04h never appears in a BIFF file.  
-    ///     This is for backward-compatibility with previous versions of Excel. 
-    ///     If you read FONT records, remember to index the table correctly, skipping ifnt=04h.
+    /// This record specifies a font and font formatting information.
     /// </summary>
-    [BiffRecordAttribute(RecordNumber.FONT)] 
-    public class FONT : BiffRecord
+    [BiffRecordAttribute(RecordType.Font)]
+    public class Font : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.FONT2;
+        public const RecordType ID = RecordType.Font;
+
+        public enum FontWeight : ushort
+        {
+            Default = 0,
+            Normal = 400,
+            Bold = 700
+        }
+
+        public enum ScriptStyle : ushort
+        {
+            NormalScript = 0x0000,
+            SuperScript = 0x0001,
+            SubScript = 0x0002
+        }
+
+        public enum UnderlineStyle : byte
+        {
+            None = 0x00,
+            Single = 0x01,
+            Double = 0x02
+        }
 
         /// <summary>
-        /// Height of the font (in units of 1/20th of a point). 
-        /// </summary>
-        public int dyHeight;	
-
-        /// <summary>
-        /// Font attributes (packed bit field).
-        /// </summary>
-        public UInt16 grbit;	
-    
-        /// <summary>
-        /// Index to the color palette.
-        /// </summary>
-        public UInt16 icv;	    
-
-        /// <summary>
-        /// Bold style; a number from 100dec to 1000dec (64h to 3E8h) 
-        /// that indicates the character weight (“boldness”). 
+        /// An unsigned integer that specifies the height of the font in twips. 
         /// 
-        /// The default values are 190h for normal text and 2BCh for bold text.
+        /// SHOULD <49> be greater than or equal to 20 and less than or equal to 8191. 
+        /// MUST be greater than or equal to 20 and less than 8181, or 0.
         /// </summary>
-        public UInt16 bls;	    
+        public UInt16 dyHeight;
 
         /// <summary>
-        /// Superscript/subscript:
-        ///     00h= None
-        ///     01h= Superscript
-        ///     02h= Subscript 
+        /// A bit that specifies whether the font is italic.
         /// </summary>
-        public SuperSubScriptStyle sss;	    
+        public bool fItalic;
 
         /// <summary>
-        /// Underline style:
-        ///     00h= None
-        ///     01h= Single
-        ///     02h= Double
-        ///     21h= Single Accounting
-        ///     22h= Double Accounting 
+        /// A bit that specifies whether the font has strikethrough formatting applied.
         /// </summary>
-        public UnderlineStyle uls;	
-     
-        /// <summary>
-        /// Font family, as defined by the Windows API LOGFONT structure.
-        /// </summary>
-        public byte bFamily;	
-    
-        /// <summary>
-        /// Character set, as defined by the Windows API LOGFONT structure.
-        /// </summary>
-        public byte bCharSet;	
+        public bool fStrikeOut;
 
         /// <summary>
-        /// Reserved; must be 0 (zero).
+        /// A bit that specifies whether the font has an outline effect applied.
         /// </summary>
-        public byte reserved0;	
+        public bool fOutline;
 
         /// <summary>
-        /// Length of the font name.
+        /// A bit that specifies whether the font has a shadow effect applied.
         /// </summary>
-        public int cch;	        
+        public bool fShadow;
 
         /// <summary>
-        /// Font name.
+        /// A bit that specifies whether the font is condensed or not. If the value is 1, the font is condensed.
         /// </summary>
-        public string rgch;	   
- 	
-        // The grbit field contains the following font attributes:
-        // Offset	Bits	Mask	Flag Name	Contents
-        public bool fReserved0;  //  0	0	    01h	    Reserved; must be 0 (zero)
-  	    public bool fItalic;	//      1	    02h	    =1 if the font is italic
-  	    public bool fReserved1;	//      2	    04h	    Reserved; must be 0 (zero)
-        public bool fStrikeout;	//  0	3	    08h	    =1 if the font is struck out
-  	    public bool fOutline;	//      4	    10h	    =1 if the font is outline style (Macintosh only)
-  	    public bool fShadow;	//      5	    20h	    =1 if the font is shadow style (Macintosh only)
-  	    public byte fReserved2;	//      7 – 6 	C0h	    Reserved; must be 0 (zero)
-        public byte fUnused0;	//  1	7 – 0 	FFh	    
+        public bool fCondense;
 
-        public FONT(IStreamReader reader, RecordNumber id, UInt16 length)
+        /// <summary>
+        /// A bit that specifies whether the font is extended or not. If the value is 1, the font is extended.
+        /// </summary>
+        public bool fExtend;
+
+        /// <summary>
+        /// An unsigned integer that specifies the color of the font. 
+        /// 
+        /// The value SHOULD <50> be an IcvFont value. 
+        /// This value MUST be an IcvFont value, or 0.
+        /// </summary>
+        public UInt16 icv;
+        // TODO: implement IcvFont structure and color mapping
+
+        /// <summary>
+        /// An unsigned integer that specifies the font weight. 
+        /// 
+        /// The value SHOULD <51> be a value from the following table. 
+        /// This value MUST be 0, or a value from the following table.
+        /// </summary>
+        public FontWeight bls;
+
+        /// <summary>
+        /// An unsigned integer that specifies whether superscript, subscript, or normal script is used.
+        /// </summary>
+        public ScriptStyle sss;
+
+        /// <summary>
+        /// An unsigned integer that specifies the underline style.
+        /// </summary>
+        public UnderlineStyle uls;
+
+        /// <summary>
+        /// An unsigned integer that specifies the font family, as defined by 
+        /// Windows API LOGFONT structure in [MSDN-FONTS]. 
+        /// 
+        /// MUST be greater than or equal to 0 and less than or equal to 5.
+        /// </summary>
+        public byte bFamily;
+
+        /// <summary>
+        /// An unsigned integer that specifies the character set, as defined 
+        /// by Windows API LOGFONT structure in [MSDN-FONTS].
+        /// </summary>
+        public byte bCharSet;
+
+        /// <summary>
+        /// A ShortXLUnicodeString that specifies the name of this font. String 
+        /// length MUST be greater than or equal to 1 and less than or equal to 31. 
+        /// The fontName.fHighByte field MUST equal 1. MUST NOT contain any null characters.
+        /// </summary>
+        public ShortXLUnicodeString fontName;
+
+        public Font(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            dyHeight = reader.ReadUInt16();
-            grbit = reader.ReadUInt16();
+            this.dyHeight = reader.ReadUInt16();
 
-            fReserved0 = Utils.BitmaskToBool(grbit, 0x01);
-            fItalic = Utils.BitmaskToBool(grbit, 0x02);	  
-            fReserved1 = Utils.BitmaskToBool(grbit, 0x04);
-            fStrikeout = Utils.BitmaskToBool(grbit, 0x08);
-            fOutline = Utils.BitmaskToBool(grbit, 0x10);	
-            fShadow	= Utils.BitmaskToBool(grbit, 0x20);
-            // fReserved2 = Utils.BitmaskToByte(grbit, 0xC0);
-            // fUnused0	= Utils.BitmaskToByte(grbit, 0xFF00);  
+            UInt16 flags = reader.ReadUInt16();
 
-            icv = reader.ReadUInt16();
-            bls = reader.ReadUInt16();
-            sss = (SuperSubScriptStyle)reader.ReadUInt16();
-            uls = (UnderlineStyle)reader.ReadByte();
-            bFamily = reader.ReadByte();
-            bCharSet = reader.ReadByte();
-            reserved0 = reader.ReadByte();
-            
-            cch = (int)reader.ReadByte();
-            int grbit2 = (int)reader.ReadByte();
-            rgch = ExcelHelperClass.getStringFromBiffRecord(reader, cch, grbit2); 
-            
+            // 0x0001 is unused
+            this.fItalic = Utils.BitmaskToBool(flags, 0x0002);
+            // 0x0004 is unused
+            this.fStrikeOut = Utils.BitmaskToBool(flags, 0x0008);
+            this.fOutline = Utils.BitmaskToBool(flags, 0x0010);
+            this.fShadow = Utils.BitmaskToBool(flags, 0x0020);
+            this.fCondense = Utils.BitmaskToBool(flags, 0x0040);
+            this.fExtend = Utils.BitmaskToBool(flags, 0x0080);
+
+            this.icv = reader.ReadUInt16();
+            this.bls = (FontWeight)reader.ReadUInt16();
+            this.sss = (ScriptStyle)reader.ReadUInt16();
+            this.uls = (UnderlineStyle)reader.ReadByte();
+            this.bFamily = reader.ReadByte();
+            this.bCharSet = reader.ReadByte();
+
+            // skip unused byte
+            reader.ReadByte();
+
+            this.fontName = new ShortXLUnicodeString(reader);
+
             // assert that the correct number of bytes has been read from the stream
-            // Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
         }
     }
 }

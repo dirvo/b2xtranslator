@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using DIaLOGIKa.b2xtranslator.OfficeGraph;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords.Graph;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
-    public class ObjSequence : OfficeGraphBiffRecordSequence
+    public class ObjSequence : BiffRecordSequence
     {
         public List<Continue> Continue;
 
@@ -18,14 +19,13 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             //OBJ = Obj *Continue
 
             // Obj
-            // this.Obj = (Obj)OfficeGraphBiffRecord.ReadRecord(reader); 
+            // this.Obj = (Obj)BiffRecord.ReadRecord(reader); 
 
             // *Continue
             this.Continue = new List<Continue>();
-            while (OfficeGraphBiffRecord.GetNextRecordNumber(reader) ==
-                DIaLOGIKa.b2xtranslator.OfficeGraph.GraphRecordNumber.Continue)
+            while (BiffRecord.GetNextRecordType(reader) == RecordType.Continue)
             {
-                this.Continue.Add((Continue)OfficeGraphBiffRecord.ReadRecord(reader));
+                this.Continue.Add((Continue)BiffRecord.ReadRecord(reader));
             }
         }
     }

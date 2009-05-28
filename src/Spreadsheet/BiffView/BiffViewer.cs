@@ -228,7 +228,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
 
                         sw.WriteLine("<tr>");
                         sw.WriteLine("<td>");
-                        XlsFileFormat.BOF bof = new XlsFileFormat.BOF(workbookReader, (XlsFileFormat.RecordNumber)bh.id, bh.length);
+                        XlsFileFormat.BOF bof = new XlsFileFormat.BOF(workbookReader, (XlsFileFormat.RecordType)bh.id, bh.length);
                         sw.WriteLine("BOF </td><td>");
                         sw.WriteLine("Type: {0}</td>  </tr>", (ChartType)bof.dt);
                         ///
@@ -282,7 +282,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
                         }
                         else 
                         {
-                            XlsFileFormat.RecordNumber id = (XlsFileFormat.RecordNumber)bh.id; 
+                            XlsFileFormat.RecordType id = (XlsFileFormat.RecordType)bh.id; 
                             sw.WriteLine("<tr>");
                             sw.WriteLine("<td>");
                             byte[] buffer = new byte[bh.length];

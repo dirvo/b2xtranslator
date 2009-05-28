@@ -33,10 +33,10 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.STRING)] 
+    [BiffRecordAttribute(RecordType.STRING)] 
     public class STRING : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.STRING;
+        public const RecordType ID = RecordType.STRING;
 
         public string value;
 
@@ -44,7 +44,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 
         public int grbit; 
 
-        public STRING(IStreamReader reader, RecordNumber id, UInt16 length)
+        public STRING(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

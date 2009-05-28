@@ -38,10 +38,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// This record is used for each custom Table style in use in the document.
     /// </summary>
-    [BiffRecordAttribute(RecordNumber.TABLESTYLE)] 
+    [BiffRecordAttribute(RecordType.TABLESTYLE)] 
     public class TABLESTYLE : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.TABLESTYLE;
+        public const RecordType ID = RecordType.TABLESTYLE;
 
         /// <summary>
         /// Record type; this matches the BIFF rt in the first two bytes of the record; =088Fh
@@ -99,7 +99,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         public UInt16 fReserved0;
 
 
-        public TABLESTYLE(IStreamReader reader, RecordNumber id, UInt16 length)
+        public TABLESTYLE(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

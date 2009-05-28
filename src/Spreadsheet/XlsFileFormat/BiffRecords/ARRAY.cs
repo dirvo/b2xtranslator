@@ -34,10 +34,10 @@ using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.ARRAY)] 
+    [BiffRecordAttribute(RecordType.ARRAY)] 
     public class ARRAY : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.ARRAY;
+        public const RecordType ID = RecordType.ARRAY;
         /// <summary>
         /// Rownumber 
         /// </summary>
@@ -79,7 +79,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         /// </summary>
         public Stack<AbstractPtg> ptgStack; 
 
-        public ARRAY(IStreamReader reader, RecordNumber id, UInt16 length)
+        public ARRAY(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

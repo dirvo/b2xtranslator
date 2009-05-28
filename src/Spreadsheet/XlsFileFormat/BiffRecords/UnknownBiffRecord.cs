@@ -9,7 +9,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
     {
         public byte[] Content;
 
-        public UnknownBiffRecord(IStreamReader reader, RecordNumber id, UInt16 length)
+        public UnknownBiffRecord(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             this.Content = reader.ReadBytes((int)length);

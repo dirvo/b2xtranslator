@@ -33,14 +33,14 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.HCENTER)] 
+    [BiffRecordAttribute(RecordType.HCENTER)] 
     public class HCENTER : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.HCENTER;
+        public const RecordType ID = RecordType.HCENTER;
 
         public bool hcenter; 
 
-        public HCENTER(IStreamReader reader, RecordNumber id, UInt16 length)
+        public HCENTER(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

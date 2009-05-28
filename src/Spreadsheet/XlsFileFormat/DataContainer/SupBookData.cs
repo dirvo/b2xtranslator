@@ -86,7 +86,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         /// Ctor 
         /// </summary>
         /// <param name="supbook">SUPBOOK BIFF Record </param>
-        public SupBookData(SUPBOOK supbook)
+        public SupBookData(SupBook supbook)
         {
             this.rgst = supbook.rgst;
             this.virtPath = supbook.virtpathstring;
@@ -120,7 +120,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
             this.xctDataList.Last.Value.addCRN(crn);           
         }
 
-        public void addEXTERNNAME(EXTERNNAME extname)
+        public void addEXTERNNAME(ExternName extname)
         {
             this.externNames.AddLast(extname.extName); 
         }

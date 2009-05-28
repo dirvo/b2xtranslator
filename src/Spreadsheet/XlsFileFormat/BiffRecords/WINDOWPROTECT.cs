@@ -38,17 +38,17 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// The WINDOWPROTECT record stores an option from the Protect Workbook dialog box.
     /// </summary>
-    [BiffRecordAttribute(RecordNumber.WINDOWPROTECT)] 
+    [BiffRecordAttribute(RecordType.WINDOWPROTECT)] 
     public class WINDOWPROTECT : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.WINDOWPROTECT;
+        public const RecordType ID = RecordType.WINDOWPROTECT;
 
         /// <summary>
         ///  =1 if the workbook windows are protected
         /// </summary>
         public UInt16 fLockWn;
         
-        public WINDOWPROTECT(IStreamReader reader, RecordNumber id, UInt16 length)
+        public WINDOWPROTECT(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

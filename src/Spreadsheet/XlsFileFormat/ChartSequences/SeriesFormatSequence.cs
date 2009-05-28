@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using DIaLOGIKa.b2xtranslator.OfficeGraph;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords.Graph;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
-    public class SeriesFormatSequence : OfficeGraphBiffRecordSequence
+    public class SeriesFormatSequence : BiffRecordSequence
     {
-        public class LegendExceptionGroup : OfficeGraphBiffRecordSequence
+        public class LegendExceptionGroup : BiffRecordSequence
         {
             public LegendException LegendException;
 
@@ -24,21 +24,21 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                 : base(reader)
             {
                 // *(LegendException [Begin ATTACHEDLABEL End]) 
-                this.LegendException = (LegendException)OfficeGraphBiffRecord.ReadRecord(reader);
+                this.LegendException = (LegendException)BiffRecord.ReadRecord(reader);
 
                 // [Begin ATTACHEDLABEL End]
-                if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) ==
-                     DIaLOGIKa.b2xtranslator.OfficeGraph.GraphRecordNumber.Begin)
+                if (BiffRecord.GetNextRecordType(reader) ==
+                     RecordType.Begin)
                 {
                     // Begin 
-                    this.Begin = (Begin)OfficeGraphBiffRecord.ReadRecord(reader);
+                    this.Begin = (Begin)BiffRecord.ReadRecord(reader);
                     // ATTACHEDLABEL
                     this.AttachedLabelSequence = new AttachedLabelSequence(reader);
 
                     
 
                     // End
-                    this.End = (End)OfficeGraphBiffRecord.ReadRecord(reader);
+                    this.End = (End)BiffRecord.ReadRecord(reader);
                 }
 
             }
@@ -77,10 +77,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
 
             // Series 
-            this.Series = (Series)OfficeGraphBiffRecord.ReadRecord(reader);
+            this.Series = (Series)BiffRecord.ReadRecord(reader);
 
             // Begin
-            this.Begin = (Begin)OfficeGraphBiffRecord.ReadRecord(reader);
+            this.Begin = (Begin)BiffRecord.ReadRecord(reader);
 
             // 4AI
             this.AiSequence = new List<AiSequence>(); 
@@ -91,30 +91,30 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
             // *SS 
             this.SsSequence = new List<SsSequence>();
-            while (OfficeGraphBiffRecord.GetNextRecordNumber(reader) ==
-                DIaLOGIKa.b2xtranslator.OfficeGraph.GraphRecordNumber.DataFormat)
+            while (BiffRecord.GetNextRecordType(reader) ==
+                RecordType.DataFormat)
             {
                 this.SsSequence.Add(new SsSequence(reader));
             }
 
             // (SerToCrt / (SerParent (SerAuxTrend / SerAuxErrBar)))
-            if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) ==
-                DIaLOGIKa.b2xtranslator.OfficeGraph.GraphRecordNumber.SerToCrt)
+            if (BiffRecord.GetNextRecordType(reader) ==
+                RecordType.SerToCrt)
             {
-                this.SerToCrt = (SerToCrt)OfficeGraphBiffRecord.ReadRecord(reader);
+                this.SerToCrt = (SerToCrt)BiffRecord.ReadRecord(reader);
             }
             else
             {
-                this.SerParent = (SerParent)OfficeGraphBiffRecord.ReadRecord(reader);
+                this.SerParent = (SerParent)BiffRecord.ReadRecord(reader);
                 // (SerAuxTrend / SerAuxErrBar)
-                if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) ==
-                    DIaLOGIKa.b2xtranslator.OfficeGraph.GraphRecordNumber.SerAuxTrend)
+                if (BiffRecord.GetNextRecordType(reader) ==
+                    RecordType.SerAuxTrend)
                 {
-                    this.SerAuxTrend = (SerAuxTrend)OfficeGraphBiffRecord.ReadRecord(reader);
+                    this.SerAuxTrend = (SerAuxTrend)BiffRecord.ReadRecord(reader);
                 }
                 else
                 {
-                    this.SerAuxErrBar = (SerAuxErrBar)OfficeGraphBiffRecord.ReadRecord(reader); 
+                    this.SerAuxErrBar = (SerAuxErrBar)BiffRecord.ReadRecord(reader); 
                 }
             }
 
@@ -123,7 +123,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             this.LegendExceptionSequence = new LegendExceptionGroup(reader); 
 
             // End 
-            this.End = (End)OfficeGraphBiffRecord.ReadRecord(reader);
+            this.End = (End)BiffRecord.ReadRecord(reader);
 
         }
     }

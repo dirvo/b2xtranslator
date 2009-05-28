@@ -38,17 +38,17 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// The PROTECT record stores the protection state for a sheet or workbook.
     /// </summary>
-    [BiffRecordAttribute(RecordNumber.PROTECT)] 
+    [BiffRecordAttribute(RecordType.PROTECT)] 
     public class PROTECT : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.PROTECT;
+        public const RecordType ID = RecordType.PROTECT;
 
         /// <summary>
         /// =1 if the sheet or workbook is protected
         /// </summary>
         public UInt16 fLock;
 
-        public PROTECT(IStreamReader reader, RecordNumber id, UInt16 length)
+        public PROTECT(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

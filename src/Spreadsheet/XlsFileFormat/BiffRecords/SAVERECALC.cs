@@ -33,12 +33,12 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.SAVERECALC)] 
+    [BiffRecordAttribute(RecordType.SAVERECALC)] 
     public class SAVERECALC : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.SAVERECALC;
+        public const RecordType ID = RecordType.SAVERECALC;
 
-        public SAVERECALC(IStreamReader reader, RecordNumber id, UInt16 length)
+        public SAVERECALC(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

@@ -34,10 +34,10 @@ using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.FORMULA)] 
+    [BiffRecordAttribute(RecordType.FORMULA)] 
     public class FORMULA : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.FORMULA;
+        public const RecordType ID = RecordType.FORMULA;
         /// <summary>
         /// Rownumber 
         /// </summary>
@@ -93,7 +93,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         public int errorValue;
         public bool fAlwaysCalc; 
 
-        public FORMULA(IStreamReader reader, RecordNumber id, UInt16 length)
+        public FORMULA(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

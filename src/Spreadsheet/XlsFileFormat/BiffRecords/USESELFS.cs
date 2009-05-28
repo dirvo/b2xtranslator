@@ -38,17 +38,17 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// This record stores a flag bit.
     /// </summary>
-    [BiffRecordAttribute(RecordNumber.USESELFS)] 
+    [BiffRecordAttribute(RecordType.USESELFS)] 
     public class USESELFS : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.USESELFS;
+        public const RecordType ID = RecordType.USESELFS;
 
         /// <summary>
         /// =1 if this file was written by a version of Excel that can use natural-language formula input
         /// </summary>
         public UInt16 fUsesElfs;
         
-        public USESELFS(IStreamReader reader, RecordNumber id, UInt16 length)
+        public USESELFS(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

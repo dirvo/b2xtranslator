@@ -46,10 +46,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// formatting properties can be associated with the style XF by name and the style’s formatting 
     /// can be updated on load (Office Excel 2007 or later).
     /// </summary>
-    [BiffRecordAttribute(RecordNumber.STYLEEXT)] 
+    [BiffRecordAttribute(RecordType.STYLEEXT)] 
     public class STYLEEXT : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.STYLEEXT;
+        public const RecordType ID = RecordType.STYLEEXT;
 
         /// <summary>
         /// Record type; this matches the BIFF rt in the first two bytes of the record; =0892h
@@ -109,7 +109,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         //public xfProps	
         // TODO: define class XFPROPS
         
-        public STYLEEXT(IStreamReader reader, RecordNumber id, UInt16 length)
+        public STYLEEXT(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

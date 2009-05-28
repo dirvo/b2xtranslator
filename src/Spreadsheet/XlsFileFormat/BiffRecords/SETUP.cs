@@ -33,10 +33,10 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.SETUP)] 
+    [BiffRecordAttribute(RecordType.SETUP)] 
     public class SETUP : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.SETUP;
+        public const RecordType ID = RecordType.SETUP;
 
         public UInt16 iPaperSize;
         public UInt16 iScale;
@@ -64,7 +64,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         public bool fEndNotes;
         public int iErrors; 
 
-        public SETUP(IStreamReader reader, RecordNumber id, UInt16 length)
+        public SETUP(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

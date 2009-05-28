@@ -33,10 +33,10 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.MULRK)] 
+    [BiffRecordAttribute(RecordType.MULRK)] 
     public class MULRK : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.MULRK;
+        public const RecordType ID = RecordType.MULRK;
 
         /// <summary>
         /// Row 
@@ -70,7 +70,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         /// <param name="reader">Streamreader</param>
         /// <param name="id">Record ID - Recordtype</param>
         /// <param name="length">The recordlegth</param>
-        public MULRK(IStreamReader reader, RecordNumber id, UInt16 length)
+        public MULRK(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

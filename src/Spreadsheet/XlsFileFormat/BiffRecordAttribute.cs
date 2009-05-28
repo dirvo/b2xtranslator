@@ -41,16 +41,16 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
     {
         public BiffRecordAttribute() { }
 
-        public BiffRecordAttribute(params RecordNumber[] typecodes)
+        public BiffRecordAttribute(params RecordType[] typecodes)
         {
             this._typeCodes = typecodes;
         }
 
-        public RecordNumber[] TypeCodes
+        public RecordType[] TypeCodes
         {
             get { return _typeCodes; }
         }
 
-        private RecordNumber[] _typeCodes = new RecordNumber[0];
+        private RecordType[] _typeCodes = new RecordType[0];
     }
 }

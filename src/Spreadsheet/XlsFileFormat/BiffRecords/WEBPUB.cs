@@ -33,12 +33,12 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.WEBPUB)] 
+    [BiffRecordAttribute(RecordType.WEBPUB)] 
     public class WEBPUB : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.WEBPUB;
+        public const RecordType ID = RecordType.WEBPUB;
 
-        public WEBPUB(IStreamReader reader, RecordNumber id, UInt16 length)
+        public WEBPUB(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

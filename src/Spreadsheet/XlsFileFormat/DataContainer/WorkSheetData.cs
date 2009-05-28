@@ -50,16 +50,17 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// <summary>
         /// List with the cellrecords from the boundsheet 
         /// </summary>
-        public List<LABELSST> LABELSSTList;
-        public List<MULRK> MULRKList;
-        public List<NUMBER> NUMBERList;
+        public List<LabelSst> LABELSSTList;
+        public List<MulRk> MULRKList;
+        public List<Number> NUMBERList;
         public List<RK> SINGLERKList;
-        public List<BLANK> BLANKList;
-        public List<MULBLANK> MULBLANKList;
-        public List<FORMULA> FORMULAList;
+        public List<Blank> BLANKList;
+        public List<MulBlank> MULBLANKList;
+        public List<Formula> FORMULAList;
+        // TODO
         public List<ARRAY> ARRAYList;
         public List<HyperlinkData> HyperLinkList; 
-        public BOUNDSHEET boundsheetRecord;
+        public BoundSheet8 boundsheetRecord;
 
 
         public String worksheetName;
@@ -70,7 +71,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public List<SharedFormulaData> sharedFormulaDataTable;
         public FormulaCell latestFormula;
 
-        public MERGECELLS MERGECELLSData;
+        public MergeCells MERGECELLSData;
 
 
         // Default values for the worksheet 
@@ -90,8 +91,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public double? footerMargin; 
 
         // PageSetup 
-        private SETUP pageSetup;
-        public SETUP PageSetup 
+        private Setup pageSetup;
+        public Setup PageSetup 
         { 
             get{ return this.pageSetup; }
         }
@@ -105,13 +106,13 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// </summary>
         public WorkSheetData()
         {
-            this.LABELSSTList = new List<LABELSST>();
-            this.MULRKList = new List<MULRK>();
-            this.NUMBERList = new List<NUMBER>();
+            this.LABELSSTList = new List<LabelSst>();
+            this.MULRKList = new List<MulRk>();
+            this.NUMBERList = new List<Number>();
             this.SINGLERKList = new List<RK>();
-            this.MULBLANKList = new List<MULBLANK>();
-            this.BLANKList = new List<BLANK>();
-            this.FORMULAList = new List<FORMULA>();
+            this.MULBLANKList = new List<MulBlank>();
+            this.BLANKList = new List<Blank>();
+            this.FORMULAList = new List<Formula>();
             this.ARRAYList = new List<ARRAY>();
             this.rowDataTable = new SortedList<int, RowData>();
             this.sharedFormulaDataTable = new List<SharedFormulaData>();
@@ -130,7 +131,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// Adds a labelsst element to the internal list 
         /// </summary>
         /// <param name="labelsstdata">A LABELSSTData element</param>
-        public void addLabelSST(LABELSST labelsst)
+        public void addLabelSST(LabelSst labelsst)
         {
             this.LABELSSTList.Add(labelsst);
             RowData rowData = this.getSpecificRow(labelsst.rw);
@@ -147,7 +148,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// a mulrk record stores some integer or floatingpoint values 
         /// </summary>
         /// <param name="mulrk">The MULRK Record</param>
-        public void addMULRK(MULRK mulrk)
+        public void addMULRK(MulRk mulrk)
         {
             this.MULRKList.Add(mulrk);
             RowData rowData = this.getSpecificRow(mulrk.rw);
@@ -170,7 +171,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// additional the method adds the specific NUMBER Data to a data container 
         /// </summary>
         /// <param name="number">NUMBER Biffrecord</param>
-        public void addNUMBER(NUMBER number)
+        public void addNUMBER(Number number)
         {
             this.NUMBERList.Add(number);
             RowData rowData = this.getSpecificRow(number.rw);
@@ -205,7 +206,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// additional the method adds the specific BLANK Data to a data container 
         /// </summary>
         /// <param name="number">NUMBER Biffrecord</param>
-        public void addBLANK(BLANK blank)
+        public void addBLANK(Blank blank)
         {
             this.BLANKList.Add(blank);
             RowData rowData = this.getSpecificRow(blank.rw);
@@ -223,7 +224,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// a mulblank record stores some blank cells and their formating 
         /// </summary>
         /// <param name="mulrk">The MULRK Record</param>
-        public void addMULBLANK(MULBLANK mulblank)
+        public void addMULBLANK(MulBlank mulblank)
         {
             this.MULBLANKList.Add(mulblank);
             RowData rowData = this.getSpecificRow(mulblank.rw);
@@ -244,7 +245,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// creates a new cell 
         /// </summary>
         /// <param name="formula"></param>
-        public void addFORMULA(FORMULA formula)
+        public void addFORMULA(Formula formula)
         {
             this.FORMULAList.Add(formula);
             RowData rowData = this.getSpecificRow(formula.rw);
@@ -288,6 +289,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// Adds an ARRAY BIFF Record to the arraylist 
         /// </summary>
         /// <param name="array"></param>
+        //TODO
         public void addARRAY(ARRAY array)
         {
             this.ARRAYList.Add(array);
@@ -368,7 +370,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// Add a shared formula to the internal list
         /// </summary>
         /// <param name="shrfmla"></param>
-        public void addSharedFormula(SHRFMLA shrfmla)
+        public void addSharedFormula(ShrFmla shrfmla)
         {
             SharedFormulaData sfd = new SharedFormulaData();
             sfd.colFirst = shrfmla.colFirst;
@@ -403,7 +405,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// Add the rowdata to the rowdataobject 
         /// </summary>
         /// <param name="row">ROW Biff Record</param>
-        public void addRowData(ROW row)
+        public void addRowData(Row row)
         {
             RowData rowData = this.getSpecificRow(row.rw);
 
@@ -426,8 +428,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// <summary>
         /// Add the colinfo to the data object model 
         /// </summary>
-        /// <param name="colinfo">COLINFO BIFF Record</param>
-        public void addColData(COLINFO colinfo)
+        /// <param name="colinfo">ColInfo BIFF Record</param>
+        public void addColData(ColInfo colinfo)
         {
             ColumnInfoData colinfoData = new ColumnInfoData();
             colinfoData.min = colinfo.colFirst;
@@ -459,7 +461,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// add the default row data to the boundsheet data object 
         /// </summary>
         /// <param name="defaultRowData"></param>
-        public void addDefaultRowData(DEFAULTROWHEIGHT defaultRowData)
+        public void addDefaultRowData(DefaultRowHeight defaultRowData)
         {
             if (!defaultRowData.fDyZero)
             {
@@ -475,14 +477,14 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             this.thickBottom = defaultRowData.fExDsc; 
         }
 
-        public void addSetupData(SETUP setup)
+        public void addSetupData(Setup setup)
         {
             this.footerMargin = setup.numFtr;
             this.headerMargin = setup.numHdr;
             this.pageSetup = setup; 
         }
 
-        public void addHyperLinkData(HLINK hlink)
+        public void addHyperLinkData(HLink hlink)
         {
             HyperlinkData hld = new HyperlinkData();
             hld.colFirst = hlink.colFirst;

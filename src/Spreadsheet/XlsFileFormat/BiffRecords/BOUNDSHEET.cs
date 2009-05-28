@@ -38,10 +38,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// This record stores the sheet name, sheet type, and stream position.
     /// </summary>
-    [BiffRecordAttribute(RecordNumber.BOUNDSHEET)] 
+    [BiffRecordAttribute(RecordType.BOUNDSHEET)] 
     public class BOUNDSHEET : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.BOUNDSHEET;
+        public const RecordType ID = RecordType.BOUNDSHEET;
 
         /// <summary>
         /// Some enum definitions 
@@ -87,7 +87,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         /// <param name="reader">IStreamReader </param>
         /// <param name="id">Type of the record </param>
         /// <param name="length">Length of the record</param>
-        public BOUNDSHEET(IStreamReader reader, RecordNumber id, UInt16 length)
+        public BOUNDSHEET(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

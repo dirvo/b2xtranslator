@@ -33,12 +33,12 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.STANDARDWIDTH)] 
+    [BiffRecordAttribute(RecordType.STANDARDWIDTH)] 
     public class STANDARDWIDTH : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.STANDARDWIDTH;
+        public const RecordType ID = RecordType.STANDARDWIDTH;
 
-        public STANDARDWIDTH(IStreamReader reader, RecordNumber id, UInt16 length)
+        public STANDARDWIDTH(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

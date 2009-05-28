@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using DIaLOGIKa.b2xtranslator.OfficeGraph;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords.Graph;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
-    public class SsSequence : OfficeGraphBiffRecordSequence
+    public class SsSequence : BiffRecordSequence
     {
         public DataFormat DataFormat;
 
@@ -41,31 +41,27 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             // [SerFmt] [LineFormat] [AreaFormat] [GELFRAME] [MarkerFormat] [AttachedLabel] End
 
             // DataFormat
-            this.DataFormat = (DataFormat)OfficeGraphBiffRecord.ReadRecord(reader);
+            this.DataFormat = (DataFormat)BiffRecord.ReadRecord(reader);
 
             // Begin
-            this.Begin = (Begin)OfficeGraphBiffRecord.ReadRecord(reader);
+            this.Begin = (Begin)BiffRecord.ReadRecord(reader);
 
             // [Chart3DBarShape]
-            if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) ==
-                    DIaLOGIKa.b2xtranslator.OfficeGraph.GraphRecordNumber.Chart3DBarShape)
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.Chart3DBarShape)
             {
-                this.Chart3DBarShape = (Chart3DBarShape)OfficeGraphBiffRecord.ReadRecord(reader);
+                this.Chart3DBarShape = (Chart3DBarShape)BiffRecord.ReadRecord(reader);
             }
 
             // [LineFormat AreaFormat PieFormat] 
-            if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) ==
-                DIaLOGIKa.b2xtranslator.OfficeGraph.GraphRecordNumber.LineFormat)
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.LineFormat)
             {
-                this.LineFormat1 = (LineFormat)OfficeGraphBiffRecord.ReadRecord(reader);
-                if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) ==
-                    DIaLOGIKa.b2xtranslator.OfficeGraph.GraphRecordNumber.AreaFormat)
+                this.LineFormat1 = (LineFormat)BiffRecord.ReadRecord(reader);
+                if (BiffRecord.GetNextRecordType(reader) == RecordType.AreaFormat)
                 {
-                    this.AreaFormat1 = (AreaFormat)OfficeGraphBiffRecord.ReadRecord(reader);
-                    if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) ==
-                        DIaLOGIKa.b2xtranslator.OfficeGraph.GraphRecordNumber.PieFormat)
+                    this.AreaFormat1 = (AreaFormat)BiffRecord.ReadRecord(reader);
+                    if (BiffRecord.GetNextRecordType(reader) == RecordType.PieFormat)
                     {
-                        this.PieFormat = (PieFormat)OfficeGraphBiffRecord.ReadRecord(reader);
+                        this.PieFormat = (PieFormat)BiffRecord.ReadRecord(reader);
                     }
                 }
             }
@@ -87,50 +83,50 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             }
 
             // [SerFmt]
-            if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) ==
-                    DIaLOGIKa.b2xtranslator.OfficeGraph.GraphRecordNumber.SerFmt)
+            if (BiffRecord.GetNextRecordType(reader) ==
+                    RecordType.SerFmt)
             {
-                this.SerFmt = (SerFmt)OfficeGraphBiffRecord.ReadRecord(reader);
+                this.SerFmt = (SerFmt)BiffRecord.ReadRecord(reader);
             }
 
             // [LineFormat] [AreaFormat] [GELFRAME] [MarkerFormat] [AttachedLabel] End
 
-            if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) ==
-                DIaLOGIKa.b2xtranslator.OfficeGraph.GraphRecordNumber.LineFormat)
+            if (BiffRecord.GetNextRecordType(reader) ==
+                RecordType.LineFormat)
             {
-                this.LineFormat2 = (LineFormat)OfficeGraphBiffRecord.ReadRecord(reader);
+                this.LineFormat2 = (LineFormat)BiffRecord.ReadRecord(reader);
             }
 
             // [AreaFormat]
-            if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) ==
-                DIaLOGIKa.b2xtranslator.OfficeGraph.GraphRecordNumber.AreaFormat)
+            if (BiffRecord.GetNextRecordType(reader) ==
+                RecordType.AreaFormat)
             {
-                this.AreaFormat2 = (AreaFormat)OfficeGraphBiffRecord.ReadRecord(reader);
+                this.AreaFormat2 = (AreaFormat)BiffRecord.ReadRecord(reader);
             }
 
             // [GELFRAME]
-            if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) ==
-                DIaLOGIKa.b2xtranslator.OfficeGraph.GraphRecordNumber.GelFrame)
+            if (BiffRecord.GetNextRecordType(reader) ==
+                RecordType.GelFrame)
             {
                 this.GelFrameSequence = new GelFrameSequence(reader) ;
             }
 
             // [MarkerFormat]
-            if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) ==
-                DIaLOGIKa.b2xtranslator.OfficeGraph.GraphRecordNumber.MarkerFormat)
+            if (BiffRecord.GetNextRecordType(reader) ==
+                RecordType.MarkerFormat)
             {
-                this.MarkerFormat = (MarkerFormat)OfficeGraphBiffRecord.ReadRecord(reader);
+                this.MarkerFormat = (MarkerFormat)BiffRecord.ReadRecord(reader);
             }
 
             // [AttachedLabel]
-            if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) ==
-                DIaLOGIKa.b2xtranslator.OfficeGraph.GraphRecordNumber.AttachedLabel)
+            if (BiffRecord.GetNextRecordType(reader) ==
+                RecordType.AttachedLabel)
             {
-                this.AttachedLabel = (AttachedLabel)OfficeGraphBiffRecord.ReadRecord(reader);
+                this.AttachedLabel = (AttachedLabel)BiffRecord.ReadRecord(reader);
             }
 
             // End 
-            this.End = (End)OfficeGraphBiffRecord.ReadRecord(reader);
+            this.End = (End)BiffRecord.ReadRecord(reader);
         }
     }
 }

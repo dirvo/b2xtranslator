@@ -42,10 +42,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
     /// It is possible to write custom number formats in a file, but they 
     /// should be added at the end of the existing FORMAT records.
     /// </summary>
-    [BiffRecordAttribute(RecordNumber.FORMAT)] 
+    [BiffRecordAttribute(RecordType.FORMAT)] 
     public class FORMAT : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.FORMAT;
+        public const RecordType ID = RecordType.FORMAT;
         
         /// <summary>
         /// Format index code (for internal use only)
@@ -73,7 +73,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public string rgb;	
 
 
-        public FORMAT(IStreamReader reader, RecordNumber id, UInt16 length)
+        public FORMAT(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

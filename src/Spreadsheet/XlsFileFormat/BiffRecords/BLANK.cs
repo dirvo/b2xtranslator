@@ -36,10 +36,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// <summary>
     /// This class is used to read data from a BLANK BiffRecord 
     /// </summary>
-    [BiffRecordAttribute(RecordNumber.BLANK)] 
+    [BiffRecordAttribute(RecordType.BLANK)] 
     public class BLANK : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.BLANK;
+        public const RecordType ID = RecordType.BLANK;
 
         /// <summary>
         /// Row 
@@ -60,7 +60,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         /// <param name="reader">Streamreader</param>
         /// <param name="id">Record ID - Recordtype</param>
         /// <param name="length">The recordlegth</param>
-        public BLANK(IStreamReader reader, RecordNumber id, UInt16 length)
+        public BLANK(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

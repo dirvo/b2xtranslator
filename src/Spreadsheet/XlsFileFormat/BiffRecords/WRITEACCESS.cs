@@ -38,12 +38,12 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// This record contains the user name, which is the name entered when installing Excel.
     /// </summary>
-    [BiffRecordAttribute(RecordNumber.WRITEACCESS)] 
+    [BiffRecordAttribute(RecordType.WRITEACCESS)] 
     public class WRITEACCESS : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.WRITEACCESS;
+        public const RecordType ID = RecordType.WRITEACCESS;
 
-        public WRITEACCESS(IStreamReader reader, RecordNumber id, UInt16 length)
+        public WRITEACCESS(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

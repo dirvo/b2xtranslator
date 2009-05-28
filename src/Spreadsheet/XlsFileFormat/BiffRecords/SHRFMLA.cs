@@ -34,10 +34,10 @@ using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.SHRFMLA)] 
+    [BiffRecordAttribute(RecordType.SHRFMLA)] 
     public class SHRFMLA : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.SHRFMLA;
+        public const RecordType ID = RecordType.SHRFMLA;
 
         /// <summary>
         /// Rownumber 
@@ -70,7 +70,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         /// </summary>
         public Stack<AbstractPtg> ptgStack; 
 
-        public SHRFMLA(IStreamReader reader, RecordNumber id, UInt16 length)
+        public SHRFMLA(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

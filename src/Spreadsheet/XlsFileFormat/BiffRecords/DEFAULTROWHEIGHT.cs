@@ -33,10 +33,10 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.DEFAULTROWHEIGHT)] 
+    [BiffRecordAttribute(RecordType.DEFAULTROWHEIGHT)] 
     public class DEFAULTROWHEIGHT : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.DEFAULTROWHEIGHT;
+        public const RecordType ID = RecordType.DEFAULTROWHEIGHT;
 
         public int miyRW;
         public int miyRwHidden; 
@@ -45,7 +45,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         public bool fExAsc;
         public bool fExDsc; 
 
-        public DEFAULTROWHEIGHT(IStreamReader reader, RecordNumber id, UInt16 length)
+        public DEFAULTROWHEIGHT(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

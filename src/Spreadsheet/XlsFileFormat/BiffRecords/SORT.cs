@@ -33,12 +33,12 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.SORT)] 
+    [BiffRecordAttribute(RecordType.SORT)] 
     public class SORT : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.SORT;
+        public const RecordType ID = RecordType.SORT;
 
-        public SORT(IStreamReader reader, RecordNumber id, UInt16 length)
+        public SORT(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

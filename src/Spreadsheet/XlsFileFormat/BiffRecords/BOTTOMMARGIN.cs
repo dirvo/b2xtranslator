@@ -33,12 +33,12 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.BOTTOMMARGIN)] 
+    [BiffRecordAttribute(RecordType.BOTTOMMARGIN)] 
     public class BOTTOMMARGIN : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.BOTTOMMARGIN;
+        public const RecordType ID = RecordType.BOTTOMMARGIN;
         public double value; 
-        public BOTTOMMARGIN(IStreamReader reader, RecordNumber id, UInt16 length)
+        public BOTTOMMARGIN(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

@@ -38,10 +38,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// This record saves a workbook option flag.
     /// </summary>
-    [BiffRecordAttribute(RecordNumber.BOOKBOOL)] 
+    [BiffRecordAttribute(RecordType.BOOKBOOL)] 
     public class BOOKBOOL : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.BOOKBOOL;
+        public const RecordType ID = RecordType.BOOKBOOL;
 
         /// <summary>
         /// An option flag. See other members.
@@ -64,7 +64,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 	    public UInt32 reserved2;	    //  15-9	FE00h
 
 
-        public BOOKBOOL(IStreamReader reader, RecordNumber id, UInt16 length)
+        public BOOKBOOL(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

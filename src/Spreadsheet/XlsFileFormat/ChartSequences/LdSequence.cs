@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using DIaLOGIKa.b2xtranslator.OfficeGraph;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords.Graph;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
-    public class LdSequence : OfficeGraphBiffRecordSequence
+    public class LdSequence : BiffRecordSequence
     {
         public Legend Legend;
 
@@ -28,26 +28,25 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             /// 
 
             // Legend 
-            this.Legend = (Legend)OfficeGraphBiffRecord.ReadRecord(reader); 
+            this.Legend = (Legend)BiffRecord.ReadRecord(reader); 
 
             // Begin
-            this.Begin = (Begin)OfficeGraphBiffRecord.ReadRecord(reader);
+            this.Begin = (Begin)BiffRecord.ReadRecord(reader);
 
             // Pos 
-            this.Pos = (Pos)OfficeGraphBiffRecord.ReadRecord(reader);
+            this.Pos = (Pos)BiffRecord.ReadRecord(reader);
 
             // [ATTACHEDLABEL]
             this.AttachedLabelSequence = new AttachedLabelSequence(reader); 
 
             // [FRAME]
-            if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) ==
-                DIaLOGIKa.b2xtranslator.OfficeGraph.GraphRecordNumber.Frame)
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.Frame)
             {
                 this.FrameSequence = new FrameSequence(reader);
             }
 
             // End 
-            this.End = (End)OfficeGraphBiffRecord.ReadRecord(reader); 
+            this.End = (End)BiffRecord.ReadRecord(reader); 
 
         }
     }

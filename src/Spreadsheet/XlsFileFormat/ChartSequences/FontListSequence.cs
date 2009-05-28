@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
-using DIaLOGIKa.b2xtranslator.OfficeGraph;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords.Graph;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
@@ -28,7 +29,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         }
     }
 
-    public class FontListSequence : OfficeGraphBiffRecordSequence
+    public class FontListSequence : BiffRecordSequence
     {
         public FrtFontList FrtFontList;
 
@@ -41,25 +42,25 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public FontListSequence(IStreamReader reader) : base(reader)
         {
             //FrtFontList 
-            this.FrtFontList = (FrtFontList)OfficeGraphBiffRecord.ReadRecord(reader);
+            this.FrtFontList = (FrtFontList)BiffRecord.ReadRecord(reader);
 
             //StartObject 
-            this.StartObject = (StartObject)OfficeGraphBiffRecord.ReadRecord(reader);
+            this.StartObject = (StartObject)BiffRecord.ReadRecord(reader);
             
             //*(Font [Fbi]) 
-            while (OfficeGraphBiffRecord.GetNextRecordNumber(reader) != GraphRecordNumber.EndObject)
+            while (BiffRecord.GetNextRecordType(reader) != RecordType.EndObject)
             {
-                Font font = (Font)OfficeGraphBiffRecord.ReadRecord(reader);
+                Font font = (Font)BiffRecord.ReadRecord(reader);
                 Fbi fbi = null;
-                if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == GraphRecordNumber.Fbi)
+                if (BiffRecord.GetNextRecordType(reader) == RecordType.Fbi)
                 {
-                    fbi = (Fbi)OfficeGraphBiffRecord.ReadRecord(reader);
+                    fbi = (Fbi)BiffRecord.ReadRecord(reader);
                 }
                 this.Fonts.Add(new FontFbiWrapper(font, fbi));
             }
 
             //EndObject
-            this.EndObject = (EndObject)OfficeGraphBiffRecord.ReadRecord(reader);
+            this.EndObject = (EndObject)BiffRecord.ReadRecord(reader);
         }
     }
 }

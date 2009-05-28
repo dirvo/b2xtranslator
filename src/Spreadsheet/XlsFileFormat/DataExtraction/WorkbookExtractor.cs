@@ -51,9 +51,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public string buffer;
         public long oldOffset;
 
-        public List<BOUNDSHEET> boundsheets;
-        public List<EXTERNSHEET> externSheets;
-        public List<SUPBOOK> supBooks;
+        public List<BoundSheet8> boundsheets;
+        public List<ExternSheet> externSheets;
+        public List<SupBook> supBooks;
         public List<XCT> XCTList;
         public List<CRN> CRNList; 
 
@@ -66,9 +66,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public WorkbookExtractor(VirtualStreamReader reader, WorkBookData workBookData)
             : base(reader)
         {
-            this.boundsheets = new List<BOUNDSHEET>();
-            this.supBooks = new List<SUPBOOK>(); 
-            this.externSheets = new List<EXTERNSHEET>();
+            this.boundsheets = new List<BoundSheet8>();
+            this.supBooks = new List<SupBook>(); 
+            this.externSheets = new List<ExternSheet>();
             this.XCTList = new List<XCT>();
             this.CRNList = new List<CRN>(); 
             this.workBookData = workBookData;
@@ -88,19 +88,19 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             {
                 while (this.StreamReader.BaseStream.Position < this.StreamReader.BaseStream.Length)
                 {
-                    bh.id = (RecordNumber)this.StreamReader.ReadUInt16();
+                    bh.id = (RecordType)this.StreamReader.ReadUInt16();
                     bh.length = this.StreamReader.ReadUInt16();
                     // Debugging output 
                     TraceLogger.DebugInternal("BIFF {0}\t{1}\t", bh.id, bh.length);
 
-                    if (bh.id == RecordNumber.BOUNDSHEET)
+                    if (bh.id == RecordType.BoundSheet8)
                     {
                         // Creates a WorkSheetData element
                         WorkSheetData bsd = new WorkSheetData();
                         this.workBookData.addBoundSheetData(bsd);
 
                         // Extracts the Boundsheet data 
-                        BOUNDSHEET bs = new BOUNDSHEET(this.StreamReader, bh.id, bh.length);
+                        BoundSheet8 bs = new BoundSheet8(this.StreamReader, bh.id, bh.length);
 
                         this.oldOffset = this.StreamReader.BaseStream.Position;
                         this.StreamReader.BaseStream.Seek(bs.lbPlyPos, SeekOrigin.Begin);
@@ -110,11 +110,11 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                         this.StreamReader.BaseStream.Seek(oldOffset, SeekOrigin.Begin);
                         TraceLogger.DebugInternal(bs.ToString());
                     }
-                    else if (bh.id == RecordNumber.TEMPLATE)
+                    else if (bh.id == RecordType.Template)
                     {
                         this.workBookData.Template = true;
                     }
-                    else if (bh.id == RecordNumber.SST)
+                    else if (bh.id == RecordType.SST)
                     {
                         /* reads the shared string table biff record and following continue records 
                          * creates an array of bytes and then puts that into a memory stream 
@@ -124,7 +124,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                          * The problem here is, that the parser has to overread the continue biff record header 
                         */
                         SST sst;
-                        UInt32 length = bh.length;
+                        UInt16 length = bh.length;
 
                         // save the old offset from this record begin 
                         this.oldOffset = this.StreamReader.BaseStream.Position;
@@ -139,9 +139,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                         MemoryStream bufferstream = new MemoryStream(buffer);
                         VirtualStreamReader binreader = new VirtualStreamReader(bufferstream);
                         BiffHeader bh2;
-                        bh2.id = (RecordNumber)this.StreamReader.ReadUInt16();
+                        bh2.id = (RecordType)this.StreamReader.ReadUInt16();
 
-                        while (bh2.id == RecordNumber.CONTINUE)
+                        while (bh2.id == RecordType.Continue)
                         {
                             bh2.length = (UInt16)(this.StreamReader.ReadUInt16());
 
@@ -159,7 +159,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
 
                             // take next Biffrecord ID 
-                            bh2.id = (RecordNumber)this.StreamReader.ReadUInt16();
+                            bh2.id = (RecordType)this.StreamReader.ReadUInt16();
                         }
                         // set the old position of the stream 
                         this.StreamReader.BaseStream.Position = this.oldOffset;
@@ -170,70 +170,70 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
                     }
 
-                    else if (bh.id == RecordNumber.EOF)
+                    else if (bh.id == RecordType.EOF)
                     {
                         // Reads the end of the internal file !!! 
                         this.StreamReader.BaseStream.Seek(0, SeekOrigin.End);
                     }
-                    else if (bh.id == RecordNumber.EXTERNSHEET)
+                    else if (bh.id == RecordType.ExternSheet)
                     {
-                        EXTERNSHEET extsheet = new EXTERNSHEET(this.StreamReader, bh.id, bh.length);
+                        ExternSheet extsheet = new ExternSheet(this.StreamReader, bh.id, bh.length);
                         this.externSheets.Add(extsheet);
                         this.workBookData.addExternSheetData(extsheet);
                     }
-                    else if (bh.id == RecordNumber.SUPBOOK)
+                    else if (bh.id == RecordType.SupBook)
                     {
-                        SUPBOOK supbook = new SUPBOOK(this.StreamReader, bh.id, bh.length);
+                        SupBook supbook = new SupBook(this.StreamReader, bh.id, bh.length);
                         this.supBooks.Add(supbook);
                         this.workBookData.addSupBookData(supbook);
                     }
-                    else if (bh.id == RecordNumber.XCT)
+                    else if (bh.id == RecordType.XCT)
                     {
                         XCT xct = new XCT(this.StreamReader, bh.id, bh.length);
                         this.XCTList.Add(xct);
                         this.workBookData.addXCT(xct);
                     }
-                    else if (bh.id == RecordNumber.CRN)
+                    else if (bh.id == RecordType.CRN)
                     {
                         CRN crn = new CRN(this.StreamReader, bh.id, bh.length);
                         this.CRNList.Add(crn);
                         this.workBookData.addCRN(crn);
                     }
-                    else if (bh.id == RecordNumber.EXTERNNAME)
+                    else if (bh.id == RecordType.ExternName)
                     {
-                        EXTERNNAME externname = new EXTERNNAME(this.StreamReader, bh.id, bh.length);
+                        ExternName externname = new ExternName(this.StreamReader, bh.id, bh.length);
                         this.workBookData.addEXTERNNAME(externname);
                     }
-                    else if (bh.id == RecordNumber.FORMAT)
+                    else if (bh.id == RecordType.Format)
                     {
-                        FORMAT format = new FORMAT(this.StreamReader, bh.id, bh.length);
+                        Format format = new Format(this.StreamReader, bh.id, bh.length);
                         this.workBookData.styleData.addFormatValue(format);
                     }
-                    else if (bh.id == RecordNumber.XF)
+                    else if (bh.id == RecordType.XF)
                     {
                         XF xf = new XF(this.StreamReader, bh.id, bh.length);
                         this.workBookData.styleData.addXFDataValue(xf);
 
                     }
 
-                    else if (bh.id == RecordNumber.STYLE)
+                    else if (bh.id == RecordType.Style)
                     {
-                        STYLE style = new STYLE(this.StreamReader, bh.id, bh.length);
+                        Style style = new Style(this.StreamReader, bh.id, bh.length);
                         this.workBookData.styleData.addStyleValue(style);
                     }
-                    else if (bh.id == RecordNumber.FONT2)
+                    else if (bh.id == RecordType.Font)
                     {
-                        FONT font = new FONT(this.StreamReader, bh.id, bh.length);
+                        Font font = new Font(this.StreamReader, bh.id, bh.length);
                         this.workBookData.styleData.addFontData(font);
 
                     }
-                    else if (bh.id == RecordNumber.NAME)
+                    else if (bh.id == RecordType.NAME)
                     {
                         NAME name = new NAME(this.StreamReader, bh.id, bh.length);
                         this.workBookData.addDefinedName(name);
 
                     }
-                    else if (bh.id == RecordNumber.BOF)
+                    else if (bh.id == RecordType.BOF)
                     {
                         if (firstBOF)
                         {
@@ -244,13 +244,13 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                             this.StreamReader.ReadBytes(bh.length);
                         }
                     }
-                    else if (bh.id == RecordNumber.FILEPASS)
+                    else if (bh.id == RecordType.FilePass)
                     {
                         throw new ExtractorException(ExtractorException.FILEENCRYPTED);
                     }
-                    else if (bh.id == RecordNumber.PALETTE)
+                    else if (bh.id == RecordType.Palette)
                     {
-                        PALETTE palette = new PALETTE(this.StreamReader, bh.id, bh.length);
+                        Palette palette = new Palette(this.StreamReader, bh.id, bh.length);
                         workBookData.styleData.setColorList(palette.rgbColorList); 
                     }
                     else

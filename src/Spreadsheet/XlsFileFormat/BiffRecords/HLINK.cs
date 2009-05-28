@@ -34,10 +34,10 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.HLINK)] 
+    [BiffRecordAttribute(RecordType.HLINK)] 
     public class HLINK : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.HLINK;
+        public const RecordType ID = RecordType.HLINK;
 
         public UInt16 rwFirst;
         public UInt16 rwLast;
@@ -57,7 +57,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         public byte[] fileTime; 
         
         
-        public HLINK(IStreamReader reader, RecordNumber id, UInt16 length)
+        public HLINK(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

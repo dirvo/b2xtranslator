@@ -33,12 +33,12 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.REFMODE)] 
+    [BiffRecordAttribute(RecordType.REFMODE)] 
     public class REFMODE : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.REFMODE;
+        public const RecordType ID = RecordType.REFMODE;
 
-        public REFMODE(IStreamReader reader, RecordNumber id, UInt16 length)
+        public REFMODE(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

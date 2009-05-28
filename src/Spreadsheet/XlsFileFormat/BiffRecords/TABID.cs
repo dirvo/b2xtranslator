@@ -45,10 +45,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// This record does not appear in BIFF5 files.
     /// </summary>
-    [BiffRecordAttribute(RecordNumber.TABID)] 
+    [BiffRecordAttribute(RecordType.TABID)] 
     public class TABID : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.TABID;
+        public const RecordType ID = RecordType.TABID;
 
         /// <summary>
         /// Array of tab indexes
@@ -60,7 +60,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         /// </summary>
         public UInt16[] rgiTab;
 
-        public TABID(IStreamReader reader, RecordNumber id, UInt16 length)
+        public TABID(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

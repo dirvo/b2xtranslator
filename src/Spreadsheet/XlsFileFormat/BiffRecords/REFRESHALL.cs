@@ -38,17 +38,17 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// This record stores an option flag.
     /// </summary>
-    [BiffRecordAttribute(RecordNumber.REFRESHALL)] 
+    [BiffRecordAttribute(RecordType.REFRESHALL)] 
     public class REFRESHALL : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.REFRESHALL;
+        public const RecordType ID = RecordType.REFRESHALL;
 
         /// <summary>
         /// =1 then Refresh All should be done on all external data ranges and PivotTables when loading the workbook (the default is =0)
         /// </summary>
         public UInt16 fRefreshAll;
 
-        public REFRESHALL(IStreamReader reader, RecordNumber id, UInt16 length)
+        public REFRESHALL(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

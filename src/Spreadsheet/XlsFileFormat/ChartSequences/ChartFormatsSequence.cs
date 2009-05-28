@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using OfficeGraph = DIaLOGIKa.b2xtranslator.OfficeGraph;
-using DIaLOGIKa.b2xtranslator.OfficeGraph;
+using OfficeGraph = DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords.Graph;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords.Graph;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords;
 
-namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
+namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.ChartSequences
 {
-    public class ChartFormatsSequence : OfficeGraphBiffRecordSequence
+    public class ChartFormatsSequence : BiffRecordSequence
     {
         public Chart Chart;
 
@@ -54,60 +55,60 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
 
             // Chart
-            this.Chart = (Chart)OfficeGraphBiffRecord.ReadRecord(reader);
+            this.Chart = (Chart)BiffRecord.ReadRecord(reader);
 
             // Begin
-            this.Begin = (Begin)OfficeGraphBiffRecord.ReadRecord(reader);
+            this.Begin = (Begin)BiffRecord.ReadRecord(reader);
 
             // *2FONTLIST
             this.FontListSequences = new List<FontListSequence>();
-            while (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == GraphRecordNumber.FrtFontList)
+            while (BiffRecord.GetNextRecordType(reader) == RecordType.FrtFontList)
             {
                 this.FontListSequences.Add(new FontListSequence(reader));
             }
 
             // Scl
-            this.Scl = (Scl)OfficeGraphBiffRecord.ReadRecord(reader);
+            this.Scl = (Scl)BiffRecord.ReadRecord(reader);
 
             // PlotGrowth
-            this.PlotGrowth = (PlotGrowth)OfficeGraphBiffRecord.ReadRecord(reader);
+            this.PlotGrowth = (PlotGrowth)BiffRecord.ReadRecord(reader);
 
             // [FRAME]
-            if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == GraphRecordNumber.Frame)
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.Frame)
             {
                 this.FrameSequence = new FrameSequence(reader);
             }
 
             // *SERIESFORMAT
             this.SeriesFormatSequences = new List<SeriesFormatSequence>();
-            while (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == GraphRecordNumber.Series)
+            while (BiffRecord.GetNextRecordType(reader) == RecordType.Series)
             {
                 this.SeriesFormatSequences.Add(new SeriesFormatSequence(reader));
             }
 
             // *SS
             this.SsSequences = new List<SsSequence>();
-            while (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == GraphRecordNumber.DataFormat)
+            while (BiffRecord.GetNextRecordType(reader) == RecordType.DataFormat)
             {
                 this.SsSequences.Add(new SsSequence(reader));
             }
 
             // ShtProps
-            this.ShtProps = (ShtProps)OfficeGraphBiffRecord.ReadRecord(reader);
+            this.ShtProps = (ShtProps)BiffRecord.ReadRecord(reader);
 
             // *2DFTTEXT
             this.DftTextSequences = new List<DftTextSequence>();
-            while (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == GraphRecordNumber.DataLabExt)
+            while (BiffRecord.GetNextRecordType(reader) == RecordType.DataLabExt)
             {
                 this.DftTextSequences.Add(new DftTextSequence(reader));
             }
 
             // AxesUsed
-            this.AxesUsed = (AxesUsed)OfficeGraphBiffRecord.ReadRecord(reader);
+            this.AxesUsed = (AxesUsed)BiffRecord.ReadRecord(reader);
 
             // 1*2AXISPARENT
             this.AxisParentSequences = new List<AxisParentSequence>();
-            while (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == GraphRecordNumber.AxisParent)
+            while (BiffRecord.GetNextRecordType(reader) == RecordType.AxisParent)
             {
                 this.AxisParentSequences.Add(new AxisParentSequence(reader));
             }
@@ -116,29 +117,29 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             // ToDo: 
 
             // [DAT]
-            if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == GraphRecordNumber.Dat)
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.Dat)
             {
-                this.Dat = (Dat)OfficeGraphBiffRecord.ReadRecord(reader);
+                this.Dat = (Dat)BiffRecord.ReadRecord(reader);
             }
 
             // *ATTACHEDLABEL
             this.AttachedLabels = new List<AttachedLabel>();
-            while (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == GraphRecordNumber.AttachedLabel)
+            while (BiffRecord.GetNextRecordType(reader) == RecordType.AttachedLabel)
             {
-                this.AttachedLabels.Add((AttachedLabel)OfficeGraphBiffRecord.ReadRecord(reader));
+                this.AttachedLabels.Add((AttachedLabel)BiffRecord.ReadRecord(reader));
             }
 
             // [CRTMLFRT]
 
             // *([DataLabExt StartObject] ATTACHEDLABEL [EndObject])
             this.DataLabelGroups = new List<DataLabelGroup>();
-            while (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == GraphRecordNumber.DataLabExt)
+            while (BiffRecord.GetNextRecordType(reader) == RecordType.DataLabExt)
             {
                this.DataLabelGroups.Add(new DataLabelGroup(reader));
             }
 
             // [TEXTPROPS]
-            //if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) )
+            //if (BiffRecord.GetNextRecordType(reader) )
             //{
             //    this.TextPropsSequence = new TextPropsSequence(reader);
             //}
@@ -148,7 +149,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
 
             // End
-            this.End = (End)OfficeGraphBiffRecord.ReadRecord(reader);
+            this.End = (End)BiffRecord.ReadRecord(reader);
         }
 
         public class DataLabelGroup
@@ -162,17 +163,17 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             {
                 // *([DataLabExt StartObject] ATTACHEDLABEL [EndObject])
 
-                if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == GraphRecordNumber.DataLabExt)
+                if (BiffRecord.GetNextRecordType(reader) == RecordType.DataLabExt)
                 {
-                    this.DataLabExt = (DataLabExt)OfficeGraphBiffRecord.ReadRecord(reader);
-                    this.StartObject = (StartObject)OfficeGraphBiffRecord.ReadRecord(reader);
+                    this.DataLabExt = (DataLabExt)BiffRecord.ReadRecord(reader);
+                    this.StartObject = (StartObject)BiffRecord.ReadRecord(reader);
                 }
 
-                this.AttachedLabel = (AttachedLabel)OfficeGraphBiffRecord.ReadRecord(reader);
+                this.AttachedLabel = (AttachedLabel)BiffRecord.ReadRecord(reader);
 
-                if (OfficeGraphBiffRecord.GetNextRecordNumber(reader) == GraphRecordNumber.EndObject)
+                if (BiffRecord.GetNextRecordType(reader) == RecordType.EndObject)
                 {
-                    this.EndObject = (EndObject)OfficeGraphBiffRecord.ReadRecord(reader);
+                    this.EndObject = (EndObject)BiffRecord.ReadRecord(reader);
                 }
             }
         }

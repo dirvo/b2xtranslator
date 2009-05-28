@@ -33,10 +33,10 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.SUPBOOK)] 
+    [BiffRecordAttribute(RecordType.SUPBOOK)] 
     public class SUPBOOK : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.SUPBOOK;
+        public const RecordType ID = RecordType.SUPBOOK;
 
         public UInt16 ctab;
 
@@ -52,7 +52,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         public bool isaddinreferencing;
         public bool isunusedsupportinglink; 
 
-        public SUPBOOK(IStreamReader reader, RecordNumber id, UInt16 length)
+        public SUPBOOK(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

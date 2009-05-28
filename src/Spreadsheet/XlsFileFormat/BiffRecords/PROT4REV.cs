@@ -38,17 +38,17 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// The PROT4REV  record stores a shared-workbook protection flag.
     /// </summary>
-    [BiffRecordAttribute(RecordNumber.PROT4REV)] 
+    [BiffRecordAttribute(RecordType.PROT4REV)] 
     public class PROT4REV : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.PROT4REV;
+        public const RecordType ID = RecordType.PROT4REV;
 
         /// <summary>
         /// =1 if the Sharing with Track Changes option is on (Protect Shared Workbook dialog box)
         /// </summary>
         public UInt16 fRevLock;
 
-        public PROT4REV(IStreamReader reader, RecordNumber id, UInt16 length)
+        public PROT4REV(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

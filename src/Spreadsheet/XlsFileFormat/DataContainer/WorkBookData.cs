@@ -99,7 +99,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         /// Add the ExternSheetData extracted from an EXTERNSHEET BIFF Record 
         /// </summary>
         /// <param name="ext">BIFF Record</param>
-        public void addExternSheetData(EXTERNSHEET ext)
+        public void addExternSheetData(ExternSheet ext)
         {
             for (int i = 0; i < ext.cXTI; i++)
             {
@@ -112,7 +112,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         /// Add a SUPBOOK BIFF Record to the list 
         /// </summary>
         /// <param name="sup"></param>
-        public void addSupBookData(SUPBOOK sup)
+        public void addSupBookData(SupBook sup)
         {
             
             SupBookData supbook = new SupBookData(sup);
@@ -209,7 +209,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         /// Add a EXTERNNAME Data structure to the internal list 
         /// </summary>
         /// <param name="xct"></param>
-        public void addEXTERNNAME(EXTERNNAME extname)
+        public void addEXTERNNAME(ExternName extname)
         {
             this.supBookDataList.Last.Value.addEXTERNNAME(extname); 
         }

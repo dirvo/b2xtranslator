@@ -41,14 +41,14 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// <summary>
     /// This class extracts the SST-Record Data from the specific biffrecord 
     /// </summary>
-    [BiffRecordAttribute(RecordNumber.SST)] 
+    [BiffRecordAttribute(RecordType.SST)] 
     public class SST : BiffRecord
     {
         public LinkedList<VirtualStreamReader> contStreamlist; 
         /// <summary>
         /// the own record data id 
         /// </summary>
-        public const RecordNumber ID = RecordNumber.SST;
+        public const RecordType ID = RecordType.SST;
 
         /// <summary>
         /// Total and unique number of strings in this SST-Biffrecord 
@@ -65,7 +65,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         /// <param name="reader">Reader to parse the document </param>
         /// <param name="id">BiffRecord ID</param>
         /// <param name="length">The lengt of the biffrecord </param>
-        public SST(IStreamReader binreader, RecordNumber id, UInt32 length, LinkedList<VirtualStreamReader> contstreamlist)
+        public SST(IStreamReader binreader, RecordType id, UInt32 length, LinkedList<VirtualStreamReader> contstreamlist)
             : base(binreader, id, length)
         {
             // assert that the correct record type is instantiated

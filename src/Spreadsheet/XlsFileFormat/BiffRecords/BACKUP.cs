@@ -38,17 +38,17 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// The BACKUP record specifies whether Excel should save backup versions of a file.
     /// </summary>
-    [BiffRecordAttribute(RecordNumber.BACKUP)] 
+    [BiffRecordAttribute(RecordType.BACKUP)] 
     public class BACKUP : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.BACKUP;
+        public const RecordType ID = RecordType.BACKUP;
 
         /// <summary>
         /// =1 if Excel should save a backup version of the file
         /// </summary>
         public UInt16 fBackupFile;
 
-        public BACKUP(IStreamReader reader, RecordNumber id, UInt16 length)
+        public BACKUP(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

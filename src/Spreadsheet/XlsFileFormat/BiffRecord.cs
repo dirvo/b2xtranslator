@@ -37,7 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
     {
         IStreamReader _reader;
         
-        RecordNumber _id;
+        RecordType _id;
         UInt32 _length;
         long _offset;
 
@@ -47,7 +47,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// <param name="reader">Streamreader</param>
         /// <param name="id">Record ID - Recordtype</param>
         /// <param name="length">The recordlegth</param>
-        public BiffRecord(IStreamReader reader, RecordNumber id, UInt32 length)
+        public BiffRecord(IStreamReader reader, RecordType id, UInt16 length)
         {
             _reader = reader;
             _offset = _reader.BaseStream.Position;
@@ -96,6 +96,17 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             }
         }
 
+        public static RecordType GetNextRecordType(IStreamReader reader)
+        {
+            // read next id
+            RecordType nextRecord = (RecordType)reader.ReadUInt16();
+
+            // seek back
+            reader.BaseStream.Seek(-sizeof(UInt16), System.IO.SeekOrigin.Current);
+
+            return nextRecord;
+        }
+
         public static BiffRecord ReadRecord(IStreamReader reader)
         {
             BiffRecord result = null;
@@ -107,7 +118,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                 if (TypeToRecordClassMapping.TryGetValue(id, out cls))
                 {
                     ConstructorInfo constructor = cls.GetConstructor(
-                        new Type[] { typeof(IStreamReader), typeof(RecordNumber), typeof(UInt16) }
+                        new Type[] { typeof(IStreamReader), typeof(RecordType), typeof(UInt16) }
                         );
 
                     try
@@ -123,7 +134,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                 }
                 else
                 {
-                    result = new UnknownBiffRecord(reader, (RecordNumber)id, size);
+                    result = new UnknownBiffRecord(reader, (RecordType)id, size);
                 }
 
                 return result;
@@ -134,7 +145,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             }
         }
 
-        public RecordNumber Id
+        public RecordType Id
         {
             get { return _id; }
         }

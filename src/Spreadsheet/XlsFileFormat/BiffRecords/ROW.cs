@@ -33,10 +33,10 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.ROW)] 
+    [BiffRecordAttribute(RecordType.ROW)] 
     public class ROW : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.ROW;
+        public const RecordType ID = RecordType.ROW;
 
         public int rw;
         public int colMic;
@@ -54,7 +54,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         public bool fExDes;
         public bool fPhonetic; 
 
-        public ROW(IStreamReader reader, RecordNumber id, UInt16 length)
+        public ROW(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

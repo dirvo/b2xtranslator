@@ -215,6 +215,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         SCL = 0xA0,          	// Window Zoom Magnification
         SELECTION = 0x1D, 	    // Current Selection
         SETUP = 0xA1, 	        // Page Setup
+        SHAPEPROPSSTREAM = 0x08A4,  // Shape formatting properties for chart elements
         SHEETEXT = 0x862,    	//  Extra Sheet Info
         SHRFMLA = 0x4BC,     	// Shared Formula
         SORT = 0x90, 	        // Sorting Options

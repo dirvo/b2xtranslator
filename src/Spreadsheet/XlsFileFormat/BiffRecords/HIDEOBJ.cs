@@ -38,10 +38,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 
     /// The HIDEOBJ record stores options selected in the Options dialog box, View tab.
     /// </summary>
-    [BiffRecordAttribute(RecordNumber.HIDEOBJ)] 
+    [BiffRecordAttribute(RecordType.HIDEOBJ)] 
     public class HIDEOBJ : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.HIDEOBJ;
+        public const RecordType ID = RecordType.HIDEOBJ;
 
         /// <summary>
         /// =2 if the Hide All  option is turned on
@@ -50,7 +50,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         /// </summary>
         public UInt16 fHideObj;
         
-        public HIDEOBJ(IStreamReader reader, RecordNumber id, UInt16 length)
+        public HIDEOBJ(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

@@ -304,7 +304,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             /// 
             _writer.WriteStartElement("cellStyles");
             //_writer.WriteAttributeString("count", sd.StyleList.Count.ToString());
-            foreach (STYLE style in sd.StyleList)
+            foreach (Style style in sd.StyleList)
             {
                 _writer.WriteStartElement("cellStyle");
 

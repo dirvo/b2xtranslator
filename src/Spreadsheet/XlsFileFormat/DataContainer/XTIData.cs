@@ -47,13 +47,13 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
     /// </summary>
     public class XTIData
     {
-        public int recordNumber;
+        public int RecordType;
         public int externalBookNumber;
         public int externalSheetNumber;
 
         public XTIData(int record, int book, int sheet)
         {
-            this.recordNumber = record;
+            this.RecordType = record;
             this.externalBookNumber = book;
             this.externalSheetNumber = sheet; 
         }

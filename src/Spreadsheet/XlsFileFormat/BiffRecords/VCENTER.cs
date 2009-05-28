@@ -33,14 +33,14 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.VCENTER)] 
+    [BiffRecordAttribute(RecordType.VCENTER)] 
     public class VCENTER : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.VCENTER;
+        public const RecordType ID = RecordType.VCENTER;
 
         public bool vcenter; 
 
-        public VCENTER(IStreamReader reader, RecordNumber id, UInt16 length)
+        public VCENTER(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

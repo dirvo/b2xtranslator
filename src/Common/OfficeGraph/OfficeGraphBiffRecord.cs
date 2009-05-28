@@ -95,6 +95,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             }
         }
 
+        [Obsolete("Use OfficeGraphBiffRecordSequence.GetNextRecordNumber")]
         public static GraphRecordNumber GetNextRecordNumber(IStreamReader reader)
         {
             // read next id
@@ -106,6 +107,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeGraph
             return nextRecord;
         }
 
+        [Obsolete("Use OfficeGraphBiffRecordSequence.ReadRecord")]
         public static OfficeGraphBiffRecord ReadRecord(IStreamReader reader)
         {
             OfficeGraphBiffRecord result = null;

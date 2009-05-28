@@ -39,17 +39,17 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// This record stores the number of built-in function groups 
     /// (Financial, Math & Trig, Date & Time, and so on) in the current version of Excel.
     /// </summary>
-    [BiffRecordAttribute(RecordNumber.FNGROUPCOUNT)] 
+    [BiffRecordAttribute(RecordType.FNGROUPCOUNT)] 
     public class FNGROUPCOUNT : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.FNGROUPCOUNT;
+        public const RecordType ID = RecordType.FNGROUPCOUNT;
 
         /// <summary>
         /// Number of built-in function groups
         /// </summary>
         public UInt16 cFnGroup;
         
-        public FNGROUPCOUNT(IStreamReader reader, RecordNumber id, UInt16 length)
+        public FNGROUPCOUNT(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

@@ -33,10 +33,10 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.INTERFACEHDR)] 
+    [BiffRecordAttribute(RecordType.INTERFACEHDR)] 
     public class INTERFACEHDR : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.INTERFACEHDR;
+        public const RecordType ID = RecordType.INTERFACEHDR;
 
         /// <summary>
         /// Code page the file is saved in:
@@ -56,7 +56,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         /// <param name="reader"></param>
         /// <param name="id"></param>
         /// <param name="length"></param>
-        public INTERFACEHDR(IStreamReader reader, RecordNumber id, UInt16 length)
+        public INTERFACEHDR(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             Debug.Assert(this.Id == ID);

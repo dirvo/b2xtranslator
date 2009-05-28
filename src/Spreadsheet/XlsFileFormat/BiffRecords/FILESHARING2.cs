@@ -33,12 +33,12 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.FILESHARING2)] 
+    [BiffRecordAttribute(RecordType.FILESHARING2)] 
     public class FILESHARING2 : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.FILESHARING2;
+        public const RecordType ID = RecordType.FILESHARING2;
 
-        public FILESHARING2(IStreamReader reader, RecordNumber id, UInt16 length)
+        public FILESHARING2(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

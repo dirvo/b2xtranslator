@@ -49,10 +49,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
     /// 12 	colFirst 	2 	The first column of the range associated with the record 
     /// 14 	colLast 	2 	The last column of the range associated with the record 
     /// </summary>
-    [BiffRecordAttribute(RecordNumber.MERGECELLS)] 
+    [BiffRecordAttribute(RecordType.MERGECELLS)] 
     public class MERGECELLS : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.MERGECELLS;
+        public const RecordType ID = RecordType.MERGECELLS;
 
         /// <summary>
         /// List with datarecords 
@@ -70,7 +70,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
         /// <param name="reader"></param>
         /// <param name="id"></param>
         /// <param name="length"></param>
-        public MERGECELLS(IStreamReader reader, RecordNumber id, UInt16 length)
+        public MERGECELLS(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             this.mergeCellDataList = new List<MergeCellData>(); 

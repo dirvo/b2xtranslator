@@ -62,8 +62,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
             get { return xfCellStyleDataList; }
         }
 
-        protected List<STYLE> styleList;
-        public List<STYLE> StyleList
+        protected List<Style> styleList;
+        public List<Style> StyleList
         {
             get { return styleList; }
         }
@@ -95,7 +95,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
             this.formatDataList = new List<FormatData>();
             this.xfCellDataList = new List<XFData>();
             this.xfCellStyleDataList = new List<XFData>();
-            this.styleList = new List<STYLE>();
+            this.styleList = new List<Style>();
             this.fillDataList = new List<FillData>();
             this.fontDataList = new List<FontData>();
             this.borderDataList = new List<BorderData>();
@@ -115,7 +115,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
         /// Add the format biff record data to the style data model 
         /// </summary>
         /// <param name="formatbiffrec"></param>
-        public void addFormatValue(FORMAT formatbiffrec)
+        public void addFormatValue(Format formatbiffrec)
         { 
 
                 FormatData fd = new FormatData(formatbiffrec.ifmt, formatbiffrec.rgb);
@@ -231,7 +231,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
         /// Add the style biff record data to the style data model 
         /// </summary>
         /// <param name="formatbiffrec"></param>
-        public void addStyleValue(STYLE stylebiff)
+        public void addStyleValue(Style stylebiff)
         {
 
                 this.styleList.Add(stylebiff);
@@ -279,11 +279,11 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
         }
 
 
-        public void addFontData(FONT font)
+        public void addFontData(Font font)
         {
             FontData fontdata = new FontData();
             // fill the objectdatafields 
-            fontdata.fontName = font.rgch;
+            fontdata.fontName = font.fontName.Value;
             // size in twips
             fontdata.size = new TwipsValue(font.dyHeight);
 
@@ -295,14 +295,12 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
             fontdata.isItalic = font.fItalic;
             fontdata.isOutline = font.fOutline;
             fontdata.isShadow = font.fShadow;
-            fontdata.isStrike = font.fStrikeout;
-            if (font.bls == 0x2BC)
-            {
-                fontdata.isBold = true;
-            }
-
-            fontdata.uStyle = font.uls;
-            fontdata.vertAlign = font.sss;
+            fontdata.isStrike = font.fStrikeOut;
+            fontdata.isBold = font.bls == Font.FontWeight.Bold;
+            
+            // TODO avoid cast
+            fontdata.uStyle = (UnderlineStyle)font.uls;
+            fontdata.vertAlign = (SuperSubScriptStyle)font.sss;
 
             fontdata.color = font.icv; 
 

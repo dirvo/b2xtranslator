@@ -33,12 +33,12 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.SOUND)] 
+    [BiffRecordAttribute(RecordType.SOUND)] 
     public class SOUND : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.SOUND;
+        public const RecordType ID = RecordType.SOUND;
 
-        public SOUND(IStreamReader reader, RecordNumber id, UInt16 length)
+        public SOUND(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

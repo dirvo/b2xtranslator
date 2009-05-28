@@ -33,12 +33,12 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.HLINKTOOLTIP)] 
+    [BiffRecordAttribute(RecordType.HLINKTOOLTIP)] 
     public class HLINKTOOLTIP : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.HLINKTOOLTIP;
+        public const RecordType ID = RecordType.HLINKTOOLTIP;
 
-        public HLINKTOOLTIP(IStreamReader reader, RecordNumber id, UInt16 length)
+        public HLINKTOOLTIP(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

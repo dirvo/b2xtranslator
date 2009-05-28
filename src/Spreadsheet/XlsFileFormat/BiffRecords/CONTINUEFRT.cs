@@ -33,12 +33,12 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.CONTINUEFRT)] 
+    [BiffRecordAttribute(RecordType.CONTINUEFRT)] 
     public class CONTINUEFRT : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.CONTINUEFRT;
+        public const RecordType ID = RecordType.CONTINUEFRT;
 
-        public CONTINUEFRT(IStreamReader reader, RecordNumber id, UInt16 length)
+        public CONTINUEFRT(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

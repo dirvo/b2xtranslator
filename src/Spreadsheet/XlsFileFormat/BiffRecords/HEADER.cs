@@ -33,14 +33,14 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.HEADER)] 
+    [BiffRecordAttribute(RecordType.HEADER)] 
     public class HEADER : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.HEADER;
+        public const RecordType ID = RecordType.HEADER;
 
         public string headerText; 
 
-        public HEADER(IStreamReader reader, RecordNumber id, UInt16 length)
+        public HEADER(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated

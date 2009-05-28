@@ -33,12 +33,12 @@ using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.BiffRecords
 {
-    [BiffRecordAttribute(RecordNumber.CELLWATCH)] 
+    [BiffRecordAttribute(RecordType.CELLWATCH)] 
     public class CELLWATCH : BiffRecord
     {
-        public const RecordNumber ID = RecordNumber.CELLWATCH;
+        public const RecordType ID = RecordType.CELLWATCH;
 
-        public CELLWATCH(IStreamReader reader, RecordNumber id, UInt16 length)
+        public CELLWATCH(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated
