@@ -52,6 +52,7 @@
     <Compile Include="ChartSequences\ChartFormatsSequence.cs" />
     <Compile Include="ChartSequences\ChartSheetContentSequence.cs" />
     <Compile Include="ChartSequences\ChartSheetSequence.cs" />
+    <Compile Include="ChartSequences\CrtMlfrtSequence.cs" />
     <Compile Include="ChartSequences\CrtSequence.cs" />
     <Compile Include="ChartSequences\DataSheetSequence.cs" />
     <Compile Include="ChartSequences\DatSequence.cs" />
