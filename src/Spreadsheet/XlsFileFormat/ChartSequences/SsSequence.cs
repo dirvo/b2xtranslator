@@ -1,5 +1,6 @@
 ﻿using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using System.Collections.Generic;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
@@ -29,13 +30,17 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
         public AttachedLabel AttachedLabel;
 
+        public List<ShapePropsSequence> ShapePropsSequences;
+
+        public CrtMlfrtSequence CrtMlfrtSequence;
+
         public End End;
 
         public SsSequence(IStreamReader reader)
             : base(reader)
         {
             // SS = DataFormat Begin [Chart3DBarShape] [LineFormat AreaFormat PieFormat] 
-            // [SerFmt] [LineFormat] [AreaFormat] [GELFRAME] [MarkerFormat] [AttachedLabel] End
+            // [SerFmt] [LineFormat] [AreaFormat] [GELFRAME] [MarkerFormat] [AttachedLabel] *2SHAPEPROPS [CRTMLFRT] End
 
             // DataFormat
             this.DataFormat = (DataFormat)BiffRecord.ReadRecord(reader);
@@ -120,6 +125,19 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                 RecordType.AttachedLabel)
             {
                 this.AttachedLabel = (AttachedLabel)BiffRecord.ReadRecord(reader);
+            }
+
+            // *2SHAPEPROPS
+            this.ShapePropsSequences = new List<ShapePropsSequence>();
+            while(BiffRecord.GetNextRecordType(reader) == RecordType.ShapePropsStream)
+            {
+                this.ShapePropsSequences.Add(new ShapePropsSequence(reader));
+            }
+
+            // [CRTMLFRT]
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.CrtMlFrt)
+            {
+                this.CrtMlfrtSequence = new CrtMlfrtSequence(reader);
             }
 
             // End 

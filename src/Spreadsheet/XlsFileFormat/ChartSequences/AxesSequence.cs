@@ -34,7 +34,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
                 Begin begin = (Begin)BiffRecord.ReadRecord(reader);
 
-                if (BiffRecord.GetNextRecordType(reader) == RecordType.CatSerRange)
+                if (BiffRecord.GetNextRecordType(reader) == RecordType.CatSerRange
+                    || BiffRecord.GetNextRecordType(reader) == RecordType.AxcExt)
                 {
                     reader.BaseStream.Position = position;
 

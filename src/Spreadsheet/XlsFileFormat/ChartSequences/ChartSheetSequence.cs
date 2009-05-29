@@ -17,7 +17,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             this.BOF = (BOF)BiffRecord.ReadRecord(reader);
 
             // [ChartFrtInfo] (not specified)
-            if (BiffRecord.GetNextRecordType(reader) == RecordType.WriteProtect)
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.ChartFrtInfo)
             {
                 this.ChartFrtInfo = (ChartFrtInfo)BiffRecord.ReadRecord(reader);
             }

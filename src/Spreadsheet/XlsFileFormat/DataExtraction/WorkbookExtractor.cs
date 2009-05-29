@@ -78,8 +78,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         {
             BiffHeader bh;
             bool firstBOF = true; 
-            try
-            {
+            //try
+            //{
                 while (this.StreamReader.BaseStream.Position < this.StreamReader.BaseStream.Length)
                 {
                     bh.id = (RecordType)this.StreamReader.ReadUInt16();
@@ -300,12 +300,12 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                             break;
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                TraceLogger.Error(ex.Message);
-                TraceLogger.Debug(ex.ToString());
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    TraceLogger.Error(ex.Message);
+            //    TraceLogger.Debug(ex.ToString());
+            //}
         }
 
         /// <summary>

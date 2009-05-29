@@ -95,15 +95,28 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             }
         }
 
+
         public static RecordType GetNextRecordType(IStreamReader reader)
         {
-            // read next id
+            // read type of the next record
             RecordType nextRecord = (RecordType)reader.ReadUInt16();
-
-            // seek back
-            reader.BaseStream.Seek(-sizeof(UInt16), System.IO.SeekOrigin.Current);
-
-            return nextRecord;
+            
+            // skip leading StartBlock/EndBlock records
+            if (nextRecord == RecordType.StartBlock
+                || nextRecord == RecordType.EndBlock)
+            {
+                // skip the body of the record
+                UInt16 size = reader.ReadUInt16();
+                reader.ReadBytes(size);
+                // get the type of the next record
+                return GetNextRecordType(reader);
+            }
+            else
+            {
+                // seek back to the begin of the current record
+                reader.BaseStream.Seek(-sizeof(UInt16), System.IO.SeekOrigin.Current);
+                return nextRecord;
+            }
         }
 
         public static BiffRecord ReadRecord(IStreamReader reader)
@@ -113,6 +126,18 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             {
                 UInt16 id = reader.ReadUInt16();
                 UInt16 size = reader.ReadUInt16();
+
+                // skip leading StartBlock/EndBlock records
+                if ((RecordType)id == RecordType.StartBlock ||
+                    (RecordType)id == RecordType.EndBlock)
+                {
+                    // skip the body of this record
+                    reader.ReadBytes(size);
+
+                    // get the next record
+                    return ReadRecord(reader);
+                }
+
                 Type cls;
                 if (TypeToRecordClassMapping.TryGetValue(id, out cls))
                 {

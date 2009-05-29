@@ -67,6 +67,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             }
             
             //*4SHAPEPROPS 
+            this.ShapePropsSequences = new List<ShapePropsSequence>();
             while (BiffRecord.GetNextRecordType(reader) == RecordType.ShapePropsStream)
             {
                 this.ShapePropsSequences.Add(new ShapePropsSequence(reader));

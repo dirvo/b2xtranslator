@@ -72,7 +72,6 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             // *(LegendException [Begin ATTACHEDLABEL End]) 
             // End
 
-
             // Series 
             this.Series = (Series)BiffRecord.ReadRecord(reader);
 

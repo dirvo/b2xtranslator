@@ -42,7 +42,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures
         /// 
         /// MUST be identical to the record type identifier of the containing record.
         /// </summary>
-        public UInt16 rt;
+        public RecordType rt;
 
         /// <summary>
         /// A FrtFlags that specifies attributes for this record. 
@@ -53,7 +53,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures
 
         public FrtHeader(IStreamReader reader)
         {
-            this.rt = reader.ReadUInt16();
+            this.rt = (RecordType)reader.ReadUInt16();
             this.grbitFrt = reader.ReadUInt16();
 
             // ignore remaing record data

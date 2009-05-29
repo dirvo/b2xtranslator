@@ -27,6 +27,7 @@
 using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
@@ -35,6 +36,31 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
     {
         public const RecordType ID = RecordType.ShapePropsStream;
 
+        public FrtHeader frtHeader;
+
+        /// <summary>
+        /// An unsigned integer that specifies the chart element that the shape 
+        /// formatting properties in this record apply to.
+        /// </summary>
+        public UInt16 wObjContext;
+
+        /// <summary>
+        /// An unsigned integer that specifies the checksum of the shape formatting properties related to this record.
+        /// </summary>
+        public UInt32 dwChecksum;
+
+        /// <summary>
+        /// An unsigned integer that specifies the length of the character array in the rgb field.
+        /// </summary>
+        public UInt32 cb;
+
+        /// <summary>
+        /// An array of ANSI characters, whose length is specified by cb, 
+        /// that contains the XML representation of the shape formatting properties 
+        /// as defined in [ECMA-376] Part 4, section 5.7.2.198.
+        /// </summary>
+        public byte[] rgb;
+
         public ShapePropsStream(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
@@ -42,7 +68,12 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            this.frtHeader = new FrtHeader(reader);
+            this.wObjContext = reader.ReadUInt16();
+            reader.ReadBytes(2); //unused
+            this.dwChecksum = reader.ReadUInt32();
+            this.cb = reader.ReadUInt32();
+            this.rgb = reader.ReadBytes((int)cb);
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

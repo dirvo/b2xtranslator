@@ -19,11 +19,14 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
         /// </summary>
         public UInt32 cb;
 
+        public XmlTkChain xmltkChain;
+
         public CrtMlFrt(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             this.frtHeader = new FrtHeader(reader);
             this.cb = reader.ReadUInt32();
+            this.xmltkChain = new XmlTkChain(reader);
         }
     }
 }

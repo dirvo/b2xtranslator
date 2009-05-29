@@ -36,9 +36,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             BiffHeader bh, latestbiff;
             BOF firstBOF = null;
             
-
-            try
-            {
+            //try
+            //{
                 while (this.StreamReader.BaseStream.Position < this.StreamReader.BaseStream.Length)
                 {
                     bh.id = (RecordType)this.StreamReader.ReadUInt16();
@@ -181,7 +180,6 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                         long oldStreamPos = this.StreamReader.BaseStream.Position; 
                         try
                         {
-
                             HLink hlink = new HLink(this.StreamReader, bh.id, bh.length);
                             bsd.addHyperLinkData(hlink); 
                         }
@@ -204,13 +202,13 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
                     latestbiff = bh; 
                 }
-            }
-            catch (Exception ex)
-            {
-                TraceLogger.Error(ex.Message);
-                TraceLogger.Error(ex.StackTrace); 
-                TraceLogger.Debug(ex.ToString());
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    TraceLogger.Error(ex.Message);
+            //    TraceLogger.Error(ex.StackTrace); 
+            //    TraceLogger.Debug(ex.ToString());
+            //}
         }
 
         /// <summary>
@@ -220,20 +218,20 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// </summary>
         public void readUnkownFile(){
             BiffHeader bh;
-            try
-            {
+            //try
+            //{
                 do
                 {
                     bh.id = (RecordType)this.StreamReader.ReadUInt16();
                     bh.length = this.StreamReader.ReadUInt16();
                     this.StreamReader.ReadBytes(bh.length);
                 } while (bh.id != RecordType.EOF); 
-            }
-            catch (Exception ex)
-            {
-                TraceLogger.Error(ex.Message);
-                TraceLogger.Debug(ex.ToString());
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    TraceLogger.Error(ex.Message);
+            //    TraceLogger.Debug(ex.ToString());
+            //}
         }
     }
 }

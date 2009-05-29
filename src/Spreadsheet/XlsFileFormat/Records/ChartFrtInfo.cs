@@ -31,6 +31,7 @@ using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
@@ -70,7 +71,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
         
         public const RecordType ID = RecordType.ChartFrtInfo;
 
-        public FrtHeader frtHeaderOld;
+        public FrtHeaderOld frtHeaderOld;
 
         public OriginatorVersion verOriginator;
 
@@ -87,7 +88,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            this.frtHeaderOld = new FrtHeader(reader);
+            this.frtHeaderOld = new FrtHeaderOld(reader);
             this.verOriginator = (OriginatorVersion)reader.ReadByte();
             this.verWriter = (WriterVersion)reader.ReadByte();
             this.cCFRTID = reader.ReadUInt16();
