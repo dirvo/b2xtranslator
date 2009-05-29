@@ -183,10 +183,21 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             
             // *CUSTOMVIEW 
             this.CustomViewSequences = new List<CustomViewSequence>();
-            while (BiffRecord.GetNextRecordType(reader) == RecordType.UserSViewBegin)
+
+            // CUSTOMVIEW seems to be totally optional, 
+            // so check for the existence of the next sequences
+            while (BiffRecord.GetNextRecordType(reader) != RecordType.CodeName &&
+                BiffRecord.GetNextRecordType(reader) != RecordType.CrtMlFrt &&
+                BiffRecord.GetNextRecordType(reader) != RecordType.EOF)
             {
                 this.CustomViewSequences.Add(new CustomViewSequence(reader));
             }
+
+            //this.CustomViewSequences = new List<CustomViewSequence>();
+            //while (BiffRecord.GetNextRecordType(reader) == RecordType.UserSViewBegin)
+            //{
+            //    this.CustomViewSequences.Add(new CustomViewSequence(reader));
+            //}
             
             // [CodeName] 
             if (BiffRecord.GetNextRecordType(reader) == RecordType.CodeName)

@@ -24,9 +24,14 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
         public CrtMlFrt(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
+            long pos = reader.BaseStream.Position;
+
             this.frtHeader = new FrtHeader(reader);
             this.cb = reader.ReadUInt32();
             this.xmltkChain = new XmlTkChain(reader);
+            reader.ReadBytes(4); // unused
+
+            reader.BaseStream.Position = pos + length;
         }
     }
 }

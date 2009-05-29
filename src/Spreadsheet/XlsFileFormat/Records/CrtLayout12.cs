@@ -122,10 +122,13 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             UInt16 flags = reader.ReadUInt16();
             this.fLayoutTargetInner = Utils.BitmaskToBool(flags, 0x1);
             this.autolayouttype = (AutoLayoutType)Utils.BitmaskToInt(flags, 0xE);
-            this.xTL = reader.ReadInt16();
-            this.yTL = reader.ReadInt16();
-            this.xBR = reader.ReadInt16();
-            this.yBR = reader.ReadInt16();
+            if (id == RecordType.CrtLayout12A)
+            {
+                this.xTL = reader.ReadInt16();
+                this.yTL = reader.ReadInt16();
+                this.xBR = reader.ReadInt16();
+                this.yBR = reader.ReadInt16();
+            }
             this.wXMode = (CrtLayout12Mode)reader.ReadUInt16();
             this.wYMode = (CrtLayout12Mode)reader.ReadUInt16();
             this.wWidthMode = (CrtLayout12Mode)reader.ReadUInt16();

@@ -146,7 +146,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             }
 
             // [TEXTPROPS]
-            if (BiffRecord.GetNextRecordType(reader) == RecordType.RichTextStream)
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.RichTextStream
+                || BiffRecord.GetNextRecordType(reader) == RecordType.TextPropsStream)
             {
                 this.TextPropsSequence = new TextPropsSequence(reader);
             }

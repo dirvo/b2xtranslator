@@ -127,10 +127,16 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             this.cchFooterEven = reader.ReadUInt16();
             this.cchHeaderFirst = reader.ReadUInt16();
             this.cchFooterFirst = reader.ReadUInt16();
-            this.strHeaderEven = new XLUnicodeString(reader).Value;
-            this.strFooterEven = new XLUnicodeString(reader).Value;
-            this.strHeaderFirst = new XLUnicodeString(reader).Value;
-            this.strFooterFirst = new XLUnicodeString(reader).Value;
+
+            byte[] strHeaderEvenBytes = reader.ReadBytes(cchHeaderEven);
+            byte[] strFooterEvenBytes = reader.ReadBytes(cchFooterEven);
+            byte[] strHeaderFirstBytes = reader.ReadBytes(cchHeaderFirst);
+            byte[] strFooterFirstBytes = reader.ReadBytes(cchFooterFirst);
+
+            //this.strHeaderEven = new XLUnicodeString(reader).Value;
+            //this.strFooterEven = new XLUnicodeString(reader).Value;
+            //this.strHeaderFirst = new XLUnicodeString(reader).Value;
+            //this.strFooterFirst = new XLUnicodeString(reader).Value;
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 

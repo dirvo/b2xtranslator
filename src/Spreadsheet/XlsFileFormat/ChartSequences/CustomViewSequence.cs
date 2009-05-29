@@ -51,8 +51,15 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             //    [Footer] [HCenter] [VCenter] [LeftMargin] [RightMargin] [TopMargin] [BottomMargin] 
             //    [Pls] [Setup] [PrintSize] [HeaderFooter] [AUTOFILTER] UserSViewEnd
 
+
+            // NOTE: UserSViewBegin and UserSViewEnd seem to be optional to!
+
+
             // UserSViewBegin
-            this.UserSViewBegin = (UserSViewBegin)BiffRecord.ReadRecord(reader);
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.UserSViewBegin)
+            {
+                this.UserSViewBegin = (UserSViewBegin)BiffRecord.ReadRecord(reader);
+            }
 
             // *Selection
             this.Selections = new List<Selection>();
@@ -152,7 +159,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             }
 
             // UserSViewEnd
-            this.UserSViewEnd = (UserSViewEnd)BiffRecord.ReadRecord(reader);
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.UserSViewEnd)
+            {
+                this.UserSViewEnd = (UserSViewEnd)BiffRecord.ReadRecord(reader);
+            }
         }
     }
 }

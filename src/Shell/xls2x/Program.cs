@@ -113,9 +113,7 @@ namespace DIaLOGIKa.b2xtranslator.xls2x
                         DateTime end = DateTime.Now;
                         TimeSpan diff = end.Subtract(start);
                         TraceLogger.Info("Conversion of file {0} finished in {1} seconds", InputFile, diff.TotalSeconds.ToString(CultureInfo.InvariantCulture));
-                
                     }
-
                 }
                 catch (DirectoryNotFoundException ex)
                 {
