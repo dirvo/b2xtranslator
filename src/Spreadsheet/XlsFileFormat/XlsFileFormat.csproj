@@ -509,6 +509,7 @@
     <Compile Include="Records\XL5MODIFY.cs" />
     <Compile Include="Records\YMult.cs" />
     <Compile Include="RecordType.cs" />
+    <Compile Include="Structures\CFrtId.cs" />
     <Compile Include="Structures\ChartParsedFormula.cs" />
     <Compile Include="Structures\DateUnit.cs" />
     <Compile Include="Structures\PaneType.cs" />

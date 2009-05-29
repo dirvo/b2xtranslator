@@ -30,6 +30,7 @@
 using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
@@ -53,7 +54,31 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
     [BiffRecordAttribute(RecordType.ChartFrtInfo)]
     public class ChartFrtInfo : BiffRecord
     {
+        public enum OriginatorVersion
+        {
+           Excel2000  = 0x9,
+           Excel2002Excel2003  = 0xA,
+           Excel2007  = 0xC
+        }
+
+        public enum WriterVersion
+        {
+            Excel2000 = 0x9,
+            Excel2002Excel2003 = 0xA,
+            Excel2007 = 0xC
+        }
+        
         public const RecordType ID = RecordType.ChartFrtInfo;
+
+        public FrtHeader frtHeaderOld;
+
+        public OriginatorVersion verOriginator;
+
+        public WriterVersion verWriter;
+
+        public UInt16 cCFRTID;
+
+        public CFrtId[] rgCFRTID;
 
         public ChartFrtInfo(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
@@ -62,7 +87,15 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            this.frtHeaderOld = new FrtHeader(reader);
+            this.verOriginator = (OriginatorVersion)reader.ReadByte();
+            this.verWriter = (WriterVersion)reader.ReadByte();
+            this.cCFRTID = reader.ReadUInt16();
+            this.rgCFRTID = new CFrtId[cCFRTID];
+            for (int i = 0; i < this.cCFRTID; i++)
+            {
+                this.rgCFRTID[i] = new CFrtId(reader);
+            }
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
