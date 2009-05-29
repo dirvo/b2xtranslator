@@ -102,17 +102,19 @@ namespace DIaLOGIKa.b2xtranslator.xls2x
 
                         OpenXmlPackage.DocumentType outType = Converter.DetectOutputType(xlsDoc);
                         string conformOutputFile = Converter.GetConformFilename(ChoosenOutputFile, outType);
-                        SpreadsheetDocument spreadx = SpreadsheetDocument.Create(conformOutputFile, outType);
+                        using (SpreadsheetDocument spreadx = SpreadsheetDocument.Create(conformOutputFile, outType))
+                        {
 
-                        //start time
-                        DateTime start = DateTime.Now;
-                        TraceLogger.Info("Converting file {0} into {1}", InputFile, conformOutputFile);
+                            //start time
+                            DateTime start = DateTime.Now;
+                            TraceLogger.Info("Converting file {0} into {1}", InputFile, conformOutputFile);
 
-                        Converter.Convert(xlsDoc, spreadx);
+                            Converter.Convert(xlsDoc, spreadx);
 
-                        DateTime end = DateTime.Now;
-                        TimeSpan diff = end.Subtract(start);
-                        TraceLogger.Info("Conversion of file {0} finished in {1} seconds", InputFile, diff.TotalSeconds.ToString(CultureInfo.InvariantCulture));
+                            DateTime end = DateTime.Now;
+                            TimeSpan diff = end.Subtract(start);
+                            TraceLogger.Info("Conversion of file {0} finished in {1} seconds", InputFile, diff.TotalSeconds.ToString(CultureInfo.InvariantCulture));
+                        }
                     }
                 }
                 catch (DirectoryNotFoundException ex)

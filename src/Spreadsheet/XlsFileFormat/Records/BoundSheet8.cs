@@ -70,12 +70,12 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             /// <summary>
             /// Excel 4.0 macro sheet
             /// </summary>
-            MacroSheet = 0x0001,
+            Macrosheet = 0x0001,
 
             /// <summary>
             /// Chart sheet
             /// </summary>
-            ChartSheet = 0x0002,
+            Chartsheet = 0x0002,
 
             /// <summary>
             /// Visual Basic module

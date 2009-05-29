@@ -60,7 +60,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         {
             xlsContext.CurrentSheet = bsd;
             _writer.WriteStartDocument();
-            _writer.WriteStartElement("worksheet", OpenXmlNamespaces.WorkBookML);
+            _writer.WriteStartElement("worksheet", OpenXmlNamespaces.SpreadsheetML);
             if (bsd.emtpyWorksheet)
             {
                 _writer.WriteStartElement("sheetData");

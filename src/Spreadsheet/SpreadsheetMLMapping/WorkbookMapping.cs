@@ -56,7 +56,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         public void Apply(WorkBookData bsd)
         {
             _writer.WriteStartDocument();
-            _writer.WriteStartElement("workbook", OpenXmlNamespaces.WorkBookML);
+            _writer.WriteStartElement("workbook", OpenXmlNamespaces.SpreadsheetML);
             _writer.WriteAttributeString("xmlns", "r", "", OpenXmlNamespaces.Relationships); 
             _writer.WriteStartElement("sheets");
 

@@ -34,20 +34,22 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
 {
     public class WorkbookPart : OpenXmlPart
     {
-        private UInt16 WorksheetNumber;
-        private UInt16 ExternalLinkNumber;
-        protected WorksheetPart workSheetPart;
-        protected SharedStringPart sharedStringPart;
-        protected ExternalLinkPart externalLinkPart;
+        private int _worksheetNumber;
+        private int _chartsheetNumber;
+        private int _externalLinkNumber;
+        protected WorksheetPart _workSheetPart;
+        protected SharedStringPart _sharedStringPart;
+        protected ExternalLinkPart _externalLinkPart;
         protected VbaProjectPart _vbaProjectPart;
-        protected StylesPart stylesPart;
+        protected StylesPart _stylesPart;
         private string _type;
 
         public WorkbookPart(OpenXmlPartContainer parent, string contentType)
             : base(parent, 0)
         {
-            this.WorksheetNumber = 1;
-            this.ExternalLinkNumber = 1;
+            this._worksheetNumber = 1;
+            this._chartsheetNumber = 1;
+            this._externalLinkNumber = 1;
             this._type = contentType;
         }
 
@@ -64,14 +66,19 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
         }
 
         /// <summary>
-        /// returns the worksheet part from the new excel document 
+        /// returns the newly added worksheet part from the new excel document 
         /// </summary>
         /// <returns></returns>
         public WorksheetPart AddWorksheetPart()
         {
-            this.workSheetPart = new WorksheetPart(this, this.WorksheetNumber);
-            this.WorksheetNumber++;
-            return this.AddPart(this.workSheetPart);
+            this._workSheetPart = new WorksheetPart(this, this._worksheetNumber);
+            this._worksheetNumber++;
+            return this.AddPart(this._workSheetPart);
+        }
+
+        public ChartsheetPart AddChartsheetPart()
+        {
+            return this.AddPart(new ChartsheetPart(this, this._chartsheetNumber++));
         }
 
         /// <summary>
@@ -95,7 +102,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
         /// <returns></returns>
         public WorksheetPart GetWorksheetPart()
         {
-            return this.workSheetPart; 
+            return this._workSheetPart; 
         }
 
         /// <summary>
@@ -104,9 +111,9 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
         /// <returns></returns>
         public ExternalLinkPart AddExternalLinkPart()
         {
-            this.externalLinkPart = new ExternalLinkPart(this, this.ExternalLinkNumber);
-            this.ExternalLinkNumber++;
-            return this.AddPart(this.externalLinkPart);
+            this._externalLinkPart = new ExternalLinkPart(this, this._externalLinkNumber);
+            this._externalLinkNumber++;
+            return this.AddPart(this._externalLinkPart);
         }
 
         /// <summary>
@@ -115,7 +122,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
         /// <returns></returns>
         public ExternalLinkPart GetExternalLinkPart()
         {
-            return this.externalLinkPart;
+            return this._externalLinkPart;
         }
 
         public override string TargetName { get { return "workbook"; } }
@@ -128,8 +135,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
         /// <returns></returns>
         public SharedStringPart AddSharedStringPart()
         {
-            this.sharedStringPart = new SharedStringPart(this);
-            return this.AddPart(this.sharedStringPart);
+            this._sharedStringPart = new SharedStringPart(this);
+            return this.AddPart(this._sharedStringPart);
         }
 
         /// <summary>
@@ -138,8 +145,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
         /// <returns></returns>
         public StylesPart AddStylesPart()
         {
-            this.stylesPart = new StylesPart(this);
-            return this.AddPart(this.stylesPart);
+            this._stylesPart = new StylesPart(this);
+            return this.AddPart(this._stylesPart);
         }
 
     }

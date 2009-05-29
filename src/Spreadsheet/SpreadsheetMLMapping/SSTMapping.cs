@@ -60,7 +60,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         public void Apply(SSTData sstData)
         {
             _writer.WriteStartDocument();
-            _writer.WriteStartElement("sst", OpenXmlNamespaces.SharedStringML);
+            _writer.WriteStartElement("sst", OpenXmlNamespaces.SpreadsheetML);
             // count="x" uniqueCount="y" 
             _writer.WriteAttributeString("count", sstData.cstTotal.ToString());
             _writer.WriteAttributeString("uniqueCount", sstData.cstUnique.ToString());

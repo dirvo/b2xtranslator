@@ -65,7 +65,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             
             
             _writer.WriteStartDocument();
-            _writer.WriteStartElement("externalLink", OpenXmlNamespaces.WorkBookML);
+            _writer.WriteStartElement("externalLink", OpenXmlNamespaces.SpreadsheetML);
 
             _writer.WriteStartElement("externalBook");
             _writer.WriteAttributeString("r", "id", OpenXmlNamespaces.Relationships, er.Id.ToString());

@@ -27,17 +27,46 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
  */
 
-using System;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
-namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
-{
-    public class ChartSheetData : SheetData
-    {
-        public ChartSheetSequence ChartSheetSequence;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
+using System.Xml;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 
-        public override void Convert<T>(T mapping)
+namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
+{
+    public class ChartsheetMapping : AbstractOpenXmlMapping,
+          IMapping<ChartSheetData>
+    {
+        ExcelContext _xlsContext;
+        ChartsheetPart _chartsheetPart;
+
+        /// <summary>
+        /// Ctor 
+        /// </summary>
+        /// <param name="xlsContext">The excel context object</param>
+        public ChartsheetMapping(ExcelContext xlsContext, ChartsheetPart targetPart)
+            : base(XmlWriter.Create(targetPart.GetStream(), xlsContext.WriterSettings))
         {
-            ((IMapping<ChartSheetData>)mapping).Apply(this);
+            this._xlsContext = xlsContext;
+            this._chartsheetPart = targetPart; 
+
+        }
+
+        /// <summary>
+        /// The overload apply method 
+        /// Creates the Worksheet xml document 
+        /// </summary>
+        /// <param name="bsd">WorkSheetData</param>
+        public void Apply(ChartSheetData csd)
+        {
+            _writer.WriteStartDocument();
+            _writer.WriteStartElement("chartsheet", OpenXmlNamespaces.SpreadsheetML);
+
+            _writer.WriteEndElement();
+            _writer.WriteEndDocument();
+
+            _writer.Flush();
         }
     }
 }

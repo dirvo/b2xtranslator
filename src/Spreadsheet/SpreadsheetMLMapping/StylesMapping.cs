@@ -58,7 +58,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         public void Apply(StyleData sd)
         {
             _writer.WriteStartDocument();
-            _writer.WriteStartElement("styleSheet", OpenXmlNamespaces.StylesML);
+            _writer.WriteStartElement("styleSheet", OpenXmlNamespaces.SpreadsheetML);
 
 
             // Format mapping 

@@ -83,57 +83,64 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
         public static void Convert(XlsDocument xls, SpreadsheetDocument xlsx)
         {
-            using (xlsx)
+            //Setup the writer
+            XmlWriterSettings xws = new XmlWriterSettings();
+            xws.CloseOutput = true;
+            xws.Encoding = Encoding.UTF8;
+            xws.ConformanceLevel = ConformanceLevel.Document;
+
+            ExcelContext xlsContext = new ExcelContext(xls, xws);
+            xlsContext.SpreadDoc = xlsx;
+
+            // convert the shared string table
+            if (xls.WorkBookData.SstData != null)
             {
-                //Setup the writer
-                XmlWriterSettings xws = new XmlWriterSettings();
-                xws.CloseOutput = true;
-                xws.Encoding = Encoding.UTF8;
-                xws.ConformanceLevel = ConformanceLevel.Document;
+                xls.WorkBookData.SstData.Convert(new SSTMapping(xlsContext));
+            }
 
-                ExcelContext xlsContext = new ExcelContext(xls, xws);
-                xlsContext.SpreadDoc = xlsx;
+            // create the styles.xml
+            if (xls.WorkBookData.styleData != null)
+            {
+                xls.WorkBookData.styleData.Convert(new StylesMapping(xlsContext));
+            }
 
-                // Converts the sst data !!!
-                if (xls.WorkBookData.SstData != null)
-                    xls.WorkBookData.SstData.Convert(new SSTMapping(xlsContext));
-
-                // creates the styles.xml
-                if (xls.WorkBookData.styleData != null)
-                    xls.WorkBookData.styleData.Convert(new StylesMapping(xlsContext));
-
-                // creates the Spreadsheets
-                foreach (SheetData var in xls.WorkBookData.boundSheetDataList)
+            // create the sheets
+            foreach (SheetData sheet in xls.WorkBookData.boundSheetDataList)
+            {
+                switch (sheet.boundsheetRecord.dt)
                 {
-                    if (var.boundsheetRecord.dt == BoundSheet8.SheetType.Worksheet)
-                    {
-                        var.Convert(new WorksheetMapping(xlsContext));
-                    }
-                    else
-                    {
-                        var.emtpyWorksheet = true;
-                        var.Convert(new WorksheetMapping(xlsContext));
-                    }
-                }
-                int sbdnumber = 1;
-                foreach (SupBookData sbd in xls.WorkBookData.supBookDataList)
-                {
-                    if (!sbd.SelfRef)
-                    {
-                        sbd.Number = sbdnumber;
-                        sbdnumber++;
-                        sbd.Convert(new ExternalLinkMapping(xlsContext));
-                    }
-                }
+                    case BoundSheet8.SheetType.Worksheet:
+                        sheet.Convert(new WorksheetMapping(xlsContext));
+                        break;
 
-                xls.WorkBookData.Convert(new WorkbookMapping(xlsContext));
+                    case BoundSheet8.SheetType.Chartsheet:
+                        sheet.Convert(new ChartsheetMapping(xlsContext, xlsContext.SpreadDoc.WorkbookPart.AddChartsheetPart()));
+                        break;
 
-                // convert the macros
-                if (xlsx.DocumentType == OpenXmlPackage.DocumentType.MacroEnabledDocument ||
-                    xlsx.DocumentType == OpenXmlPackage.DocumentType.MacroEnabledTemplate)
-                {
-                    xls.Convert(new MacroBinaryMapping(xlsContext));
+                    default:
+                        sheet.emtpyWorksheet = true;
+                        sheet.Convert(new WorksheetMapping(xlsContext));
+                        break;
                 }
+            }
+            int sbdnumber = 1;
+            foreach (SupBookData sbd in xls.WorkBookData.supBookDataList)
+            {
+                if (!sbd.SelfRef)
+                {
+                    sbd.Number = sbdnumber;
+                    sbdnumber++;
+                    sbd.Convert(new ExternalLinkMapping(xlsContext));
+                }
+            }
+
+            xls.WorkBookData.Convert(new WorkbookMapping(xlsContext));
+
+            // convert the macros
+            if (xlsx.DocumentType == OpenXmlPackage.DocumentType.MacroEnabledDocument ||
+                xlsx.DocumentType == OpenXmlPackage.DocumentType.MacroEnabledTemplate)
+            {
+                xls.Convert(new MacroBinaryMapping(xlsContext));
             }
         }
     }

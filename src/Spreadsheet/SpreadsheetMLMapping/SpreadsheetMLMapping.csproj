@@ -38,6 +38,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChartsheetMapping.cs" />
     <Compile Include="Converter.cs" />
     <Compile Include="ExcelContext.cs" />
     <Compile Include="ExcelMapping.cs" />

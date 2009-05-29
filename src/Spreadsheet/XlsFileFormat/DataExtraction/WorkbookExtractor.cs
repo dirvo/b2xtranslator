@@ -107,7 +107,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                                         this.StreamReader.BaseStream.Seek(oldOffset, SeekOrigin.Begin);
                                         break;
 
-                                    case BoundSheet8.SheetType.ChartSheet:
+                                    case BoundSheet8.SheetType.Chartsheet:
                                         ChartSheetData chartSheetData = new ChartSheetData();
 
                                         this.oldOffset = this.StreamReader.BaseStream.Position;

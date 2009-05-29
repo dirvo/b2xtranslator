@@ -48,8 +48,9 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 
         public const string OleObject = "application/vnd.openxmlformats-officedocument.oleObject";
         public const string Vml = "application/vnd.openxmlformats-officedocument.vmlDrawing";
+        public const string Drawing = "application/vnd.openxmlformats-officedocument.drawing+xml";
         public const string Emf = "image/x-emf";
-
+        
         public const string MSExcel = "application/vnd.ms-excel";
         public const string MSWord = "application/msword";
         public const string MSPowerpoint = "application/vnd.ms-powerpoint";
@@ -88,6 +89,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
        
         public const string Styles = "application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml";
         public const string Worksheet = "application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml";
+        public const string Chartsheet = "application/vnd.openxmlformats-officedocument.spreadsheetml.chartsheet+xml";
         public const string SharedStrings = "application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml";
         public const string Connections = "application/vnd.openxmlformats-officedocument.spreadsheetml.connections+xml";
         public const string ExternalLink = "application/vnd.openxmlformats-officedocument.spreadsheetml.externalLink+xml"; 
@@ -108,6 +110,12 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string ViewProps = "application/vnd.openxmlformats-officedocument.presentationml.viewProps+xml";
         public const string PresProps = "application/vnd.openxmlformats-officedocument.presentationml.presProps+xml";
         public const string ExtendedProps = "application/vnd.openxmlformats-officedocument.extended-properties+xml";
+    }
+
+    public static class DrawingMLContentTypes
+    {
+        // DrawingML content types
+        public const string Chart = "application/vnd.openxmlformats-officedocument.drawingml.chart+xml";
     }
 
     public static class MicrosoftWordContentTypes
@@ -140,10 +148,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string docPropsVTypes = "http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes";
 
         // SpreadsheetML Namespaces
-        public const string SharedStringML = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
-        public const string WorkBookML = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
-        public const string StylesML = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"; 
-
+        public const string SpreadsheetML = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        
         //Office
         public const string Office = "urn:schemas-microsoft-com:office:office";
         public const string OfficeWord = "urn:schemas-microsoft-com:office:word";
@@ -190,7 +196,6 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string HandoutMaster = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/handoutMaster";
 
         // SpreadsheetML
-
         public const string WorkSheet = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet";
         public const string sharedStrings = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings";
         public const string externalLink = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLink";
