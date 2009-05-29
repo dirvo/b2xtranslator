@@ -198,6 +198,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
 
+            bool inChartSubstream = (length == 10);
+
             // initialize class members from stream
             UInt16 flags = reader.ReadUInt16();
             this.fDspFmlaRt = Utils.BitmaskToBool(flags, 0x0001);
@@ -215,11 +217,14 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 
             // TODO: find a generic solution for the problem that this record is different depending on the surrounding stream
 
-            // This field is undefined and MUST be ignored if this record is contained in a chart sheet substream.
-            //this.rwTop = reader.ReadUInt16();
+            if (!inChartSubstream)
+            {
+                // This field is undefined and MUST be ignored if this record is contained in a chart sheet substream.
+                this.rwTop = reader.ReadUInt16();
 
-            // This field is undefined and MUST be ignored if this record is contained in a chart sheet substream.
-            //this.colLeft = reader.ReadUInt16();
+                // This field is undefined and MUST be ignored if this record is contained in a chart sheet substream.
+                this.colLeft = reader.ReadUInt16();
+            }
 
 
             this.icvHdr = reader.ReadUInt16();
@@ -227,8 +232,11 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             this.wScaleSLV = reader.ReadUInt16();
             this.wScaleNormal = reader.ReadUInt16();
 
-            // These fields are undefined and MUST be ignored if this record is contained in a chart sheet substream.
-            //reader.ReadBytes(4);
+            if (!inChartSubstream)
+            {
+                // These fields are undefined and MUST be ignored if this record is contained in a chart sheet substream.
+                reader.ReadBytes(4);
+            }
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
