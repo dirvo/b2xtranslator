@@ -186,16 +186,24 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         private int GetRowSpanCount(ChildAnchor anch, int row)
         {
-            int count = 0;
-            int availableHeight = anch.rcgBounds.Height;
-
-            while (availableHeight > 0)
+            try
             {
-                availableHeight -= RowHeights[row + count];
-                count++;
-            }
+                int count = 0;
+                int availableHeight = anch.rcgBounds.Height;
 
-            return count;
+                while (availableHeight > 0 && RowHeights.Count > row + count)
+                {
+                    availableHeight -= RowHeights[row + count];
+                    if (availableHeight >= 0) count++;
+                }
+
+                return count;
+            }
+            catch (Exception)
+            {                
+                throw;
+            }
+           
         }
 
         public void ApplyTable(GroupContainer group, uint TABLEFLAGS)
@@ -218,7 +226,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         Int32 height = BitConverter.ToInt32(data, 6 + i * cbElem);
                         RowHeights.Add(height);
                     }
-                }
+                }                
             }
 
             List<ShapeContainer> Cells = new List<ShapeContainer>();
@@ -291,7 +299,81 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteAttributeString("noGrp", "1");
             _writer.WriteEndElement(); //graphicFrameLocks
             _writer.WriteEndElement(); //cNvGraphicFramePr
-            _writer.WriteElementString("p", "nvPr", OpenXmlNamespaces.PresentationML, "");
+
+            _writer.WriteStartElement("p", "nvPr", OpenXmlNamespaces.PresentationML);
+
+            if (Tools.Utils.BitmaskToBool(TABLEFLAGS, 0x1 << 1))
+            {
+                OEPlaceHolderAtom placeholder = null;
+                int exObjIdRef = -1;
+                CheckClientData(group.FirstChildWithType<ShapeContainer>().FirstChildWithType<ClientData>(), ref placeholder, ref exObjIdRef);
+
+                if (placeholder != null)
+                {
+
+                    _writer.WriteStartElement("p", "ph", OpenXmlNamespaces.PresentationML);
+
+                    if (!placeholder.IsObjectPlaceholder())
+                    {
+                        string typeValue = Utils.PlaceholderIdToXMLValue(placeholder.PlacementId);
+                        _writer.WriteAttributeString("type", typeValue);
+                    }
+
+                    switch (placeholder.PlaceholderSize)
+                    {
+                        case 1:
+                            _writer.WriteAttributeString("sz", "half");
+                            break;
+                        case 2:
+                            _writer.WriteAttributeString("sz", "quarter");
+                            break;
+                    }
+
+
+                    if (placeholder.Position != -1)
+                    {
+                        _writer.WriteAttributeString("idx", placeholder.Position.ToString());
+                    }
+                    else
+                    {
+                        try
+                        {
+                            Slide master = _ctx.Ppt.FindMasterRecordById(group.FirstAncestorWithType<Slide>().FirstChildWithType<SlideAtom>().MasterId);
+                            foreach (ShapeContainer cont in master.FirstChildWithType<PPDrawing>().FirstChildWithType<DrawingContainer>().FirstChildWithType<GroupContainer>().AllChildrenWithType<ShapeContainer>())
+                            {
+                                Shape s = cont.FirstChildWithType<Shape>();
+                                ClientData d = cont.FirstChildWithType<ClientData>();
+                                if (d != null)
+                                {
+                                    System.IO.MemoryStream ms = new System.IO.MemoryStream(d.bytes);
+                                    Record rec = Record.ReadRecord(ms, 0);
+                                    if (rec is OEPlaceHolderAtom)
+                                    {
+                                        OEPlaceHolderAtom placeholder2 = (OEPlaceHolderAtom)rec;
+                                        if (placeholder2.PlacementId == PlaceholderEnum.MasterBody && (placeholder.PlacementId == PlaceholderEnum.Body || placeholder.PlacementId == PlaceholderEnum.Object))
+                                        {
+                                            if (placeholder2.Position != -1)
+                                            {
+                                                _writer.WriteAttributeString("idx", placeholder2.Position.ToString());
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+
+                        catch (Exception)
+                        {
+                            //ignore
+                        }
+                    }
+
+                    _writer.WriteEndElement();
+                }
+            }
+
+            _writer.WriteEndElement(); //nvPr
             _writer.WriteEndElement(); //nvGraphicFramePr            
 
             if (anchor != null && anchor.Right >= anchor.Left && anchor.Bottom >= anchor.Top)
@@ -362,6 +444,26 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         }
 
                         _writer.WriteStartElement("a", "tcPr", OpenXmlNamespaces.DrawingML);
+
+                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.dxTextLeft))
+                        {
+                            _writer.WriteAttributeString("marL", so.OptionsByID[ShapeOptions.PropertyId.dxTextLeft].op.ToString());
+                        }
+
+                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.dyTextTop))
+                        {
+                            _writer.WriteAttributeString("marT", so.OptionsByID[ShapeOptions.PropertyId.dyTextTop].op.ToString());
+                        }
+
+                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.dxTextRight))
+                        {
+                            _writer.WriteAttributeString("marR", so.OptionsByID[ShapeOptions.PropertyId.dxTextRight].op.ToString());
+                        }
+
+                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.dyTextBottom))
+                        {
+                            _writer.WriteAttributeString("marB", so.OptionsByID[ShapeOptions.PropertyId.dyTextBottom].op.ToString());
+                        }
 
                         if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.anchorText))
                         {
@@ -504,6 +606,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             ShapeContainer container = table[row, col];
             ChildAnchor anch = container.FirstChildWithType<ChildAnchor>();
+            ShapeOptions so = container.FirstChildWithType<ShapeOptions>();
+
             int colWidth = ColumnWidthsByYPos[anch.Left];
             if (anch.rcgBounds.Height > RowHeights[row])
             {
@@ -586,7 +690,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteStartElement("a", "lnBlToTr", OpenXmlNamespaces.DrawingML);
             _writer.WriteElementString("a", "noFill", OpenXmlNamespaces.DrawingML, "");
             _writer.WriteEndElement(); //lnBlToTr
-
+                      
         }
 
         private void WriteLineProperties(ShapeContainer lineCont)
@@ -620,8 +724,19 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 if (soline.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineColor))
                 {
                     _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("val", Utils.getRGBColorFromOfficeArtCOLORREF(soline.OptionsByID[ShapeOptions.PropertyId.lineColor].op, lineCont.FirstAncestorWithType<Slide>(), so));
+                    string SchemeType = "";
+                    string colorVal = Utils.getRGBColorFromOfficeArtCOLORREF(soline.OptionsByID[ShapeOptions.PropertyId.lineColor].op, lineCont.FirstAncestorWithType<Slide>(), so, ref SchemeType);
+
+                    if (SchemeType.Length == 0)
+                    {
+                        _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("val", colorVal);
+                    }
+                    else
+                    {
+                        _writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("val", SchemeType);
+                    }
                     _writer.WriteEndElement();
                     _writer.WriteEndElement();
                 }
@@ -1073,7 +1188,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 {
 
                     _writer.WriteStartElement("p", "txBody", OpenXmlNamespaces.PresentationML);
-                    writeBodyPr(container);
+                    writeBodyPr(container, false);
                     _writer.WriteElementString("a", "lstStyle", OpenXmlNamespaces.DrawingML, "");
                     _writer.WriteStartElement("a", "p", OpenXmlNamespaces.DrawingML);
 
@@ -1762,10 +1877,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         }
 
-        public void writeBodyPr(Record rec)
+        public void writeBodyPr(Record rec, bool cancelAttributes)
         {
             _writer.WriteStartElement("a", "bodyPr", OpenXmlNamespaces.DrawingML);
-            bool cancelAttributes = false;
+            //bool cancelAttributes = false;
             if (rec is ShapeContainer)
             {
                 ShapeContainer container = (ShapeContainer)rec;
@@ -2050,8 +2165,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             {
                 _writer.WriteStartElement("p", "txBody", OpenXmlNamespaces.PresentationML);
             }
-
-            writeBodyPr(textbox);
+            writeBodyPr(textbox, insideTable);
 
             _writer.WriteStartElement("a", "lstStyle", OpenXmlNamespaces.DrawingML);
             bool lvlRprWritten = false;

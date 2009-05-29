@@ -61,15 +61,28 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             switch (fillType)
             {
                 case 0x0: //solid
+                    string SchemeType = "";
+
+
                     if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillColor))
                     {
-                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, (RegularContainer)slide, so);
+                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, (RegularContainer)slide, so, ref SchemeType);
                     } else {
                         colorval = "FFFFFF"; //TODO: find out which color to use in this case
                     }
                     _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("val", colorval);
+
+                    if (SchemeType.Length == 0)
+                    {
+                        _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("val", colorval);
+                    }
+                    else
+                    {
+                        _writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("val", SchemeType);
+                    }
+                    
                     if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity))
                     {
                         _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);

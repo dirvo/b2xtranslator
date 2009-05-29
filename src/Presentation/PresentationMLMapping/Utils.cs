@@ -311,6 +311,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         public static string getRGBColorFromOfficeArtCOLORREF(uint value, RegularContainer slide, DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions so)
         {
+            string dummy = "";
+            return getRGBColorFromOfficeArtCOLORREF(value, slide, so, ref dummy);
+        }
+
+
+
+        public static string getRGBColorFromOfficeArtCOLORREF(uint value, RegularContainer slide, DIaLOGIKa.b2xtranslator.OfficeDrawing.ShapeOptions so, ref string SchemeType)
+        {
             byte[] bytes = BitConverter.GetBytes(value);
             bool fPaletteIndex = (bytes[3] & 1) != 0;
             bool fPaletteRGB = (bytes[3] & (1 << 1)) != 0;
@@ -460,6 +468,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     case 0x00: //background
                         return new RGBColor(MasterScheme.Background, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
                     case 0x01: //text
+                        SchemeType = "tx1";
                         return new RGBColor(MasterScheme.TextAndLines, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
                     case 0x02: //shadow
                         return new RGBColor(MasterScheme.Shadows, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
@@ -470,6 +479,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     case 0x05: //accent1
                         return new RGBColor(MasterScheme.Accent, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
                     case 0x06: //accent2
+                        SchemeType = "hlink";
                         return new RGBColor(MasterScheme.AccentAndHyperlink, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
                     case 0x07: //accent3
                         return new RGBColor(MasterScheme.AccentAndFollowedHyperlink, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
