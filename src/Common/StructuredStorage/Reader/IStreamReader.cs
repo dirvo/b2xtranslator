@@ -98,7 +98,8 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Reader
         /// <exception cref="System.ObjectDisposedException">The stream is closed.</exception>
         /// <exception cref="System.IO.IOException">An I/O error occurs.</exception>
         int Read(char[] buffer, int index, int count);
-        
+
+        /// <summary>
         /// Reads a Boolean value from the current stream and advances the current position
         ///     of the stream by one byte.
         /// </summary>
