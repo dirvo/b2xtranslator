@@ -30,7 +30,7 @@ using System.Text;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
 
-namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
+namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.SpreadsheetML
 {
 
     public class ExternalLinkPart : OpenXmlPart
@@ -52,7 +52,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
 
         public override string RelationshipType
         {
-            get { return OpenXmlRelationshipTypes.externalLink; }
+            get { return OpenXmlRelationshipTypes.ExternalLink; }
         }
 
         public override string TargetName { get { return "externalLink" + this.RefNumber.ToString(); } }

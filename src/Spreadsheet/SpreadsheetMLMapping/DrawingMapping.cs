@@ -27,22 +27,36 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
  */
 
-using System;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib.DrawingML;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 
-namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
+namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
-    public abstract class SheetData : IVisitable
+    public class DrawingMapping : AbstractOpenXmlMapping,
+          IMapping<ChartSheetContentSequence>
     {
-        public BoundSheet8 boundsheetRecord;
+        ExcelContext _xlsContext;
+        DrawingsPart _drawingsPart;
 
-        // this value is used for the case that the converter adds the 
-        // chartview sheets as emty sheets
-        // TODO: remove
-        public bool emtpyWorksheet;
+        public DrawingMapping(ExcelContext xlsContext, DrawingsPart targetPart)
+            : base(targetPart.XmlWriter)
+        {
+            this._xlsContext = xlsContext;
+            this._drawingsPart = targetPart;
+        }
 
-        
-        public abstract void Convert<T>(T mapping);
+        #region IMapping<ChartSheetContentSequence> Members
+
+        public void Apply(ChartSheetContentSequence chartSheetContentSequence)
+        {
+            _writer.WriteStartElement(Dml.SpreadsheetDrawing.ElWsDr, Dml.SpreadsheetDrawing.Ns);
+
+            _writer.WriteEndElement();
+
+            _writer.Flush();
+        }
+
+        #endregion
     }
 }

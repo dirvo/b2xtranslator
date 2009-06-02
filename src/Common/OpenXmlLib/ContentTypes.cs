@@ -196,12 +196,16 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string HandoutMaster = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/handoutMaster";
 
         // SpreadsheetML
-        public const string WorkSheet = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet";
-        public const string sharedStrings = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings";
-        public const string externalLink = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLink";
-        public const string externalLinkPath = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLinkPath";
+        public const string Worksheet = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet";
+        public const string Chartsheet = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/chartsheet";
+        public const string SharedStrings = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings";
+        public const string ExternalLink = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLink";
+        public const string ExternalLinkPath = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLinkPath";
+        
+        public const string Chart = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart";
+        public const string Drawing = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing";
 
-        public const string hyperLink = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink"; 
+        public const string HyperLink = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink"; 
     }
 
     public static class MicrosoftWordRelationshipTypes

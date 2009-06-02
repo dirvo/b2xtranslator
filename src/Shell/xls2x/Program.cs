@@ -26,23 +26,16 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using System.Xml;
-using System.IO;
-using DIaLOGIKa.b2xtranslator.ZipUtils;
-using DIaLOGIKa.b2xtranslator.Tools;
-using System.Diagnostics;
 using System.Globalization;
+using System.IO;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib;
+using DIaLOGIKa.b2xtranslator.Shell;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 using DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping;
-using DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer;
-using System.Reflection;
-using Microsoft.Win32;
-using DIaLOGIKa.b2xtranslator.Shell;
-using DIaLOGIKa.b2xtranslator.OpenXmlLib;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.Tools;
+using DIaLOGIKa.b2xtranslator.ZipUtils;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib.SpreadsheetML;
 
 namespace DIaLOGIKa.b2xtranslator.xls2x
 {

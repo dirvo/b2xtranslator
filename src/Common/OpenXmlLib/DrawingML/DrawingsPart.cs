@@ -29,46 +29,28 @@ using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
-using DIaLOGIKa.b2xtranslator.OpenXmlLib.DrawingML;
 
-namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.SpreadsheetML
+namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.DrawingML
 {
 
-    public class ChartsheetPart : OpenXmlPart
+    public class DrawingsPart : OpenXmlPart
     {
-        private int _drawingNumber = 0;
-        private DrawingsPart _drawingsPart = null;
-
-
-        public ChartsheetPart(OpenXmlPartContainer parent, int partIndex)
+        public DrawingsPart(OpenXmlPartContainer parent, int partIndex)
             : base(parent, partIndex)
         {
         }
-
-
+        
         public override string ContentType
         {
-            get { return SpreadsheetMLContentTypes.Chartsheet; }
+            get { return OpenXmlContentTypes.Drawing; }
         }
 
         public override string RelationshipType
         {
-            get { return OpenXmlRelationshipTypes.Chartsheet; }
+            get { return OpenXmlRelationshipTypes.Drawing; }
         }
 
-        public override string TargetName { get { return "sheet" + this.PartIndex.ToString(); } }
-        public override string TargetDirectory { get { return "chartsheets"; } }
-
-        public DrawingsPart DrawingsPart
-        {
-            get
-            {
-                if (this._drawingsPart == null)
-                {
-                    this._drawingsPart = this.AddPart(new DrawingsPart(this, ++this._drawingNumber));
-                }
-                return this._drawingsPart;
-            }
-        }
+        public override string TargetName { get { return "drawing" + this.PartIndex.ToString(); } }
+        public override string TargetDirectory { get { return "drawings"; } }
     }
 }

@@ -30,7 +30,7 @@ using System.Text;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
 
-namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
+namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.SpreadsheetML
 {
     public class SharedStringPart : OpenXmlPart
     {
@@ -47,7 +47,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
 
         public override string RelationshipType
         {
-            get { return OpenXmlRelationshipTypes.sharedStrings; }
+            get { return OpenXmlRelationshipTypes.SharedStrings; }
         }
 
         public override string TargetName { get { return "sharedStrings"; } }

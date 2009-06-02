@@ -30,7 +30,7 @@ using System.Text;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
 
-namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
+namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.SpreadsheetML
 {
 
     public class WorksheetPart : OpenXmlPart
@@ -51,7 +51,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
 
         public override string RelationshipType
         {
-            get { return OpenXmlRelationshipTypes.WorkSheet; }
+            get { return OpenXmlRelationshipTypes.Worksheet; }
         }
 
         public override string TargetName { get { return "sheet" + this.WorksheetNumber.ToString(); } }

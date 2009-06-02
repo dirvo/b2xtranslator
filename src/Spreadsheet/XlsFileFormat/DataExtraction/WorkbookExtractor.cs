@@ -77,7 +77,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public override void extractData()
         {
             BiffHeader bh;
-            bool firstBOF = true; 
+            
             //try
             //{
                 while (this.StreamReader.BaseStream.Position < this.StreamReader.BaseStream.Length)
@@ -126,7 +126,6 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                                 if (sheetData != null)
                                 {
                                     // add general sheet info
-                                    sheetData.worksheetName = bs.stName.Value;
                                     sheetData.boundsheetRecord = bs;
                                 }
                                 this.workBookData.addBoundSheetData(sheetData);
@@ -268,15 +267,12 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                             break;
                         case RecordType.BOF:
                             {
-                                //TODO why firstBOF?
-                                if (firstBOF)
-                                {
-                                    BOF bof = new BOF(this.StreamReader, bh.id, bh.length);
-                                }
-                                else
-                                {
-                                    this.StreamReader.ReadBytes(bh.length);
-                                }
+                                this.workBookData.BOF = new BOF(this.StreamReader, bh.id, bh.length);
+                            }
+                            break;
+                        case RecordType.CodeName:
+                            {
+                                this.workBookData.CodeName = new CodeName(this.StreamReader, bh.id, bh.length);
                             }
                             break;
                         case RecordType.FilePass:

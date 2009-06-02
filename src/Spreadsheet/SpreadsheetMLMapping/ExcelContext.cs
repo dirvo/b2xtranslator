@@ -26,7 +26,7 @@
  */
 
 using System.Xml;
-using DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib.SpreadsheetML;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping

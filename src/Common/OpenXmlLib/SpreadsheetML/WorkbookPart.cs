@@ -30,7 +30,7 @@ using System.Text;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
 
-namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
+namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.SpreadsheetML
 {
     public class WorkbookPart : OpenXmlPart
     {

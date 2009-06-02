@@ -37,7 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
         public override void Convert<T>(T mapping)
         {
-            ((IMapping<ChartSheetData>)mapping).Apply(this);
+            ((IMapping<ChartSheetSequence>)mapping).Apply(this.ChartSheetSequence);
         }
     }
 }

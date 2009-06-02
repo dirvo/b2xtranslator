@@ -40,7 +40,10 @@
   <ItemGroup>
     <Compile Include="AppPropertiesPart.cs" />
     <Compile Include="ContentPart.cs" />
+    <Compile Include="DrawingML\DrawingML.cs" />
     <Compile Include="SpreadsheetML\ChartsheetPart.cs" />
+    <Compile Include="DrawingML\DrawingsPart.cs" />
+    <Compile Include="SpreadsheetML\SpreadsheetML.cs" />
     <Compile Include="VmlPart.cs" />
     <Compile Include="ExternalRelationship.cs" />
     <Compile Include="PresentationML\HandoutMasterPart.cs" />

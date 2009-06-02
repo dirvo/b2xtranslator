@@ -38,7 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
     /// This class is a container for the extracted data 
     /// Implements the IVisitable Interface 
     /// </summary>
-    public class WorkBookData: IVisitable
+    public class WorkBookData : IVisitable
     {
         /// <summary>
         /// This attribute stores the SharedStringTable Data
@@ -61,7 +61,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
 
         public int refWorkBookNumber;
 
-        public StyleData.StyleData styleData; 
+        public StyleData.StyleData styleData;
+
+        public BOF BOF;
+        public CodeName CodeName;
 
         /// <summary>
         /// Ctor 
@@ -146,8 +149,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
             String back = ""; 
             if (supData != null && supData.SelfRef)
             {
-                String first = this.boundSheetDataList[extSheet.itabFirst].worksheetName;
-                String last = this.boundSheetDataList[extSheet.itabLast].worksheetName;
+                String first = this.boundSheetDataList[extSheet.itabFirst].boundsheetRecord.stName.Value;
+                String last = this.boundSheetDataList[extSheet.itabLast].boundsheetRecord.stName.Value;
                 if (first.Equals(last))
                 {
                     back = first;

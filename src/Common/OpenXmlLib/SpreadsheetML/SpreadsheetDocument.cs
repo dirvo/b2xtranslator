@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 
-namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet
+namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.SpreadsheetML
 {
     /// <summary>
     /// Includes some information about the spreadsheetdocument 

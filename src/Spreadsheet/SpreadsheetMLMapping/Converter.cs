@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
-using DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib.SpreadsheetML;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
@@ -81,7 +81,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             }
         }
 
-        public static void Convert(XlsDocument xls, SpreadsheetDocument xlsx)
+        public static void Convert(XlsDocument xls, SpreadsheetDocument spreadsheetDocument)
         {
             //Setup the writer
             XmlWriterSettings xws = new XmlWriterSettings();
@@ -90,7 +90,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             xws.ConformanceLevel = ConformanceLevel.Document;
 
             ExcelContext xlsContext = new ExcelContext(xls, xws);
-            xlsContext.SpreadDoc = xlsx;
+            xlsContext.SpreadDoc = spreadsheetDocument;
 
             // convert the shared string table
             if (xls.WorkBookData.SstData != null)
@@ -104,25 +104,6 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 xls.WorkBookData.styleData.Convert(new StylesMapping(xlsContext));
             }
 
-            // create the sheets
-            foreach (SheetData sheet in xls.WorkBookData.boundSheetDataList)
-            {
-                switch (sheet.boundsheetRecord.dt)
-                {
-                    case BoundSheet8.SheetType.Worksheet:
-                        sheet.Convert(new WorksheetMapping(xlsContext));
-                        break;
-
-                    case BoundSheet8.SheetType.Chartsheet:
-                        sheet.Convert(new ChartsheetMapping(xlsContext, xlsContext.SpreadDoc.WorkbookPart.AddChartsheetPart()));
-                        break;
-
-                    default:
-                        sheet.emtpyWorksheet = true;
-                        sheet.Convert(new WorksheetMapping(xlsContext));
-                        break;
-                }
-            }
             int sbdnumber = 1;
             foreach (SupBookData sbd in xls.WorkBookData.supBookDataList)
             {
@@ -134,11 +115,11 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 }
             }
 
-            xls.WorkBookData.Convert(new WorkbookMapping(xlsContext));
+            xls.WorkBookData.Convert(new WorkbookMapping(xlsContext, spreadsheetDocument.WorkbookPart));
 
             // convert the macros
-            if (xlsx.DocumentType == OpenXmlPackage.DocumentType.MacroEnabledDocument ||
-                xlsx.DocumentType == OpenXmlPackage.DocumentType.MacroEnabledTemplate)
+            if (spreadsheetDocument.DocumentType == OpenXmlPackage.DocumentType.MacroEnabledDocument ||
+                spreadsheetDocument.DocumentType == OpenXmlPackage.DocumentType.MacroEnabledTemplate)
             {
                 xls.Convert(new MacroBinaryMapping(xlsContext));
             }

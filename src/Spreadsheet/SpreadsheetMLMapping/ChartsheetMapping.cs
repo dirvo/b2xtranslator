@@ -30,13 +30,13 @@
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 using System.Xml;
-using DIaLOGIKa.b2xtranslator.OpenXmlLib.Spreadsheet;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib.SpreadsheetML;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
     public class ChartsheetMapping : AbstractOpenXmlMapping,
-          IMapping<ChartSheetData>
+          IMapping<ChartSheetSequence>
     {
         ExcelContext _xlsContext;
         ChartsheetPart _chartsheetPart;
@@ -46,11 +46,10 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         /// </summary>
         /// <param name="xlsContext">The excel context object</param>
         public ChartsheetMapping(ExcelContext xlsContext, ChartsheetPart targetPart)
-            : base(XmlWriter.Create(targetPart.GetStream(), xlsContext.WriterSettings))
+            : base(targetPart.XmlWriter)
         {
             this._xlsContext = xlsContext;
-            this._chartsheetPart = targetPart; 
-
+            this._chartsheetPart = targetPart;
         }
 
         /// <summary>
@@ -58,11 +57,54 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         /// Creates the Worksheet xml document 
         /// </summary>
         /// <param name="bsd">WorkSheetData</param>
-        public void Apply(ChartSheetData csd)
+        public void Apply(ChartSheetSequence chartSheetSequence)
         {
             _writer.WriteStartDocument();
-            _writer.WriteStartElement("chartsheet", OpenXmlNamespaces.SpreadsheetML);
+            // chartsheet
+            _writer.WriteStartElement(Sml.Sheet.ElChartsheet, Sml.Ns);
+            _writer.WriteAttributeString("xmlns", Sml.Ns);
+            _writer.WriteAttributeString("xmlns", "r", "", OpenXmlNamespaces.Relationships);
+            
+            ChartSheetContentSequence chartSheetContentSequence = chartSheetSequence.ChartSheetContentSequence;
 
+            // sheetPr
+            _writer.WriteStartElement(Sml.Sheet.ElSheetPr, Sml.Ns);
+            if (chartSheetContentSequence.CodeName != null)
+            {
+                // code name
+                _writer.WriteAttributeString(Sml.Sheet.AttrCodeName, chartSheetContentSequence.CodeName.codeName.Value);
+            }
+            // TODO: map SheetExtOptional to published and tab color
+
+            _writer.WriteEndElement();
+
+            
+            // sheetViews
+            if (chartSheetContentSequence.WindowSequences.Count > 0)
+            {
+                _writer.WriteStartElement(Sml.Sheet.ElSheetViews, Sml.Ns);
+
+                // Note: There is a Window2 record for each Window1 record in the beginning of the workbook.
+                // The index in the list corresponds to the 0-based workbookViewId attribute.
+                //
+                for (int window1Id = 0; window1Id < chartSheetContentSequence.WindowSequences.Count; window1Id++)
+                {
+                    chartSheetContentSequence.WindowSequences[window1Id].Convert(new WindowMapping(this._xlsContext, this._chartsheetPart, window1Id));
+                }
+                _writer.WriteEndElement();
+            }
+
+            // page setup
+            chartSheetContentSequence.PageSetupSequence.Convert(new PageSetupMapping(this._xlsContext, this._chartsheetPart));
+
+            // header and footer
+            // TODO: header and footer
+
+            // drawing
+            _writer.WriteStartElement(Sml.Sheet.ElDrawing, Sml.Ns);
+            _writer.WriteAttributeString("r", "id", OpenXmlNamespaces.Relationships, this._chartsheetPart.DrawingsPart.RelIdToString);
+            chartSheetContentSequence.Convert(new DrawingMapping(this._xlsContext, this._chartsheetPart.DrawingsPart));
+            
             _writer.WriteEndElement();
             _writer.WriteEndDocument();
 

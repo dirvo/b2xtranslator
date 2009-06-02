@@ -33,22 +33,25 @@ using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer;
 using DIaLOGIKa.b2xtranslator.Tools;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib.SpreadsheetML;
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
     public class WorksheetMapping : AbstractOpenXmlMapping,
           IMapping<WorkSheetData>
     {
-        ExcelContext xlsContext;
+        ExcelContext _xlsContext;
+        WorksheetPart _worksheetPart;
 
         /// <summary>
         /// Ctor 
         /// </summary>
         /// <param name="xlsContext">The excel context object</param>
-        public WorksheetMapping(ExcelContext xlsContext)
-            : base(XmlWriter.Create(xlsContext.SpreadDoc.WorkbookPart.AddWorksheetPart().GetStream(), xlsContext.WriterSettings))
+        public WorksheetMapping(ExcelContext xlsContext, WorksheetPart worksheetPart)
+            : base(worksheetPart.XmlWriter)
         {
-            this.xlsContext = xlsContext;
+            this._xlsContext = xlsContext;
+            this._worksheetPart = worksheetPart;
         }
 
         /// <summary>
@@ -58,7 +61,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         /// <param name="bsd">WorkSheetData</param>
         public void Apply(WorkSheetData bsd)
         {
-            xlsContext.CurrentSheet = bsd;
+            _xlsContext.CurrentSheet = bsd;
             _writer.WriteStartDocument();
             _writer.WriteStartElement("worksheet", OpenXmlNamespaces.SpreadsheetML);
             if (bsd.emtpyWorksheet)
@@ -144,7 +147,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         if (col.style > 15)
                         {
 
-                            _writer.WriteAttributeString("style", Convert.ToString(col.style - this.xlsContext.XlsDoc.WorkBookData.styleData.XFCellStyleDataList.Count, CultureInfo.GetCultureInfo("en-US")));
+                            _writer.WriteAttributeString("style", Convert.ToString(col.style - this._xlsContext.XlsDoc.WorkBookData.styleData.XFCellStyleDataList.Count, CultureInfo.GetCultureInfo("en-US")));
                         }
 
                         _writer.WriteEndElement();
@@ -196,7 +199,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         _writer.WriteAttributeString("customFormat", "1");
                         if (row.style > 15)
                         {
-                            _writer.WriteAttributeString("s", (row.style - this.xlsContext.XlsDoc.WorkBookData.styleData.XFCellStyleDataList.Count).ToString());
+                            _writer.WriteAttributeString("s", (row.style - this._xlsContext.XlsDoc.WorkBookData.styleData.XFCellStyleDataList.Count).ToString());
                         }
                     }
                     if (row.thickBot)
@@ -221,7 +224,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
                         if (cell.TemplateID > 15)
                         {
-                            _writer.WriteAttributeString("s", (cell.TemplateID - this.xlsContext.XlsDoc.WorkBookData.styleData.XFCellStyleDataList.Count).ToString());
+                            _writer.WriteAttributeString("s", (cell.TemplateID - this._xlsContext.XlsDoc.WorkBookData.styleData.XFCellStyleDataList.Count).ToString());
                         }
 
                         if (cell is StringCell)
@@ -255,7 +258,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             _writer.WriteStartElement("f");
                             if (!fcell.isSharedFormula)
                             {
-                                String value = FormulaInfixMapping.mapFormula(fcell.PtgStack, this.xlsContext);
+                                String value = FormulaInfixMapping.mapFormula(fcell.PtgStack, this._xlsContext);
 
 
                                 if (fcell.usesArrayRecord)
@@ -291,7 +294,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                                         /// Write value and reference 
                                         _writer.WriteAttributeString("ref", sfd.getOXMLFormatedData());
 
-                                        String value = FormulaInfixMapping.mapFormula(sfd.PtgStack, this.xlsContext, sfd.rwFirst, sfd.colFirst);
+                                        String value = FormulaInfixMapping.mapFormula(sfd.PtgStack, this._xlsContext, sfd.rwFirst, sfd.colFirst);
                                         _writer.WriteString(value);
 
                                         sfd.RefCount++;
@@ -403,7 +406,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                                 //    writtenParentElement = true;
                                 //}
 
-                                ExternalRelationship er = this.xlsContext.SpreadDoc.WorkbookPart.GetWorksheetPart().AddExternalRelationship(OpenXmlRelationshipTypes.hyperLink, link.url.Replace(" ","") );
+                                ExternalRelationship er = this._xlsContext.SpreadDoc.WorkbookPart.GetWorksheetPart().AddExternalRelationship(OpenXmlRelationshipTypes.HyperLink, link.url.Replace(" ","") );
 
 
 
@@ -526,9 +529,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
             _writer.WriteEndElement();      // close worksheet
             _writer.WriteEndDocument();
-            bsd.worksheetId = this.xlsContext.SpreadDoc.WorkbookPart.GetWorksheetPart().RelId;
-            bsd.worksheetRef = this.xlsContext.SpreadDoc.WorkbookPart.GetWorksheetPart().RelIdToString;
-
+            
             // close writer 
             _writer.Flush();
         }

@@ -54,7 +54,6 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         // TODO
         public List<ARRAY> ARRAYList;
         public List<HyperlinkData> HyperLinkList; 
-        public String worksheetRef;
         public SortedList<Int32, RowData> rowDataTable;
         public List<ColumnInfoData> colInfoDataTable;
         public List<SharedFormulaData> sharedFormulaDataTable;
