@@ -136,13 +136,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     case BlipStoreEntry.BlipType.msoblipTIFF:
                         imgPart = _targetPart.AddImagePart(ImagePart.ImageType.Tiff);
                         break;
-                    case BlipStoreEntry.BlipType.msoblipPICT:
                     case BlipStoreEntry.BlipType.msoblipDIB:
+                    case BlipStoreEntry.BlipType.msoblipPICT:
                     case BlipStoreEntry.BlipType.msoblipERROR:
                     case BlipStoreEntry.BlipType.msoblipUNKNOWN:
                     case BlipStoreEntry.BlipType.msoblipLastClient:
                     case BlipStoreEntry.BlipType.msoblipFirstClient:
-                        throw new Exception("Cannot convert picture of type " + bse.btWin32);
+                        //throw new Exception("Cannot convert picture of type " + bse.btWin32);
+                        break;
                 }
 
                 imgPart.TargetDirectory = "..\\media";

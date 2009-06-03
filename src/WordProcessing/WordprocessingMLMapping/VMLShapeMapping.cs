@@ -19,24 +19,32 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private BlipStoreContainer _blipStore = null;
         private ConversionContext _ctx;
         private FileShapeAddress _fspa;
+        private PictureDescriptor _pict;
         private ContentPart _targetPart;
-        private XmlElement _fill, _stroke, _shadow, _imagedata, _3dstyle;
-        private bool _documentBase;
+        private XmlElement _fill, _stroke, _shadow, _imagedata, _3dstyle, _textpath;
         private List<byte> pSegmentInfo = new List<byte>();
         private List<byte> pVertices = new List<byte>();
+        private StringBuilder _textPathStyle;
 
-        public VMLShapeMapping(XmlWriter writer, ContentPart targetPart, FileShapeAddress fspa, bool documentBase, ConversionContext ctx)
+        public VMLShapeMapping(XmlWriter writer, 
+            ContentPart targetPart, 
+            FileShapeAddress fspa, 
+            PictureDescriptor pict,
+            ConversionContext ctx)
             : base(writer)
         {
             _ctx = ctx;
             _fspa = fspa;
-            _documentBase = documentBase;
+            _pict = pict;
             _targetPart = targetPart;
             _imagedata = _nodeFactory.CreateElement("v", "imagedata", OpenXmlNamespaces.VectorML);
             _fill = _nodeFactory.CreateElement("v", "fill", OpenXmlNamespaces.VectorML);
             _stroke = _nodeFactory.CreateElement("v", "stroke", OpenXmlNamespaces.VectorML);
             _shadow = _nodeFactory.CreateElement("v", "shadow", OpenXmlNamespaces.VectorML);
             _3dstyle = _nodeFactory.CreateElement("o", "extrusion", OpenXmlNamespaces.Office);
+            _textpath = _nodeFactory.CreateElement("v", "textpath", OpenXmlNamespaces.VectorML);
+
+            _textPathStyle = new StringBuilder();
 
             Record recBs = _ctx.Doc.OfficeArtContent.DrawingGroupData.FirstChildWithType<BlipStoreContainer>();
             if (recBs != null)
@@ -97,18 +105,18 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 if (container.Children[i].GetType() == typeof(ShapeContainer))
                 {
                     ShapeContainer childShape = (ShapeContainer)container.Children[i];
-                    childShape.Convert(new VMLShapeMapping(_writer, _targetPart, _fspa, false, _ctx));
+                    childShape.Convert(new VMLShapeMapping(_writer, _targetPart, _fspa, null, _ctx));
                 }
                 else if (container.Children[i].GetType() == typeof(GroupContainer))
                 {
                     GroupContainer childGroup = (GroupContainer)container.Children[i];
-                    _documentBase = false;
+                    _fspa = null;
                     convertGroup(childGroup);
                 }
             }
 
             //write wrap
-            if (_documentBase)
+            if (_fspa != null)
             {
                 string wrap = getWrapType(_fspa);
                 if(wrap != "through")
@@ -418,6 +426,39 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         hasTextbox = true;
                         break;
 
+                    // TEXT PATH (Word Art)
+
+                    case ShapeOptions.PropertyId.gtextUNICODE:
+                        String text = Encoding.Unicode.GetString(entry.opComplex);
+                        text = text.Replace("\0", "");
+                        appendValueAttribute(_textpath, "", "string", text, "");
+                        break;
+                    case ShapeOptions.PropertyId.gtextFont:
+                        String font = Encoding.Unicode.GetString(entry.opComplex);
+                        font = font.Replace("\0", "");
+                        appendStyleProperty(_textPathStyle, "font-family", "\""+font+"\"");
+                        break;
+                    case ShapeOptions.PropertyId.GeometryTextBooleanProperties:
+                        GeometryTextBooleanProperties props = new GeometryTextBooleanProperties(entry.op);
+                        if (props.fUsegtextFBestFit && props.gtextFBestFit)
+                        {
+                            appendValueAttribute(_textpath, "", "fitpath", "t", "");
+                        }
+                        if (props.fUsegtextFShrinkFit && props.gtextFShrinkFit)
+                        {
+                            appendValueAttribute(_textpath, "", "trim", "t", "");
+                        }
+                        if (props.fUsegtextFKern && props.gtextFKern)
+                        {
+                            appendStyleProperty(_textPathStyle, "v-text-kern", "t");
+                        }
+                        if (props.fUsegtextFItalic && props.gtextFItalic)
+                        {
+                            appendStyleProperty(_textPathStyle, "font-style", "italic");
+                        }
+                        break;
+                    
+
                     // PATH
                     case ShapeOptions.PropertyId.shapePath:
                         string path = parsePath(options);
@@ -515,7 +556,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             }
 
             //write wrap
-            if (_documentBase)
+            if (_fspa != null)
             {
                 string wrap = getWrapType(_fspa);
                 if(wrap != "through")
@@ -536,6 +577,13 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             if (_fill.Attributes.Count > 0)
             {
                 _fill.WriteTo(_writer);
+            }
+
+            // text path
+            if (_textpath.Attributes.Count > 0)
+            {
+                appendValueAttribute(_textpath, "", "style", _textPathStyle.ToString(), "");
+                _textpath.WriteTo(_writer);
             }
 
             //write imagedata
@@ -674,7 +722,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private string getCoordinateFrom(ChildAnchor anchor)
         {
             StringBuilder from = new StringBuilder();
-            if (_documentBase)
+            if (_fspa != null)
             {
                 TwipsValue left = new TwipsValue(_fspa.xaLeft);
                 TwipsValue top = new TwipsValue(_fspa.yaTop);
@@ -697,7 +745,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private string getCoordinateTo(ChildAnchor anchor)
         {
             StringBuilder from = new StringBuilder();
-            if (_documentBase)
+            if (_fspa != null)
             {
                 TwipsValue right = new TwipsValue(_fspa.xaRight);
                 TwipsValue bottom = new TwipsValue(_fspa.yaBottom);
@@ -726,17 +774,22 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             // because they have "from" and "to" attributes to decline the dimension
             if(!(shape.ShapeType is LineType))
             {
-                if (_documentBase)
+                if (_fspa != null)
                 {
                     //this shape is placed directly in the document, 
                     //so use the FSPA to build the style
                     AppendDimensionToStyle(style, _fspa);
                 }
-                else
+                else if(anchor != null)
                 {
                     //the style is part of a group, 
                     //so use the anchor
                     AppendDimensionToStyle(style, anchor);
+                }
+                else if(_pict != null)
+                {
+                    // it is some kind of PICT shape (e.g. WordArt)
+                    AppendDimensionToStyle(style, _pict);
                 }
             }
 
@@ -754,6 +807,18 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             appendStyleProperty(style, "z-index", zIndex.ToString());
 
             return style;
+        }
+
+        private void AppendDimensionToStyle(StringBuilder style, PictureDescriptor pict)
+        {
+            double xScaling = pict.mx / 1000.0;
+            double yScaling = pict.my / 1000.0;
+            TwipsValue width = new TwipsValue(pict.dxaGoal * xScaling);
+            TwipsValue height = new TwipsValue(pict.dyaGoal * yScaling);
+            string widthString = Convert.ToString(width.ToPoints(), CultureInfo.GetCultureInfo("en-US"));
+            string heightString = Convert.ToString(height.ToPoints(), CultureInfo.GetCultureInfo("en-US"));
+            style.Append("width:").Append(widthString).Append("pt;");
+            style.Append("height:").Append(heightString).Append("pt;");
         }
 
         private void writeStartShapeElement(Shape shape)
@@ -1025,13 +1090,14 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 case BlipStoreEntry.BlipType.msoblipTIFF:
                     imgPart = _targetPart.AddImagePart(ImagePart.ImageType.Tiff);
                     break;
-                case BlipStoreEntry.BlipType.msoblipPICT:
                 case BlipStoreEntry.BlipType.msoblipDIB:
+                case BlipStoreEntry.BlipType.msoblipPICT:
                 case BlipStoreEntry.BlipType.msoblipERROR:
                 case BlipStoreEntry.BlipType.msoblipUNKNOWN:
                 case BlipStoreEntry.BlipType.msoblipLastClient:
                 case BlipStoreEntry.BlipType.msoblipFirstClient:
-                    throw new MappingException("Cannot convert picture of type " + bse.btWin32);
+                    //throw new MappingException("Cannot convert picture of type " + bse.btWin32);
+                    break;
             }
 
             Stream outStream = imgPart.GetStream();

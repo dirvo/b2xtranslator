@@ -174,43 +174,46 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         imgPart = _targetPart.AddImagePart(ImagePart.ImageType.Tiff);
                         break;
                     case BlipStoreEntry.BlipType.msoblipPICT:
-                    case BlipStoreEntry.BlipType.msoblipDIB:
                     case BlipStoreEntry.BlipType.msoblipERROR:
                     case BlipStoreEntry.BlipType.msoblipUNKNOWN:
                     case BlipStoreEntry.BlipType.msoblipLastClient:
                     case BlipStoreEntry.BlipType.msoblipFirstClient:
-                        throw new MappingException("Cannot convert picture of type " + bse.btWin32);
+                    case BlipStoreEntry.BlipType.msoblipDIB:
+                        //throw new MappingException("Cannot convert picture of type " + bse.btWin32);
+                        break;
                 }
 
-
-                Stream outStream = imgPart.GetStream();
-
-                //write the blip
-                if (bse.Blip != null)
+                if (imgPart != null)
                 {
-                    switch (bse.btWin32)
+                    Stream outStream = imgPart.GetStream();
+
+                    //write the blip
+                    if (bse.Blip != null)
                     {
-                        case BlipStoreEntry.BlipType.msoblipEMF:
-                        case BlipStoreEntry.BlipType.msoblipWMF:
+                        switch (bse.btWin32)
+                        {
+                            case BlipStoreEntry.BlipType.msoblipEMF:
+                            case BlipStoreEntry.BlipType.msoblipWMF:
 
-                            //it's a meta image
-                            MetafilePictBlip metaBlip = (MetafilePictBlip)bse.Blip;
+                                //it's a meta image
+                                MetafilePictBlip metaBlip = (MetafilePictBlip)bse.Blip;
 
-                            //meta images can be compressed
-                            byte[] decompressed = metaBlip.Decrompress();
-                            outStream.Write(decompressed, 0, decompressed.Length);
+                                //meta images can be compressed
+                                byte[] decompressed = metaBlip.Decrompress();
+                                outStream.Write(decompressed, 0, decompressed.Length);
 
-                            break;
-                        case BlipStoreEntry.BlipType.msoblipJPEG:
-                        case BlipStoreEntry.BlipType.msoblipCMYKJPEG:
-                        case BlipStoreEntry.BlipType.msoblipPNG:
-                        case BlipStoreEntry.BlipType.msoblipTIFF:
+                                break;
+                            case BlipStoreEntry.BlipType.msoblipJPEG:
+                            case BlipStoreEntry.BlipType.msoblipCMYKJPEG:
+                            case BlipStoreEntry.BlipType.msoblipPNG:
+                            case BlipStoreEntry.BlipType.msoblipTIFF:
 
-                            //it's a bitmap image
-                            BitmapBlip bitBlip = (BitmapBlip)bse.Blip;
-                            outStream.Write(bitBlip.m_pvBits, 0, bitBlip.m_pvBits.Length);
+                                //it's a bitmap image
+                                BitmapBlip bitBlip = (BitmapBlip)bse.Blip;
+                                outStream.Write(bitBlip.m_pvBits, 0, bitBlip.m_pvBits.Length);
 
-                            break;
+                                break;
+                        }
                     }
                 }
             }

@@ -13,7 +13,8 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
         {
             miter,
             round,
-            bevel
+            bevel,
+            none
         }
         //inner Class
         public class Handle
@@ -129,6 +130,8 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
         /// By default nothing is locked.
         /// </summary>
         public ProtectionBooleans Lock = new ProtectionBooleans(0);
+
+        public bool TextPath;
 
         public UInt32 TypeCode
         {

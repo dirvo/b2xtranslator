@@ -65,7 +65,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                 //stroke
                 _writer.WriteStartElement("v", "stroke", OpenXmlNamespaces.VectorML);
-                _writer.WriteAttributeString("joinstyle", shapeType.Joins.ToString());
+                if (shapeType.Joins != ShapeType.JoinStyle.none)
+                {
+                    _writer.WriteAttributeString("joinstyle", shapeType.Joins.ToString());
+                }
                 _writer.WriteEndElement();
 
                 //Formulas
@@ -94,7 +97,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 {
                     _writer.WriteAttributeString("limo", shapeType.Limo);
                 }
-
+                if (shapeType.TextPath)
+                {
+                    _writer.WriteAttributeString("textpathok", "t");
+                    
+                }
                 if (shapeType.ConnectorLocations != null)
                 {
                     _writer.WriteAttributeString("o", "connecttype", OpenXmlNamespaces.Office, "custom");
@@ -128,6 +135,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 if (_lock.Attributes.Count > 1)
                 {
                     _lock.WriteTo(_writer);
+                }
+
+                // Textpath
+                if (shapeType.TextPath)
+                {
+                    _writer.WriteStartElement("v", "textpath", OpenXmlNamespaces.VectorML);
+                    _writer.WriteAttributeString("on", "t");
+                    _writer.WriteAttributeString("fitshape", "t");
+                    _writer.WriteEndElement();
                 }
 
                 //Handles
@@ -168,6 +184,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 _writer.WriteEndElement();
 
             }
+            _writer.Flush();
         }
 
 

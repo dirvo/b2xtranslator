@@ -910,7 +910,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                             _writer.WriteEndElement();
                             _writer.WriteStartElement("w", "pict", OpenXmlNamespaces.WordprocessingML);
 
-                            shape.Convert(new VMLShapeMapping(_writer, _targetPart, fspa, true, _ctx));
+                            shape.Convert(new VMLShapeMapping(_writer, _targetPart, fspa, null, _ctx));
 
                             _writer.WriteEndElement();
                             writeTextStart(textType);
@@ -926,7 +926,16 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         _writer.WriteEndElement();
                         _writer.WriteStartElement("w", "pict", OpenXmlNamespaces.WordprocessingML);
 
-                        pict.Convert(new VMLPictureMapping(_writer, _targetPart, false));
+                        if (pict.BlipStoreEntry != null)
+                        {
+                            // it's a normal picture
+                            pict.Convert(new VMLPictureMapping(_writer, _targetPart, false));
+                        }
+                        else
+                        {
+                            // a PICT without a BSE can stand for a WordArt Shape
+                            pict.ShapeContainer.Convert(new VMLShapeMapping(_writer, _targetPart, null, pict, _ctx));
+                        }
 
                         _writer.WriteEndElement();
                         writeTextStart(textType);

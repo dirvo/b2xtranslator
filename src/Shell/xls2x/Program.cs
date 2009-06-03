@@ -97,7 +97,6 @@ namespace DIaLOGIKa.b2xtranslator.xls2x
                         string conformOutputFile = Converter.GetConformFilename(ChoosenOutputFile, outType);
                         using (SpreadsheetDocument spreadx = SpreadsheetDocument.Create(conformOutputFile, outType))
                         {
-
                             //start time
                             DateTime start = DateTime.Now;
                             TraceLogger.Info("Converting file {0} into {1}", InputFile, conformOutputFile);
