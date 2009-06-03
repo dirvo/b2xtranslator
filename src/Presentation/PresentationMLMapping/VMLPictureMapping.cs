@@ -12,6 +12,7 @@ using DIaLOGIKa.b2xtranslator.Tools;
 using System.Globalization;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes;
+using System.Collections;
 
 namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 {
@@ -27,83 +28,94 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _targetPart = vmlPart;
         }
         
-        public void Apply(BlipStoreEntry bse, Shape shape, ShapeOptions options, Rectangle bounds, ConversionContext ctx, string spid, ref Point size)
+        //public void Apply(BlipStoreEntry bse, Shape shape, ShapeOptions options, Rectangle bounds, ConversionContext ctx, string spid, ref Point size)
+        public void Apply(List<ArrayList> VMLEntriesList, ConversionContext ctx)
         {
             _ctx = ctx;
-            ImagePart imgPart = copyPicture(bse, ref size);
-            if (imgPart != null)
-            {
+            BlipStoreEntry bse;
 
-                _writer.WriteStartDocument();
-                _writer.WriteStartElement("xml");
+            _writer.WriteStartDocument();
+            _writer.WriteStartElement("xml");
 
+            _writer.WriteStartElement("o", "shapelayout", OpenXmlNamespaces.Office);
+            _writer.WriteAttributeString("v", "ext", OpenXmlNamespaces.VectorML, "edit");
+            _writer.WriteStartElement("o", "idmap", OpenXmlNamespaces.Office);
+            _writer.WriteAttributeString("v", "ext", OpenXmlNamespaces.VectorML, "edit");
+            _writer.WriteAttributeString("data", "1079");
+            _writer.WriteEndElement(); //idmap
+            _writer.WriteEndElement(); //shapelayout
 
-                _writer.WriteStartElement("o", "shapelayout", OpenXmlNamespaces.Office);
-                _writer.WriteAttributeString("v", "ext", OpenXmlNamespaces.VectorML, "edit");
-                _writer.WriteStartElement("o", "idmap", OpenXmlNamespaces.Office);
-                _writer.WriteAttributeString("v", "ext", OpenXmlNamespaces.VectorML, "edit");
-                _writer.WriteAttributeString("data", "2");
-                _writer.WriteEndElement(); //idmap
-                _writer.WriteEndElement(); //shapelayout
+            //v:shapetype
+            PictureFrameType type = new PictureFrameType();
+            type.Convert(new VMLShapeTypeMapping(_ctx, _writer));
 
+            foreach (ArrayList VMLEntry in VMLEntriesList)
+            {                
 
-                //v:shapetype
-                PictureFrameType type = new PictureFrameType();
-                type.Convert(new VMLShapeTypeMapping(_ctx, _writer));
-                                            
-                //v:shape
-                _writer.WriteStartElement("v", "shape", OpenXmlNamespaces.VectorML);
-                _writer.WriteAttributeString("id", spid);
-                _writer.WriteAttributeString("type", "#" + VMLShapeTypeMapping.GenerateTypeId(type));
+                bse = (BlipStoreEntry)VMLEntry[0];
+                ShapeOptions options = (ShapeOptions)VMLEntry[2];
+                Rectangle bounds = (Rectangle)VMLEntry[3];
+                string spid = (string)VMLEntry[4];
+                Point size = (Point)VMLEntry[5];
 
-                StringBuilder style = new StringBuilder();
-            
-                
-                style.Append("position:absolute;");
-                style.Append("left:" + (new EmuValue(Utils.MasterCoordToEMU(bounds.Left)).ToPoints()).ToString() + "pt;");
-                style.Append("top:" + (new EmuValue(Utils.MasterCoordToEMU(bounds.Top)).ToPoints()).ToString() + "pt;");
-                style.Append("width:").Append(new EmuValue(Utils.MasterCoordToEMU(bounds.Width)).ToPoints()).Append("pt;");
-                style.Append("height:").Append(new EmuValue(Utils.MasterCoordToEMU(bounds.Height)).ToPoints()).Append("pt;");
-                _writer.WriteAttributeString("style", style.ToString());
-                               
-                foreach (ShapeOptions.OptionEntry entry in options.OptionsByID.Values)
+                ImagePart imgPart = copyPicture(bse, ref size);
+                if (imgPart != null)
                 {
-                    switch (entry.pid)
+                                        
+                    //v:shape
+                    _writer.WriteStartElement("v", "shape", OpenXmlNamespaces.VectorML);
+                    _writer.WriteAttributeString("id", spid);
+                    _writer.WriteAttributeString("type", "#" + VMLShapeTypeMapping.GenerateTypeId(type));
+
+                    StringBuilder style = new StringBuilder();
+
+
+                    style.Append("position:absolute;");
+                    style.Append("left:" + (new EmuValue(Utils.MasterCoordToEMU(bounds.Left)).ToPoints()).ToString() + "pt;");
+                    style.Append("top:" + (new EmuValue(Utils.MasterCoordToEMU(bounds.Top)).ToPoints()).ToString() + "pt;");
+                    style.Append("width:").Append(new EmuValue(Utils.MasterCoordToEMU(bounds.Width)).ToPoints()).Append("pt;");
+                    style.Append("height:").Append(new EmuValue(Utils.MasterCoordToEMU(bounds.Height)).ToPoints()).Append("pt;");
+                    _writer.WriteAttributeString("style", style.ToString());
+
+                    foreach (ShapeOptions.OptionEntry entry in options.OptionsByID.Values)
                     {
-                        //BORDERS
+                        switch (entry.pid)
+                        {
+                            //BORDERS
 
-                        case ShapeOptions.PropertyId.borderBottomColor:
-                            RGBColor bottomColor = new RGBColor((int)entry.op, RGBColor.ByteOrder.RedFirst);
-                            _writer.WriteAttributeString("o", "borderbottomcolor", OpenXmlNamespaces.Office, "#" + bottomColor.SixDigitHexCode);
-                            break;
-                        case ShapeOptions.PropertyId.borderLeftColor:
-                            RGBColor leftColor = new RGBColor((int)entry.op, RGBColor.ByteOrder.RedFirst);
-                            _writer.WriteAttributeString("o", "borderleftcolor", OpenXmlNamespaces.Office, "#" + leftColor.SixDigitHexCode);
-                            break;
-                        case ShapeOptions.PropertyId.borderRightColor:
-                            RGBColor rightColor = new RGBColor((int)entry.op, RGBColor.ByteOrder.RedFirst);
-                            _writer.WriteAttributeString("o", "borderrightcolor", OpenXmlNamespaces.Office, "#" + rightColor.SixDigitHexCode);
-                            break;
-                        case ShapeOptions.PropertyId.borderTopColor:
-                            RGBColor topColor = new RGBColor((int)entry.op, RGBColor.ByteOrder.RedFirst);
-                            _writer.WriteAttributeString("o", "bordertopcolor", OpenXmlNamespaces.Office, "#" + topColor.SixDigitHexCode);
-                            break;
+                            case ShapeOptions.PropertyId.borderBottomColor:
+                                RGBColor bottomColor = new RGBColor((int)entry.op, RGBColor.ByteOrder.RedFirst);
+                                _writer.WriteAttributeString("o", "borderbottomcolor", OpenXmlNamespaces.Office, "#" + bottomColor.SixDigitHexCode);
+                                break;
+                            case ShapeOptions.PropertyId.borderLeftColor:
+                                RGBColor leftColor = new RGBColor((int)entry.op, RGBColor.ByteOrder.RedFirst);
+                                _writer.WriteAttributeString("o", "borderleftcolor", OpenXmlNamespaces.Office, "#" + leftColor.SixDigitHexCode);
+                                break;
+                            case ShapeOptions.PropertyId.borderRightColor:
+                                RGBColor rightColor = new RGBColor((int)entry.op, RGBColor.ByteOrder.RedFirst);
+                                _writer.WriteAttributeString("o", "borderrightcolor", OpenXmlNamespaces.Office, "#" + rightColor.SixDigitHexCode);
+                                break;
+                            case ShapeOptions.PropertyId.borderTopColor:
+                                RGBColor topColor = new RGBColor((int)entry.op, RGBColor.ByteOrder.RedFirst);
+                                _writer.WriteAttributeString("o", "bordertopcolor", OpenXmlNamespaces.Office, "#" + topColor.SixDigitHexCode);
+                                break;
+                        }
                     }
+
+                    //v:imageData
+                    _writer.WriteStartElement("v", "imagedata", OpenXmlNamespaces.VectorML);
+                    _writer.WriteAttributeString("o", "relid", OpenXmlNamespaces.Office, imgPart.RelIdToString);
+                    _writer.WriteAttributeString("o", "title", OpenXmlNamespaces.Office, "");
+                    _writer.WriteEndElement(); //imagedata
+
+                    //close v:shape
+                    _writer.WriteEndElement();                   
                 }
-
-                //v:imageData
-                _writer.WriteStartElement("v", "imagedata", OpenXmlNamespaces.VectorML);
-                _writer.WriteAttributeString("o", "relid", OpenXmlNamespaces.Office, imgPart.RelIdToString);
-                _writer.WriteAttributeString("o", "title", OpenXmlNamespaces.Office, "");
-                _writer.WriteEndElement(); //imagedata
-
-                //close v:shape
-                _writer.WriteEndElement();
-
-                _writer.WriteEndElement(); //xml
-                _writer.WriteEndDocument();
-                _writer.Flush();
             }
+
+            _writer.WriteEndElement(); //xml
+            _writer.WriteEndDocument();
+            _writer.Flush();
         }
 
         /// <summary>

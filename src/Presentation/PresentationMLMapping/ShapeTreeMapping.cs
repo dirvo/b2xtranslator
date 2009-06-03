@@ -37,6 +37,7 @@ using System.Reflection;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using System.Drawing;
 using DIaLOGIKa.b2xtranslator.Tools;
+using System.Collections;
 
 namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 {
@@ -56,7 +57,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         private SortedDictionary<int, int> ColumnWidthsByYPos;
         private List<int> RowHeights;
-        private List<ShapeContainer> Lines;
+        //private List<ShapeContainer> Lines;
+        private SortedList<int, SortedList<int, ShapeContainer>> verticallinelist;
+        private SortedList<int, SortedList<int, ShapeContainer>> horizontallinelist;
 
         public ShapeTreeMapping(ConversionContext ctx, XmlWriter writer)
             : base(writer)
@@ -85,6 +88,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         public void Apply(PPDrawing drawing)
         {
             Apply((RegularContainer) drawing);
+            writeVML();
         }
 
         public void Apply(DrawingContainer drawingContainer)
@@ -224,16 +228,29 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     for (int i = 0; i < nElems; i++)
                     {
                         Int32 height = BitConverter.ToInt32(data, 6 + i * cbElem);
-                        RowHeights.Add(height);
+                        //this is a workaround for a bug
+                        //it should be analysed when to use 0 height
+                        if (height > 50)
+                        {
+                            RowHeights.Add(height);
+                        }
+                        else
+                        {
+                            RowHeights.Add(0);
+                        }
                     }
                 }                
             }
 
             List<ShapeContainer> Cells = new List<ShapeContainer>();
-            Lines = new List<ShapeContainer>();
+            //Lines = new List<ShapeContainer>();
             Dictionary<string, ShapeContainer> LinesByPosition = new Dictionary<string, ShapeContainer>();
            
             SortedList<int, SortedList<int, ShapeContainer>> tablelist = new SortedList<int,SortedList<int,ShapeContainer>>();
+            verticallinelist = new SortedList<int, SortedList<int, ShapeContainer>>();
+            horizontallinelist = new SortedList<int, SortedList<int, ShapeContainer>>();
+
+
             foreach (ShapeContainer scontainer in group.AllChildrenWithType<ShapeContainer>())
             {
                 ChildAnchor anch = scontainer.FirstChildWithType<ChildAnchor>();
@@ -246,7 +263,20 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     }
                     else if (Utils.getPrstForShape(shape.Instance) == "line")
                     {
-                        Lines.Add(scontainer);
+                        if (anch.Top == anch.Bottom)
+                        {
+                            //horizontal
+                            if (!horizontallinelist.ContainsKey(anch.Top)) horizontallinelist.Add(anch.Top, new SortedList<int, ShapeContainer>());
+                            horizontallinelist[anch.Top].Add(anch.Left, scontainer);
+                        }
+                        else
+                        {
+                            //vertical
+                            if (!verticallinelist.ContainsKey(anch.Top)) verticallinelist.Add(anch.Top, new SortedList<int, ShapeContainer>());
+                            verticallinelist[anch.Top].Add(anch.Left, scontainer);
+                        }                       
+
+                        //Lines.Add(scontainer);
                     }
                 } 
             }
@@ -423,8 +453,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                         ChildAnchor anch = container.FirstChildWithType<ChildAnchor>();
                         int colWidth = ColumnWidthsByYPos[anch.Left];
-                        
-                        if (anch.rcgBounds.Height > RowHeights[row])
+
+                        if (anch.rcgBounds.Height > RowHeights[row] && GetRowSpanCount(anch, row) > 1)
                         {
                             _writer.WriteAttributeString("rowSpan", GetRowSpanCount(anch, row).ToString());
                         }
@@ -433,7 +463,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         {
                             _writer.WriteAttributeString("gridSpan", GetGridSpanCount(anch, col).ToString());
                         }
-                                              
+
                         foreach (Record record in container.Children)
                         {
                             if (record is ClientTextbox)
@@ -516,10 +546,16 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         {
                             ShapeContainer previouscontainer = table[row, col-1];
                             ChildAnchor anch = previouscontainer.FirstChildWithType<ChildAnchor>();
-                            if (anch.rcgBounds.Height > RowHeights[row])
+
+                            if (anch.rcgBounds.Height > RowHeights[row] && GetRowSpanCount(anch, row) > 1)
                             {
-                                _writer.WriteAttributeString("rowSpan", "2");                                
+                                _writer.WriteAttributeString("rowSpan", GetRowSpanCount(anch, row).ToString());
                             }
+
+                            //if (anch.rcgBounds.Height > RowHeights[row])
+                            //{
+                            //    _writer.WriteAttributeString("rowSpan", "2");
+                            //}
 
                             if (anch.rcgBounds.Width > ColumnWidthsByYPos[anch.Left])
                             {
@@ -593,94 +629,130 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         private void WriteTableLineProperties(int row, int col, ShapeContainer[,] table)
         {
-            int rows = table.GetLength(0);
-            int columns = table.GetLength(1);
-
-            //check cell position
-            bool isLeft = (col == 0);
-            bool isRight = (col == columns - 1);
-            bool isTop = (row == 0);
-            bool isBottom = (row == rows - 1);
-
-            int span;
-
             ShapeContainer container = table[row, col];
             ChildAnchor anch = container.FirstChildWithType<ChildAnchor>();
             ShapeOptions so = container.FirstChildWithType<ShapeOptions>();
 
+            ShapeContainer leftLine = null;
+            ShapeContainer rightLine = null;
+            ShapeContainer topLine = null;
+            ShapeContainer bottomLine = null;
+
+            foreach (int linetop in horizontallinelist.Keys)
+            {
+                SortedList<int, ShapeContainer> lst = horizontallinelist[linetop];
+
+                if (linetop == anch.Top)
+                    foreach (int lineleft in lst.Keys)
+                    {
+                        ShapeContainer line = lst[lineleft];
+                        if (topLine == null)
+                        {
+                            //set first as default
+                            topLine = line;
+                        }
+                        else
+                        {
+                            if (lineleft == anch.Left) topLine = line;
+                        }
+                    }
+
+                if (linetop == anch.Bottom)
+                    foreach (int lineleft in lst.Keys)
+                    {
+                        ShapeContainer line = lst[lineleft];
+                        if (bottomLine == null)
+                        {
+                            //set first as default
+                            bottomLine = line;
+                        }
+                        else
+                        {
+                            if (lineleft == anch.Left) bottomLine = line;
+                        }
+                    }
+            }
+
+            foreach (int linetop in verticallinelist.Keys)
+            {
+                SortedList<int, ShapeContainer> lst = verticallinelist[linetop];
+
+                foreach (int lineleft in lst.Keys)
+                {
+                    ShapeContainer line = lst[lineleft];
+
+                    if (lineleft == anch.Left)
+                        if (leftLine == null)
+                        {
+                            //set first as default
+                            leftLine = line;
+                        }
+                        else
+                        {
+                            if (linetop == anch.Top) leftLine = line;
+                        }
+
+                    if (lineleft == anch.Right)
+                        if (rightLine == null)
+                        {
+                            //set first as default
+                            rightLine = line;
+                        }
+                        else
+                        {
+                            if (linetop == anch.Top) rightLine = line;
+                        }
+                }
+
+            }
+
+
+
+            int rows = table.GetLength(0);
+            int columns = table.GetLength(1);
+
+            ////check cell position
+            //bool isLeft = (col == 0);
+            //bool isRight = (col == columns - 1);
+            //bool isTop = (row == 0);
+            //bool isBottom = (row == rows - 1);
+
+            int span;
             int colWidth = ColumnWidthsByYPos[anch.Left];
             if (anch.rcgBounds.Height > RowHeights[row])
             {
                 //recheck isBottom
                 span = GetRowSpanCount(anch, row);
-                isBottom = (row + span - 1 == rows - 1);
+                //isBottom = (row + span - 1 == rows - 1);
             }
             if (anch.rcgBounds.Width > colWidth)
             {
                 //recheck isRight
                 span = GetGridSpanCount(anch, col);
-                isRight = (col + span - 1 == columns - 1);
+                //isRight = (col + span - 1 == columns - 1);
             }
             
 
-            ShapeContainer outerLine = null;
-            ShapeContainer innerLine = null;
-
-            int topmost = -1;
-            int topleast = int.MaxValue;
-            foreach (ShapeContainer lineCont in Lines)
-            {
-                //first find topmost and topleast vertical lines
-                //the topmost line is used as outer line
-                foreach (ChildAnchor anchor in lineCont.AllChildrenWithType<ChildAnchor>())
-                {
-                    //vertical
-                    if (anchor.Top == anchor.Bottom)
-                    {
-                        if (anchor.Top > topmost)
-                        {
-                            outerLine = lineCont;
-                            topmost = anchor.Top;
-                        }
-                        if (anchor.Top < topleast)
-                        {
-                            topleast = anchor.Top;
-                        }
-                    }
-                }
-            }
-            foreach (ShapeContainer lineCont in Lines)
-            {
-                //a vertical line which is neither topmost nor topleast is used as inner line
-                foreach (ChildAnchor anchor in lineCont.AllChildrenWithType<ChildAnchor>())
-                {
-                    //vertical
-                    if (anchor.Top == anchor.Bottom)
-                    {
-                        if (anchor.Top < topmost & anchor.Top > topleast)
-                        {
-                            innerLine = lineCont;
-                            break;
-                        }
-                    }
-                }   
-            }
             
      
             _writer.WriteStartElement("a", "lnL", OpenXmlNamespaces.DrawingML);
-            if (isLeft) WriteLineProperties(outerLine); else WriteLineProperties(innerLine); 
+            WriteLineProperties(leftLine, so);
+            //if (isLeft) WriteLineProperties(outerLine, so); else WriteLineProperties(innerLine, null); 
             _writer.WriteEndElement(); //lnL
 
             _writer.WriteStartElement("a", "lnR", OpenXmlNamespaces.DrawingML);
-            if (isRight) WriteLineProperties(outerLine); else WriteLineProperties(innerLine);
+            WriteLineProperties(rightLine, so);
+            //if (isRight) WriteLineProperties(outerLine, so); else WriteLineProperties(innerLine, null);
             _writer.WriteEndElement(); //lnR
 
             _writer.WriteStartElement("a", "lnT", OpenXmlNamespaces.DrawingML);
-            if (isTop) WriteLineProperties(outerLine); else WriteLineProperties(innerLine);
+            WriteLineProperties(topLine, so);
+            //if (isTop) WriteLineProperties(outerLine, so); else WriteLineProperties(innerLine, null);
             _writer.WriteEndElement(); //lnT
 
             _writer.WriteStartElement("a", "lnB", OpenXmlNamespaces.DrawingML);
-            if (isBottom) WriteLineProperties(outerLine); else WriteLineProperties(innerLine);
+            WriteLineProperties(bottomLine, so);
+            //if (isBottom) WriteLineProperties(outerLine, so); else WriteLineProperties(innerLine, null);
             _writer.WriteEndElement(); //lnB
 
             _writer.WriteStartElement("a", "lnTlToBr", OpenXmlNamespaces.DrawingML);
@@ -693,8 +765,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                       
         }
 
-        private void WriteLineProperties(ShapeContainer lineCont)
+        private void WriteLineProperties(ShapeContainer lineCont, ShapeOptions soframe)
         {
+            if (lineCont == null)
+            {
+                _writer.WriteElementString("a", "noFill", OpenXmlNamespaces.DrawingML, "");
+                return;
+            }
+
             foreach (ShapeOptions soline in lineCont.AllChildrenWithType<ShapeOptions>())
             {
                 if (soline.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineWidth))
@@ -721,11 +799,34 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 _writer.WriteAttributeString("cmpd", "sng");
                 _writer.WriteAttributeString("algn", "ctr");
 
-                if (soline.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineColor))
+                if (soline.OptionsByID.ContainsKey(ShapeOptions.PropertyId.FillStyleBooleanProperties))
+                {
+                    FillStyleBooleanProperties fsb = new FillStyleBooleanProperties(soline.OptionsByID[ShapeOptions.PropertyId.FillStyleBooleanProperties].op);
+                    if (fsb.fFilled && fsb.fUsefFilled && soline.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineColor))
+                    {
+                        _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
+                        string SchemeType = "";
+                        string colorVal = Utils.getRGBColorFromOfficeArtCOLORREF(soline.OptionsByID[ShapeOptions.PropertyId.lineColor].op, lineCont.FirstAncestorWithType<Slide>(), so, ref SchemeType);
+
+                        if (SchemeType.Length == 0)
+                        {
+                            _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("val", colorVal);
+                        }
+                        else
+                        {
+                            _writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("val", SchemeType);
+                        }
+                        _writer.WriteEndElement();
+                        _writer.WriteEndElement();
+                    }
+                } 
+                else if (soframe != null && soframe.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineColor))
                 {
                     _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
                     string SchemeType = "";
-                    string colorVal = Utils.getRGBColorFromOfficeArtCOLORREF(soline.OptionsByID[ShapeOptions.PropertyId.lineColor].op, lineCont.FirstAncestorWithType<Slide>(), so, ref SchemeType);
+                    string colorVal = Utils.getRGBColorFromOfficeArtCOLORREF(soframe.OptionsByID[ShapeOptions.PropertyId.lineColor].op, lineCont.FirstAncestorWithType<Slide>(), soframe, ref SchemeType);
 
                     if (SchemeType.Length == 0)
                     {
@@ -740,11 +841,52 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteEndElement();
                     _writer.WriteEndElement();
                 }
-
+               
                 if (soline.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineDashing))
                 {
                     _writer.WriteStartElement("a", "prstDash", OpenXmlNamespaces.DrawingML);
                     switch ((ShapeOptions.LineDashing)soline.OptionsByID[ShapeOptions.PropertyId.lineDashing].op)
+                    {
+                        case ShapeOptions.LineDashing.Solid:
+                            _writer.WriteAttributeString("val", "solid");
+                            break;
+                        case ShapeOptions.LineDashing.DashSys:
+                            _writer.WriteAttributeString("val", "sysDash");
+                            break;
+                        case ShapeOptions.LineDashing.DotSys:
+                            _writer.WriteAttributeString("val", "sysDot");
+                            break;
+                        case ShapeOptions.LineDashing.DashDotSys:
+                            _writer.WriteAttributeString("val", "sysDashDot");
+                            break;
+                        case ShapeOptions.LineDashing.DashDotDotSys:
+                            _writer.WriteAttributeString("val", "sysDashDotDot");
+                            break;
+                        case ShapeOptions.LineDashing.DotGEL:
+                            _writer.WriteAttributeString("val", "dot");
+                            break;
+                        case ShapeOptions.LineDashing.DashGEL:
+                            _writer.WriteAttributeString("val", "dash");
+                            break;
+                        case ShapeOptions.LineDashing.LongDashGEL:
+                            _writer.WriteAttributeString("val", "lgDash");
+                            break;
+                        case ShapeOptions.LineDashing.DashDotGEL:
+                            _writer.WriteAttributeString("val", "dashDot");
+                            break;
+                        case ShapeOptions.LineDashing.LongDashDotGEL:
+                            _writer.WriteAttributeString("val", "lgDashDot");
+                            break;
+                        case ShapeOptions.LineDashing.LongDashDotDotGEL:
+                            _writer.WriteAttributeString("val", "lgDashDotDot");
+                            break;
+                    }
+                    _writer.WriteEndElement();
+                }
+                else if (soframe != null && soframe.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineDashing))
+                {
+                    _writer.WriteStartElement("a", "prstDash", OpenXmlNamespaces.DrawingML);
+                    switch ((ShapeOptions.LineDashing)soframe.OptionsByID[ShapeOptions.PropertyId.lineDashing].op)
                     {
                         case ShapeOptions.LineDashing.Solid:
                             _writer.WriteAttributeString("val", "solid");
@@ -1524,6 +1666,34 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
         }
 
+        public Point scanEMFPictureForSize(BlipStoreEntry bse)
+        {
+            Record mb = _ctx.Ppt.PicturesContainer._pictures[bse.foDelay];
+            Point size = new Point();
+
+            //write the blip
+            if (mb != null)
+            {
+                switch (bse.btWin32)
+                {
+                    case BlipStoreEntry.BlipType.msoblipEMF:
+                    case BlipStoreEntry.BlipType.msoblipWMF:
+
+                        //it's a meta image
+                        MetafilePictBlip metaBlip = (MetafilePictBlip)mb;
+                        size = metaBlip.m_ptSize;
+
+                        //meta images can be compressed
+                        byte[] decompressed = metaBlip.Decrompress();
+
+                        break;
+                }
+            }
+            
+            return size;
+        
+        }
+
         private void writeOle(ShapeContainer container, ExOleEmbedContainer oleContainer)
         {
             Shape sh = container.FirstChildWithType<Shape>();
@@ -1537,7 +1707,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteAttributeString("noChangeAspect", "1");
             _writer.WriteEndElement(); //graphicFrameLocks
             _writer.WriteEndElement(); //cNvGraphicFramePr
-            _writer.WriteElementString("p", "nvPr", OpenXmlNamespaces.PresentationML, "");
+            //_writer.WriteElementString("p", "nvPr", OpenXmlNamespaces.PresentationML, "");
+
+            _writer.WriteStartElement("p", "nvPr", OpenXmlNamespaces.PresentationML);
+            OEPlaceHolderAtom placeholder = null;
+            int exObjIdRef = 0;
+            CheckClientData(container.FirstChildWithType<ClientData>(), ref placeholder, ref exObjIdRef);
+            _writer.WriteEndElement();
+
             _writer.WriteEndElement(); //nvGraphicFramePr   
 
             Rectangle anchor = new Rectangle();
@@ -1583,9 +1760,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteEndElement();
                 }
             }
-
-           
-
+            
             _writer.WriteStartElement("a", "graphic", OpenXmlNamespaces.DrawingML);
 
             _writer.WriteStartElement("a", "graphicData", OpenXmlNamespaces.DrawingML);
@@ -1598,20 +1773,18 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             outStream.Write(oleContainer.stgAtom.DecompressData(), 0, (int)oleContainer.stgAtom.decompressedSize);
 
             string rId = embPart.RelIdToString;
-           
-            string spid = "_x0000_s" + id;
-            double width = 6096000; 
-            double height = 4067348; 
+
+            string spid = "_x0000_s" + sh.spid.ToString(); //+ id;
             string name = oleContainer.AllChildrenWithType<CStringAtom>()[0].Text;
             string progId = oleContainer.AllChildrenWithType<CStringAtom>()[1].Text;
 
             DrawingGroup gr = (DrawingGroup)this._ctx.Ppt.DocumentRecord.FirstChildWithType<PPDrawingGroup>().Children[0];
             BlipStoreEntry bse = (BlipStoreEntry)gr.FirstChildWithType<BlipStoreContainer>().Children[(int)so.OptionsByID[ShapeOptions.PropertyId.Pib].op - 1];
 
-            VmlPart vmlPart = null;
-            vmlPart = parentSlideMapping.targetPart.AddVmlPart();
-            vmlPart.TargetDirectory = "..\\drawings";
-            System.IO.Stream vmlStream = vmlPart.GetStream();
+            //VmlPart vmlPart = null;
+            //vmlPart = parentSlideMapping.targetPart.AddVmlPart();
+            //vmlPart.TargetDirectory = "..\\drawings";
+            //System.IO.Stream vmlStream = vmlPart.GetStream();
 
             GroupShapeRecord gsr = container.FirstAncestorWithType<GroupContainer>().FirstChildWithType<ShapeContainer>().FirstChildWithType<GroupShapeRecord>();
 
@@ -1633,9 +1806,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 rec = new Rectangle(chanch.Left, chanch.Top, chanch.Right - chanch.Left, chanch.Bottom - chanch.Top);
             }
 
-            VMLPictureMapping vm = new VMLPictureMapping(vmlPart, _ctx.WriterSettings);
+            //VMLPictureMapping vm = new VMLPictureMapping(vmlPart, _ctx.WriterSettings);
             Point size = new Point();
-            vm.Apply(bse, sh, so, rec, _ctx, spid, ref size);
+            //vm.Apply(bse, sh, so, rec, _ctx, spid, ref size);
+            addVMLEntry(bse, sh, so, rec, spid, ref size);
 
             _writer.WriteStartElement("p", "oleObj", OpenXmlNamespaces.PresentationML);
             _writer.WriteAttributeString("spid", spid);
@@ -1656,6 +1830,37 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement(); //graphic
             
             _writer.WriteEndElement(); //graphicFrame
+        }
+
+        private List<ArrayList> VMLEntries = new List<ArrayList>();
+        private void addVMLEntry(BlipStoreEntry bse, Shape shape, ShapeOptions options, Rectangle bounds, string spid, ref Point size)
+        {
+            size = scanEMFPictureForSize(bse);
+            ArrayList newVMLEntries = new ArrayList();
+            newVMLEntries.Add(bse);
+            newVMLEntries.Add(shape);
+            newVMLEntries.Add(options);
+            newVMLEntries.Add(bounds);
+            newVMLEntries.Add(spid);
+            newVMLEntries.Add(size);
+            VMLEntries.Add(newVMLEntries);
+        }
+
+        private void writeVML()
+        {
+            if (VMLEntries.Count > 0)
+            {
+                VmlPart vmlPart = null;
+                vmlPart = parentSlideMapping.targetPart.AddVmlPart();
+                vmlPart.TargetDirectory = "..\\drawings";
+                System.IO.Stream vmlStream = vmlPart.GetStream();
+
+                VMLPictureMapping vm = new VMLPictureMapping(vmlPart, _ctx.WriterSettings);
+                Point size = new Point();
+
+                vm.Apply(VMLEntries, _ctx);
+                //vm.Apply(bse, sh, so, rec, _ctx, spid, ref size);
+            }
         }
 
         private void writePic(ShapeContainer container)
@@ -1998,6 +2203,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         private void CheckClientData(ClientData clientData, ref OEPlaceHolderAtom placeholder, ref int exObjIdRef)
         {
+            bool output = exObjIdRef > -1;
             ShapeStyleTextProp9Atom = null;
             bool phWritten = false;
             if (clientData != null)
@@ -2009,103 +2215,113 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 {
                     Record rec = Record.ReadRecord(ms, 0);
 
-                    if (rec.TypeCode == 4116 && exObjIdRef > -1)
+                    if (rec.TypeCode == 4116 && output)
                     {
                         AnimationInfoContainer animinfo = (AnimationInfoContainer)rec;
                         animinfos.Add(animinfo, _idCnt);
                         if (ms.Position < ms.Length) rec = Record.ReadRecord(ms, 1);
                     }
 
-                    switch (rec.TypeCode)
+                    while (true)
                     {
-                        case 3009:
-                            exObjIdRef = ((ExObjRefAtom)rec).exObjIdRef;
-                            break;
-                        case 3011:
-                            placeholder = (OEPlaceHolderAtom)rec;
+                        switch (rec.TypeCode)
+                        {
+                            case 3009:
+                                exObjIdRef = ((ExObjRefAtom)rec).exObjIdRef;
+                                break;
+                            case 3011:
+                                placeholder = (OEPlaceHolderAtom)rec;
 
-                            if (placeholder != null && exObjIdRef > -1)
-                            {
-
-                                _writer.WriteStartElement("p", "ph", OpenXmlNamespaces.PresentationML);
-
-                                if (!placeholder.IsObjectPlaceholder())
+                                if (placeholder != null && output)
                                 {
-                                    string typeValue = Utils.PlaceholderIdToXMLValue(placeholder.PlacementId);
-                                    _writer.WriteAttributeString("type", typeValue);
-                                }
 
-                                switch (placeholder.PlaceholderSize)
-                                {
-                                    case 1:
-                                        _writer.WriteAttributeString("sz", "half");
-                                        break;
-                                    case 2:
-                                        _writer.WriteAttributeString("sz", "quarter");
-                                        break;
-                                }
+                                    _writer.WriteStartElement("p", "ph", OpenXmlNamespaces.PresentationML);
 
-
-                                if (placeholder.Position != -1)
-                                {
-                                    _writer.WriteAttributeString("idx", placeholder.Position.ToString());
-                                }
-                                else
-                                {
-                                    try
+                                    if (!placeholder.IsObjectPlaceholder())
                                     {
-                                        Slide master = _ctx.Ppt.FindMasterRecordById(clientData.FirstAncestorWithType<Slide>().FirstChildWithType<SlideAtom>().MasterId);
-                                        foreach (ShapeContainer cont in master.FirstChildWithType<PPDrawing>().FirstChildWithType<DrawingContainer>().FirstChildWithType<GroupContainer>().AllChildrenWithType<ShapeContainer>())
+                                        string typeValue = Utils.PlaceholderIdToXMLValue(placeholder.PlacementId);
+                                        _writer.WriteAttributeString("type", typeValue);
+                                    }
+
+                                    switch (placeholder.PlaceholderSize)
+                                    {
+                                        case 1:
+                                            _writer.WriteAttributeString("sz", "half");
+                                            break;
+                                        case 2:
+                                            _writer.WriteAttributeString("sz", "quarter");
+                                            break;
+                                    }
+
+
+                                    if (placeholder.Position != -1)
+                                    {
+                                        _writer.WriteAttributeString("idx", placeholder.Position.ToString());
+                                    }
+                                    else
+                                    {
+                                        try
                                         {
-                                            Shape s = cont.FirstChildWithType<Shape>();
-                                            ClientData d = cont.FirstChildWithType<ClientData>();
-                                            if (d != null)
+                                            Slide master = _ctx.Ppt.FindMasterRecordById(clientData.FirstAncestorWithType<Slide>().FirstChildWithType<SlideAtom>().MasterId);
+                                            foreach (ShapeContainer cont in master.FirstChildWithType<PPDrawing>().FirstChildWithType<DrawingContainer>().FirstChildWithType<GroupContainer>().AllChildrenWithType<ShapeContainer>())
                                             {
-                                                ms = new System.IO.MemoryStream(d.bytes);
-                                                rec = Record.ReadRecord(ms, 0);
-                                                if (rec is OEPlaceHolderAtom)
+                                                Shape s = cont.FirstChildWithType<Shape>();
+                                                ClientData d = cont.FirstChildWithType<ClientData>();
+                                                if (d != null)
                                                 {
-                                                    OEPlaceHolderAtom placeholder2 = (OEPlaceHolderAtom)rec;
-                                                    if (placeholder2.PlacementId == PlaceholderEnum.MasterBody && (placeholder.PlacementId == PlaceholderEnum.Body || placeholder.PlacementId == PlaceholderEnum.Object))
+                                                    ms = new System.IO.MemoryStream(d.bytes);
+                                                    rec = Record.ReadRecord(ms, 0);
+                                                    if (rec is OEPlaceHolderAtom)
                                                     {
-                                                        if (placeholder2.Position != -1)
+                                                        OEPlaceHolderAtom placeholder2 = (OEPlaceHolderAtom)rec;
+                                                        if (placeholder2.PlacementId == PlaceholderEnum.MasterBody && (placeholder.PlacementId == PlaceholderEnum.Body || placeholder.PlacementId == PlaceholderEnum.Object))
                                                         {
-                                                            _writer.WriteAttributeString("idx", placeholder2.Position.ToString());
+                                                            if (placeholder2.Position != -1)
+                                                            {
+                                                                _writer.WriteAttributeString("idx", placeholder2.Position.ToString());
+                                                            }
                                                         }
                                                     }
                                                 }
                                             }
+
                                         }
 
+                                        catch (Exception)
+                                        {
+                                            //ignore
+                                        }
                                     }
 
-                                    catch (Exception)
-                                    {
-                                       //ignore
-                                    }
+                                    _writer.WriteEndElement();
+                                    phWritten = true;
                                 }
-                                
-                                _writer.WriteEndElement();
-                                phWritten = true;
-                            }
+                                break;
+                            case 4116:
+                                break;
+                            case 5000:
+                                RegularContainer con = (RegularContainer)rec;
+                                foreach (ProgBinaryTag t in con.AllChildrenWithType<ProgBinaryTag>())
+                                {
+                                    CStringAtom c = t.FirstChildWithType<CStringAtom>();
+                                    ProgBinaryTagDataBlob b = t.FirstChildWithType<ProgBinaryTagDataBlob>();
+                                    StyleTextProp9Atom p = b.FirstChildWithType<StyleTextProp9Atom>();
+                                    ShapeStyleTextProp9Atom = p;
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                        if (ms.Position < ms.Length)
+                        {
+                            rec = Record.ReadRecord(ms, 0);
+                        }
+                        else
+                        {
                             break;
-                        case 4116:
-                            break;
-                        case 5000:
-                            RegularContainer con = (RegularContainer)rec;
-                            foreach (ProgBinaryTag t in con.AllChildrenWithType<ProgBinaryTag>())
-                            {
-                                CStringAtom c = t.FirstChildWithType<CStringAtom>();
-                                ProgBinaryTagDataBlob b = t.FirstChildWithType<ProgBinaryTagDataBlob>();
-                                StyleTextProp9Atom p = b.FirstChildWithType<StyleTextProp9Atom>();
-                                ShapeStyleTextProp9Atom = p;
-                            }
-                            break;
-                        default:
-                            break;
-                    }
+                        }
+                    }                    
                 }
-                               
             
                 RegularContainer container = (RegularContainer)(clientData.ParentRecord);
                 foreach (ClientTextbox b in container.AllChildrenWithType<ClientTextbox>())
@@ -2129,7 +2345,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                
                                 break;
                             case 0xff7: //DateTimeMCAtom
-                                if (!phWritten && exObjIdRef > -1)
+                                if (!phWritten && output)
                                 {
                                     _writer.WriteStartElement("p", "ph", OpenXmlNamespaces.PresentationML);
                                     _writer.WriteAttributeString("type", "dt");

@@ -758,7 +758,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     }
                     _writer.WriteEndElement(); //spcBef
                 }
-                
+
                 if (p.SpaceAfterPresent)
                 {
                     _writer.WriteStartElement("a", "spcAft", OpenXmlNamespaces.DrawingML);
