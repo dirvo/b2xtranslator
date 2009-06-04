@@ -43,6 +43,8 @@
     <Compile Include="BiffRecord.cs" />
     <Compile Include="BiffRecordAttribute.cs" />
     <Compile Include="BiffString.cs" />
+    <Compile Include="ChartAxisIdGenerator.cs" />
+    <Compile Include="ChartFormatIdGenerator.cs" />
     <Compile Include="ChartSequences\AiSequence.cs" />
     <Compile Include="ChartSequences\AttachedLabelSequence.cs" />
     <Compile Include="ChartSequences\AutoFilterSequence.cs" />

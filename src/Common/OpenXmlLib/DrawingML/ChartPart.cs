@@ -33,31 +33,24 @@ using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.DrawingML
 {
 
-    public class DrawingsPart : OpenXmlPart
+    public class ChartPart : OpenXmlPart
     {
-        private int _chartPartCount;
-
-        public DrawingsPart(OpenXmlPartContainer parent, int partIndex)
+        public ChartPart(OpenXmlPartContainer parent, int partIndex)
             : base(parent, partIndex)
         {
         }
-        
+
         public override string ContentType
         {
-            get { return OpenXmlContentTypes.Drawing; }
+            get { return DrawingMLContentTypes.Chart; }
         }
 
         public override string RelationshipType
         {
-            get { return OpenXmlRelationshipTypes.Drawing; }
+            get { return OpenXmlRelationshipTypes.Chart; }
         }
 
-        public override string TargetName { get { return "drawing" + this.PartIndex.ToString(); } }
-        public override string TargetDirectory { get { return "drawings"; } }
-
-        public ChartPart AddChartPart()
-        {
-            return this.AddPart(new ChartPart(this, ++_chartPartCount));
-        }
+        public override string TargetName { get { return "chart" + this.PartIndex.ToString(); } }
+        public override string TargetDirectory { get { return "charts"; } }
     }
 }

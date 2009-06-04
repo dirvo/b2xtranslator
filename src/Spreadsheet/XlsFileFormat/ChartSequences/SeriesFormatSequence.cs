@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
+using System;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
-    public class SeriesFormatSequence : BiffRecordSequence
+    public class SeriesFormatSequence : BiffRecordSequence, IVisitable
     {
         public class LegendExceptionGroup : BiffRecordSequence
         {
@@ -61,7 +63,15 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
         public LegendExceptionGroup LegendExceptionSequence; 
 
-        public End End; 
+        public End End;
+
+        /// <summary>
+        /// An unsigned integer that specifies the order of the series in the collection. It is 0 based.
+        /// 
+        /// NOTE: This value is set at parse time. It is not stored in the binary file.
+        /// </summary>
+        public UInt16 order;
+
 
         public SeriesFormatSequence(IStreamReader reader)
             : base(reader)
@@ -87,8 +97,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
             // *SS 
             this.SsSequence = new List<SsSequence>();
-            while (BiffRecord.GetNextRecordType(reader) ==
-                RecordType.DataFormat)
+            while (BiffRecord.GetNextRecordType(reader) == RecordType.DataFormat)
             {
                 this.SsSequence.Add(new SsSequence(reader));
             }
@@ -125,5 +134,14 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             this.End = (End)BiffRecord.ReadRecord(reader);
 
         }
+
+        #region IVisitable Members
+
+        public void Convert<T>(T mapping)
+        {
+            ((IMapping<SeriesFormatSequence>)mapping).Apply(this);
+        }
+
+        #endregion
     }
 }

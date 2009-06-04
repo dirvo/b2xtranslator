@@ -39,6 +39,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                 {
                     reader.BaseStream.Position = position;
 
+                    ChartAxisIdGenerator.Instance.StartNewAxisGroup();
+
                     //IVAXIS
                     this.IvAxisSequence = new IvAxisSequence(reader);
 
@@ -55,6 +57,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                 {
                     reader.BaseStream.Position = position;
 
+                    ChartAxisIdGenerator.Instance.StartNewAxisGroup();
+
                     //DVAXIS 
                     this.DvAxisSequence = new DvAxisSequence(reader);
                     
@@ -64,6 +68,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             }
 
             //*3ATTACHEDLABEL 
+            this.AttachedLabelSequences = new List<AttachedLabelSequence>();
             while (BiffRecord.GetNextRecordType(reader) == RecordType.Text)
             {
                 this.AttachedLabelSequences.Add(new AttachedLabelSequence(reader));

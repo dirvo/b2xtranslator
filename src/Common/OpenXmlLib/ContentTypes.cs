@@ -135,6 +135,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 
         // Drawing ML namespaces
         public const string DrawingML = "http://schemas.openxmlformats.org/drawingml/2006/main";
+        public const string DrawingMLSpreadsheet = "http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing";
         public const string DrawingMLPicture = "http://schemas.openxmlformats.org/drawingml/2006/picture";
 
         // WordprocessingML namespaces
@@ -205,6 +206,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string Chart = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart";
         public const string Drawing = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing";
 
+        
         public const string HyperLink = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink"; 
     }
 

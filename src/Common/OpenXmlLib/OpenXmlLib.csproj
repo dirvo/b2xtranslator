@@ -40,6 +40,7 @@
   <ItemGroup>
     <Compile Include="AppPropertiesPart.cs" />
     <Compile Include="ContentPart.cs" />
+    <Compile Include="DrawingML\ChartPart.cs" />
     <Compile Include="DrawingML\DrawingML.cs" />
     <Compile Include="SpreadsheetML\ChartsheetPart.cs" />
     <Compile Include="DrawingML\DrawingsPart.cs" />

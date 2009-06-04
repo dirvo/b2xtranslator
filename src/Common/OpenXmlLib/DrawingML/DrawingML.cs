@@ -6,6 +6,9 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.DrawingML
 {
     public class Dml
     {
+        public const string Ns = "http://schemas.openxmlformats.org/drawingml/2006/main";
+        public const string Prefix = "a";
+
         #region Names defined in dml-audioVideo.xsd
         public class AudioVideo
         {
@@ -1601,6 +1604,9 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.DrawingML
         #region Names defined in dml-chart.xsd
         public class Chart
         {
+            public const string Ns = "http://schemas.openxmlformats.org/drawingml/2006/chart";
+            public const string Prefix = "c";
+
             /// <summary>
             /// Extension
             /// </summary>
@@ -5808,6 +5814,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.DrawingML
         public class SpreadsheetDrawing
         {
             public const string Ns = "http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing";
+            public const string Prefix = "xdr";
 
             /// <summary>
             /// Non-Visual Drawing Properties

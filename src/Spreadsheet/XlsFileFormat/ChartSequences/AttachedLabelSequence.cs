@@ -1,9 +1,10 @@
 ﻿using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
-    public class AttachedLabelSequence : BiffRecordSequence
+    public class AttachedLabelSequence : BiffRecordSequence, IVisitable
     {
         public Text Text;
 
@@ -17,7 +18,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
         public AiSequence AiSequence;
 
-        public Frame Frame;
+        public FrameSequence FrameSequence;
 
         public ObjectLink ObjectLink;
 
@@ -63,7 +64,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             //[FRAME] 
             if (BiffRecord.GetNextRecordType(reader) == RecordType.Frame)
             {
-                this.Frame = (Frame)BiffRecord.ReadRecord(reader);
+                this.FrameSequence = new FrameSequence(reader);
             }   
             
             //[ObjectLink] 
@@ -99,5 +100,14 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             //End
             this.End = (End)BiffRecord.ReadRecord(reader);
         }
+
+        #region IVisitable Members
+
+        public void Convert<T>(T mapping)
+        {
+            ((IMapping<AttachedLabelSequence>)mapping).Apply(this);
+        }
+
+        #endregion
     }
 }

@@ -44,20 +44,20 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
         public const RecordType ID = RecordType.Chart;
 
         /// <summary>
-        /// A FixedPoint as specified in [MS-OSHARED] section 2.2.1.6 that specifies 
-        /// the horizontal position of the upper-left corner of the chart in points. 
+        /// A FixedPoint as specified in [MS-OSHARED] section 2.2.1.6 that specifies the 
+        /// horizontal position of the upper-left corner of the chart in points. 
         /// 
-        /// MUST be 0.
+        /// SHOULD <40> be greater than or equal to zero.
         /// </summary>
-        FixedPointNumber x;
+        public FixedPointNumber x;
 
         /// <summary>
-        /// A FixedPoint as specified in [MS-OSHARED] section 2.2.1.6 that specifies 
-        /// the vertical position of the upper-left corner of the chart in points. 
+        /// A FixedPoint as specified in [MS-OSHARED] section 2.2.1.6 that specifies the 
+        /// horizontal position of the upper-left corner of the chart in points. 
         /// 
-        /// MUST be 0.
+        /// SHOULD <40> be greater than or equal to zero.
         /// </summary>
-        FixedPointNumber y;
+        public FixedPointNumber y;
 
         /// <summary>
         /// A FixedPoint as specified in [MS-OSHARED] section 2.2.1.6 that specifies 
@@ -65,7 +65,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
         /// 
         /// MUST be greater than or equal to 0.
         /// </summary>
-        FixedPointNumber dx;
+        public FixedPointNumber dx;
 
         /// <summary>
         /// A FixedPoint as specified in [MS-OSHARED] section 2.2.1.6 that specifies
@@ -73,7 +73,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
         /// 
         /// MUST be greater than or equal to 0.
         /// </summary>
-        FixedPointNumber dy;
+        public FixedPointNumber dy;
 
         public Chart(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)

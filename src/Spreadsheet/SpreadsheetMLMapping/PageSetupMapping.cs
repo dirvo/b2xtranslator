@@ -56,25 +56,17 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         {
             // page margins
             _writer.WriteStartElement(Sml.Sheet.ElPageMargins, Sml.Ns);
+            {
+                double leftMargin = pageSetupSequence.LeftMargin != null ? pageSetupSequence.LeftMargin.value : 0.75;
+                double rightMargin = pageSetupSequence.RightMargin != null ? pageSetupSequence.RightMargin.value : 0.75;
+                double topMargin = pageSetupSequence.TopMargin != null ? pageSetupSequence.TopMargin.value : 1.0;
+                double bottomMargin = pageSetupSequence.BottomMargin != null ? pageSetupSequence.BottomMargin.value : 1.0;
 
-            if (pageSetupSequence.LeftMargin != null)
-            {
-                _writer.WriteAttributeString(Sml.Sheet.AttrLeft, pageSetupSequence.LeftMargin.value.ToString(CultureInfo.InvariantCulture));
-            }
-            if (pageSetupSequence.RightMargin != null)
-            {
-                _writer.WriteAttributeString(Sml.Sheet.AttrRight, pageSetupSequence.RightMargin.value.ToString(CultureInfo.InvariantCulture));
-            }
-            if (pageSetupSequence.TopMargin != null)
-            {
-                _writer.WriteAttributeString(Sml.Sheet.AttrTop, pageSetupSequence.TopMargin.value.ToString(CultureInfo.InvariantCulture));
-            }
-            if (pageSetupSequence.BottomMargin != null)
-            {
-                _writer.WriteAttributeString(Sml.Sheet.AttrBottom, pageSetupSequence.BottomMargin.value.ToString(CultureInfo.InvariantCulture));
-            }
-            if (pageSetupSequence.Setup != null)
-            {
+                _writer.WriteAttributeString(Sml.Sheet.AttrLeft, leftMargin.ToString(CultureInfo.InvariantCulture));
+                _writer.WriteAttributeString(Sml.Sheet.AttrRight, rightMargin.ToString(CultureInfo.InvariantCulture));
+                _writer.WriteAttributeString(Sml.Sheet.AttrTop, topMargin.ToString(CultureInfo.InvariantCulture));
+                _writer.WriteAttributeString(Sml.Sheet.AttrBottom, bottomMargin.ToString(CultureInfo.InvariantCulture));
+
                 _writer.WriteAttributeString(Sml.Sheet.AttrHeader, pageSetupSequence.Setup.numHdr.ToString(CultureInfo.InvariantCulture));
                 _writer.WriteAttributeString(Sml.Sheet.AttrFooter, pageSetupSequence.Setup.numFtr.ToString(CultureInfo.InvariantCulture));
             }
@@ -86,17 +78,17 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             {
                 _writer.WriteStartElement(Sml.Sheet.ElPageSetup, Sml.Ns);
 
+                _writer.WriteAttributeString(Sml.Sheet.AttrPaperSize, pageSetupSequence.Setup.iPaperSize.ToString(CultureInfo.InvariantCulture));
+
                 if (pageSetupSequence.Setup.fUsePage)
                 {
                     _writer.WriteAttributeString(Sml.Sheet.AttrFirstPageNumber, pageSetupSequence.Setup.iPageStart.ToString(CultureInfo.InvariantCulture));
                 }
 
-                _writer.WriteAttributeString(Sml.Sheet.AttrPaperSize, pageSetupSequence.Setup.iPaperSize.ToString(CultureInfo.InvariantCulture));
-
                 if (!(pageSetupSequence.Setup.fNoPls || pageSetupSequence.Setup.fNoOrient))
                 {
                     // If fNoPls is 1, the value is undefined and MUST be ignored. If fNoOrient is 1, the value is undefined and MUST be ignored.
-                    _writer.WriteAttributeString(Sml.Sheet.AttrOrientation, pageSetupSequence.Setup.fPortrait ? "landscape" : "portrait");
+                    _writer.WriteAttributeString(Sml.Sheet.AttrOrientation, pageSetupSequence.Setup.fPortrait ? "portrait" : "landscape");
                 }
                 _writer.WriteAttributeString(Sml.Sheet.AttrUseFirstPageNumber, pageSetupSequence.Setup.fUsePage ? "1" : "0");
 

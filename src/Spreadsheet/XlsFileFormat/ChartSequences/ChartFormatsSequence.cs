@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
+using System;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
-    public class ChartFormatsSequence : BiffRecordSequence
+    public class ChartFormatsSequence : BiffRecordSequence, IVisitable
     {
         public Chart Chart;
 
@@ -30,7 +32,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
         public List<AxisParentSequence> AxisParentSequences;
 
-        public List<AttachedLabel> AttachedLabels;
+        public List<AttachedLabelSequence> AttachedLabelSequences;
 
         public List<DataLabelGroup> DataLabelGroups;
 
@@ -82,7 +84,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             this.SeriesFormatSequences = new List<SeriesFormatSequence>();
             while (BiffRecord.GetNextRecordType(reader) == RecordType.Series)
             {
-                this.SeriesFormatSequences.Add(new SeriesFormatSequence(reader));
+                SeriesFormatSequence seriesFormatSequence = new SeriesFormatSequence(reader);
+                // remember the index in the collection
+                seriesFormatSequence.order = (UInt16)this.SeriesFormatSequences.Count;
+                this.SeriesFormatSequences.Add(seriesFormatSequence);
             }
 
             // *SS
@@ -126,10 +131,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             }
 
             // *ATTACHEDLABEL
-            this.AttachedLabels = new List<AttachedLabel>();
-            while (BiffRecord.GetNextRecordType(reader) == RecordType.AttachedLabel)
+            this.AttachedLabelSequences = new List<AttachedLabelSequence>();
+            while (BiffRecord.GetNextRecordType(reader) == RecordType.Text)
             {
-                this.AttachedLabels.Add((AttachedLabel)BiffRecord.ReadRecord(reader));
+                this.AttachedLabelSequences.Add(new AttachedLabelSequence(reader));
             }
 
             // [CRTMLFRT]
@@ -188,6 +193,15 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                 }
             }
         }
+
+        #region IVisitable Members
+
+        public void Convert<T>(T mapping)
+        {
+            ((IMapping<ChartFormatsSequence>)mapping).Apply(this);
+        }
+
+        #endregion
     }
 
 }

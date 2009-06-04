@@ -89,7 +89,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 //
                 for (int window1Id = 0; window1Id < chartSheetContentSequence.WindowSequences.Count; window1Id++)
                 {
-                    chartSheetContentSequence.WindowSequences[window1Id].Convert(new WindowMapping(this._xlsContext, this._chartsheetPart, window1Id));
+                    chartSheetContentSequence.WindowSequences[window1Id].Convert(new WindowMapping(this._xlsContext, this._chartsheetPart, window1Id, true));
                 }
                 _writer.WriteEndElement();
             }
@@ -103,7 +103,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             // drawing
             _writer.WriteStartElement(Sml.Sheet.ElDrawing, Sml.Ns);
             _writer.WriteAttributeString("r", "id", OpenXmlNamespaces.Relationships, this._chartsheetPart.DrawingsPart.RelIdToString);
-            chartSheetContentSequence.Convert(new DrawingMapping(this._xlsContext, this._chartsheetPart.DrawingsPart));
+            chartSheetContentSequence.Convert(new DrawingMapping(this._xlsContext, this._chartsheetPart.DrawingsPart, true));
             
             _writer.WriteEndElement();
             _writer.WriteEndDocument();

@@ -44,10 +44,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures
     /// </summary>
     public class FixedPointNumber
     {
-        private UInt16 integral;
+        private Int16 integral;
         private UInt16 fractional;
 
-        public FixedPointNumber(UInt16 integral, UInt16 fractional)
+        public FixedPointNumber(Int16 integral, UInt16 fractional)
         {
             this.integral = integral;
             this.fractional = fractional;
@@ -55,8 +55,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures
 
         public FixedPointNumber(IStreamReader reader)
         {
-            this.integral = reader.ReadUInt16();
+            // DEVIATION: The order of fractional and integral part is different as specified.
             this.fractional = reader.ReadUInt16();
+            this.integral = reader.ReadInt16();
         }
 
         public double Value

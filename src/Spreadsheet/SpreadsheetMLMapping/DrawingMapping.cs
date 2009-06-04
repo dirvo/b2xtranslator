@@ -30,6 +30,10 @@
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.DrawingML;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
+using System;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
@@ -39,20 +43,111 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         ExcelContext _xlsContext;
         DrawingsPart _drawingsPart;
 
-        public DrawingMapping(ExcelContext xlsContext, DrawingsPart targetPart)
+        bool _isChartsheet;
+
+        public DrawingMapping(ExcelContext xlsContext, DrawingsPart targetPart, bool isChartsheet)
             : base(targetPart.XmlWriter)
         {
             this._xlsContext = xlsContext;
             this._drawingsPart = targetPart;
+
+            this._isChartsheet = isChartsheet;
         }
 
         #region IMapping<ChartSheetContentSequence> Members
 
         public void Apply(ChartSheetContentSequence chartSheetContentSequence)
         {
-            _writer.WriteStartElement(Dml.SpreadsheetDrawing.ElWsDr, Dml.SpreadsheetDrawing.Ns);
+            _writer.WriteStartElement(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElWsDr, Dml.SpreadsheetDrawing.Ns);
+            _writer.WriteAttributeString("xmlns", Dml.SpreadsheetDrawing.Prefix, "", Dml.SpreadsheetDrawing.Ns);
+            _writer.WriteAttributeString("xmlns", Dml.Prefix, "", Dml.Ns);
+
+            if (this._isChartsheet)
+            {
+                _writer.WriteStartElement(Dml.SpreadsheetDrawing.ElAbsoluteAnchor, Dml.SpreadsheetDrawing.Ns);
+                {
+                    Chart chart = chartSheetContentSequence.ChartFormatsSequence.Chart;
+
+                    // NOTE: Excel seems to somehow round the pos and ext values. The exact calculation is not documented.
+                    //   Besides, Excel might write negative values which are corrected to 0 by Excel on load time.
+                    //
+                    // xdr:pos
+                    _writer.WriteStartElement(Dml.SpreadsheetDrawing.ElPos, Dml.SpreadsheetDrawing.Ns);
+                    _writer.WriteAttributeString(Dml.BaseTypes.AttrX, Math.Max(0, new PtValue(chart.x.Value).ToEmu()).ToString());
+                    _writer.WriteAttributeString(Dml.BaseTypes.AttrY, Math.Max(0, new PtValue(chart.y.Value).ToEmu()).ToString());
+                    _writer.WriteEndElement();
+
+                    // xdr:ext
+                    _writer.WriteStartElement(Dml.SpreadsheetDrawing.ElExt, Dml.SpreadsheetDrawing.Ns);
+                    _writer.WriteAttributeString(Dml.BaseTypes.AttrCx, Math.Max(0, new PtValue(chart.dx.Value).ToEmu()).ToString());
+                    _writer.WriteAttributeString(Dml.BaseTypes.AttrCy, Math.Max(0, new PtValue(chart.dy.Value).ToEmu()).ToString());
+                    _writer.WriteEndElement();
+
+                    _writer.WriteStartElement(Dml.SpreadsheetDrawing.ElGraphicFrame, Dml.SpreadsheetDrawing.Ns);
+                    {
+                        // TODO: add graphic properties
+                        _writer.WriteStartElement(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElNvGraphicFramePr, Dml.SpreadsheetDrawing.Ns);
+                        {
+                            _writer.WriteStartElement(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElCNvPr, Dml.SpreadsheetDrawing.Ns);
+                            _writer.WriteAttributeString(Dml.DocumentProperties.AttrId, this._drawingsPart.RelId.ToString());
+                            _writer.WriteAttributeString(Dml.DocumentProperties.AttrName, "Shape");
+                            _writer.WriteEndElement(); // xdr:cNvPr
+
+                            _writer.WriteStartElement(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElCNvGraphicFramePr, Dml.SpreadsheetDrawing.Ns);
+                            _writer.WriteStartElement(Dml.Prefix, Dml.DocumentProperties.ElGraphicFrameLocks, Dml.Ns);
+                            _writer.WriteAttributeString(Dml.DocumentProperties.AttrNoGrp, "1");
+                            _writer.WriteEndElement(); // a:graphicFrameLocks
+                            _writer.WriteEndElement(); // xdr:cNvGraphicFramePr
+                        }
+                        _writer.WriteEndElement(); // xdr:nvGraphicFramePr
+
+                        // xdr:xfrm
+                        _writer.WriteStartElement(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElXfrm, Dml.SpreadsheetDrawing.Ns);
+                        {
+                            _writer.WriteStartElement(Dml.Prefix, Dml.BaseTypes.ElOff, Dml.Ns);
+                            _writer.WriteAttributeString(Dml.BaseTypes.AttrX, "0");
+                            _writer.WriteAttributeString(Dml.BaseTypes.AttrY, "0");
+                            _writer.WriteEndElement(); // a:off
+
+                            _writer.WriteStartElement(Dml.Prefix, Dml.BaseTypes.ElExt, Dml.Ns);
+                            _writer.WriteAttributeString(Dml.BaseTypes.AttrCx, "0");
+                            _writer.WriteAttributeString(Dml.BaseTypes.AttrCy, "0");
+                            _writer.WriteEndElement(); // a:ext
+                        }
+                        _writer.WriteEndElement(); // xdr:xfrm
+
+
+                        _writer.WriteStartElement(Dml.GraphicalObject.ElGraphic, Dml.Ns);
+                        {
+                            _writer.WriteStartElement(Dml.GraphicalObject.ElGraphicData, Dml.Ns);
+                            _writer.WriteAttributeString(Dml.GraphicalObject.AttrUri, Dml.Chart.Ns);
+
+                            // create and convert chart part
+                            ChartPart chartPart = this._drawingsPart.AddChartPart();
+                            chartSheetContentSequence.Convert(new ChartMapping(this._xlsContext, chartPart, this._isChartsheet));
+
+                            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElChart, Dml.Chart.Ns);
+                            _writer.WriteAttributeString("r", "id", OpenXmlNamespaces.Relationships, chartPart.RelIdToString);
+
+                            _writer.WriteEndElement(); // c:chart
+
+                            _writer.WriteEndElement(); // a:graphicData
+                        }
+                        _writer.WriteEndElement(); // a:graphic
+                    }
+                    _writer.WriteEndElement(); // a:graphicFrame
+
+                    _writer.WriteElementString(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElClientData, Dml.SpreadsheetDrawing.Ns, string.Empty);
+                }
+                _writer.WriteEndElement(); // absoluteAnchor
+            }
+            else
+            {
+                // embedded drawing
+            }
 
             _writer.WriteEndElement();
+            _writer.WriteEndDocument();
 
             _writer.Flush();
         }

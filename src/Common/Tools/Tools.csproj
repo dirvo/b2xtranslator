@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EmuValue.cs" />
+    <Compile Include="PtValue.cs" />
     <Compile Include="RGBColor.cs" />
     <Compile Include="TraceLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

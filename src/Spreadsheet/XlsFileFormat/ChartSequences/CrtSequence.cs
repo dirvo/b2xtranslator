@@ -1,10 +1,11 @@
 ﻿using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 using System.Collections.Generic;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
-    public class CrtSequence : BiffRecordSequence
+    public class CrtSequence : BiffRecordSequence, IVisitable
     {
         public ChartFormat ChartFormat;
 
@@ -22,7 +23,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
         public LdSequence LdSequence;
 
-        public DropBarSequence DropBarSequence;
+        public DropBarSequence[] DropBarSequence;
 
         public List<CrtLineGroup> CrtLineGroups;
 
@@ -66,33 +67,36 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             {
                 this.SeriesList = (SeriesList)BiffRecord.ReadRecord(reader);
             }
-            
+
             // [Chart3d] 
             if (BiffRecord.GetNextRecordType(reader) == RecordType.Chart3d)
             {
                 this.Chart3d = (Chart3d)BiffRecord.ReadRecord(reader);
             }
-            
+
             // [LD] 
             if (BiffRecord.GetNextRecordType(reader) == RecordType.Legend)
             {
                 this.LdSequence = new LdSequence(reader);
             }
-            
+
             // [2DROPBAR] 
-            // TODO: What is the meaning of [2...]?
             if (BiffRecord.GetNextRecordType(reader) == RecordType.DropBar)
             {
-                this.DropBarSequence = new DropBarSequence(reader);
+                this.DropBarSequence = new DropBarSequence[2];
+                for (int i = 0; i < 2; i++)
+                {
+                    this.DropBarSequence[i] = new DropBarSequence(reader);
+                }
             }
-            
+
             //*4(CrtLine LineFormat) 
             this.CrtLineGroups = new List<CrtLineGroup>();
             while (BiffRecord.GetNextRecordType(reader) == RecordType.CrtLine)
             {
                 this.CrtLineGroups.Add(new CrtLineGroup(reader));
             }
-            
+
             //*2DFTTEXT 
             this.DftTextSequences = new List<DftTextSequence>();
             while (BiffRecord.GetNextRecordType(reader) == RecordType.DataLabExt
@@ -100,19 +104,19 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             {
                 this.DftTextSequences.Add(new DftTextSequence(reader));
             }
-            
+
             //[DataLabExtContents] 
             if (BiffRecord.GetNextRecordType(reader) == RecordType.DataLabExtContents)
             {
                 this.DataLabExtContents = (DataLabExtContents)BiffRecord.ReadRecord(reader);
             }
-            
+
             //[SS] 
             if (BiffRecord.GetNextRecordType(reader) == RecordType.DataFormat)
             {
                 this.SsSequence = new SsSequence(reader);
             }
-            
+
             //*4SHAPEPROPS 
             this.ShapePropsSequences = new List<ShapePropsSequence>();
             while (BiffRecord.GetNextRecordType(reader) == RecordType.ShapePropsStream)
@@ -122,6 +126,15 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
             this.End = (End)BiffRecord.ReadRecord(reader);
         }
+
+        #region IVisitable Members
+
+        public void Convert<T>(T mapping)
+        {
+            ((IMapping<CrtSequence>)mapping).Apply(this);
+        }
+
+        #endregion
     }
 
     public class CrtLineGroup

@@ -55,6 +55,16 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
         public bool fManSerAlloc;
 
         /// <summary>
+        /// A bit that specifies whether to plot visible cells only.
+        /// </summary>
+        public bool fPlotVisOnly;
+
+        /// <summary>
+        /// A bit that specifies whether to size the chart with the window.
+        /// </summary>
+        public bool fNotSizeWith;
+
+        /// <summary>
         /// If fAlwaysAutoPlotArea is true then this field MUST be true. 
         /// If fAlwaysAutoPlotArea is false then this field MUST be ignored.
         /// </summary>
@@ -79,8 +89,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 
             // initialize class members from stream
             UInt16 flags = reader.ReadUInt16();
+
             this.fManSerAlloc = Utils.BitmaskToBool(flags, 0x1);
-            // 0x2 and 0x4 are reserved
+            this.fPlotVisOnly = Utils.BitmaskToBool(flags, 0x2);
+            this.fNotSizeWith = Utils.BitmaskToBool(flags, 0x4);
             this.fManPlotArea = Utils.BitmaskToBool(flags, 0x8);
             this.fAlwaysAutoPlotArea = Utils.BitmaskToBool(flags, 0x10);
             this.mdBlank = (EmptyCellPlotMode)reader.ReadByte();

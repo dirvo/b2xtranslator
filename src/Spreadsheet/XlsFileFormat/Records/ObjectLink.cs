@@ -41,6 +41,16 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
     {
         public const RecordType ID = RecordType.ObjectLink;
 
+        public enum ObjectType : ushort
+        {
+            Chart = 0x0001,
+            DVAxis = 0x0002,
+            IVAxis = 0x0003,
+            SeriesOrDataPoints = 0x0004,
+            SeriesAxis = 0x0007,
+            DisplayUnitsLabels = 0x000C
+        }
+
         /// <summary>
         /// An unsigned integer that specifies the object that the Text is linked to. <br/>
         /// MUST be a value from the following table:<br/>
@@ -51,7 +61,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
         /// 0x0007 = Series axis.
         /// 0x000C = Display units labels of an axis.
         /// </summary>
-        public UInt16 wLinkObj;
+        public ObjectType wLinkObj;
 
         /// <summary>
         /// An unsigned integer that specifies the zero-based index into a Series record in the collection 
@@ -79,7 +89,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            this.wLinkObj = reader.ReadUInt16();
+            this.wLinkObj = (ObjectType)reader.ReadUInt16();
             this.wLinkVar1 = reader.ReadUInt16();
             this.wLinkVar2 = reader.ReadUInt16();
 

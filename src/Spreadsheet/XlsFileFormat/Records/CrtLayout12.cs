@@ -2,6 +2,9 @@
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Tools;
+using System.Diagnostics;
+using System.ComponentModel;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
@@ -9,22 +12,22 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
     /// This record specifies layout information for a plot area.
     /// </summary>
     [BiffRecordAttribute(RecordType.CrtLayout12A, RecordType.CrtLayout12)]
-    public class CrtLayout12 : BiffRecord
+    public class CrtLayout12 : BiffRecord, IVisitable
     {
-        public enum CrtLayout12Mode
+        public enum CrtLayout12Mode : ushort
         {
-            L12MAUTO,
-            L12MFACTOR,
-            L12MEDGE
+            L12MAUTO = 0x0000,
+            L12MFACTOR = 0x0001,
+            L12MEDGE = 0x0002
         }
 
-        public enum AutoLayoutType
+        public enum AutoLayoutType : byte
         {
-            Bottom,
-            TopRightCorner,
-            Top,
-            Right,
-            Left
+            Bottom = 0x00,
+            TopRightCorner = 0x01,
+            Top = 0x02,
+            Right = 0x03,
+            Left = 0x04
         }
 
         /// <summary>
@@ -138,6 +141,18 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             this.dx = reader.ReadDouble();
             this.dy = reader.ReadDouble();
             reader.ReadBytes(2); //reserved
+
+            // assert that the correct number of bytes has been read from the stream
+            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
         }
+
+        #region IVisitable Members
+
+        public void Convert<T>(T mapping)
+        {
+            ((IMapping<CrtLayout12>)mapping).Apply(this);
+        }
+
+        #endregion
     }
 }

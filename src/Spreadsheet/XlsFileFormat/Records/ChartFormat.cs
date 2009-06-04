@@ -67,6 +67,16 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
         /// </summary>
         public UInt16 icrt;
 
+        public int[] AxisIds;
+
+        /// <summary>
+        /// An unsigned integer that specifies the zero-based index of this ChartFormat 
+        /// record in the collection of ChartFormat records in the current chart sheet substream.
+        /// 
+        /// NOTE: This information is added at parse time and is not stored in the binary file format.
+        /// </summary>
+        public UInt16 idx;
+
         public ChartFormat(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
@@ -79,6 +89,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             reader.ReadBytes(16);
             this.fVaried = Utils.BitmaskToBool(reader.ReadUInt16(), 0x0001);
             this.icrt = reader.ReadUInt16();
+
+            this.AxisIds = ChartAxisIdGenerator.Instance.AxisIds;
+            this.idx = ChartFormatIdGenerator.Instance.GenerateId();
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

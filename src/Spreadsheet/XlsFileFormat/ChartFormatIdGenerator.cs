@@ -28,34 +28,48 @@
  */
 
 using System;
-using System.Diagnostics;
-using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using System.Collections.Generic;
+using System.Text;
 
-namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
+namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
     /// <summary>
-    /// This record specifies the properties of a fill pattern for parts of a chart. 
-    /// The record consists of an OfficeArtFOPT, as specified in [MS-ODRAW] section 2.2.9, 
-    /// and an OfficeArtTertiaryFOPT, as specified in [MS-ODRAW] section 2.2.11, that both
-    /// contain properties for the fill pattern applied. <55>
+    /// An internal helper class for counting the number of ChartFormat records per Chart sheet substream
+    /// This number is stored within each ChartFormat record
     /// </summary>
-    [BiffRecordAttribute(RecordType.GelFrame)]
-    public class GelFrame : BiffRecord
+    class ChartFormatIdGenerator
     {
-        public const RecordType ID = RecordType.GelFrame;
+        private UInt16 _id = 0;
 
-        public GelFrame(IStreamReader reader, RecordType id, UInt16 length)
-            : base(reader, id, length)
+        /// <summary>
+        /// This class is a singleton
+        /// </summary>
+        private static ChartFormatIdGenerator _instance;
+
+        private ChartFormatIdGenerator()
         {
-            // assert that the correct record type is instantiated
-            Debug.Assert(this.Id == ID);
+        }
 
-            // initialize class members from stream
-            // TODO: place code here
-            this.Reader.BaseStream.Position = this.Offset + this.Length;
+        public static ChartFormatIdGenerator Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new ChartFormatIdGenerator();
+                }
+                return _instance;
+            }
+        }
 
-            // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
+        public void StartNewChartsheetSubstream()
+        {
+            _id = 0;
+        }
+
+        public UInt16 GenerateId()
+        {
+            return _id++;
         }
     }
 }

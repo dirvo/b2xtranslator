@@ -27,35 +27,40 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
  */
 
-using System;
-using System.Diagnostics;
-using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib.DrawingML;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 
-namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
+namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
-    /// <summary>
-    /// This record specifies the properties of a fill pattern for parts of a chart. 
-    /// The record consists of an OfficeArtFOPT, as specified in [MS-ODRAW] section 2.2.9, 
-    /// and an OfficeArtTertiaryFOPT, as specified in [MS-ODRAW] section 2.2.11, that both
-    /// contain properties for the fill pattern applied. <55>
-    /// </summary>
-    [BiffRecordAttribute(RecordType.GelFrame)]
-    public class GelFrame : BiffRecord
+    public class TitleMapping : AbstractOpenXmlMapping,
+          IMapping<AttachedLabelSequence>
     {
-        public const RecordType ID = RecordType.GelFrame;
+        ExcelContext _xlsContext;
+        ChartPart _chartPart;
 
-        public GelFrame(IStreamReader reader, RecordType id, UInt16 length)
-            : base(reader, id, length)
+        bool _isChartsheet;
+
+        public TitleMapping(ExcelContext xlsContext, ChartPart chartPart, bool isChartsheet)
+            : base(chartPart.XmlWriter)
         {
-            // assert that the correct record type is instantiated
-            Debug.Assert(this.Id == ID);
+            this._xlsContext = xlsContext;
+            this._chartPart = chartPart;
 
-            // initialize class members from stream
-            // TODO: place code here
-            this.Reader.BaseStream.Position = this.Offset + this.Length;
-
-            // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
+            this._isChartsheet = isChartsheet;
         }
+
+        #region IMapping<AttachedLabelSequence> Members
+
+        public void Apply(AttachedLabelSequence attachedLabelSequence)
+        {
+            // c:title
+            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElTitle, Dml.Chart.Ns);
+            {
+
+            }
+            _writer.WriteEndElement(); // c:title
+        }
+        #endregion
     }
 }

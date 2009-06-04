@@ -5,7 +5,7 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
+ *        notice, this list of conditions and the following disclaimer.
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
@@ -24,40 +24,62 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Collections.Generic;
 using System.Text;
-using DIaLOGIKa.b2xtranslator.OpenXmlLib;
-using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
+using System.Globalization;
 
-namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.DrawingML
+namespace DIaLOGIKa.b2xtranslator.Tools
 {
 
-    public class DrawingsPart : OpenXmlPart
+    public class PtValue
     {
-        private int _chartPartCount;
+        public double Value;
 
-        public DrawingsPart(OpenXmlPartContainer parent, int partIndex)
-            : base(parent, partIndex)
+        /// <summary>
+        /// Creates a new PtValue for the given value.
+        /// </summary>
+        /// <param name="value"></param>
+        public PtValue(double value)
         {
-        }
-        
-        public override string ContentType
-        {
-            get { return OpenXmlContentTypes.Drawing; }
-        }
-
-        public override string RelationshipType
-        {
-            get { return OpenXmlRelationshipTypes.Drawing; }
+            this.Value = value;
         }
 
-        public override string TargetName { get { return "drawing" + this.PartIndex.ToString(); } }
-        public override string TargetDirectory { get { return "drawings"; } }
-
-        public ChartPart AddChartPart()
+        /// <summary>
+        /// Converts the EMU to pt
+        /// </summary>
+        /// <returns></returns>
+        public double ToPoints()
         {
-            return this.AddPart(new ChartPart(this, ++_chartPartCount));
+            return this.Value;
+        }
+
+        /// <summary>
+        /// Converts the pt value to EMU
+        /// </summary>
+        /// <returns></returns>
+        public int ToEmu()
+        {
+            return (int)((360000 * 2.54 * this.Value) / 72.0);
+        }
+
+        /// <summary>
+        /// Converts the pt value to cm
+        /// </summary>
+        /// <returns></returns>
+        public double ToCm()
+        {
+            return (2.54 * this.Value) / 72.0;
+        }
+
+        /// <summary>
+        /// returns the original value as string 
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return Convert.ToString(this.Value, CultureInfo.GetCultureInfo("en-US"));
         }
     }
 }

@@ -38,7 +38,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ChartsheetMapping.cs" />
+    <Compile Include="ChartMapping\BarChartMapping.cs" />
+    <Compile Include="ChartMapping\CrtSequenceMapping.cs" />
+    <Compile Include="ChartMapping\ChartspaceMapping.cs" />
+    <Compile Include="ChartMapping\ChartsheetMapping.cs" />
+    <Compile Include="ChartMapping\LayoutMapping.cs" />
+    <Compile Include="ChartMapping\PlotAreaMapping.cs" />
+    <Compile Include="ChartMapping\SeriesMapping.cs" />
+    <Compile Include="ChartMapping\TitleMapping.cs" />
     <Compile Include="Converter.cs" />
     <Compile Include="DrawingMapping.cs" />
     <Compile Include="ExcelContext.cs" />
