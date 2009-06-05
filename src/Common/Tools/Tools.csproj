@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EmuValue.cs" />
+    <Compile Include="FixedPointNumber.cs" />
     <Compile Include="PtValue.cs" />
     <Compile Include="RGBColor.cs" />
     <Compile Include="TraceLogger.cs" />

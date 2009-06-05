@@ -53,7 +53,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteStartElement("a", startElement, OpenXmlNamespaces.DrawingML);
 
-            //TODO: use real language
             _writer.WriteAttributeString("lang", lang);
 
             if (run.SizePresent)

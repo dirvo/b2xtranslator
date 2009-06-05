@@ -250,7 +250,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             perspectiveWeight=585,
             perspectiveOriginX=586,
             perspectiveOriginY=587,
-            fPerspective=639,
+            PerspectiveStyleBooleanProperties=639,
 
             //3D Object
             c3DSpecularAmt=640,

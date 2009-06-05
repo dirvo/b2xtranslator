@@ -56,6 +56,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             if (slide == null) slide = so.FirstAncestorWithType<Note>();
             if (slide == null) slide = so.FirstAncestorWithType<Handout>();
             string colorval = "";
+            string colorval2 = "";
             uint fillType = 0;
             if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillType)) fillType = so.OptionsByID[ShapeOptions.PropertyId.fillType].op;
             switch (fillType)
@@ -400,20 +401,76 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         }
                     }
 
-                    if (switchColors & so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillBackColor))
+                    List<string> shadeColors = new List<string>();
+                    List<FixedPointNumber> relativePositions = new List<FixedPointNumber>();
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillShadeColors))
                     {
-                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillBackColor].op, slide, so);
+                        uint length = so.OptionsByID[ShapeOptions.PropertyId.fillShadeColors].op;
+
+                        //An IMsoArray record that specifies colors and their relative positions. 
+                        //Each element of the array contains an OfficeArtCOLORREF record color and a FixedPoint, as specified in [MS-OSHARED] 
+                        //section 2.2.1.6, that specifies its relative position along the gradient vector.
+                        byte[] data = so.OptionsByID[ShapeOptions.PropertyId.fillShadeColors].opComplex;
+
+                        int pos = 0;
+                        string colval;
+                        FixedPointNumber fixedpoint;
+                        UInt16 nElems = BitConverter.ToUInt16(data, pos);
+                        pos += 2;
+                        UInt16 nElemsAlloc = BitConverter.ToUInt16(data, pos);
+                        pos += 2;
+                        UInt16 cbElem = BitConverter.ToUInt16(data, pos);
+                        pos += 2;
+
+                        if (cbElem == 0xFFF0)
+                        {
+                            //If this value is 0xFFF0 then this record is an array of truncated 8 byte elements. Only the 4 low-order bytes are recorded. Each element's 4 high-order bytes equal 0x00000000 and each element's 4 low-order bytes are contained in data.
+                        }
+                        else
+                        {
+                            while (pos < length)
+                            {
+                                colval = Utils.getRGBColorFromOfficeArtCOLORREF(BitConverter.ToUInt32(data, pos), slide, so);
+                                shadeColors.Add(colval);
+                                pos += 4;
+                                fixedpoint = new FixedPointNumber(BitConverter.ToUInt16(data, pos), BitConverter.ToUInt16(data, pos + 2));
+                                relativePositions.Add(fixedpoint);
+                                pos += 4;
+                            }
+                        }
+
+                        colorval = shadeColors[0];
+                        colorval2 = shadeColors[1];
                     }
                     else
                     {
-                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillColor))
+                        if (switchColors & so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillBackColor))
                         {
-                            colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide, so);
-                        } else {
-                            colorval = "FFFFFF"; //TODO: find out which color to use in this case
+                            colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillBackColor].op, slide, so);
+                        }
+                        else
+                        {
+                            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillColor))
+                            {
+                                colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide, so);
+                            }
+                            else
+                            {
+                                colorval = "FFFFFF"; //TODO: find out which color to use in this case
+                            }
+                        }
+
+                        if (switchColors | !so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillBackColor))
+                        {
+                            colorval2 = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide, so);
+                        }
+                        else
+                        {
+                            colorval2 = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillBackColor].op, slide, so);
                         }
                     }
 
+                    
                     _writer.WriteStartElement("a", "gs", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("pos", "0");
                     _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
@@ -446,18 +503,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteEndElement();
                     _writer.WriteEndElement();
 
-                    if (switchColors | !so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillBackColor))
-                    {
-                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide, so);
-                    }
-                    else
-                    {
-                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillBackColor].op, slide, so);
-                    }
+                    //new colorval
                     _writer.WriteStartElement("a", "gs", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("pos", "100000");
                     _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("val", colorval);
+                    _writer.WriteAttributeString("val", colorval2);
                     if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillBackOpacity))
                     {
                         _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
