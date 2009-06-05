@@ -34,21 +34,13 @@ using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
-    public class PlotAreaMapping : AbstractOpenXmlMapping,
+    public class PlotAreaMapping : AbstractChartMapping,
           IMapping<ChartFormatsSequence>
     {
-        ExcelContext _xlsContext;
-        ChartPart _chartPart;
 
-        bool _isChartsheet;
-
-        public PlotAreaMapping(ExcelContext xlsContext, ChartPart chartPart, bool isChartsheet)
-            : base(chartPart.XmlWriter)
+        public PlotAreaMapping(ExcelContext workbookContext, ChartContext chartContext)
+            : base(workbookContext, chartContext)
         {
-            this._xlsContext = xlsContext;
-            this._chartPart = chartPart;
-
-            this._isChartsheet = isChartsheet;
         }
 
         #region IMapping<ChartFormatsSequence> Members
@@ -95,7 +87,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 // c:layout
                 if (chartFormatsSequence.ShtProps.fManPlotArea && chartFormatsSequence.CrtLayout12A != null)
                 {
-                    chartFormatsSequence.CrtLayout12A.Convert(new LayoutMapping(this._xlsContext, this._chartPart, this._isChartsheet));
+                    chartFormatsSequence.CrtLayout12A.Convert(new LayoutMapping(this.WorkbookContext, this.ChartContext));
                 }
 
                 // chart groups
@@ -114,44 +106,53 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         // area chart
                         if (crtSequence.ChartType is Area)
                         {
+                            crtSequence.Convert(new AreaChartMapping(this.WorkbookContext, this.ChartContext, is3DChart));
                         }
                         // bar and column chart
                         else if (crtSequence.ChartType is Bar)
                         {
-                            crtSequence.Convert(new BarChartMapping(this._xlsContext, this._chartPart, chartFormatsSequence, this._isChartsheet, is3DChart));
+                            crtSequence.Convert(new BarChartMapping(this.WorkbookContext, this.ChartContext, is3DChart));
                         }
                         // OfPieChart (Bar of pie / Pie of Pie)
                         else if (crtSequence.ChartType is BopPop)
                         {
+                            crtSequence.Convert(new OfPieChartMapping(this.WorkbookContext, this.ChartContext, is3DChart));
                         }
                         // bubbleChart
                         else if (crtSequence.ChartType is Scatter && ((Scatter)crtSequence.ChartType).fBubbles)
                         {
+                            crtSequence.Convert(new BubbleChartMapping(this.WorkbookContext, this.ChartContext, is3DChart));
                         }
                         // scatterChart
                         else if (crtSequence.ChartType is Scatter && !((Scatter)crtSequence.ChartType).fBubbles)
                         {
+                            crtSequence.Convert(new ScatterChartMapping(this.WorkbookContext, this.ChartContext, is3DChart));
                         }
                         // lineChart and stockChart
                         else if (crtSequence.ChartType is Line)
                         {
+                            crtSequence.Convert(new LineChartMapping(this.WorkbookContext, this.ChartContext, is3DChart));
                         }
                         // doughnutChart
                         else if (crtSequence.ChartType is Pie && ((Pie)crtSequence.ChartType).pcDonut != 0)
                         {
+                            crtSequence.Convert(new DoughnutChartMapping(this.WorkbookContext, this.ChartContext, is3DChart));
                         }
                         // pieChart
                         else if (crtSequence.ChartType is Pie && ((Pie)crtSequence.ChartType).pcDonut == 0)
                         {
+                            crtSequence.Convert(new PieChartMapping(this.WorkbookContext, this.ChartContext, is3DChart));
                         }
                         // radarChart
-                        else if (crtSequence.ChartType is Radar || crtSequence.ChartType is RadarArea)
+                        else if (crtSequence.ChartType is Radar)
                         {
                             // RadarArea (or "Filled Radar") has the radarStyle set to "filled")
+                            crtSequence.Convert(new RadarChartMapping(this.WorkbookContext, this.ChartContext, is3DChart));
                         }
                         // surfaceChart
                         else if (crtSequence.ChartType is Surf)
                         {
+                            crtSequence.Convert(new SurfaceChartMapping(this.WorkbookContext, this.ChartContext, is3DChart));
                         }
                     }
                 }
@@ -167,16 +168,70 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         // c:catAx
                         _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElCatAx, Dml.Chart.Ns);
                         {
+                            // EG_AxShared
+                            // c:axId
                             _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElAxId, Dml.Chart.Ns);
                             _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axesSequence.IvAxisSequence.Axis.AxisId.ToString());
-                            _writer.WriteEndElement();
+                            _writer.WriteEndElement(); // c:axId
+
+                            // c:scaling
+                            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElScaling, Dml.Chart.Ns);
+                            {
+                                // c:logBase
+
+                                // c:orientation
+                                _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElOrientation, Dml.Chart.Ns);
+                                _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axesSequence.IvAxisSequence.CatSerRange.fReverse ? "maxMin" : "minMax");
+                                _writer.WriteEndElement(); // c:orientation
+
+                                // c:max
+
+                                // c:min
 
 
-                            CatSerRange catSerRange = axesSequence.IvAxisSequence.CatSerRange;
+                            }
+                            _writer.WriteEndElement(); // c:scaling
+
+                            // c:delete
+
+                            // c:axPos
+                            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElAxPos, Dml.Chart.Ns);
+                            // TODO: find mapping
+                            _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, "b");
+                            _writer.WriteEndElement(); // c:axPos
+
+                            // c:majorGridlines
+
+                            // c:minorGridlines
+
+                            // c:title
+                            foreach (AttachedLabelSequence attachedLabelSequence in axesSequence.AttachedLabelSequences)
+                            {
+                                if (attachedLabelSequence.ObjectLink != null && attachedLabelSequence.ObjectLink.wLinkObj == ObjectLink.ObjectType.IVAxis)
+                                {
+                                    attachedLabelSequence.Convert(new TitleMapping(this.WorkbookContext, this.ChartContext));
+                                    break;
+                                }
+                            }
+
+                            // c:numFmt
+
+                            // c:majorTickMark
+
+                            // c:minorTickMark
+
+                            // c:tickLblPos
+
+                            // c:spPr
+
+                            // c:txPr
+                            
                             // c:crossAx
                             _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElCrossAx, Dml.Chart.Ns);
-                            //_writer.WriteAttributeString(Dml.BaseTypes.AttrVal, catSerRange.);
+                            _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axesSequence.DvAxisSequence.Axis.AxisId.ToString());
                             _writer.WriteEndElement(); // c:crossAx
+
+                            // c:crosses or c:crossesAt
 
                         }
                         _writer.WriteEndElement(); // c:catAx
@@ -185,9 +240,70 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     // c:valAx
                     _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElValAx, Dml.Chart.Ns);
                     {
+                        // c:axId
                         _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElAxId, Dml.Chart.Ns);
                         _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axesSequence.DvAxisSequence.Axis.AxisId.ToString());
-                        _writer.WriteEndElement();
+                        _writer.WriteEndElement(); // c:axId
+
+                        // c:scaling
+                        _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElScaling, Dml.Chart.Ns);
+                        {
+                            // c:logBase
+
+                            // c:orientation
+                            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElOrientation, Dml.Chart.Ns);
+                            _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axesSequence.DvAxisSequence.ValueRange.fReversed ? "maxMin" : "minMax");
+                            _writer.WriteEndElement(); // c:orientation
+
+                            // c:max
+
+                            // c:min
+
+
+                        }
+                        _writer.WriteEndElement(); // c:scaling
+
+                        // c:delete
+
+                        // c:axPos
+                        _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElAxPos, Dml.Chart.Ns);
+                        // TODO: find mapping
+                        _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, "l");
+                        _writer.WriteEndElement(); // c:axPos
+
+                        // c:majorGridlines
+
+                        // c:minorGridlines
+
+                        // c:title
+                        foreach (AttachedLabelSequence attachedLabelSequence in axesSequence.AttachedLabelSequences)
+                        {
+                            if (attachedLabelSequence.ObjectLink != null && attachedLabelSequence.ObjectLink.wLinkObj == ObjectLink.ObjectType.DVAxis)
+                            {
+                                attachedLabelSequence.Convert(new TitleMapping(this.WorkbookContext, this.ChartContext));
+                                break;
+                            }
+                        }
+
+                        // c:numFmt
+
+                        // c:majorTickMark
+
+                        // c:minorTickMark
+
+                        // c:tickLblPos
+
+                        // c:spPr
+
+                        // c:txPr
+
+                        // c:crossAx
+                        _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElCrossAx, Dml.Chart.Ns);
+                        _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axesSequence.IvAxisSequence.Axis.AxisId.ToString());
+                        _writer.WriteEndElement(); // c:crossAx
+
+                        // c:crosses or c:crossesAt
+
                     }
                     _writer.WriteEndElement(); // c:valAx
                 }

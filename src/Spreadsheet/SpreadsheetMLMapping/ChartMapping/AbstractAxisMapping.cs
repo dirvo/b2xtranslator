@@ -30,37 +30,31 @@
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.DrawingML;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
+using System;
+using System.Globalization;
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
-    public class TitleMapping : AbstractChartMapping,
-          IMapping<AttachedLabelSequence>
+    public abstract class AbstractAxisMapping : AbstractChartMapping,
+          IMapping<AxesSequence>
     {
-        public TitleMapping(ExcelContext workbookContext, ChartContext chartContext)
+        public AbstractAxisMapping(ExcelContext workbookContext, ChartContext chartContext)
             : base(workbookContext, chartContext)
         {
         }
 
-        #region IMapping<AttachedLabelSequence> Members
+        #region IMapping<AxesSequence> Members
 
-        public void Apply(AttachedLabelSequence attachedLabelSequence)
+        public virtual void Apply(AxesSequence axesSequence)
         {
-            // c:title
-            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElTitle, Dml.Chart.Ns);
-            {
-                // c:tx
-
-                // c:layout
-
-                // c:overlay
-
-                // c:spPr
-
-                // c:txPr
-
-            }
-            _writer.WriteEndElement(); // c:title
+            // EG_AxShared
+            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElAxId, Dml.Chart.Ns);
+            _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axesSequence.IvAxisSequence.Axis.AxisId.ToString());
+            _writer.WriteEndElement();
         }
+
         #endregion
     }
 }

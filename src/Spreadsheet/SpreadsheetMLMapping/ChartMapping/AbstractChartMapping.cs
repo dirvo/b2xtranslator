@@ -30,37 +30,53 @@
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.DrawingML;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
+using System;
+using System.Globalization;
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
-    public class TitleMapping : AbstractChartMapping,
-          IMapping<AttachedLabelSequence>
+    public abstract class AbstractChartMapping : AbstractOpenXmlMapping
     {
-        public TitleMapping(ExcelContext workbookContext, ChartContext chartContext)
-            : base(workbookContext, chartContext)
+        private ExcelContext _workbookContext;
+        private ChartContext _chartContext;
+        
+        public AbstractChartMapping(ExcelContext workbookContext, ChartContext chartContext)
+            : base(chartContext.ChartPart.XmlWriter)
         {
+            this._workbookContext = workbookContext;
+            this._chartContext = chartContext;
         }
 
-        #region IMapping<AttachedLabelSequence> Members
-
-        public void Apply(AttachedLabelSequence attachedLabelSequence)
+        public ExcelContext WorkbookContext
         {
-            // c:title
-            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElTitle, Dml.Chart.Ns);
-            {
-                // c:tx
-
-                // c:layout
-
-                // c:overlay
-
-                // c:spPr
-
-                // c:txPr
-
-            }
-            _writer.WriteEndElement(); // c:title
+            get { return this._workbookContext; }
         }
-        #endregion
+
+        public ChartContext ChartContext
+        {
+            get { return this._chartContext; }
+        }
+
+        public ChartPart ChartPart
+        {
+            get { return this.ChartContext.ChartPart; }
+        }
+
+        public ChartSheetContentSequence ChartSheetContentSequence
+        {
+            get { return this.ChartContext.ChartSheetContentSequence; }
+        }
+
+        public ChartContext.ChartLocation Location
+        {
+            get { return this.ChartContext.Location; }
+        }
+
+        public ChartFormatsSequence ChartFormatsSequence
+        {
+            get { return this.ChartSheetContentSequence.ChartFormatsSequence; }
+        }
     }
 }

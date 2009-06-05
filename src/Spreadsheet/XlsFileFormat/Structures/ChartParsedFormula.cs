@@ -30,6 +30,7 @@
 using System;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg;
+using System.Collections.Generic;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures
 {
@@ -46,16 +47,19 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures
     public class ChartParsedFormula
     {
         private UInt16 cce;
-        private byte[] formula;
+        
+        /// <summary>
+        /// LinkedList with the Ptg records !!
+        /// </summary>
+        public Stack<AbstractPtg> formula;
 
         public ChartParsedFormula(IStreamReader reader)
         {
             this.cce = reader.ReadUInt16();
 
-            // TODO: parse as AbstractPtg[]
             if (this.cce > 0)
             {
-                this.formula = reader.ReadBytes(this.cce);
+                this.formula = ExcelHelperClass.getFormulaStack(reader, this.cce);
             }
         }
     }

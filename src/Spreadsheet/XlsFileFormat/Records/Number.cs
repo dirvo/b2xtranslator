@@ -34,22 +34,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
     /// This class is used to read data from a NUMBER BiffRecord 
     /// </summary>
     [BiffRecordAttribute(RecordType.Number)] 
-    public class Number : BiffRecord
+    public class Number : AbstractCellContent
     {
         public const RecordType ID = RecordType.Number;
-
-        /// <summary>
-        /// Row 
-        /// </summary>
-        public UInt16 rw;
-        /// <summary>
-        /// Column
-        /// </summary>
-        public UInt16 col;
-        /// <summary>
-        /// Index to the XF Record 
-        /// </summary>
-        public UInt16 ixfe;
 
         /// <summary>
         /// The floating point number
@@ -68,13 +55,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
 
-            this.rw = reader.ReadUInt16();
-            this.col = reader.ReadUInt16();
-            this.ixfe = reader.ReadUInt16();
             this.num = reader.ReadDouble(); 
             
             // assert that the correct number of bytes has been read from the stream
-            // Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
         }
     }
 }

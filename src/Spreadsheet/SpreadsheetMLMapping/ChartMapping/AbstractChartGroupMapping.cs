@@ -30,37 +30,28 @@
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.DrawingML;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
+using System;
+using System.Globalization;
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
-    public class TitleMapping : AbstractChartMapping,
-          IMapping<AttachedLabelSequence>
+    public abstract class AbstractChartGroupMapping : AbstractChartMapping,
+          IMapping<CrtSequence>
     {
-        public TitleMapping(ExcelContext workbookContext, ChartContext chartContext)
+        protected bool _is3DChart;
+
+        public AbstractChartGroupMapping(ExcelContext workbookContext, ChartContext chartContext, bool is3DChart)
             : base(workbookContext, chartContext)
         {
+            this._is3DChart = is3DChart;
         }
 
-        #region IMapping<AttachedLabelSequence> Members
+        #region IMapping<CrtSequence> Members
 
-        public void Apply(AttachedLabelSequence attachedLabelSequence)
-        {
-            // c:title
-            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElTitle, Dml.Chart.Ns);
-            {
-                // c:tx
+        public abstract void Apply(CrtSequence crtSequence);
 
-                // c:layout
-
-                // c:overlay
-
-                // c:spPr
-
-                // c:txPr
-
-            }
-            _writer.WriteEndElement(); // c:title
-        }
         #endregion
     }
 }

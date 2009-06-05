@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2008, DIaLOGIKa
  * All rights reserved.
  *
@@ -30,34 +30,36 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
-    [BiffRecordAttribute(RecordType.BoolErr)] 
-    public class BoolErr : AbstractCellContent
+    /// <summary>
+    /// This class is used to read data from a NUMBER BiffRecord 
+    /// </summary>
+    public class AbstractCellContent : BiffRecord
     {
-        public const RecordType ID = RecordType.BoolErr;
+        /// <summary>
+        /// Row 
+        /// </summary>
+        public UInt16 rw;
+        /// <summary>
+        /// Column
+        /// </summary>
+        public UInt16 col;
+        /// <summary>
+        /// Index to the XF Record 
+        /// </summary>
+        public UInt16 ixfe;
 
         /// <summary>
-        /// An unsigned integer that specifies either a Boolean value or an error value, depending on the value of fError.
+        /// Ctor 
         /// </summary>
-        public byte bBoolErr;
-
-        /// <summary>
-        /// A Boolean that specifies whether bBoolErr contains an error code or a Boolean value.
-        /// </summary>
-        public bool fError;
-
-
-        public BoolErr(IStreamReader reader, RecordType id, UInt16 length)
+        /// <param name="reader">Streamreader</param>
+        /// <param name="id">Record ID - Recordtype</param>
+        /// <param name="length">The recordlegth</param>
+        public AbstractCellContent(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
-            // assert that the correct record type is instantiated
-            Debug.Assert(this.Id == ID);
-
-            // initialize class members from stream
-            this.bBoolErr = reader.ReadByte();
-            this.fError = reader.ReadByte() == 0x1;
-            
-            // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            this.rw = reader.ReadUInt16();
+            this.col = reader.ReadUInt16();
+            this.ixfe = reader.ReadUInt16();
         }
     }
 }

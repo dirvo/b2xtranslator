@@ -167,6 +167,7 @@
     <Compile Include="DataContainer\WorkSheetData.cs" />
     <Compile Include="DataExtraction\StreamExtractor.cs" />
     <Compile Include="DataExtraction\WorkbookExtractor.cs" />
+    <Compile Include="Records\AbstractCellContent.cs" />
     <Compile Include="Records\Addin.cs" />
     <Compile Include="Records\Addmenu.cs" />
     <Compile Include="Records\AlRuns.cs" />
@@ -388,7 +389,6 @@
     <Compile Include="Records\Qsir.cs" />
     <Compile Include="Records\QsiSXTag.cs" />
     <Compile Include="Records\Radar.cs" />
-    <Compile Include="Records\RadarArea.cs" />
     <Compile Include="Records\RealTimeData.cs" />
     <Compile Include="Records\RecalcId.cs" />
     <Compile Include="Records\RecipName.cs" />

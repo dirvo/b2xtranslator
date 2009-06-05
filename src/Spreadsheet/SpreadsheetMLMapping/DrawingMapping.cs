@@ -124,7 +124,8 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
                             // create and convert chart part
                             ChartPart chartPart = this._drawingsPart.AddChartPart();
-                            chartSheetContentSequence.Convert(new ChartMapping(this._xlsContext, chartPart, this._isChartsheet));
+                            ChartContext chartContext = new ChartContext(chartPart, chartSheetContentSequence, this._isChartsheet ? ChartContext.ChartLocation.Chartsheet : ChartContext.ChartLocation.Embedded);
+                            chartSheetContentSequence.Convert(new ChartMapping(this._xlsContext, chartContext));
 
                             _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElChart, Dml.Chart.Ns);
                             _writer.WriteAttributeString("r", "id", OpenXmlNamespaces.Relationships, chartPart.RelIdToString);

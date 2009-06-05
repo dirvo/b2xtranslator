@@ -37,11 +37,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
     /// <summary>
     /// This record specifies that the chart group is a radar chart group and specifies the chart group attributes.
     /// </summary>
-    [BiffRecordAttribute(RecordType.Radar)]
+    [BiffRecordAttribute(RecordType.Radar, RecordType.RadarArea)]
     public class Radar : BiffRecord
     {
-        public const RecordType ID = RecordType.Radar;
-
         /// <summary>
         /// A bit that specifies whether category (3) labels are displayed.
         /// </summary>
@@ -55,9 +53,6 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
         public Radar(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
-            // assert that the correct record type is instantiated
-            Debug.Assert(this.Id == ID);
-
             // initialize class members from stream
             UInt16 flags = reader.ReadUInt16();
             this.fRdrAxLab = Utils.BitmaskToBool(flags, 0x1);

@@ -42,12 +42,22 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
         public const RecordType ID = RecordType.Dimensions;
 
         /// <summary>
+        /// A RwLongU that specifies the first row in the sheet that contains a used cell.
+        /// </summary>
+        public UInt32 rwMic;
+
+        /// <summary>
         /// An unsigned integer that specifies the number of non-empty cells in the 
         /// longest row in the data sheet of a Graph object. 
         /// 
         /// MUST be less than or equal to 0x00000F9F.
         /// </summary>
         public UInt32 rwMac;
+
+        /// <summary>
+        /// A ColU that specifies the first column in the sheet that contains a used cell.
+        /// </summary>
+        public UInt16 colMic;
 
         /// <summary>
         /// An unsigned integer that specifies the number of non-empty rows in the 
@@ -64,13 +74,11 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            reader.ReadBytes(4);
+            this.rwMic = reader.ReadUInt32();
             this.rwMac = reader.ReadUInt32();
-            reader.ReadBytes(2);
+            this.colMic = reader.ReadUInt16();
             this.colMac = reader.ReadUInt16();
             reader.ReadBytes(2);
-
-            // TODO: complete according to MS-XLS
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

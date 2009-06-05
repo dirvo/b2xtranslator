@@ -30,36 +30,44 @@
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.DrawingML;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
+using System;
+using System.Globalization;
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
-    public class TitleMapping : AbstractChartMapping,
-          IMapping<AttachedLabelSequence>
+    public class LineChartMapping : AbstractChartGroupMapping
     {
-        public TitleMapping(ExcelContext workbookContext, ChartContext chartContext)
-            : base(workbookContext, chartContext)
+        public LineChartMapping(ExcelContext workbookContext, ChartContext chartContext, bool is3DChart)
+            : base(workbookContext, chartContext, is3DChart)
         {
         }
 
-        #region IMapping<AttachedLabelSequence> Members
+        #region IMapping<CrtSequence> Members
 
-        public void Apply(AttachedLabelSequence attachedLabelSequence)
+        public override void Apply(CrtSequence crtSequence)
         {
-            // c:title
-            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElTitle, Dml.Chart.Ns);
+            if (!(crtSequence.ChartType is Line))
             {
-                // c:tx
-
-                // c:layout
-
-                // c:overlay
-
-                // c:spPr
-
-                // c:txPr
-
+                throw new Exception("Invalid chart type");
             }
-            _writer.WriteEndElement(); // c:title
+
+            Line line = crtSequence.ChartType as Line;
+
+            // c:lineChart or c:stockChart 
+            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElLineChart, Dml.Chart.Ns);
+            {
+
+                // Axis Ids
+                foreach (int axisId in crtSequence.ChartFormat.AxisIds)
+                {
+                    _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElAxId, Dml.Chart.Ns);
+                    _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axisId.ToString());
+                    _writer.WriteEndElement();
+                }
+            }
+            _writer.WriteEndElement();
         }
         #endregion
     }

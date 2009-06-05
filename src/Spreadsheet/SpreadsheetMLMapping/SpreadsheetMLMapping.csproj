@@ -38,14 +38,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChartMapping\AbstractAxisMapping.cs" />
+    <Compile Include="ChartMapping\AbstractChartGroupMapping.cs" />
+    <Compile Include="ChartMapping\AbstractChartMapping.cs" />
+    <Compile Include="ChartMapping\AreaChartMapping.cs" />
     <Compile Include="ChartMapping\BarChartMapping.cs" />
-    <Compile Include="ChartMapping\CrtSequenceMapping.cs" />
+    <Compile Include="ChartMapping\BubbleChartMapping.cs" />
+    <Compile Include="ChartMapping\ChartContext.cs" />
     <Compile Include="ChartMapping\ChartspaceMapping.cs" />
-    <Compile Include="ChartMapping\ChartsheetMapping.cs" />
+    <Compile Include="ChartsheetMapping.cs" />
+    <Compile Include="ChartMapping\DoughnutChartMapping.cs" />
     <Compile Include="ChartMapping\LayoutMapping.cs" />
+    <Compile Include="ChartMapping\LineChartMapping.cs" />
+    <Compile Include="ChartMapping\OfPieChartMapping.cs" />
+    <Compile Include="ChartMapping\PieChartMapping.cs" />
     <Compile Include="ChartMapping\PlotAreaMapping.cs" />
+    <Compile Include="ChartMapping\RadarChartMapping.cs" />
+    <Compile Include="ChartMapping\ScatterChartMapping.cs" />
     <Compile Include="ChartMapping\SeriesMapping.cs" />
+    <Compile Include="ChartMapping\SurfaceChartMapping.cs" />
     <Compile Include="ChartMapping\TitleMapping.cs" />
+    <Compile Include="ChartMapping\ValMapping.cs" />
     <Compile Include="Converter.cs" />
     <Compile Include="DrawingMapping.cs" />
     <Compile Include="ExcelContext.cs" />

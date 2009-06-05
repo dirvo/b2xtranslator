@@ -49,7 +49,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
         public Begin Begin;
 
-        public List<AiSequence> AiSequence;
+        public List<AiSequence> AiSequences;
 
         public List<SsSequence> SsSequence;
 
@@ -89,10 +89,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             this.Begin = (Begin)BiffRecord.ReadRecord(reader);
 
             // 4AI
-            this.AiSequence = new List<AiSequence>(); 
+            this.AiSequences = new List<AiSequence>(); 
             for (int i = 0; i < 4; i++)
             {
-                this.AiSequence.Add(new AiSequence(reader)); 
+                this.AiSequences.Add(new AiSequence(reader)); 
             }
 
             // *SS 

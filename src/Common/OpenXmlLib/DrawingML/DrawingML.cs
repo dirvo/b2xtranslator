@@ -2738,6 +2738,11 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.DrawingML
             public const string AttrDifferentFirst = "differentFirst";
 
             /// <summary>
+            /// Index
+            /// </summary>
+            public const string AttrIdx = "idx";
+
+            /// <summary>
             /// Left
             /// </summary>
             public const string AttrL = "l";

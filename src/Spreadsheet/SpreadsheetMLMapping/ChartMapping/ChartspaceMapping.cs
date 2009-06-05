@@ -37,21 +37,15 @@ using System.Globalization;
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
-    public class ChartMapping : AbstractOpenXmlMapping,
+    public class ChartMapping : AbstractChartMapping,
           IMapping<ChartSheetContentSequence>
     {
-        ExcelContext _xlsContext;
-        ChartPart _chartPart;
+        ChartContext _chartContext;
 
-        bool _isChartsheet;
-
-        public ChartMapping(ExcelContext xlsContext, ChartPart chartPart, bool isChartsheet)
-            : base(chartPart.XmlWriter)
+        public ChartMapping(ExcelContext workbookContext, ChartContext chartContext)
+            : base(workbookContext, chartContext)
         {
-            this._xlsContext = xlsContext;
-            this._chartPart = chartPart;
-
-            this._isChartsheet = isChartsheet;
+            this._chartContext = chartContext;
         }
 
         #region IMapping<ChartSheetContentSequence> Members
@@ -76,13 +70,13 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     {
                         if (attachedLabelSequence.ObjectLink != null && attachedLabelSequence.ObjectLink.wLinkObj == ObjectLink.ObjectType.Chart)
                         {
-                            attachedLabelSequence.Convert(new TitleMapping(this._xlsContext, this._chartPart, this._isChartsheet));
+                            attachedLabelSequence.Convert(new TitleMapping(this.WorkbookContext, this.ChartContext));
                             break;
                         }
                     }
 
                     // c:plotArea
-                    chartFormatsSequence.Convert(new PlotAreaMapping(this._xlsContext, this._chartPart, this._isChartsheet));
+                    chartFormatsSequence.Convert(new PlotAreaMapping(this.WorkbookContext, this.ChartContext));
 
                     // c:legend
                     _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElLegend, Dml.Chart.Ns);

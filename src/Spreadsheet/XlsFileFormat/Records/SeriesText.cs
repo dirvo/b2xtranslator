@@ -31,6 +31,7 @@ using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Tools;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
@@ -42,7 +43,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
     {
         public const RecordType ID = RecordType.SeriesText;
 
-        public string stText;
+        public ShortXLUnicodeString stText;
 
         public SeriesText(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
@@ -52,7 +53,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 
             // initialize class members from stream
             reader.ReadBytes(2); // reserved
-            this.stText = Utils.ReadShortXlUnicodeString(reader.BaseStream);
+            this.stText = new ShortXLUnicodeString(reader);
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

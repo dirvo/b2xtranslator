@@ -34,22 +34,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
     /// This class is used to read data from a BLANK BiffRecord 
     /// </summary>
     [BiffRecordAttribute(RecordType.Blank)] 
-    public class Blank : BiffRecord
+    public class Blank : AbstractCellContent
     {
         public const RecordType ID = RecordType.Blank;
-
-        /// <summary>
-        /// Row 
-        /// </summary>
-        public UInt16 rw;
-        /// <summary>
-        /// Column
-        /// </summary>
-        public UInt16 col;
-        /// <summary>
-        /// Index to the XF Record 
-        /// </summary>
-        public UInt16 ixfe;
 
         /// <summary>
         /// Ctor 
@@ -62,10 +49,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
         {
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
-
-            this.rw = this.Reader.ReadUInt16();
-            this.col = this.Reader.ReadUInt16();
-            this.ixfe = this.Reader.ReadUInt16(); 
+            
+            // all fields are in base class
             
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 

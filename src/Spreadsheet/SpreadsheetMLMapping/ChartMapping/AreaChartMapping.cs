@@ -27,45 +27,48 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
  */
 
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib.DrawingML;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 using System;
-using System.Diagnostics;
-using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using DIaLOGIKa.b2xtranslator.Tools;
+using System.Globalization;
 
-namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
+namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
-    /// <summary>
-    /// This record specifies that the chart group is a filled radar chart group and specifies the chart group attributes.
-    /// </summary>
-    [BiffRecordAttribute(RecordType.RadarArea)]
-    public class RadarArea : BiffRecord
+    public class AreaChartMapping : AbstractChartGroupMapping
     {
-        public const RecordType ID = RecordType.RadarArea;
-
-        /// <summary>
-        /// A bit that specifies whether category (3) labels are displayed.
-        /// </summary>
-        public bool fRdrAxLab;
-
-        /// <summary>
-        /// A bit that specifies whether the data points in the chart group has shadows.
-        /// </summary>
-        public bool fHasShadow;
-
-        public RadarArea(IStreamReader reader, RecordType id, UInt16 length)
-            : base(reader, id, length)
+        public AreaChartMapping(ExcelContext workbookContext, ChartContext chartContext, bool is3DChart)
+            : base(workbookContext, chartContext, is3DChart)
         {
-            // assert that the correct record type is instantiated
-            Debug.Assert(this.Id == ID);
-
-            // initialize class members from stream
-            UInt16 flags = reader.ReadUInt16();
-            this.fRdrAxLab = Utils.BitmaskToBool(flags, 0x1);
-            this.fHasShadow = Utils.BitmaskToBool(flags, 0x2);
-            reader.ReadBytes(2); //unused
-
-            // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
         }
+
+        #region IMapping<CrtSequence> Members
+
+        public override void Apply(CrtSequence crtSequence)
+        {
+            if (!(crtSequence.ChartType is Area))
+            {
+                throw new Exception("Invalid chart type");
+            }
+
+            Area area = crtSequence.ChartType as Area;
+
+            // c:areaChart / c:area3DChart
+            _writer.WriteStartElement(Dml.Chart.Prefix, this._is3DChart ? Dml.Chart.ElArea3DChart : Dml.Chart.ElBarChart, Dml.Chart.Ns);
+            {
+                
+                // Axis Ids
+                foreach (int axisId in crtSequence.ChartFormat.AxisIds)
+                {
+                    _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElAxId, Dml.Chart.Ns);
+                    _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axisId.ToString());
+                    _writer.WriteEndElement();
+                }
+            }
+            _writer.WriteEndElement();
+        }
+        #endregion
     }
 }

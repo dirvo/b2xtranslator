@@ -35,21 +35,12 @@ using System.Globalization;
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
-    public class LayoutMapping : AbstractOpenXmlMapping,
+    public class LayoutMapping : AbstractChartMapping,
           IMapping<CrtLayout12>
     {
-        ExcelContext _xlsContext;
-        ChartPart _chartPart;
-
-        bool _isChartsheet;
-
-        public LayoutMapping(ExcelContext xlsContext, ChartPart chartPart, bool isChartsheet)
-            : base(chartPart.XmlWriter)
+        public LayoutMapping(ExcelContext workbookContext, ChartContext chartContext)
+            : base(workbookContext, chartContext)
         {
-            this._xlsContext = xlsContext;
-            this._chartPart = chartPart;
-
-            this._isChartsheet = isChartsheet;
         }
 
         #region IMapping<CrtLayout12> Members

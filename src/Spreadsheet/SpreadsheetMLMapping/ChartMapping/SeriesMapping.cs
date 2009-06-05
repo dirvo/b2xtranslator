@@ -30,24 +30,16 @@
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.DrawingML;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
-    public class SeriesMapping : AbstractOpenXmlMapping,
+    public class SeriesMapping : AbstractChartMapping,
           IMapping<SeriesFormatSequence>
     {
-        ExcelContext _xlsContext;
-        ChartPart _chartPart;
-
-        bool _isChartsheet;
-
-        public SeriesMapping(ExcelContext xlsContext, ChartPart chartPart, bool isChartsheet)
-            : base(chartPart.XmlWriter)
+        public SeriesMapping(ExcelContext workbookContext, ChartContext chartContext)
+            : base(workbookContext, chartContext)
         {
-            this._xlsContext = xlsContext;
-            this._chartPart = chartPart;
-
-            this._isChartsheet = isChartsheet;
         }
 
         #region IMapping<SeriesFormatSequence> Members
@@ -68,8 +60,46 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             _writer.WriteEndElement(); // c:order
 
             // c:tx
+            // find BRAI record for series name
+            foreach (AiSequence aiSequence in seriesFormatSequence.AiSequences)
+            {
+                if (aiSequence.BRAI.braiId == BRAI.BraiId.SeriesNameOrLegendText)
+                {
+                    BRAI brai = aiSequence.BRAI;
+                    
+                    string formula = FormulaInfixMapping.mapFormula(brai.formula.formula, this.WorkbookContext);
 
-            // c:spPr
+                    if (aiSequence.SeriesText != null)
+                    {
+                        switch (brai.rt)
+                        {
+                            case BRAI.DataSource.Literal:
+                                // c:tx
+                                _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElTx, Dml.Chart.Ns);
+                                // c:v
+                                _writer.WriteElementString(Dml.Chart.Prefix, Dml.Chart.ElV, Dml.Chart.Ns, aiSequence.SeriesText.stText.Value);
+                                _writer.WriteEndElement(); // c:tx
+                                break;
+
+                            case BRAI.DataSource.Reference:
+                                // c:tx
+                                _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElTx, Dml.Chart.Ns);
+                                // c:f
+                                _writer.WriteElementString(Dml.Chart.Prefix, Dml.Chart.ElF, Dml.Chart.Ns, formula);
+
+                                // TODO: optional data cache
+                                // c:strCache
+
+                                _writer.WriteEndElement(); // c:tx
+                                break;
+                        }
+                    }
+
+                    break;
+                }
+            }
+
+            // TODO: c:spPr
 
         }
         #endregion

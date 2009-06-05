@@ -37,30 +37,16 @@ using System.Globalization;
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
-    public class BarChartMapping : AbstractOpenXmlMapping,
-          IMapping<CrtSequence>
+    public class BarChartMapping : AbstractChartGroupMapping
     {
-        ExcelContext _xlsContext;
-        ChartPart _chartPart;
-        ChartFormatsSequence _chartFormatsSequence;
-
-        bool _isChartsheet;
-        bool _is3DChart;
-
-        public BarChartMapping(ExcelContext xlsContext, ChartPart chartPart, ChartFormatsSequence chartFormatsSequence, bool isChartsheet, bool is3DChart)
-            : base(chartPart.XmlWriter)
+        public BarChartMapping(ExcelContext workbookContext, ChartContext chartContext, bool is3DChart)
+            : base(workbookContext, chartContext, is3DChart)
         {
-            this._xlsContext = xlsContext;
-            this._chartPart = chartPart;
-            this._chartFormatsSequence = chartFormatsSequence;
-
-            this._isChartsheet = isChartsheet;
-            this._is3DChart = is3DChart;
         }
 
         #region IMapping<CrtSequence> Members
 
-        public void Apply(CrtSequence crtSequence)
+        public override void Apply(CrtSequence crtSequence)
         {
             if (!(crtSequence.ChartType is Bar))
             {
@@ -70,8 +56,8 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             Bar bar = crtSequence.ChartType as Bar;
             
 
-            // c:barChart
-            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElBarChart, Dml.Chart.Ns);
+            // c:barChart / c:bar3DChart
+            _writer.WriteStartElement(Dml.Chart.Prefix, this._is3DChart ? Dml.Chart.ElBar3DChart : Dml.Chart.ElBarChart, Dml.Chart.Ns);
             {
                 // EG_BarChartShared
                 // c:barDir
@@ -87,7 +73,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 _writer.WriteEndElement(); // c:varyColors
 
                 // Bar Chart Series
-                foreach (SeriesFormatSequence seriesFormatSequence in this._chartFormatsSequence.SeriesFormatSequences)
+                foreach (SeriesFormatSequence seriesFormatSequence in this.ChartFormatsSequence.SeriesFormatSequences)
                 {
                     if (seriesFormatSequence.SerToCrt != null && seriesFormatSequence.SerToCrt.id == crtSequence.ChartFormat.idx)
                     {
@@ -95,9 +81,26 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElSer, Dml.Chart.Ns);
 
                         // EG_SerShared
-                        seriesFormatSequence.Convert(new SeriesMapping(this._xlsContext, this._chartPart, this._isChartsheet));
+                        seriesFormatSequence.Convert(new SeriesMapping(this.WorkbookContext, this.ChartContext));
 
                         // c:invertIfNegative (stored in AreaFormat)
+
+                        // c:pictureOptions
+
+                        // c:dPt (Data Point)
+
+                        // c:dLbls (Data Labels)
+
+                        // c:trendline 
+
+                        // c:errBars
+
+                        // c:cat (Category Axis Data)
+
+                        // c:val
+                        seriesFormatSequence.Convert(new ValMapping(this.WorkbookContext, this.ChartContext));
+
+                        // c:shape
 
                         _writer.WriteEndElement(); // c:ser
                     }

@@ -83,13 +83,13 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             /// The data source is the text or value as specified 
             /// by the formula field.
             /// </summary>
-            Formula = 0x01,
+            Literal = 0x01,
 
             /// <summary>
             /// The data source is the value from a range of cells 
             /// in a sheet specified by the formula field.
             /// </summary>
-            Range = 0x02
+            Reference = 0x02
         }
 
         public enum Formatting : ushort
