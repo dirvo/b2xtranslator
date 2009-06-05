@@ -198,7 +198,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 while (availableHeight > 0 && RowHeights.Count > row + count)
                 {
                     availableHeight -= RowHeights[row + count];
-                    if (availableHeight >= 0) count++;
+                    if (availableHeight >= 0) count++; else return 0;
                 }
 
                 return count;
@@ -230,7 +230,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         Int32 height = BitConverter.ToInt32(data, 6 + i * cbElem);
                         //this is a workaround for a bug
                         //it should be analysed when to use 0 height
-                        if (height > 50)
+                        if (height > 53)
                         {
                             RowHeights.Add(height);
                         }
@@ -799,47 +799,59 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 _writer.WriteAttributeString("cmpd", "sng");
                 _writer.WriteAttributeString("algn", "ctr");
 
-                if (soline.OptionsByID.ContainsKey(ShapeOptions.PropertyId.FillStyleBooleanProperties))
+                
+                if (soline.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineStyleBooleans))
                 {
-                    FillStyleBooleanProperties fsb = new FillStyleBooleanProperties(soline.OptionsByID[ShapeOptions.PropertyId.FillStyleBooleanProperties].op);
-                    if (fsb.fFilled && fsb.fUsefFilled && soline.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineColor))
+                    LineStyleBooleans fsb = new LineStyleBooleans(soline.OptionsByID[ShapeOptions.PropertyId.lineStyleBooleans].op);
+                    if (fsb.fUsefLine && fsb.fLine)
                     {
-                        _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
-                        string SchemeType = "";
-                        string colorVal = Utils.getRGBColorFromOfficeArtCOLORREF(soline.OptionsByID[ShapeOptions.PropertyId.lineColor].op, lineCont.FirstAncestorWithType<Slide>(), so, ref SchemeType);
+                                 
+                        if (soline.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineColor))
+                        {
+                            _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
+                            string SchemeType = "";
+                            string colorVal = Utils.getRGBColorFromOfficeArtCOLORREF(soline.OptionsByID[ShapeOptions.PropertyId.lineColor].op, lineCont.FirstAncestorWithType<Slide>(), so, ref SchemeType);
 
-                        if (SchemeType.Length == 0)
-                        {
-                            _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                            _writer.WriteAttributeString("val", colorVal);
+                            if (SchemeType.Length == 0)
+                            {
+                                _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("val", colorVal);
+                            }
+                            else
+                            {
+                                _writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("val", SchemeType);
+                            }
+                            _writer.WriteEndElement();
+                            _writer.WriteEndElement();
                         }
-                        else
-                        {
-                            _writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
-                            _writer.WriteAttributeString("val", SchemeType);
-                        }
-                        _writer.WriteEndElement();
-                        _writer.WriteEndElement();
+                       
                     }
-                } 
-                else if (soframe != null && soframe.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineColor))
+                } else if (soframe != null && soframe.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineStyleBooleans))
                 {
-                    _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
-                    string SchemeType = "";
-                    string colorVal = Utils.getRGBColorFromOfficeArtCOLORREF(soframe.OptionsByID[ShapeOptions.PropertyId.lineColor].op, lineCont.FirstAncestorWithType<Slide>(), soframe, ref SchemeType);
+                    LineStyleBooleans fsb = new LineStyleBooleans(soframe.OptionsByID[ShapeOptions.PropertyId.lineStyleBooleans].op);
+                    if (fsb.fUsefLine && fsb.fLine)
+                    {
+                         if (soframe.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineColor))
+                        {
+                            _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
+                            string SchemeType = "";
+                            string colorVal = Utils.getRGBColorFromOfficeArtCOLORREF(soframe.OptionsByID[ShapeOptions.PropertyId.lineColor].op, lineCont.FirstAncestorWithType<Slide>(), soframe, ref SchemeType);
 
-                    if (SchemeType.Length == 0)
-                    {
-                        _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("val", colorVal);
+                            if (SchemeType.Length == 0)
+                            {
+                                _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("val", colorVal);
+                            }
+                            else
+                            {
+                                _writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("val", SchemeType);
+                            }
+                            _writer.WriteEndElement();
+                            _writer.WriteEndElement();
+                        }
                     }
-                    else
-                    {
-                        _writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("val", SchemeType);
-                    }
-                    _writer.WriteEndElement();
-                    _writer.WriteEndElement();
                 }
                
                 if (soline.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineDashing))
@@ -1770,7 +1782,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             embPart = parentSlideMapping.targetPart.AddEmbeddedObjectPart(EmbeddedObjectPart.ObjectType.Other);
             embPart.TargetDirectory = "..\\embeddings";
             System.IO.Stream outStream = embPart.GetStream();
-            outStream.Write(oleContainer.stgAtom.DecompressData(), 0, (int)oleContainer.stgAtom.decompressedSize);
+            if (oleContainer.stgAtom.Instance == 1)
+            {
+                outStream.Write(oleContainer.stgAtom.DecompressData(), 0, (int)oleContainer.stgAtom.decompressedSize);
+            }
+            else
+            {
+                outStream.Write(oleContainer.stgAtom.data, 0, oleContainer.stgAtom.data.Length);
+            }
 
             string rId = embPart.RelIdToString;
 

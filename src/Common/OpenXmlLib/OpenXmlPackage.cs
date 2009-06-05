@@ -67,6 +67,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
             _defaultTypes.Add("bin", OpenXmlContentTypes.OleObject);
             _defaultTypes.Add("vml", OpenXmlContentTypes.Vml);
             _defaultTypes.Add("emf", OpenXmlContentTypes.Emf);
+            _defaultTypes.Add("wmf", OpenXmlContentTypes.Wmf);
         }
 
         public void Dispose()

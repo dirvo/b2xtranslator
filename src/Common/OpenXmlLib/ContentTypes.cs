@@ -50,6 +50,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         public const string Vml = "application/vnd.openxmlformats-officedocument.vmlDrawing";
         public const string Drawing = "application/vnd.openxmlformats-officedocument.drawing+xml";
         public const string Emf = "image/x-emf";
+        public const string Wmf = "image/x-wmf";
         
         public const string MSExcel = "application/vnd.ms-excel";
         public const string MSWord = "application/msword";
