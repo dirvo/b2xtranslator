@@ -162,16 +162,89 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 {
                     // NOTE: AxisParent.iax must be 0 for the primary axis group
                     AxesSequence axesSequence = axisParentSequence.AxesSequence;
-
-                    if (axesSequence.IvAxisSequence != null)
+                    if (axesSequence != null)
                     {
-                        // c:catAx
-                        _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElCatAx, Dml.Chart.Ns);
+                        if (axesSequence.IvAxisSequence != null)
                         {
-                            // EG_AxShared
+                            // c:catAx
+                            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElCatAx, Dml.Chart.Ns);
+                            {
+                                // EG_AxShared
+                                // c:axId
+                                _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElAxId, Dml.Chart.Ns);
+                                _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axesSequence.IvAxisSequence.Axis.AxisId.ToString());
+                                _writer.WriteEndElement(); // c:axId
+
+                                // c:scaling
+                                _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElScaling, Dml.Chart.Ns);
+                                {
+                                    // c:logBase
+
+                                    // c:orientation
+                                    _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElOrientation, Dml.Chart.Ns);
+                                    _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axesSequence.IvAxisSequence.CatSerRange.fReverse ? "maxMin" : "minMax");
+                                    _writer.WriteEndElement(); // c:orientation
+
+                                    // c:max
+
+                                    // c:min
+
+
+                                }
+                                _writer.WriteEndElement(); // c:scaling
+
+                                // c:delete
+
+                                // c:axPos
+                                _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElAxPos, Dml.Chart.Ns);
+                                // TODO: find mapping
+                                _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, "b");
+                                _writer.WriteEndElement(); // c:axPos
+
+                                // c:majorGridlines
+
+                                // c:minorGridlines
+
+                                // c:title
+                                foreach (AttachedLabelSequence attachedLabelSequence in axesSequence.AttachedLabelSequences)
+                                {
+                                    if (attachedLabelSequence.ObjectLink != null && attachedLabelSequence.ObjectLink.wLinkObj == ObjectLink.ObjectType.IVAxis)
+                                    {
+                                        attachedLabelSequence.Convert(new TitleMapping(this.WorkbookContext, this.ChartContext));
+                                        break;
+                                    }
+                                }
+
+                                // c:numFmt
+
+                                // c:majorTickMark
+
+                                // c:minorTickMark
+
+                                // c:tickLblPos
+
+                                // c:spPr
+
+                                // c:txPr
+
+                                // c:crossAx
+                                _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElCrossAx, Dml.Chart.Ns);
+                                _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axesSequence.DvAxisSequence.Axis.AxisId.ToString());
+                                _writer.WriteEndElement(); // c:crossAx
+
+                                // c:crosses or c:crossesAt
+
+                            }
+                            _writer.WriteEndElement(); // c:catAx
+                        }
+
+
+                        // c:valAx
+                        _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElValAx, Dml.Chart.Ns);
+                        {
                             // c:axId
                             _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElAxId, Dml.Chart.Ns);
-                            _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axesSequence.IvAxisSequence.Axis.AxisId.ToString());
+                            _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axesSequence.DvAxisSequence.Axis.AxisId.ToString());
                             _writer.WriteEndElement(); // c:axId
 
                             // c:scaling
@@ -181,7 +254,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
                                 // c:orientation
                                 _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElOrientation, Dml.Chart.Ns);
-                                _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axesSequence.IvAxisSequence.CatSerRange.fReverse ? "maxMin" : "minMax");
+                                _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axesSequence.DvAxisSequence.ValueRange.fReversed ? "maxMin" : "minMax");
                                 _writer.WriteEndElement(); // c:orientation
 
                                 // c:max
@@ -197,7 +270,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             // c:axPos
                             _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElAxPos, Dml.Chart.Ns);
                             // TODO: find mapping
-                            _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, "b");
+                            _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, "l");
                             _writer.WriteEndElement(); // c:axPos
 
                             // c:majorGridlines
@@ -207,7 +280,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             // c:title
                             foreach (AttachedLabelSequence attachedLabelSequence in axesSequence.AttachedLabelSequences)
                             {
-                                if (attachedLabelSequence.ObjectLink != null && attachedLabelSequence.ObjectLink.wLinkObj == ObjectLink.ObjectType.IVAxis)
+                                if (attachedLabelSequence.ObjectLink != null && attachedLabelSequence.ObjectLink.wLinkObj == ObjectLink.ObjectType.DVAxis)
                                 {
                                     attachedLabelSequence.Convert(new TitleMapping(this.WorkbookContext, this.ChartContext));
                                     break;
@@ -225,87 +298,17 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             // c:spPr
 
                             // c:txPr
-                            
+
                             // c:crossAx
                             _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElCrossAx, Dml.Chart.Ns);
-                            _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axesSequence.DvAxisSequence.Axis.AxisId.ToString());
+                            _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axesSequence.IvAxisSequence.Axis.AxisId.ToString());
                             _writer.WriteEndElement(); // c:crossAx
 
                             // c:crosses or c:crossesAt
 
                         }
-                        _writer.WriteEndElement(); // c:catAx
+                        _writer.WriteEndElement(); // c:valAx
                     }
-
-                    // c:valAx
-                    _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElValAx, Dml.Chart.Ns);
-                    {
-                        // c:axId
-                        _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElAxId, Dml.Chart.Ns);
-                        _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axesSequence.DvAxisSequence.Axis.AxisId.ToString());
-                        _writer.WriteEndElement(); // c:axId
-
-                        // c:scaling
-                        _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElScaling, Dml.Chart.Ns);
-                        {
-                            // c:logBase
-
-                            // c:orientation
-                            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElOrientation, Dml.Chart.Ns);
-                            _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axesSequence.DvAxisSequence.ValueRange.fReversed ? "maxMin" : "minMax");
-                            _writer.WriteEndElement(); // c:orientation
-
-                            // c:max
-
-                            // c:min
-
-
-                        }
-                        _writer.WriteEndElement(); // c:scaling
-
-                        // c:delete
-
-                        // c:axPos
-                        _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElAxPos, Dml.Chart.Ns);
-                        // TODO: find mapping
-                        _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, "l");
-                        _writer.WriteEndElement(); // c:axPos
-
-                        // c:majorGridlines
-
-                        // c:minorGridlines
-
-                        // c:title
-                        foreach (AttachedLabelSequence attachedLabelSequence in axesSequence.AttachedLabelSequences)
-                        {
-                            if (attachedLabelSequence.ObjectLink != null && attachedLabelSequence.ObjectLink.wLinkObj == ObjectLink.ObjectType.DVAxis)
-                            {
-                                attachedLabelSequence.Convert(new TitleMapping(this.WorkbookContext, this.ChartContext));
-                                break;
-                            }
-                        }
-
-                        // c:numFmt
-
-                        // c:majorTickMark
-
-                        // c:minorTickMark
-
-                        // c:tickLblPos
-
-                        // c:spPr
-
-                        // c:txPr
-
-                        // c:crossAx
-                        _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElCrossAx, Dml.Chart.Ns);
-                        _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axesSequence.IvAxisSequence.Axis.AxisId.ToString());
-                        _writer.WriteEndElement(); // c:crossAx
-
-                        // c:crosses or c:crossesAt
-
-                    }
-                    _writer.WriteEndElement(); // c:valAx
                 }
             }
             _writer.WriteEndElement(); // c:plotArea

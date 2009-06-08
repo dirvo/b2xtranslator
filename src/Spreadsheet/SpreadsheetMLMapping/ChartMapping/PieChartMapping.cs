@@ -58,7 +58,6 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             // c:pieChart or c:pie3DChart 
             _writer.WriteStartElement(Dml.Chart.Prefix, this._is3DChart ? Dml.Chart.ElPie3DChart : Dml.Chart.ElPieChart, Dml.Chart.Ns);
             {
-
                 // Axis Ids
                 foreach (int axisId in crtSequence.ChartFormat.AxisIds)
                 {
