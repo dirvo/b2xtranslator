@@ -31,6 +31,7 @@ using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Tools;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
@@ -41,7 +42,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
     /// then all the fields will have default values otherwise all the fields MUST contain a value.
     /// </summary>
     [BiffRecordAttribute(RecordType.AreaFormat)]
-    public class AreaFormat : BiffRecord
+    public class AreaFormat : BiffRecord, IVisitable
     {
         public const RecordType ID = RecordType.AreaFormat;
 
@@ -114,5 +115,14 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
         }
+
+        #region IVisitable Members
+
+        public void Convert<T>(T mapping)
+        {
+            ((IMapping<AreaFormat>)mapping).Apply(this);
+        }
+
+        #endregion
     }
 }

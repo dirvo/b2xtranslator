@@ -1,10 +1,11 @@
 ﻿using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using System.Collections.Generic;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
-    public class SsSequence : BiffRecordSequence
+    public class SsSequence : BiffRecordSequence, IVisitable
     {
         public DataFormat DataFormat;
 
@@ -143,5 +144,14 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             // End 
             this.End = (End)BiffRecord.ReadRecord(reader);
         }
+
+        #region IVisitable Members
+
+        public void Convert<T>(T mapping)
+        {
+            ((IMapping<SsSequence>)mapping).Apply(this);
+        }
+
+        #endregion
     }
 }

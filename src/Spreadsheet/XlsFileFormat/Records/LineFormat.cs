@@ -31,6 +31,7 @@ using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Tools;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
@@ -38,7 +39,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
     /// This record specifies the appearance of a line.
     /// </summary>
     [BiffRecordAttribute(RecordType.LineFormat)]
-    public class LineFormat : BiffRecord
+    public class LineFormat : BiffRecord, IVisitable
     {
         public enum LineStyle
         {
@@ -129,5 +130,14 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
         }
+
+        #region IVisitable Members
+
+        public void Convert<T>(T mapping)
+        {
+            ((IMapping<LineFormat>)mapping).Apply(this);
+        }
+
+        #endregion
     }
 }

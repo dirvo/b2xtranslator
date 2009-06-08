@@ -69,8 +69,34 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
                 // varyColors
                 writeValueElement(_writer, "varyColors", crtSequence.ChartFormat.fVaried ? "1" : "0");
-                
 
+                // Pie Chart Series
+                foreach (SeriesFormatSequence seriesFormatSequence in this.ChartFormatsSequence.SeriesFormatSequences)
+                {
+                    if (seriesFormatSequence.SerToCrt != null && seriesFormatSequence.SerToCrt.id == crtSequence.ChartFormat.idx)
+                    {
+                        // c:ser
+                        _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElSer, Dml.Chart.Ns);
+
+                        // EG_SerShared
+                        seriesFormatSequence.Convert(new SeriesMapping(this.WorkbookContext, this.ChartContext));
+
+                        // c:dPt (Data Points)
+                        for (int i = 1; i < seriesFormatSequence.SsSequence.Count; i++)
+                        {
+                            // write a dPt for each SsSequence
+                            SsSequence sss = seriesFormatSequence.SsSequence[i];
+                            sss.Convert(new DataPointMapping(this.WorkbookContext, this.ChartContext, i-1));
+                        }
+
+                        // c:val
+                        seriesFormatSequence.Convert(new ValMapping(this.WorkbookContext, this.ChartContext));
+
+                        // c:shape
+
+                        _writer.WriteEndElement(); // c:ser
+                    }
+                }
 
                 // firstSliceAng
                 writeValueElement(_writer, "firstSliceAng", pie.anStart.ToString());

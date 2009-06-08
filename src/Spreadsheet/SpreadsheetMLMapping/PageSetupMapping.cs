@@ -85,10 +85,16 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     _writer.WriteAttributeString(Sml.Sheet.AttrFirstPageNumber, pageSetupSequence.Setup.iPageStart.ToString(CultureInfo.InvariantCulture));
                 }
 
-                if (!(pageSetupSequence.Setup.fNoPls || pageSetupSequence.Setup.fNoOrient))
+                if (pageSetupSequence.Setup.fNoPls == false && pageSetupSequence.Setup.fNoOrient == false)
                 {
-                    // If fNoPls is 1, the value is undefined and MUST be ignored. If fNoOrient is 1, the value is undefined and MUST be ignored.
+                    // If fNoPls is 1, the value is undefined and MUST be ignored. 
+                    // If fNoOrient is 1, the value is undefined and MUST be ignored.
                     _writer.WriteAttributeString(Sml.Sheet.AttrOrientation, pageSetupSequence.Setup.fPortrait ? "portrait" : "landscape");
+                }
+                else
+                {
+                    // use landscape as default
+                    _writer.WriteAttributeString(Sml.Sheet.AttrOrientation, "landscape");
                 }
                 _writer.WriteAttributeString(Sml.Sheet.AttrUseFirstPageNumber, pageSetupSequence.Setup.fUsePage ? "1" : "0");
 

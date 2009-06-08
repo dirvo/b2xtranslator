@@ -50,64 +50,70 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             // c:layout
             _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElLayout, Dml.Chart.Ns);
             {
-                // c:manualLayout
-                _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElManualLayout, Dml.Chart.Ns);
+                if (crtLayout12.wHeightMode != CrtLayout12.CrtLayout12Mode.L12MAUTO ||
+                    crtLayout12.wWidthMode != CrtLayout12.CrtLayout12Mode.L12MAUTO ||
+                    crtLayout12.wYMode != CrtLayout12.CrtLayout12Mode.L12MAUTO ||
+                    crtLayout12.wXMode != CrtLayout12.CrtLayout12Mode.L12MAUTO)
                 {
-                    // c:layoutTarget
-                    _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElLayoutTarget, Dml.Chart.Ns);
-                    _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, crtLayout12.fLayoutTargetInner ? "inner" : "outer");
-                    _writer.WriteEndElement(); // c:layoutTarget
-
-                    if (crtLayout12.wXMode != CrtLayout12.CrtLayout12Mode.L12MAUTO)
+                    // c:manualLayout
+                    _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElManualLayout, Dml.Chart.Ns);
                     {
-                        // c:xMode
-                        _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElXMode, Dml.Chart.Ns);
-                        _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, crtLayout12.wXMode == CrtLayout12.CrtLayout12Mode.L12MEDGE ? "edge" : "factor");
-                        _writer.WriteEndElement(); // c:xMode
-                    }
-                    if (crtLayout12.wYMode != CrtLayout12.CrtLayout12Mode.L12MAUTO)
-                    {
-                        // c:yMode
-                        _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElYMode, Dml.Chart.Ns);
-                        _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, crtLayout12.wYMode == CrtLayout12.CrtLayout12Mode.L12MEDGE ? "edge" : "factor");
-                        _writer.WriteEndElement(); // c:yMode
-                    }
-                    if (crtLayout12.wWidthMode != CrtLayout12.CrtLayout12Mode.L12MAUTO)
-                    {
-                        // c:wMode
-                        _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElWMode, Dml.Chart.Ns);
-                        _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, crtLayout12.wWidthMode == CrtLayout12.CrtLayout12Mode.L12MEDGE ? "edge" : "factor");
-                        _writer.WriteEndElement(); // c:wMode
-                    }
-                    if (crtLayout12.wHeightMode != CrtLayout12.CrtLayout12Mode.L12MAUTO)
-                    {
-                        // c:hMode
-                        _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElHMode, Dml.Chart.Ns);
-                        _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, crtLayout12.wHeightMode == CrtLayout12.CrtLayout12Mode.L12MEDGE ? "edge" : "factor");
-                        _writer.WriteEndElement(); // c:hMode
-                    }
+                        // c:layoutTarget
+                        _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElLayoutTarget, Dml.Chart.Ns);
+                        _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, crtLayout12.fLayoutTargetInner ? "inner" : "outer");
+                        _writer.WriteEndElement(); // c:layoutTarget
 
-                    // c:x
-                    _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElX, Dml.Chart.Ns);
-                    _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, crtLayout12.x.ToString(CultureInfo.InvariantCulture));
-                    _writer.WriteEndElement(); // c:x
+                        if (crtLayout12.wXMode != CrtLayout12.CrtLayout12Mode.L12MAUTO)
+                        {
+                            // c:xMode
+                            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElXMode, Dml.Chart.Ns);
+                            _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, crtLayout12.wXMode == CrtLayout12.CrtLayout12Mode.L12MEDGE ? "edge" : "factor");
+                            _writer.WriteEndElement(); // c:xMode
+                        }
+                        if (crtLayout12.wYMode != CrtLayout12.CrtLayout12Mode.L12MAUTO)
+                        {
+                            // c:yMode
+                            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElYMode, Dml.Chart.Ns);
+                            _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, crtLayout12.wYMode == CrtLayout12.CrtLayout12Mode.L12MEDGE ? "edge" : "factor");
+                            _writer.WriteEndElement(); // c:yMode
+                        }
+                        if (crtLayout12.wWidthMode != CrtLayout12.CrtLayout12Mode.L12MAUTO)
+                        {
+                            // c:wMode
+                            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElWMode, Dml.Chart.Ns);
+                            _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, crtLayout12.wWidthMode == CrtLayout12.CrtLayout12Mode.L12MEDGE ? "edge" : "factor");
+                            _writer.WriteEndElement(); // c:wMode
+                        }
+                        if (crtLayout12.wHeightMode != CrtLayout12.CrtLayout12Mode.L12MAUTO)
+                        {
+                            // c:hMode
+                            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElHMode, Dml.Chart.Ns);
+                            _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, crtLayout12.wHeightMode == CrtLayout12.CrtLayout12Mode.L12MEDGE ? "edge" : "factor");
+                            _writer.WriteEndElement(); // c:hMode
+                        }
 
-                    // c:y
-                    _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElY, Dml.Chart.Ns);
-                    _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, crtLayout12.y.ToString(CultureInfo.InvariantCulture));
-                    _writer.WriteEndElement(); // c:y
+                        // c:x
+                        _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElX, Dml.Chart.Ns);
+                        _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, crtLayout12.x.ToString(CultureInfo.InvariantCulture));
+                        _writer.WriteEndElement(); // c:x
 
-                    // c:w
-                    _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElW, Dml.Chart.Ns);
-                    _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, crtLayout12.dx.ToString(CultureInfo.InvariantCulture));
-                    _writer.WriteEndElement(); // c:w
+                        // c:y
+                        _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElY, Dml.Chart.Ns);
+                        _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, crtLayout12.y.ToString(CultureInfo.InvariantCulture));
+                        _writer.WriteEndElement(); // c:y
 
-                    // c:h
-                    _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElH, Dml.Chart.Ns);
-                    _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, crtLayout12.dy.ToString(CultureInfo.InvariantCulture));
-                    _writer.WriteEndElement(); // c:h
+                        // c:w
+                        _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElW, Dml.Chart.Ns);
+                        _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, crtLayout12.dx.ToString(CultureInfo.InvariantCulture));
+                        _writer.WriteEndElement(); // c:w
+
+                        // c:h
+                        _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElH, Dml.Chart.Ns);
+                        _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, crtLayout12.dy.ToString(CultureInfo.InvariantCulture));
+                        _writer.WriteEndElement(); // c:h
+                    }
+                    _writer.WriteEndElement(); // c:manualLayout
                 }
-                _writer.WriteEndElement(); // c:manualLayout
             }
             _writer.WriteEndElement(); // c:layout
         }
