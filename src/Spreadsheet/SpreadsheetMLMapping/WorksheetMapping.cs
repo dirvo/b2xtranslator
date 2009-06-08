@@ -64,12 +64,12 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             _xlsContext.CurrentSheet = bsd;
             _writer.WriteStartDocument();
             _writer.WriteStartElement("worksheet", OpenXmlNamespaces.SpreadsheetML);
-            if (bsd.emtpyWorksheet)
-            {
-                _writer.WriteStartElement("sheetData");
-                _writer.WriteEndElement(); 
-            }
-            else
+            //if (bsd.emtpyWorksheet)
+            //{
+            //    _writer.WriteStartElement("sheetData");
+            //    _writer.WriteEndElement(); 
+            //}
+            //else
             {
 
                 // default info 
@@ -104,7 +104,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         _writer.WriteAttributeString("thickBottom", "1");
                     }
 
-                    _writer.WriteEndElement();
+                    _writer.WriteEndElement(); // sheetFormatPr
                 }
 
 
@@ -150,23 +150,18 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             _writer.WriteAttributeString("style", Convert.ToString(col.style - this._xlsContext.XlsDoc.WorkBookData.styleData.XFCellStyleDataList.Count, CultureInfo.GetCultureInfo("en-US")));
                         }
 
-                        _writer.WriteEndElement();
+                        _writer.WriteEndElement(); // col
                     }
 
 
                     _writer.WriteEndElement();
                 }
-
-
                 // End col info 
-
-
 
                 _writer.WriteStartElement("sheetData");
                 //  bsd.rowDataTable.Values
                 foreach (RowData row in bsd.rowDataTable.Values)
                 {
-
                     // write row start tag
                     // Row 
                     _writer.WriteStartElement("row");
@@ -323,9 +318,6 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             }
 
                             _writer.WriteEndElement();
-
-
-
                         }
                         else
                         {// Data !!! 
@@ -435,15 +427,12 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         }
                     }*/
                     }
-                    _writer.WriteEndElement();
+                    _writer.WriteEndElement(); // hyperlinks
                     if (writtenParentElement)
                     {
                         
                     }
-
                 }
-
-
 
                 // worksheet margins !!
                 if (bsd.leftMargin != null && bsd.topMargin != null &&
@@ -451,15 +440,15 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     bsd.headerMargin != null && bsd.footerMargin != null)
                 {
                     _writer.WriteStartElement("pageMargins");
-                    _writer.WriteAttributeString("left", Convert.ToString(bsd.leftMargin, CultureInfo.GetCultureInfo("en-US")));
-                    _writer.WriteAttributeString("right", Convert.ToString(bsd.rightMargin, CultureInfo.GetCultureInfo("en-US")));
-                    _writer.WriteAttributeString("top", Convert.ToString(bsd.topMargin, CultureInfo.GetCultureInfo("en-US")));
-                    _writer.WriteAttributeString("bottom", Convert.ToString(bsd.bottomMargin, CultureInfo.GetCultureInfo("en-US")));
-                    _writer.WriteAttributeString("header", Convert.ToString(bsd.headerMargin, CultureInfo.GetCultureInfo("en-US")));
-                    _writer.WriteAttributeString("footer", Convert.ToString(bsd.footerMargin, CultureInfo.GetCultureInfo("en-US")));
-
-
-                    _writer.WriteEndElement();
+                    {
+                        _writer.WriteAttributeString("left", Convert.ToString(bsd.leftMargin, CultureInfo.GetCultureInfo("en-US")));
+                        _writer.WriteAttributeString("right", Convert.ToString(bsd.rightMargin, CultureInfo.GetCultureInfo("en-US")));
+                        _writer.WriteAttributeString("top", Convert.ToString(bsd.topMargin, CultureInfo.GetCultureInfo("en-US")));
+                        _writer.WriteAttributeString("bottom", Convert.ToString(bsd.bottomMargin, CultureInfo.GetCultureInfo("en-US")));
+                        _writer.WriteAttributeString("header", Convert.ToString(bsd.headerMargin, CultureInfo.GetCultureInfo("en-US")));
+                        _writer.WriteAttributeString("footer", Convert.ToString(bsd.footerMargin, CultureInfo.GetCultureInfo("en-US")));
+                    }
+                    _writer.WriteEndElement(); // pageMargins
                 }
 
                 // page setup settings 
@@ -523,6 +512,17 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         _writer.WriteAttributeString("copies", bsd.PageSetup.iCopies.ToString());
                     }
 
+                    _writer.WriteEndElement();
+                }
+
+                // embedded drawings (charts etc)
+                if (bsd.ObjectsSequence != null)
+                {
+                    _writer.WriteStartElement(Sml.Sheet.ElDrawing, Sml.Ns);
+                    {
+                        _writer.WriteAttributeString("r", "id", OpenXmlNamespaces.Relationships, this._worksheetPart.DrawingsPart.RelIdToString);
+                        bsd.ObjectsSequence.Convert(new DrawingMapping(this._xlsContext, this._worksheetPart.DrawingsPart, true));
+                    }
                     _writer.WriteEndElement();
                 }
             }

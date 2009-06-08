@@ -1111,7 +1111,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 case BlipStoreEntry.BlipType.msoblipWMF:
 
                     //it's a meta image
-                    MetafilePictBlip metaBlip = (MetafilePictBlip)Record.ReadRecord(reader, 0);
+                    MetafilePictBlip metaBlip = (MetafilePictBlip)Record.ReadRecord(reader);
 
                     //meta images can be compressed
                     byte[] decompressed = metaBlip.Decrompress();
@@ -1124,7 +1124,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 case BlipStoreEntry.BlipType.msoblipTIFF:
 
                     //it's a bitmap image
-                    BitmapBlip bitBlip = (BitmapBlip)Record.ReadRecord(reader, 0);
+                    BitmapBlip bitBlip = (BitmapBlip)Record.ReadRecord(reader);
                     outStream.Write(bitBlip.m_pvBits, 0, bitBlip.m_pvBits.Length);
                     break;
             }

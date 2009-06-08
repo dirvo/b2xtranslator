@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib.DrawingML;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.SpreadsheetML
 {
@@ -36,6 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.SpreadsheetML
     {
         private int _worksheetNumber;
         private int _chartsheetNumber;
+        private int _drawingsNumber;
         private int _externalLinkNumber;
         protected WorksheetPart _workSheetPart;
         protected SharedStringPart _sharedStringPart;
@@ -50,6 +52,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.SpreadsheetML
             this._worksheetNumber = 1;
             this._chartsheetNumber = 1;
             this._externalLinkNumber = 1;
+            this._drawingsNumber = 1;
             this._type = contentType;
         }
 
@@ -79,6 +82,11 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.SpreadsheetML
         public ChartsheetPart AddChartsheetPart()
         {
             return this.AddPart(new ChartsheetPart(this, this._chartsheetNumber++));
+        }
+
+        public DrawingsPart AddDrawingsPart()
+        {
+            return this.AddPart(new DrawingsPart(this, this._drawingsNumber++));
         }
 
         /// <summary>

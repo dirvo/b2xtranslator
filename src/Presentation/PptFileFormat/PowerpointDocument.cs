@@ -139,7 +139,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             try
             {
                 this.CurrentUserStream = file.GetStream("Current User");
-                Record rec = Record.ReadRecord(this.CurrentUserStream, 0);
+                Record rec = Record.ReadRecord(this.CurrentUserStream);
                 if (rec is CurrentUserAtom)
                 {
                     this.CurrentUserAtom = (CurrentUserAtom)rec;
@@ -188,7 +188,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             if (this.CurrentUserAtom != null)
             {
                 this.PowerpointDocumentStream.Seek(this.CurrentUserAtom.OffsetToCurrentEdit, SeekOrigin.Begin);
-                this.LastUserEdit = (UserEditAtom)Record.ReadRecord(this.PowerpointDocumentStream, 0);
+                this.LastUserEdit = (UserEditAtom)Record.ReadRecord(this.PowerpointDocumentStream);
             }
 
             this.ConstructPersistObjectDirectory();
@@ -359,7 +359,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
             UInt32 offset = this.PersistObjectDirectory[persistId];
             this.PowerpointDocumentStream.Seek(offset, SeekOrigin.Begin);
-            return (T)Record.ReadRecord(this.PowerpointDocumentStream, 0);
+            return (T)Record.ReadRecord(this.PowerpointDocumentStream);
         }
 
         /// <summary>
@@ -500,13 +500,13 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             while (userEditAtom != null)
             {
                 this.PowerpointDocumentStream.Seek(userEditAtom.OffsetPersistDirectory, SeekOrigin.Begin);
-                PersistDirectoryAtom pdAtom = (PersistDirectoryAtom)Record.ReadRecord(this.PowerpointDocumentStream, 0);
+                PersistDirectoryAtom pdAtom = (PersistDirectoryAtom)Record.ReadRecord(this.PowerpointDocumentStream);
                 result.Insert(0, pdAtom);
 
                 this.PowerpointDocumentStream.Seek(userEditAtom.OffsetLastEdit, SeekOrigin.Begin);
 
                 if (userEditAtom.OffsetLastEdit != 0)
-                    userEditAtom = (UserEditAtom)Record.ReadRecord(this.PowerpointDocumentStream, 0);
+                    userEditAtom = (UserEditAtom)Record.ReadRecord(this.PowerpointDocumentStream);
                 else
                     userEditAtom = null;
             }

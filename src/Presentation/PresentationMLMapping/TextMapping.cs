@@ -150,7 +150,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         {
             parentShapeTreeMapping = pparentShapeTreeMapping;
             System.IO.MemoryStream ms = new System.IO.MemoryStream(textbox.Bytes);
-            Record rec = Record.ReadRecord(ms, 0);
+            Record rec = Record.ReadRecord(ms);
             TextHeaderAtom thAtom = null;
             TextStyleAtom style = null;
             FooterMCAtom mca = null;
@@ -167,7 +167,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     thAtom = (TextHeaderAtom)rec;
                     while (ms.Position < ms.Length)
                     {
-                        rec = Record.ReadRecord(ms, 0);
+                        rec = Record.ReadRecord(ms);
 
                         switch (rec.TypeCode)
                         {
@@ -322,7 +322,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                     while (ms.Position < ms.Length)
                     {
-                        rec = Record.ReadRecord(ms, 0);
+                        rec = Record.ReadRecord(ms);
                         switch (rec.TypeCode)
                         {
                             case 0xfa6: //TextRulerAtom

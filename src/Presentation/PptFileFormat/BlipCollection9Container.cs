@@ -26,7 +26,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             byte winBlipType = this.Reader.ReadByte();
             byte unused = this.Reader.ReadByte();
 
-            Record rec = Record.ReadRecord(this.Reader, 0);
+            Record rec = Record.ReadRecord(this.Reader);
 
             if (rec is BitmapBlip)
             {

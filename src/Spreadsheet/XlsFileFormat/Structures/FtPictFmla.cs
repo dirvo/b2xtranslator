@@ -29,31 +29,35 @@
 
 using System;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.Tools;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg;
-using System.Collections.Generic;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures
 {
     /// <summary>
-    /// This structure specifies a formula used in a chart.
+    /// This structure specifies the location of the data associated with the picture Obj that contains this FtPictFmla.
     /// </summary>
-    public class ChartParsedFormula
+    public class FtPictFmla
     {
-        private UInt16 cce;
-        
         /// <summary>
-        /// LinkedList with the Ptg records !!
+        /// Reserved. MUST be 0x09.
         /// </summary>
-        public Stack<AbstractPtg> formula;
+        public UInt16 ft;
 
-        public ChartParsedFormula(IStreamReader reader)
+        /// <summary>
+        /// An unsigned integer that specifies the length, in bytes of this FtPicFmla, not including ft and cb fields.
+        /// </summary>
+        public UInt16 cb;
+
+        public FtPictFmla(IStreamReader reader)
         {
-            this.cce = reader.ReadUInt16();
+            this.ft = reader.ReadUInt16();
+            this.cb = reader.ReadUInt16();
 
-            if (this.cce > 0)
-            {
-                this.formula = ExcelHelperClass.getFormulaStack(reader, this.cce);
-            }
+            // TODO: place implemenation here
+
+            // skip remaining bytes until implementation is not completed
+            reader.ReadBytes(this.cb);
         }
     }
 }

@@ -33,7 +33,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 int maxPosition = (int)(fib.fcDggInfo + fib.lcbDggInfo);
 
                 //read the DrawingGroupData
-                this.DrawingGroupData = (DrawingGroup)Record.ReadRecord(reader, 0);
+                this.DrawingGroupData = (DrawingGroup)Record.ReadRecord(reader);
 
                 //read the Drawings
                 this.Drawings = new List<OfficeArtWordDrawing>();
@@ -41,7 +41,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 {
                     OfficeArtWordDrawing drawing = new OfficeArtWordDrawing();
                     drawing.dgglbl = (DrawingType)reader.ReadByte();
-                    drawing.container = (DrawingContainer)Record.ReadRecord(reader, 0);
+                    drawing.container = (DrawingContainer)Record.ReadRecord(reader);
 
                     for (int i = 0; i < drawing.container.Children.Count; i++)
                     {

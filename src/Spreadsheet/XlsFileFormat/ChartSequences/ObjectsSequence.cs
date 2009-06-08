@@ -1,25 +1,26 @@
 ﻿using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 using System.Collections.Generic;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
-    public class ObjectsSequence : BiffRecordSequence
+    public class ObjectsSequence : BiffRecordSequence, IVisitable
     {
         public MsoDrawingSelection MsoDrawingSelection;
 
-        public List<ObjectGroup> ObjectGroups;
+        public List<DrawingsGroup> DrawingsGroup;
 
         public ObjectsSequence(IStreamReader reader)
             : base(reader)
         {
-            // OBJECTS = *(MsoDrawing *Continue [OBJ / TEXTOBJECT]) [MsoDrawingSelection]
+            // OBJECTS = *(MsoDrawing *Continue *(TEXTOBJECT / OBJ / CHART)) [MsoDrawingSelection]
 
-            // *(MsoDrawing *Continue [OBJ / TEXTOBJECT])
-            this.ObjectGroups = new List<ObjectGroup>();
+            // *(MsoDrawing *Continue *(TEXTOBJECT / OBJ / CHART))
+            this.DrawingsGroup = new List<DrawingsGroup>();
             while (BiffRecord.GetNextRecordType(reader) == RecordType.MsoDrawing)
             {
-                this.ObjectGroups.Add(new ObjectGroup(reader));
+                this.DrawingsGroup.Add(new DrawingsGroup(reader));
             }
 
             // [MsoDrawingSelection]
@@ -28,21 +29,28 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                 this.MsoDrawingSelection = (MsoDrawingSelection)BiffRecord.ReadRecord(reader);
             }
         }
+
+        #region IVisitable Members
+
+        public void Convert<T>(T mapping)
+        {
+            ((IMapping<ObjectsSequence>)mapping).Apply(this);
+        }
+
+        #endregion
     }
 
-    public class ObjectGroup
+    public class DrawingsGroup
     {
         public MsoDrawing MsoDrawing;
 
         public List<Continue> Continues;
 
-        public ObjSequence ObjSequence;
+        public List<ObjectGroup> Objects;
 
-        public TextObjectSequence TextObjectSequence;
-
-        public ObjectGroup(IStreamReader reader)
+        public DrawingsGroup(IStreamReader reader)
         {
-            // MsoDrawing *Continue [OBJ / TEXTOBJECT]
+            // MsoDrawing *Continue *(TEXTOBJECT / OBJ / CHART)
 
             // MsoDrawing
             this.MsoDrawing = (MsoDrawing)BiffRecord.ReadRecord(reader);
@@ -54,14 +62,38 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                 this.Continues.Add((Continue)BiffRecord.ReadRecord(reader));
             }
 
-            // [OBJ / TEXTOBJECT]
+            // *(TEXTOBJECT / OBJ / CHART)
+            this.Objects = new List<ObjectGroup>();
+            while (BiffRecord.GetNextRecordType(reader) == RecordType.Obj
+                || BiffRecord.GetNextRecordType(reader) == RecordType.TxO
+                || BiffRecord.GetNextRecordType(reader) == RecordType.BOF)
+            {
+                this.Objects.Add(new ObjectGroup(reader));
+            }
+        }
+    }
+
+    public class ObjectGroup
+    {
+        public TextObjectSequence TextObjectSequence;
+
+        public Obj Obj;
+
+        public ChartSheetSequence ChartSheetSequence;
+
+        public ObjectGroup(IStreamReader reader)
+        {
             if (BiffRecord.GetNextRecordType(reader) == RecordType.Obj)
             {
-                this.ObjSequence = new ObjSequence(reader);
+                this.Obj = (Obj)BiffRecord.ReadRecord(reader);
             }
             else if (BiffRecord.GetNextRecordType(reader) == RecordType.TxO)
             {
                 this.TextObjectSequence = new TextObjectSequence(reader);
+            }
+            else if (BiffRecord.GetNextRecordType(reader) == RecordType.BOF)
+            {
+                this.ChartSheetSequence = new ChartSheetSequence(reader);
             }
         }
     }

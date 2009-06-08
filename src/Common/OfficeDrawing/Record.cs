@@ -272,12 +272,12 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             }
         }
 
-        public static Record ReadRecord(Stream stream, uint siblingIdx)
+        public static Record ReadRecord(Stream stream)
         {
-            return ReadRecord(new BinaryReader(stream), siblingIdx);
+            return ReadRecord(new BinaryReader(stream));
         }
 
-        public static Record ReadRecord(BinaryReader reader, uint siblingIdx)
+        public static Record ReadRecord(BinaryReader reader)
         {
             try
             {
@@ -326,8 +326,6 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
                     //TraceLogger.DebugInternal("Going to read record of type UnknownRecord ({1})", cls, typeCode);
                     result = new UnknownRecord(reader, size, typeCode, version, instance);
                 }
-
-                result.SiblingIdx = siblingIdx;
 
                 return result;
             }

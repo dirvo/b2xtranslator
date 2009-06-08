@@ -376,7 +376,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 if (d != null)
                                 {
                                     System.IO.MemoryStream ms = new System.IO.MemoryStream(d.bytes);
-                                    Record rec = Record.ReadRecord(ms, 0);
+                                    Record rec = Record.ReadRecord(ms);
                                     if (rec is OEPlaceHolderAtom)
                                     {
                                         OEPlaceHolderAtom placeholder2 = (OEPlaceHolderAtom)rec;
@@ -2319,13 +2319,17 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                 if (ms.Length > 0)
                 {
-                    Record rec = Record.ReadRecord(ms, 0);
+                    Record rec = Record.ReadRecord(ms);
 
                     if (rec.TypeCode == 4116 && output)
                     {
                         AnimationInfoContainer animinfo = (AnimationInfoContainer)rec;
                         animinfos.Add(animinfo, _idCnt);
-                        if (ms.Position < ms.Length) rec = Record.ReadRecord(ms, 1);
+                        if (ms.Position < ms.Length)
+                        {
+                            rec = Record.ReadRecord(ms);
+                            rec.SiblingIdx = 1;
+                        }
                     }
 
                     while (true)
@@ -2376,7 +2380,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                                 if (d != null)
                                                 {
                                                     ms = new System.IO.MemoryStream(d.bytes);
-                                                    rec = Record.ReadRecord(ms, 0);
+                                                    rec = Record.ReadRecord(ms);
                                                     if (rec is OEPlaceHolderAtom)
                                                     {
                                                         OEPlaceHolderAtom placeholder2 = (OEPlaceHolderAtom)rec;
@@ -2420,7 +2424,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         }
                         if (ms.Position < ms.Length)
                         {
-                            rec = Record.ReadRecord(ms, 0);
+                            rec = Record.ReadRecord(ms);
                         }
                         else
                         {
@@ -2436,7 +2440,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     Record rec;
                     while (ms.Position < ms.Length)
                     {
-                        rec = Record.ReadRecord(ms, 0);
+                        rec = Record.ReadRecord(ms);
 
                         switch (rec.TypeCode)
                         {
@@ -2499,7 +2503,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             string lang = "en-US";
             while (ms.Position < ms.Length)
             {
-                Record rec = Record.ReadRecord(ms, 0);
+                Record rec = Record.ReadRecord(ms);
 
                 switch (rec.TypeCode)
                 {

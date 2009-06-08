@@ -51,6 +51,6 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.DrawingML
         }
 
         public override string TargetName { get { return "chart" + this.PartIndex.ToString(); } }
-        public override string TargetDirectory { get { return "charts"; } }
+        public override string TargetDirectory { get { return "../charts"; } }
     }
 }

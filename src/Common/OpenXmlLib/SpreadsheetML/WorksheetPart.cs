@@ -29,18 +29,19 @@ using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.WordprocessingML;
+using DIaLOGIKa.b2xtranslator.OpenXmlLib.DrawingML;
 
 namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.SpreadsheetML
 {
 
     public class WorksheetPart : OpenXmlPart
     {
-        private int WorksheetNumber; 
-
-        public WorksheetPart(OpenXmlPartContainer parent, int WorksheetNumber)
-            : base(parent, WorksheetNumber)
+        private static int _drawingNumber = 0; 
+        private DrawingsPart _drawingsPart = null;
+        
+        public WorksheetPart(WorkbookPart parent, int partIndex)
+            : base(parent, partIndex)
         {
-            this.WorksheetNumber = WorksheetNumber; 
         }
 
 
@@ -54,7 +55,20 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.SpreadsheetML
             get { return OpenXmlRelationshipTypes.Worksheet; }
         }
 
-        public override string TargetName { get { return "sheet" + this.WorksheetNumber.ToString(); } }
+        public override string TargetName { get { return "sheet" + this.PartIndex.ToString(); } }
         public override string TargetDirectory { get { return "worksheets"; } }
+
+        public DrawingsPart DrawingsPart
+        {
+            get
+            {
+                if (this._drawingsPart == null)
+                {
+                    this._drawingsPart = this.AddPart(new DrawingsPart(this, ++WorksheetPart._drawingNumber));
+                    //this._drawingsPart = ((WorkbookPart)this.Parent).AddDrawingsPart();
+                }
+                return this._drawingsPart;
+            }
+        }
     }
 }

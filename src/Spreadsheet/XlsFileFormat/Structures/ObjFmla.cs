@@ -29,31 +29,34 @@
 
 using System;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.Tools;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg;
-using System.Collections.Generic;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures
 {
     /// <summary>
-    /// This structure specifies a formula used in a chart.
+    /// This structure specifies a formula in an Obj record.
     /// </summary>
-    public class ChartParsedFormula
+    public class ObjFmla
     {
-        private UInt16 cce;
-        
-        /// <summary>
-        /// LinkedList with the Ptg records !!
-        /// </summary>
-        public Stack<AbstractPtg> formula;
+        public UInt16 cbFmla;
 
-        public ChartParsedFormula(IStreamReader reader)
+        //public ObjectParsedFormula fmla;
+
+        //public PictFmlaEmbedInfo embedInfo;
+
+
+
+
+        public ObjFmla(IStreamReader reader)
         {
-            this.cce = reader.ReadUInt16();
+            this.cbFmla = reader.ReadUInt16();
+            //this.fmla = new ObjectParsedFormula(reader);
 
-            if (this.cce > 0)
-            {
-                this.formula = ExcelHelperClass.getFormulaStack(reader, this.cce);
-            }
+            // TODO: place implemenation here
+
+            // read padding bytes
+            reader.ReadBytes(this.cbFmla);
         }
     }
 }

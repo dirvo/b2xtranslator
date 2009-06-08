@@ -87,6 +87,18 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
                     path = Path.Combine(part.TargetDirectory, path);
                     part = part.Parent;
                 }
+
+                // resolve path (i.e. resolve "../" within path)
+                if (!string.IsNullOrEmpty(path))
+                {
+                    string rootPath = Path.GetFullPath(".");
+                    string resolvedPath = Path.GetFullPath(path);
+                    if (resolvedPath.StartsWith(rootPath))
+                    {
+                        path = resolvedPath.Substring(rootPath.Length + 1);
+                    }
+                }
+
                 if (path == "ppt\\slides\\media") return "ppt\\media";
                 if (path == "ppt\\notesSlides\\media") return "ppt\\media";
                 if (path == "ppt\\slideMasters\\..\\slideLayouts") return "ppt\\slideLayouts";

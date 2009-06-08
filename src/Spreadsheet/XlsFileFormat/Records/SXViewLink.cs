@@ -58,7 +58,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 
             this.cch = reader.ReadByte();
 
-            this.XLUnicodeStringNoCch = new XLUnicodeStringNoCch(reader, this.cch);
+            if (this.cch > 0)
+            {
+                this.XLUnicodeStringNoCch = new XLUnicodeStringNoCch(reader, this.cch);
+            }
             
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 

@@ -27,6 +27,7 @@
 using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
@@ -35,6 +36,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
     {
         public const RecordType ID = RecordType.MsoDrawing;
 
+        public RegularContainer rgChildRec;
+
         public MsoDrawing(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
@@ -42,10 +45,16 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
+            this.rgChildRec = Record.ReadRecord(reader.BaseStream) as RegularContainer;
             // TODO: place code here
             
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+
+            // HACK: The length of the embedded OfficeDrawing records seems not correct in the test files
+            //   Therefore we set the position of the stream to the value specified by length
+            //
+            this.Reader.BaseStream.Position = this.Offset + this.Length;
         }
     }
 }

@@ -51,6 +51,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public List<Blank> BLANKList;
         public List<MulBlank> MULBLANKList;
         public List<Formula> FORMULAList;
+        public ObjectsSequence ObjectsSequence;
+
         // TODO
         public List<ARRAY> ARRAYList;
         public List<HyperlinkData> HyperLinkList; 

@@ -53,7 +53,8 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 
                 try
                 {
-                    child = Record.ReadRecord(this.Reader, idx);
+                    child = Record.ReadRecord(this.Reader);
+                    child.SiblingIdx = idx;
 
                     this.Children.Add(child);
                     child.ParentRecord = this;
@@ -130,6 +131,27 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             return (T)this.Children.Find(
                 delegate(Record r) { return r is T; }
             );
+        }
+
+        public T FirstDescendantWithType<T>() where T : Record
+        {
+            foreach (Record child in this.Children)
+            {
+                if (child is T)
+                {
+                    return child as T;
+                }
+                else if (child is RegularContainer)
+                {
+                    RegularContainer container = child as RegularContainer;
+                    T hit = container.FirstDescendantWithType<T>();
+                    if (hit != null)
+                    {
+                        return hit;
+                    }
+                }
+            }
+            return null;
         }
 
         #region IEnumerable<Record> Members

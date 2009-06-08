@@ -27,6 +27,7 @@
 using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
@@ -34,6 +35,36 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
     public class Obj : BiffRecord
     {
         public const RecordType ID = RecordType.Obj;
+
+        public FtCmo cmo;
+
+        public FtGmo gmo;
+
+        public FtCf pictFormat;
+
+        public FtPioGrbit pictFlags;
+
+        public FtCbls cbls;
+
+        public FtRbo rbo;
+
+        public FtSbs sbs;
+
+        public FtNts nts;
+
+        public FtMacro macro;
+
+        public FtPictFmla pictFmla;
+
+        public ObjLinkFmla linkFmla;
+
+        public FtCblsData checkBox;
+
+        public FtRboData radioButton;
+
+        public FtEdoData edit;
+
+
 
         public Obj(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
@@ -43,6 +74,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 
             // initialize class members from stream
             // TODO: place code here
+            reader.ReadBytes(length);
             
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 

@@ -29,31 +29,44 @@
 
 using System;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg;
-using System.Collections.Generic;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures
 {
     /// <summary>
-    /// This structure specifies a formula used in a chart.
+    /// This structure specifies the clipboard format of the picture-type Obj record containing this FtCf.
     /// </summary>
-    public class ChartParsedFormula
+    public class FtCf
     {
-        private UInt16 cce;
-        
-        /// <summary>
-        /// LinkedList with the Ptg records !!
-        /// </summary>
-        public Stack<AbstractPtg> formula;
-
-        public ChartParsedFormula(IStreamReader reader)
+        public enum ClipboardFormat : ushort
         {
-            this.cce = reader.ReadUInt16();
+            EnhancedMetafile = 0x0002,
+            Bitmap = 0x0009,
+            Unknown = 0xFFFF
+        }
 
-            if (this.cce > 0)
-            {
-                this.formula = ExcelHelperClass.getFormulaStack(reader, this.cce);
-            }
+        /// <summary>
+        /// Reserved. MUST be 0x07.
+        /// </summary>
+        public UInt16 ft;
+
+        /// <summary>
+        /// Reserved. MUST be 0x02.
+        /// </summary>
+        public UInt16 cb;
+
+        /// <summary>
+        /// An unsigned integer that specifies the Windows clipboard format of the data associated with the picture.
+        /// </summary>
+        public ClipboardFormat cf;
+
+
+        public FtCf(IStreamReader reader)
+        {
+            this.ft = reader.ReadUInt16();
+            this.cb = reader.ReadUInt16();
+            this.cf = (ClipboardFormat)reader.ReadUInt16();
         }
     }
 }
+

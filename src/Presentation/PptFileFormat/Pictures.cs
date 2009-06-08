@@ -47,7 +47,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             while (this.Reader.BaseStream.Position < this.Reader.BaseStream.Length)
             {
                 pos = this.Reader.BaseStream.Position;
-                Record r = Record.ReadRecord(this.Reader, 0);
+                Record r = Record.ReadRecord(this.Reader);
                 switch (r.TypeCode)
                 {
                     case 0:

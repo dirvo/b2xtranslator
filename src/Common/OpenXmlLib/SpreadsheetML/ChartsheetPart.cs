@@ -38,9 +38,8 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.SpreadsheetML
     {
         private int _drawingNumber = 0;
         private DrawingsPart _drawingsPart = null;
-
-
-        public ChartsheetPart(OpenXmlPartContainer parent, int partIndex)
+        
+        public ChartsheetPart(WorkbookPart parent, int partIndex)
             : base(parent, partIndex)
         {
         }
@@ -66,6 +65,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.SpreadsheetML
                 if (this._drawingsPart == null)
                 {
                     this._drawingsPart = this.AddPart(new DrawingsPart(this, ++this._drawingNumber));
+                    //this._drawingsPart = ((WorkbookPart)this.Parent).AddDrawingsPart();
                 }
                 return this._drawingsPart;
             }

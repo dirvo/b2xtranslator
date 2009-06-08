@@ -29,31 +29,59 @@
 
 using System;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg;
-using System.Collections.Generic;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures
 {
     /// <summary>
-    /// This structure specifies a formula used in a chart.
+    /// This structure specifies Boolean properties of the picture Obj containing this FtPioGrbit.
     /// </summary>
-    public class ChartParsedFormula
+    public class FtPioGrbit
     {
-        private UInt16 cce;
-        
         /// <summary>
-        /// LinkedList with the Ptg records !!
+        /// Reserved. MUST be 0x08.
         /// </summary>
-        public Stack<AbstractPtg> formula;
+        public UInt16 ft;
 
-        public ChartParsedFormula(IStreamReader reader)
+        /// <summary>
+        /// Reserved. MUST be 0x02.
+        /// </summary>
+        public UInt16 cb;
+
+        public bool fAutoPict;
+
+        public bool fDde;
+
+        public bool fPrintCalc;
+
+        public bool fIcon;
+
+        public bool fCtl;
+
+        public bool fPrstm;
+
+        public bool fCamera;
+
+        public bool fDefaultSize;
+
+        public bool fAutoLoad;
+
+        public FtPioGrbit(IStreamReader reader)
         {
-            this.cce = reader.ReadUInt16();
+            this.ft = reader.ReadUInt16();
+            this.cb = reader.ReadUInt16();
 
-            if (this.cce > 0)
-            {
-                this.formula = ExcelHelperClass.getFormulaStack(reader, this.cce);
-            }
+            UInt16 flags = reader.ReadUInt16();
+            this.fAutoPict = Utils.BitmaskToBool(flags, 0x0001);
+            this.fDde = Utils.BitmaskToBool(flags, 0x0002);
+            this.fPrintCalc = Utils.BitmaskToBool(flags, 0x0004);
+            this.fIcon = Utils.BitmaskToBool(flags, 0x0008);
+            this.fCtl = Utils.BitmaskToBool(flags, 0x0010);
+            this.fPrstm = Utils.BitmaskToBool(flags, 0x0020);
+
+            this.fCamera = Utils.BitmaskToBool(flags, 0x0080);
+            this.fDefaultSize = Utils.BitmaskToBool(flags, 0x0100);
+            this.fAutoLoad = Utils.BitmaskToBool(flags, 0x0200);
         }
     }
 }

@@ -242,7 +242,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     foreach (OfficeDrawing.ClientData data in shapecontainer.AllChildrenWithType<OfficeDrawing.ClientData>())
                     {
                         System.IO.MemoryStream ms = new System.IO.MemoryStream(data.bytes);
-                        OfficeDrawing.Record rec = OfficeDrawing.Record.ReadRecord(ms, 0);
+                        OfficeDrawing.Record rec = OfficeDrawing.Record.ReadRecord(ms);
 
                         if (rec.TypeCode == 3011)
                         {
