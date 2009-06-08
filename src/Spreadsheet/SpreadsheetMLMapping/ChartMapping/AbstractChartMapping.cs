@@ -34,6 +34,7 @@ using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 using System;
 using System.Globalization;
+using System.Xml;
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
@@ -77,6 +78,20 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         public ChartFormatsSequence ChartFormatsSequence
         {
             get { return this.ChartSheetContentSequence.ChartFormatsSequence; }
+        }
+
+        protected void writeValueElement(XmlWriter writer, string localName, string value)
+        {
+            writer.WriteStartElement(Dml.Chart.Prefix, localName, Dml.Chart.Ns);
+            writer.WriteAttributeString("", "val", "", value);
+            writer.WriteEndElement();
+        }
+
+        protected void writeValueElement(XmlWriter writer, string prefix, string localName, string ns, string value)
+        {
+            writer.WriteStartElement(prefix, localName, ns);
+            writer.WriteAttributeString("", "val", "", value);
+            writer.WriteEndElement();
         }
     }
 }

@@ -34,6 +34,7 @@ using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 using System;
 using System.Globalization;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
@@ -65,6 +66,14 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axisId.ToString());
                     _writer.WriteEndElement();
                 }
+
+                // varyColors
+                writeValueElement(_writer, "varyColors", crtSequence.ChartFormat.fVaried ? "1" : "0");
+                
+
+
+                // firstSliceAng
+                writeValueElement(_writer, "firstSliceAng", pie.anStart.ToString());
             }
             _writer.WriteEndElement();
         }
