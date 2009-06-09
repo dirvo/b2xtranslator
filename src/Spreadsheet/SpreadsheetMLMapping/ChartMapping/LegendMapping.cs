@@ -55,9 +55,6 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 {
                     // TODO: older Excel Versions
                 }
-
-
-
             }
             _writer.WriteEndElement(); // c:legend
         }

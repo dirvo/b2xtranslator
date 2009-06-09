@@ -60,9 +60,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 case LineFormat.LineWeight.Medium:
                     return "25400";
                 case LineFormat.LineWeight.Wide:
-                    return "";
-                default:
-                    return "";
+                    return "38100";
             }
         }
 
