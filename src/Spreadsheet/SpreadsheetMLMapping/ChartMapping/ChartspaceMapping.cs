@@ -58,7 +58,6 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             // c:chartspace
             _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElChartSpace, Dml.Chart.Ns);
             _writer.WriteAttributeString("xmlns", Dml.Chart.Prefix, "", Dml.Chart.Ns);
-
             _writer.WriteAttributeString("xmlns", Dml.Prefix, "", Dml.Ns);
             {
                 // c:chart
@@ -109,6 +108,12 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
                 }
                 _writer.WriteEndElement(); // c:chart
+
+                // c:spPr
+                if (chartFormatsSequence.FrameSequence != null)
+                {
+                    chartFormatsSequence.FrameSequence.Convert(new ShapePropertiesMapping(this.WorkbookContext, this.ChartContext));
+                }
             }
             _writer.WriteEndElement();
             _writer.WriteEndDocument();

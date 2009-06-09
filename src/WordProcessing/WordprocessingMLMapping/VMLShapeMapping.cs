@@ -412,7 +412,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     // 3D STYLE
 
                     case ShapeOptions.PropertyId.f3D:
-                    case ShapeOptions.PropertyId.fc3DFillHarsh:
+                    case ShapeOptions.PropertyId.ThreeDStyleBooleanProperties:
                     case ShapeOptions.PropertyId.fc3DLightFace:
                         break;
                     case ShapeOptions.PropertyId.c3DExtrudeBackward:

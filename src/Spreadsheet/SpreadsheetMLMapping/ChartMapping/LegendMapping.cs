@@ -36,6 +36,12 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     writeValueElement("legendPos", mapLegendPos(ldSequence.Pos));
                 }
 
+                // c:spPr
+                if (ldSequence.FrameSequence != null)
+                {
+                    ldSequence.FrameSequence.Convert(new ShapePropertiesMapping(this.WorkbookContext, this.ChartContext));
+                }
+
                 // c:txPr
                 if (ldSequence.TextPropsSequence != null)
                 {
@@ -49,7 +55,12 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     {
                         xmlTextProps.LoadXml(ldSequence.TextPropsSequence.RichTextStream.rgb);
                     }
-                    xmlTextProps.WriteTo(_writer);
+
+                    // NOTE: Don't use WriteTo on the document root because it might try to 
+                    // add an XML declaration to the writer (BANG!). 
+                    // Use it on the top-most element node instead.
+                    //
+                    xmlTextProps.DocumentElement.WriteTo(_writer);
                 }
                 else
                 {

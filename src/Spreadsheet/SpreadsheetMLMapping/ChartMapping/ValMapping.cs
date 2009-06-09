@@ -50,13 +50,13 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         /// </summary>
         public void Apply(SeriesFormatSequence seriesFormatSequence)
         {
-            // c:val
-            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElVal, Dml.Chart.Ns);
+            // find BRAI record for values
+            foreach (AiSequence aiSequence in seriesFormatSequence.AiSequences)
             {
-                // find BRAI record for values
-                foreach (AiSequence aiSequence in seriesFormatSequence.AiSequences)
+                if (aiSequence.BRAI.braiId == BRAI.BraiId.SeriesValues)
                 {
-                    if (aiSequence.BRAI.braiId == BRAI.BraiId.SeriesValues)
+                    // c:val
+                    _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElVal, Dml.Chart.Ns);
                     {
                         BRAI brai = aiSequence.BRAI;
                         switch (brai.rt)
@@ -87,12 +87,11 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                                 _writer.WriteEndElement(); // c:numRef
                                 break;
                         }
-
-                        break;
                     }
+                    _writer.WriteEndElement(); // c:val
+                    break;
                 }
             }
-            _writer.WriteEndElement(); // c:val
         }
         #endregion
 
@@ -117,7 +116,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     }
                     // c:ptCount
                     writeValueElement(Dml.Chart.ElPtCount, ptCount.ToString());
-                    
+
                     UInt32 idx = 0;
                     for (UInt32 i = 0; i < dataMatrix.GetLength(1); i++)
                     {
@@ -129,10 +128,10 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                                 // c:pt
                                 _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElPt, Dml.Chart.Ns);
                                 _writer.WriteAttributeString(Dml.Chart.AttrIdx, idx.ToString());
-                                
+
                                 // c:v
                                 _writer.WriteElementString(Dml.Chart.Prefix, Dml.Chart.ElV, Dml.Chart.Ns, ((Number)cellContent).num.ToString(CultureInfo.InvariantCulture));
-                                
+
                                 _writer.WriteEndElement(); // c:pt
                             }
                         }

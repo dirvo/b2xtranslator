@@ -51,6 +51,7 @@
     <Compile Include="ChartMapping\DataPointMapping.cs" />
     <Compile Include="ChartMapping\LegendMapping.cs" />
     <Compile Include="ChartMapping\LineFormatMapping.cs" />
+    <Compile Include="ChartMapping\ShapePropertiesMapping.cs" />
     <Compile Include="ChartsheetMapping.cs" />
     <Compile Include="ChartMapping\DoughnutChartMapping.cs" />
     <Compile Include="ChartMapping\LayoutMapping.cs" />

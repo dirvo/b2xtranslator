@@ -35,7 +35,7 @@ using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
     public class PlotAreaMapping : AbstractChartMapping,
-          IMapping<ChartFormatsSequence>
+        IMapping<ChartFormatsSequence>
     {
 
         public PlotAreaMapping(ExcelContext workbookContext, ChartContext chartContext)
@@ -249,7 +249,6 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
                                 // c:min
 
-
                             }
                             _writer.WriteEndElement(); // c:scaling
 
@@ -282,7 +281,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             // c:tickLblPos
 
                             // c:spPr
-
+                            
                             // c:txPr
 
                             // c:crossAx
@@ -293,6 +292,13 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         }
                         _writer.WriteEndElement(); // c:valAx
                     }
+                }
+                // c:spPr
+                if (chartFormatsSequence.AxisParentSequences.Count > 0 
+                    && chartFormatsSequence.AxisParentSequences[0].AxesSequence != null
+                    && chartFormatsSequence.AxisParentSequences[0].AxesSequence.PlotArea != null)
+                {
+                    chartFormatsSequence.AxisParentSequences[0].AxesSequence.Frame.Convert(new ShapePropertiesMapping(this.WorkbookContext, this.ChartContext));
                 }
             }
             _writer.WriteEndElement(); // c:plotArea

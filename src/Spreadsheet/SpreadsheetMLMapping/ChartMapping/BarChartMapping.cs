@@ -54,7 +54,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             }
 
             Bar bar = crtSequence.ChartType as Bar;
-            
+
 
             // c:barChart / c:bar3DChart
             _writer.WriteStartElement(Dml.Chart.Prefix, this._is3DChart ? Dml.Chart.ElBar3DChart : Dml.Chart.ElBarChart, Dml.Chart.Ns);
@@ -62,14 +62,14 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 // EG_BarChartShared
                 // c:barDir
                 writeValueElement(Dml.Chart.ElBarDir, bar.fTranspose ? "bar" : "col");
-                
+
                 // c:grouping
                 string grouping = bar.fStacked ? "stacked" : bar.f100 ? "percentStacked" : this.Is3DChart && !crtSequence.Chart3d.fCluster ? "standard" : "clustered";
                 writeValueElement(Dml.Chart.ElGrouping, grouping);
 
                 // c:varyColors
                 writeValueElement(Dml.Chart.ElVaryColors, crtSequence.ChartFormat.fVaried ? "1" : "0");
-                
+
                 // Bar Chart Series
                 foreach (SeriesFormatSequence seriesFormatSequence in this.ChartFormatsSequence.SeriesFormatSequences)
                 {
@@ -100,11 +100,17 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         // c:errBars
 
                         // c:cat (Category Axis Data)
+                        seriesFormatSequence.Convert(new CatMapping(this.WorkbookContext, this.ChartContext));
 
                         // c:val
                         seriesFormatSequence.Convert(new ValMapping(this.WorkbookContext, this.ChartContext));
 
-                        // c:shape
+                        // c:shape (we only condider the first Chart3DBarShape found)
+                        SsSequence ssSeq = seriesFormatSequence.SsSequence.Find(s => s.Chart3DBarShape != null);
+                        if (ssSeq != null)
+                        {
+                            insertShape(ssSeq.Chart3DBarShape);
+                        }
 
                         _writer.WriteEndElement(); // c:ser
                     }
@@ -118,20 +124,24 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 {
                     // c:gapWidth
                     writeValueElement(Dml.Chart.ElGapWidth, crtSequence.Chart3d.pcGap.ToString());
-                    
+
                     // c:gapDepth
                     writeValueElement(Dml.Chart.ElGapDepth, crtSequence.Chart3d.pcDepth.ToString());
-                    
-                    // c:shape (defined in Chart3DBarShape???)
+
+                    // c:shape 
+                    if (crtSequence.SsSequence != null && crtSequence.SsSequence.Chart3DBarShape != null)
+                    {
+                        insertShape(crtSequence.SsSequence.Chart3DBarShape);
+                    }
                 }
                 else
                 {
                     // c:gapWidth
                     writeValueElement(Dml.Chart.ElGapWidth, bar.pcGap.ToString());
-                    
+
                     // c:overlap
                     writeValueElement(Dml.Chart.ElOverlap, bar.pcOverlap.ToString());
-                    
+
                     // Series Lines
 
 
@@ -146,5 +156,28 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             _writer.WriteEndElement();
         }
         #endregion
+
+        private void insertShape(Chart3DBarShape chart3DBarShape)
+        {
+            string shape = string.Empty;
+            switch (chart3DBarShape.taper)
+            {
+                case Chart3DBarShape.TaperType.None:
+                    shape = chart3DBarShape.riser == Chart3DBarShape.RiserType.Rectangle ? "box" : "cylinder";
+                    break;
+
+                case Chart3DBarShape.TaperType.TopEach:
+                    shape = chart3DBarShape.riser == Chart3DBarShape.RiserType.Rectangle ? "pyramid" : "cone";
+                    break;
+
+                case Chart3DBarShape.TaperType.TopMax:
+                    shape = chart3DBarShape.riser == Chart3DBarShape.RiserType.Rectangle ? "pyramidToMax" : "coneToMax";
+                    break;
+            }
+            if (!string.IsNullOrEmpty(shape))
+            {
+                writeValueElement(Dml.Chart.ElShape, shape);
+            }
+        }
     }
 }

@@ -62,6 +62,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public ChartSheetContentSequence(IStreamReader reader)
             : base(reader)
         {
+            // reset id counter for chart groups 
+            ChartFormatIdGenerator.Instance.StartNewChartsheetSubstream();
+            ChartAxisIdGenerator.Instance.StartNewChartsheetSubstream();
+
             // CHARTSHEETCONTENT = [WriteProtect] [SheetExt] [WebPub] *HFPicture PAGESETUP PrintSize [HeaderFooter] [BACKGROUND] *Fbi *Fbi2 [ClrtClient] [PROTECTION] 
             //          [Palette] [SXViewLink] [PivotChartBits] [SBaseRef] [MsoDrawingGroup] OBJECTS Units CHARTFOMATS SERIESDATA *WINDOW *CUSTOMVIEW [CodeName] [CRTMLFRT] EOF
 

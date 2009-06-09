@@ -19,37 +19,44 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
         public void Apply(SeriesFormatSequence seriesFormatSequence)
         {
-            // c:cat
-            _writer.WriteStartElement(Dml.Chart.Prefix, "cat", Dml.Chart.Ns);
+            // find BRAI record for categories
+            foreach (AiSequence aiSequence in seriesFormatSequence.AiSequences)
             {
-                // find BRAI record for categories
-                foreach (AiSequence aiSequence in seriesFormatSequence.AiSequences)
+                if (aiSequence.BRAI.braiId == BRAI.BraiId.SeriesCategory)
                 {
-                    if (aiSequence.BRAI.braiId == BRAI.BraiId.SeriesCategory)
-                    {
-                         BRAI brai = aiSequence.BRAI;
-                         switch (brai.rt)
-                         {
-                             case BRAI.DataSource.Literal:
-                                 break;
-                             case BRAI.DataSource.Reference:
-                                 // c:strRef
-                                 _writer.WriteStartElement(Dml.Chart.Prefix, "strRef", Dml.Chart.Ns);
-                                 {
-                                     // c:f
-                                     string formula = FormulaInfixMapping.mapFormula(brai.formula.formula, this.WorkbookContext);
-                                     _writer.WriteElementString(Dml.Chart.Prefix, Dml.Chart.ElF, Dml.Chart.Ns, formula);
+                    BRAI brai = aiSequence.BRAI;
 
-                                     // c:strCache
-                                     convertStringCache(seriesFormatSequence);
-                                 }
-                                 _writer.WriteEndElement();
-                                 break;
-                         }
+                    // don't create a c:cat node for automatically generated category axis data!
+                    if (brai.rt != BRAI.DataSource.Automatic)
+                    {
+                        // c:cat
+                        _writer.WriteStartElement(Dml.Chart.Prefix, "cat", Dml.Chart.Ns);
+                        {
+                            switch (brai.rt)
+                            {
+                                case BRAI.DataSource.Literal:
+                                    break;
+                                case BRAI.DataSource.Reference:
+                                    // c:strRef
+                                    _writer.WriteStartElement(Dml.Chart.Prefix, "strRef", Dml.Chart.Ns);
+                                    {
+                                        // c:f
+                                        string formula = FormulaInfixMapping.mapFormula(brai.formula.formula, this.WorkbookContext);
+                                        _writer.WriteElementString(Dml.Chart.Prefix, Dml.Chart.ElF, Dml.Chart.Ns, formula);
+
+                                        // c:strCache
+                                        convertStringCache(seriesFormatSequence);
+                                    }
+                                    _writer.WriteEndElement();
+                                    break;
+                            }
+                        }
+                        _writer.WriteEndElement(); // c:cat
                     }
+                    break;
                 }
             }
-            _writer.WriteEndElement(); // c:cat
+
         }
 
         private void convertStringCache(SeriesFormatSequence seriesFormatSequence)

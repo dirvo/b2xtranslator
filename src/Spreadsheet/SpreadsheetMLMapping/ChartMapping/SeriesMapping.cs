@@ -95,7 +95,10 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 }
             }
 
-            // TODO: c:spPr
+            if (seriesFormatSequence.SsSequence.Count > 0)
+            {
+                seriesFormatSequence.SsSequence[0].Convert(new ShapePropertiesMapping(this.WorkbookContext, this.ChartContext));
+            }
 
         }
         #endregion

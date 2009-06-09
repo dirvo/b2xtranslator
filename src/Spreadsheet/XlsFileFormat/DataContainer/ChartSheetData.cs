@@ -37,8 +37,6 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
         public ChartSheetData()
         {
-            // reset id counter for chart groups 
-            ChartFormatIdGenerator.Instance.StartNewChartsheetSubstream();
         }
 
         public override void Convert<T>(T mapping)

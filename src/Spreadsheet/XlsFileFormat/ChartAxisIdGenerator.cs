@@ -67,6 +67,13 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             }
         }
 
+        public void StartNewChartsheetSubstream()
+        {
+            _id = 0;
+            _idList.Clear();
+        }
+
+
         public void StartNewAxisGroup()
         {
             _idList.Clear();

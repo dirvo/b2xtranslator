@@ -161,7 +161,6 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         }
                     }
                     _writer.WriteEndElement(); // xdr:twoCellAnchor
-
                 }
             }
 

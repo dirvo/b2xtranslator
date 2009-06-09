@@ -174,6 +174,13 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             fillShapeOriginX=410,
             fillShapeOriginY=411,
             fillShadeType=412,
+
+            fillColorExt=414,
+            fillColorExtMod=416,
+            fillBackColorExt=418,
+            fillBackColorExtMod=420,
+
+
             fRecolorFillAsPicture=441,
             fUseShapeAnchor=442,
             fFilled=443,

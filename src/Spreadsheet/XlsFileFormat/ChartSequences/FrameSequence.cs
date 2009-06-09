@@ -29,10 +29,11 @@
 
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
-    public class FrameSequence : BiffRecordSequence
+    public class FrameSequence : BiffRecordSequence, IVisitable
     {
         public Frame Frame;
         
@@ -79,5 +80,14 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             // End
             this.End = (End)BiffRecord.ReadRecord(reader);
         }
+
+        #region IVisitable Members
+
+        public void Convert<T>(T mapping)
+        {
+            ((IMapping<FrameSequence>)mapping).Apply(this);
+        }
+
+        #endregion
     }
 }

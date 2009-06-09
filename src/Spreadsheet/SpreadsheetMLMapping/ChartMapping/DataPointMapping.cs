@@ -37,19 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 // c:pictureOptions
 
                 // c:spPr
-                _writer.WriteStartElement(Dml.Chart.Prefix, "spPr", Dml.Chart.Ns);
-                {
-                    if (ssSequence.AreaFormat1 != null)
-                    {
-                        ssSequence.AreaFormat1.Convert(new AreaFormatMapping(this.WorkbookContext, this.ChartContext, ssSequence.GelFrameSequence));
-                    }
-
-                    if(ssSequence.LineFormat1 != null)
-                    {
-                        ssSequence.LineFormat1.Convert(new LineFormatMapping(this.WorkbookContext, this.ChartContext));
-                    }
-                }
-                _writer.WriteEndElement();
+                ssSequence.Convert(new ShapePropertiesMapping(this.WorkbookContext, this.ChartContext));
             }
             _writer.WriteEndElement();
         }

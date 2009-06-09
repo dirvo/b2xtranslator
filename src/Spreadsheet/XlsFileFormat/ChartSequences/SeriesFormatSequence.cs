@@ -8,43 +8,6 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
     public class SeriesFormatSequence : BiffRecordSequence, IVisitable
     {
-        public class LegendExceptionGroup : BiffRecordSequence
-        {
-            public LegendException LegendException;
-
-            public Begin Begin;
-
-            public AttachedLabelSequence AttachedLabelSequence;
-
-            public End End;
-
-            
-
-            public LegendExceptionGroup(IStreamReader reader)
-                : base(reader)
-            {
-                // *(LegendException [Begin ATTACHEDLABEL End]) 
-                this.LegendException = (LegendException)BiffRecord.ReadRecord(reader);
-
-                // [Begin ATTACHEDLABEL End]
-                if (BiffRecord.GetNextRecordType(reader) ==
-                     RecordType.Begin)
-                {
-                    // Begin 
-                    this.Begin = (Begin)BiffRecord.ReadRecord(reader);
-                    // ATTACHEDLABEL
-                    this.AttachedLabelSequence = new AttachedLabelSequence(reader);
-
-                    
-
-                    // End
-                    this.End = (End)BiffRecord.ReadRecord(reader);
-                }
-
-            }
-
-        }
-
         public Series Series;
 
         public Begin Begin;
@@ -53,15 +16,15 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
         public List<SsSequence> SsSequence;
 
-        public SerToCrt SerToCrt; 
+        public SerToCrt SerToCrt;
 
-        public SerParent SerParent ;
+        public SerParent SerParent;
 
         public SerAuxTrend SerAuxTrend;
 
         public SerAuxErrBar SerAuxErrBar;
 
-        public LegendExceptionGroup LegendExceptionSequence; 
+        public LegendExceptionGroup LegendExceptionSequence;
 
         public End End;
 
@@ -89,10 +52,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             this.Begin = (Begin)BiffRecord.ReadRecord(reader);
 
             // 4AI
-            this.AiSequences = new List<AiSequence>(); 
+            this.AiSequences = new List<AiSequence>();
             for (int i = 0; i < 4; i++)
             {
-                this.AiSequences.Add(new AiSequence(reader)); 
+                this.AiSequences.Add(new AiSequence(reader));
             }
 
             // *SS 
@@ -119,7 +82,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                 }
                 else
                 {
-                    this.SerAuxErrBar = (SerAuxErrBar)BiffRecord.ReadRecord(reader); 
+                    this.SerAuxErrBar = (SerAuxErrBar)BiffRecord.ReadRecord(reader);
                 }
             }
 
@@ -143,5 +106,40 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         }
 
         #endregion
+
+        public class LegendExceptionGroup : BiffRecordSequence
+        {
+            public LegendException LegendException;
+
+            public Begin Begin;
+
+            public AttachedLabelSequence AttachedLabelSequence;
+
+            public End End;
+
+
+
+            public LegendExceptionGroup(IStreamReader reader)
+                : base(reader)
+            {
+                // *(LegendException [Begin ATTACHEDLABEL End]) 
+                this.LegendException = (LegendException)BiffRecord.ReadRecord(reader);
+
+                // [Begin ATTACHEDLABEL End]
+                if (BiffRecord.GetNextRecordType(reader) ==
+                     RecordType.Begin)
+                {
+                    // Begin 
+                    this.Begin = (Begin)BiffRecord.ReadRecord(reader);
+                    // ATTACHEDLABEL
+                    this.AttachedLabelSequence = new AttachedLabelSequence(reader);
+
+
+
+                    // End
+                    this.End = (End)BiffRecord.ReadRecord(reader);
+                }
+            }
+        }
     }
 }
