@@ -521,7 +521,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     _writer.WriteStartElement(Sml.Sheet.ElDrawing, Sml.Ns);
                     {
                         _writer.WriteAttributeString("r", "id", OpenXmlNamespaces.Relationships, this._worksheetPart.DrawingsPart.RelIdToString);
-                        bsd.ObjectsSequence.Convert(new DrawingMapping(this._xlsContext, this._worksheetPart.DrawingsPart, true));
+                        bsd.ObjectsSequence.Convert(new DrawingMapping(this._xlsContext, this._worksheetPart.DrawingsPart, false));
                     }
                     _writer.WriteEndElement();
                 }
