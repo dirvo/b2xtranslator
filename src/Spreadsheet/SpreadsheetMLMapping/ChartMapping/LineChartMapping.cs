@@ -58,8 +58,36 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             // c:lineChart or c:stockChart 
             _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElLineChart, Dml.Chart.Ns);
             {
+                // EG_LineChartShared
+                // c:grouping
 
-                // Axis Ids
+                // c:varyColors
+
+                // c:ser
+
+                // c:dLbls
+
+                // dropLines
+
+                // End EG_LineChartShared
+
+                if (this.Is3DChart)
+                {
+                    // c:gapDepth
+                }
+                else
+                {
+                    // c:hiLowLines
+
+                    // c:upDownBars
+
+                    // c:marker
+
+                    // c:smooth
+
+                }
+
+                // c:axId
                 foreach (int axisId in crtSequence.ChartFormat.AxisIds)
                 {
                     _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElAxId, Dml.Chart.Ns);

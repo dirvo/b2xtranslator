@@ -42,7 +42,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     _writer.WriteStartElement(Dml.Prefix, "solidFill", Dml.Ns);
                     {
                         // <a:srgbClr val="000000"/>
-                        writeValueElement(_writer, Dml.Prefix, "srgbClr", Dml.Ns, fillColor.SixDigitHexCode);
+                        writeValueElement(Dml.Prefix, "srgbClr", Dml.Ns, fillColor.SixDigitHexCode);
                     }
                     _writer.WriteEndElement();
                 }

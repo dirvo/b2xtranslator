@@ -28,7 +28,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 // c:explosion
 
                 // c:idx
-                writeValueElement(_writer, "idx", _index.ToString());
+                writeValueElement("idx", _index.ToString());
 
                 // c:invertIfNegative
 

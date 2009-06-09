@@ -48,6 +48,11 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             this._is3DChart = is3DChart;
         }
 
+        public bool Is3DChart
+        {
+            get { return this._is3DChart; }
+        }
+
         #region IMapping<CrtSequence> Members
 
         public abstract void Apply(CrtSequence crtSequence);

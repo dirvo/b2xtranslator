@@ -80,18 +80,18 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             get { return this.ChartSheetContentSequence.ChartFormatsSequence; }
         }
 
-        protected void writeValueElement(XmlWriter writer, string localName, string value)
+        protected void writeValueElement(string localName, string value)
         {
-            writer.WriteStartElement(Dml.Chart.Prefix, localName, Dml.Chart.Ns);
-            writer.WriteAttributeString("", "val", "", value);
-            writer.WriteEndElement();
+            _writer.WriteStartElement(Dml.Chart.Prefix, localName, Dml.Chart.Ns);
+            _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, value);
+            _writer.WriteEndElement();
         }
 
-        protected void writeValueElement(XmlWriter writer, string prefix, string localName, string ns, string value)
+        protected void writeValueElement(string prefix, string localName, string ns, string value)
         {
-            writer.WriteStartElement(prefix, localName, ns);
-            writer.WriteAttributeString("", "val", "", value);
-            writer.WriteEndElement();
+            _writer.WriteStartElement(prefix, localName, ns);
+            _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, value);
+            _writer.WriteEndElement();
         }
     }
 }

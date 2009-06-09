@@ -37,7 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 _writer.WriteEndElement();
 
                 // <a:prstDash val="solid"/>
-                writeValueElement(_writer, Dml.Prefix, "prstDash", Dml.Ns, mapLineStyle(lineFormat.lns));
+                writeValueElement(Dml.Prefix, "prstDash", Dml.Ns, mapLineStyle(lineFormat.lns));
             }
             _writer.WriteEndElement();
         }

@@ -68,7 +68,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 }
 
                 // varyColors
-                writeValueElement(_writer, "varyColors", crtSequence.ChartFormat.fVaried ? "1" : "0");
+                writeValueElement("varyColors", crtSequence.ChartFormat.fVaried ? "1" : "0");
 
                 // Pie Chart Series
                 foreach (SeriesFormatSequence seriesFormatSequence in this.ChartFormatsSequence.SeriesFormatSequences)
@@ -99,7 +99,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 }
 
                 // firstSliceAng
-                writeValueElement(_writer, "firstSliceAng", pie.anStart.ToString());
+                writeValueElement("firstSliceAng", pie.anStart.ToString());
             }
             _writer.WriteEndElement();
         }
