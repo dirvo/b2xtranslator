@@ -299,7 +299,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             fc3DRotationCenterAuto=764,
             fc3DParallel=765,
             fc3DKeyHarsh=766,
-            fc3DFillHarsh=767,
+            ThreeDStyleBooleanProperties=767,
 
             //Shape
             hspMaster=769,

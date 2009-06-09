@@ -351,6 +351,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                     switch (fillType)
                     {
+                        case 0x5:
                         case 0x6:
                             _writer.WriteStartElement("a", "path", OpenXmlNamespaces.DrawingML);
                             _writer.WriteAttributeString("path", "shape");
@@ -401,8 +402,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         }
                     }
 
+                    Dictionary<int, string> shadeColorsDic = new Dictionary<int, string>();
                     List<string> shadeColors = new List<string>();
-                    List<FixedPointNumber> relativePositions = new List<FixedPointNumber>();
                     if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillShadeColors))
                     {
                         uint length = so.OptionsByID[ShapeOptions.PropertyId.fillShadeColors].op;
@@ -431,19 +432,18 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             while (pos < length)
                             {
                                 colval = Utils.getRGBColorFromOfficeArtCOLORREF(BitConverter.ToUInt32(data, pos), slide, so);
-                                shadeColors.Add(colval);
+                                
                                 pos += 4;
                                 fixedpoint = new FixedPointNumber(BitConverter.ToUInt16(data, pos), BitConverter.ToUInt16(data, pos + 2));
-                                relativePositions.Add(fixedpoint);
+                                shadeColors.Insert(0,colval);
                                 pos += 4;
                             }
                         }
-
-                        colorval = shadeColors[0];
-                        colorval2 = shadeColors[1];
+                                           
                     }
                     else
                     {
+                        bool switchcolors = false; 
                         if (switchColors & so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillBackColor))
                         {
                             colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillBackColor].op, slide, so);
@@ -457,6 +457,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             else
                             {
                                 colorval = "FFFFFF"; //TODO: find out which color to use in this case
+                                switchcolors = true;
                             }
                         }
 
@@ -468,55 +469,85 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         {
                             colorval2 = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillBackColor].op, slide, so);
                         }
-                    }
 
-                    
-                    _writer.WriteStartElement("a", "gs", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("pos", "0");
-                    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("val", colorval);
-                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity))
-                    {
-                        _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillOpacity].op / 65536 * 100000)).ToString()); //we need the percentage of the opacity (65536 means 100%)
-                        _writer.WriteEndElement();
-                    }
-
-                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillShadeType))
-                    {
-                        uint flags = so.OptionsByID[ShapeOptions.PropertyId.fillShadeType].op;
-                        bool none = Tools.Utils.BitmaskToBool(flags, 0x1);
-                        bool gamma = Tools.Utils.BitmaskToBool(flags, 0x1 << 1);
-                        bool sigma = Tools.Utils.BitmaskToBool(flags, 0x1 << 2);
-                        bool band = Tools.Utils.BitmaskToBool(flags, 0x1 << 3);
-                        bool onecolor = Tools.Utils.BitmaskToBool(flags, 0x1 << 4);
-
-                        if (gamma) _writer.WriteElementString("a", "gamma", OpenXmlNamespaces.DrawingML, "");
-                        if (band)
+                        if (switchcolors)
                         {
-                            _writer.WriteStartElement("a", "shade", OpenXmlNamespaces.DrawingML);
-                            _writer.WriteAttributeString("val", "37255");
+                            //this is a workaround for a bug. Further analysis necessarry
+                            string dummy = colorval;
+                            colorval = colorval2;
+                            colorval2 = dummy;
+                        }
+
+                        shadeColors.Add(colorval);
+                        shadeColors.Add(colorval2);
+                    }
+                                       
+
+                    int gspos;
+                    string col;
+                    for (int i = 0; i < shadeColors.Count; i++)
+                    {
+                        col = shadeColors[i];
+                        if (i == 0)
+                        {
+                            gspos = 0;
+                        } else if (i == shadeColors.Count-1)
+                        {
+                            gspos = 100000;
+                        } else {
+                            gspos = i * 100000 / shadeColors.Count;
+                        }                       
+
+                        _writer.WriteStartElement("a", "gs", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("pos", gspos.ToString());
+                        _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("val", col);
+                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity))
+                        {
+                            _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillOpacity].op / 65536 * 100000)).ToString()); //we need the percentage of the opacity (65536 means 100%)
                             _writer.WriteEndElement();
                         }
-                        if (gamma) _writer.WriteElementString("a", "invGamma", OpenXmlNamespaces.DrawingML, "");
-                    }
-                    _writer.WriteEndElement();
-                    _writer.WriteEndElement();
 
-                    //new colorval
-                    _writer.WriteStartElement("a", "gs", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("pos", "100000");
-                    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("val", colorval2);
-                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillBackOpacity))
-                    {
-                        _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillBackOpacity].op / 65536 * 100000)).ToString()); //we need the percentage of the opacity (65536 means 100%)
+                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillShadeType))
+                        {
+                            uint flags = so.OptionsByID[ShapeOptions.PropertyId.fillShadeType].op;
+                            bool none = Tools.Utils.BitmaskToBool(flags, 0x1);
+                            bool gamma = Tools.Utils.BitmaskToBool(flags, 0x1 << 1);
+                            bool sigma = Tools.Utils.BitmaskToBool(flags, 0x1 << 2);
+                            bool band = Tools.Utils.BitmaskToBool(flags, 0x1 << 3);
+                            bool onecolor = Tools.Utils.BitmaskToBool(flags, 0x1 << 4);
+
+                            if (gamma) _writer.WriteElementString("a", "gamma", OpenXmlNamespaces.DrawingML, "");
+                            if (band)
+                            {
+                                _writer.WriteStartElement("a", "shade", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("val", "37255");
+                                _writer.WriteEndElement();
+                            }
+                            if (gamma) _writer.WriteElementString("a", "invGamma", OpenXmlNamespaces.DrawingML, "");
+                        }
+                        _writer.WriteEndElement();
                         _writer.WriteEndElement();
                     }
+
                     
-                    _writer.WriteEndElement();
-                    _writer.WriteEndElement();
+                    
+
+                    ////new colorval
+                    //_writer.WriteStartElement("a", "gs", OpenXmlNamespaces.DrawingML);
+                    //_writer.WriteAttributeString("pos", "100000");
+                    //_writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                    //_writer.WriteAttributeString("val", colorval2);
+                    //if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillBackOpacity))
+                    //{
+                    //    _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
+                    //    _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillBackOpacity].op / 65536 * 100000)).ToString()); //we need the percentage of the opacity (65536 means 100%)
+                    //    _writer.WriteEndElement();
+                    //}
+                    
+                    //_writer.WriteEndElement();
+                    //_writer.WriteEndElement();
 
                     _writer.WriteEndElement(); //gsLst
 

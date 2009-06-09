@@ -1346,6 +1346,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteElementString("a", "lstStyle", OpenXmlNamespaces.DrawingML, "");
                     _writer.WriteStartElement("a", "p", OpenXmlNamespaces.DrawingML);
 
+                    _writer.WriteStartElement("a", "pPr", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteAttributeString("algn", "ctr");
+                    _writer.WriteAttributeString("fontAlgn", "auto");
+                    _writer.WriteEndElement();
+
                     //check if there is text in so
                     if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.gtextUNICODE))
                     {
@@ -1377,6 +1382,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 {
                                     _writer.WriteAttributeString("kern", "10");
                                 }
+
+                                if (gb.fUsegtextFItalic & gb.gtextFItalic)
+                                {
+                                    _writer.WriteAttributeString("i", "1");
+                                }
                             }
 
                             if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineStyleBooleans))
@@ -1391,24 +1401,39 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                         uint w = so.OptionsByID[ShapeOptions.PropertyId.lineWidth].op;
                                         _writer.WriteAttributeString("w", w.ToString());
                                     }
+
+                                    string color = "000000";
+                                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineColor))
+                                    {
+                                        color = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.lineColor].op, slide, so);
+                                    }
                                     
                                     _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
                                     _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                                    _writer.WriteAttributeString("val", "000000");
+                                    _writer.WriteAttributeString("val", color);
                                     _writer.WriteEndElement();
                                     _writer.WriteEndElement();
                                     _writer.WriteEndElement();
                                 }
                             }
 
-                            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillColor))
+                            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.FillStyleBooleanProperties))
                             {
-                                string colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.fillColor].op, slide, so);
-                                _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
-                                _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                                _writer.WriteAttributeString("val", colorval);
-                                _writer.WriteEndElement();
-                                _writer.WriteEndElement();
+                                FillStyleBooleanProperties p = new FillStyleBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.FillStyleBooleanProperties].op);
+                                if (p.fUsefFilled & p.fFilled)
+                                {
+                                    new FillMapping(_ctx, _writer, parentSlideMapping).Apply(so);
+                                }
+                            }
+
+                            //shadow
+                            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.ShadowStyleBooleanProperties))
+                            {
+                                ShadowStyleBooleanProperties sp = new ShadowStyleBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.ShadowStyleBooleanProperties].op);
+                                if (sp.fUsefShadow & sp.fShadow)
+                                {
+                                    new ShadowMapping(_ctx, _writer).Apply(so);
+                                }
                             }
                                                         
                             _writer.WriteStartElement("a", "latin", OpenXmlNamespaces.DrawingML);
@@ -2145,6 +2170,21 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteEndElement();
                         cancelAttributes = true;
                         break;
+                    case 0x8A:
+                        _writer.WriteAttributeString("wrap", "none");
+                        _writer.WriteAttributeString("fromWordArt", "1");
+
+                        _writer.WriteStartElement("a", "prstTxWarp", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("prst", "textTriangle");
+                        _writer.WriteStartElement("a", "avLst", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteStartElement("a", "gd", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("name", "adj");
+                        _writer.WriteAttributeString("fmla", "val 50000");
+                        _writer.WriteEndElement();
+                        _writer.WriteEndElement();
+                        _writer.WriteEndElement();
+                        cancelAttributes = true;
+                        break;
                     case 0x90:
                         _writer.WriteAttributeString("wrap", "none");
                         _writer.WriteAttributeString("fromWordArt", "1");
@@ -2160,6 +2200,102 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteEndElement();
                         cancelAttributes = true;
                         break;
+                    case 0x98:
+                        _writer.WriteAttributeString("wrap", "none");
+                        _writer.WriteAttributeString("fromWordArt", "1");
+
+                        _writer.WriteStartElement("a", "prstTxWarp", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("prst", "textCurveUp");
+                        _writer.WriteStartElement("a", "avLst", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteStartElement("a", "gd", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("name", "adj");
+                        _writer.WriteAttributeString("fmla", "val 40356");
+                        _writer.WriteEndElement();
+                        _writer.WriteEndElement();
+                        _writer.WriteEndElement();
+                        cancelAttributes = true;
+                        break;
+                    case 0x9A:
+                        _writer.WriteAttributeString("wrap", "none");
+                        _writer.WriteAttributeString("fromWordArt", "1");
+
+                        _writer.WriteStartElement("a", "prstTxWarp", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("prst", "textCascadeUp");
+                        _writer.WriteStartElement("a", "avLst", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteStartElement("a", "gd", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("name", "adj");
+                        _writer.WriteAttributeString("fmla", "val 44444");
+                        _writer.WriteEndElement();
+                        _writer.WriteEndElement();
+                        _writer.WriteEndElement();
+                        cancelAttributes = true;
+                        break;
+                    case 0x9C:
+                        _writer.WriteAttributeString("wrap", "none");
+                        _writer.WriteAttributeString("fromWordArt", "1");
+
+                        _writer.WriteStartElement("a", "prstTxWarp", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("prst", "textWave1");
+                        _writer.WriteStartElement("a", "avLst", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteStartElement("a", "gd", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("name", "adj1");
+                        _writer.WriteAttributeString("fmla", "val 13005");
+                        _writer.WriteEndElement();
+                        _writer.WriteStartElement("a", "gd", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("name", "adj2");
+                        _writer.WriteAttributeString("fmla", "val 0");
+                        _writer.WriteEndElement();
+                        _writer.WriteEndElement();
+                        _writer.WriteEndElement();
+                        cancelAttributes = true;
+                        break;
+                    case 0x9E:
+                        _writer.WriteAttributeString("wrap", "none");
+                        _writer.WriteAttributeString("fromWordArt", "1");
+
+                        _writer.WriteStartElement("a", "prstTxWarp", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("prst", "textDoubleWave1");
+                        _writer.WriteStartElement("a", "avLst", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteStartElement("a", "gd", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("name", "adj1");
+                        _writer.WriteAttributeString("fmla", "val 6500");
+                        _writer.WriteEndElement();
+                        _writer.WriteStartElement("a", "gd", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("name", "adj2");
+                        _writer.WriteAttributeString("fmla", "val 0");
+                        _writer.WriteEndElement();
+                        _writer.WriteEndElement();
+                        _writer.WriteEndElement();
+                        cancelAttributes = true;
+                        break;
+                    case 0x9F:
+                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.GeometryTextBooleanProperties))
+                        {
+                            GeometryTextBooleanProperties gbp = new GeometryTextBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.GeometryTextBooleanProperties].op);
+                            if (gbp.fUsegtextFVertical && gbp.gtextFVertical)
+                            {
+                                _writer.WriteAttributeString("vert", "wordArtVert");
+                            }
+                        }
+
+                        _writer.WriteAttributeString("wrap", "none");
+                        _writer.WriteAttributeString("fromWordArt", "1");
+
+                        _writer.WriteStartElement("a", "prstTxWarp", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("prst", "textWave4");
+                        _writer.WriteStartElement("a", "avLst", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteStartElement("a", "gd", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("name", "adj1");
+                        _writer.WriteAttributeString("fmla", "val 13005");
+                        _writer.WriteEndElement();
+                        _writer.WriteStartElement("a", "gd", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("name", "adj2");
+                        _writer.WriteAttributeString("fmla", "val 0");
+                        _writer.WriteEndElement();
+                        _writer.WriteEndElement();
+                        _writer.WriteEndElement();
+                        cancelAttributes = true;
+                        break;
                     case 0xA1:
                         _writer.WriteAttributeString("wrap", "none");
                         _writer.WriteAttributeString("fromWordArt", "1");
@@ -2170,6 +2306,36 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteStartElement("a", "gd", OpenXmlNamespaces.DrawingML);
                         _writer.WriteAttributeString("name", "adj");
                         _writer.WriteAttributeString("fmla", "val 26227");
+                        _writer.WriteEndElement();
+                        _writer.WriteEndElement();
+                        _writer.WriteEndElement();
+                        cancelAttributes = true;
+                        break;
+                    case 0xA3:
+                        _writer.WriteAttributeString("wrap", "none");
+                        _writer.WriteAttributeString("fromWordArt", "1");
+
+                        _writer.WriteStartElement("a", "prstTxWarp", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("prst", "textDeflateBottom");
+                        _writer.WriteStartElement("a", "avLst", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteStartElement("a", "gd", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("name", "adj");
+                        _writer.WriteAttributeString("fmla", "val 76472");
+                        _writer.WriteEndElement();
+                        _writer.WriteEndElement();
+                        _writer.WriteEndElement();
+                        cancelAttributes = true;
+                        break;
+                    case 0xAA:
+                        _writer.WriteAttributeString("wrap", "none");
+                        _writer.WriteAttributeString("fromWordArt", "1");
+
+                        _writer.WriteStartElement("a", "prstTxWarp", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("prst", "textFadeUp");
+                        _writer.WriteStartElement("a", "avLst", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteStartElement("a", "gd", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("name", "adj");
+                        _writer.WriteAttributeString("fmla", "val 9991");
                         _writer.WriteEndElement();
                         _writer.WriteEndElement();
                         _writer.WriteEndElement();
@@ -2296,6 +2462,39 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             break;
                     }
                 }
+            }
+
+            RegularContainer slide = so.FirstAncestorWithType<Slide>();
+            if (slide == null) slide = so.FirstAncestorWithType<Note>();
+            if (slide == null) slide = so.FirstAncestorWithType<Handout>();
+            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.ThreeDStyleBooleanProperties))
+            {
+                ThreeDStyleProperties tds = new ThreeDStyleProperties(so.OptionsByID[ShapeOptions.PropertyId.ThreeDStyleBooleanProperties].op);                                
+
+                //_writer.WriteStartElement("a", "scene3d",OpenXmlNamespaces.DrawingML);
+                //_writer.WriteStartElement("a", "camera", OpenXmlNamespaces.DrawingML);
+                //_writer.WriteAttributeString("prst", "legacyObliqueRight");
+                //_writer.WriteEndElement(); //camera
+                //_writer.WriteStartElement("a", "lightRig", OpenXmlNamespaces.DrawingML);
+                //_writer.WriteAttributeString("rig", "legacyHarsh3");
+                //_writer.WriteAttributeString("dir", "t");
+                //_writer.WriteEndElement(); //lightRig
+                //_writer.WriteEndElement(); //scene3d
+
+                //_writer.WriteStartElement("a", "sp3d", OpenXmlNamespaces.DrawingML);
+                //_writer.WriteAttributeString("extrusionH", "100000");
+                //_writer.WriteAttributeString("prstMaterial", "legacyMatte");
+
+                //if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.c3DExtrusionColor))
+                //{
+                //    _writer.WriteStartElement("a", "extrusionClr", OpenXmlNamespaces.DrawingML);
+                //    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                //    _writer.WriteAttributeString("val", Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.c3DExtrusionColor].op, slide, so));
+                //    _writer.WriteEndElement(); //srgbClr
+                //    _writer.WriteEndElement(); //extrusionClr
+                //}
+
+                //_writer.WriteEndElement(); //sp3d
             }
 
             if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.TextBooleanProperties))
@@ -2621,6 +2820,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             RegularContainer slide = textbox.FirstAncestorWithType<Slide>();
                             if (slide == null) slide = textbox.FirstAncestorWithType<Note>();
                             if (slide == null) slide = textbox.FirstAncestorWithType<Handout>();
+
                             new CharacterRunPropsMapping(_ctx, _writer).Apply(style.CRuns[0], "defRPr", slide, ref lastColor, ref lastSize, ref lastTypeface, lang, null); 
                             _writer.WriteEndElement();
                             lvlRprWritten = true;
