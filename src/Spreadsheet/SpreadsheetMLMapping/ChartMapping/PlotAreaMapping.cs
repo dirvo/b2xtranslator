@@ -171,9 +171,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             {
                                 // EG_AxShared
                                 // c:axId
-                                _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElAxId, Dml.Chart.Ns);
-                                _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axesSequence.IvAxisSequence.Axis.AxisId.ToString());
-                                _writer.WriteEndElement(); // c:axId
+                                writeValueElement(Dml.Chart.ElAxId, axesSequence.IvAxisSequence.Axis.AxisId.ToString());
 
                                 // c:scaling
                                 _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElScaling, Dml.Chart.Ns);
@@ -181,9 +179,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                                     // c:logBase
 
                                     // c:orientation
-                                    _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElOrientation, Dml.Chart.Ns);
-                                    _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axesSequence.IvAxisSequence.CatSerRange.fReverse ? "maxMin" : "minMax");
-                                    _writer.WriteEndElement(); // c:orientation
+                                    writeValueElement(Dml.Chart.ElOrientation, axesSequence.IvAxisSequence.CatSerRange.fReverse ? "maxMin" : "minMax");
 
                                     // c:max
 
@@ -196,11 +192,9 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                                 // c:delete
 
                                 // c:axPos
-                                _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElAxPos, Dml.Chart.Ns);
                                 // TODO: find mapping
-                                _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, "b");
-                                _writer.WriteEndElement(); // c:axPos
-
+                                writeValueElement(Dml.Chart.ElAxPos, "b");
+                                
                                 // c:majorGridlines
 
                                 // c:minorGridlines
@@ -228,10 +222,8 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                                 // c:txPr
 
                                 // c:crossAx
-                                _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElCrossAx, Dml.Chart.Ns);
-                                _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axesSequence.DvAxisSequence.Axis.AxisId.ToString());
-                                _writer.WriteEndElement(); // c:crossAx
-
+                                writeValueElement(Dml.Chart.ElCrossAx, axesSequence.DvAxisSequence.Axis.AxisId.ToString());
+                                
                                 // c:crosses or c:crossesAt
 
                             }
@@ -243,20 +235,16 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElValAx, Dml.Chart.Ns);
                         {
                             // c:axId
-                            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElAxId, Dml.Chart.Ns);
-                            _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axesSequence.DvAxisSequence.Axis.AxisId.ToString());
-                            _writer.WriteEndElement(); // c:axId
-
+                            writeValueElement(Dml.Chart.ElAxId, axesSequence.DvAxisSequence.Axis.AxisId.ToString());
+                            
                             // c:scaling
                             _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElScaling, Dml.Chart.Ns);
                             {
                                 // c:logBase
 
                                 // c:orientation
-                                _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElOrientation, Dml.Chart.Ns);
-                                _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axesSequence.DvAxisSequence.ValueRange.fReversed ? "maxMin" : "minMax");
-                                _writer.WriteEndElement(); // c:orientation
-
+                                writeValueElement(Dml.Chart.ElOrientation, axesSequence.DvAxisSequence.ValueRange.fReversed ? "maxMin" : "minMax");
+                                
                                 // c:max
 
                                 // c:min
@@ -268,11 +256,9 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             // c:delete
 
                             // c:axPos
-                            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElAxPos, Dml.Chart.Ns);
                             // TODO: find mapping
-                            _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, "l");
-                            _writer.WriteEndElement(); // c:axPos
-
+                            writeValueElement(Dml.Chart.ElAxPos, "l");
+                            
                             // c:majorGridlines
 
                             // c:minorGridlines
@@ -300,10 +286,8 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             // c:txPr
 
                             // c:crossAx
-                            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElCrossAx, Dml.Chart.Ns);
-                            _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axesSequence.IvAxisSequence.Axis.AxisId.ToString());
-                            _writer.WriteEndElement(); // c:crossAx
-
+                            writeValueElement(Dml.Chart.ElCrossAx, axesSequence.IvAxisSequence.Axis.AxisId.ToString());
+                            
                             // c:crosses or c:crossesAt
 
                         }

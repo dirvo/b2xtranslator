@@ -61,17 +61,15 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             {
                 // EG_BarChartShared
                 // c:barDir
-                _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElBarDir, Dml.Chart.Ns);
-                _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, bar.fTranspose ? "bar" : "col");
-                _writer.WriteEndElement(); // c:barDir
-
-                // c:grouping TODO
+                writeValueElement(Dml.Chart.ElBarDir, bar.fTranspose ? "bar" : "col");
+                
+                // c:grouping
+                string grouping = bar.fStacked ? "stacked" : bar.f100 ? "percentStacked" : this.Is3DChart && !crtSequence.Chart3d.fCluster ? "standard" : "clustered";
+                writeValueElement(Dml.Chart.ElGrouping, grouping);
 
                 // c:varyColors
-                _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElVaryColors, Dml.Chart.Ns);
-                _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, crtSequence.ChartFormat.fVaried ? "1" : "0");
-                _writer.WriteEndElement(); // c:varyColors
-
+                writeValueElement(Dml.Chart.ElVaryColors, crtSequence.ChartFormat.fVaried ? "1" : "0");
+                
                 // Bar Chart Series
                 foreach (SeriesFormatSequence seriesFormatSequence in this.ChartFormatsSequence.SeriesFormatSequences)
                 {
@@ -87,7 +85,13 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
                         // c:pictureOptions
 
-                        // c:dPt (Data Point)
+                        // c:dPt (Data Points)
+                        for (int i = 1; i < seriesFormatSequence.SsSequence.Count; i++)
+                        {
+                            // write a dPt for each SsSequence
+                            SsSequence ssSequence = seriesFormatSequence.SsSequence[i];
+                            ssSequence.Convert(new DataPointMapping(this.WorkbookContext, this.ChartContext, i - 1));
+                        }
 
                         // c:dLbls (Data Labels)
 
@@ -113,29 +117,21 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 if (this._is3DChart)
                 {
                     // c:gapWidth
-                    _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElGapWidth, Dml.Chart.Ns);
-                    _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, crtSequence.Chart3d.pcGap.ToString());
-                    _writer.WriteEndElement(); // c:gapWidth
-
+                    writeValueElement(Dml.Chart.ElGapWidth, crtSequence.Chart3d.pcGap.ToString());
+                    
                     // c:gapDepth
-                    _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElGapDepth, Dml.Chart.Ns);
-                    _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, crtSequence.Chart3d.pcDepth.ToString());
-                    _writer.WriteEndElement(); // c:gapDepth
-
+                    writeValueElement(Dml.Chart.ElGapDepth, crtSequence.Chart3d.pcDepth.ToString());
+                    
                     // c:shape (defined in Chart3DBarShape???)
                 }
                 else
                 {
                     // c:gapWidth
-                    _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElGapWidth, Dml.Chart.Ns);
-                    _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, bar.pcGap.ToString());
-                    _writer.WriteEndElement(); // c:gapWidth
-
+                    writeValueElement(Dml.Chart.ElGapWidth, bar.pcGap.ToString());
+                    
                     // c:overlap
-                    _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElOverlap, Dml.Chart.Ns);
-                    _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, bar.pcOverlap.ToString());
-                    _writer.WriteEndElement(); // c:overlap
-
+                    writeValueElement(Dml.Chart.ElOverlap, bar.pcOverlap.ToString());
+                    
                     // Series Lines
 
 
@@ -144,9 +140,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 // Axis Ids
                 foreach (int axisId in crtSequence.ChartFormat.AxisIds)
                 {
-                    _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElAxId, Dml.Chart.Ns);
-                    _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axisId.ToString());
-                    _writer.WriteEndElement();
+                    writeValueElement(Dml.Chart.ElAxId, axisId.ToString());
                 }
             }
             _writer.WriteEndElement();

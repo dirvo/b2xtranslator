@@ -116,10 +116,8 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         }
                     }
                     // c:ptCount
-                    _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElPtCount, Dml.Chart.Ns);
-                    _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, ptCount.ToString());
-                    _writer.WriteEndElement(); // c:ptCount
-
+                    writeValueElement(Dml.Chart.ElPtCount, ptCount.ToString());
+                    
                     UInt32 idx = 0;
                     for (UInt32 i = 0; i < dataMatrix.GetLength(1); i++)
                     {

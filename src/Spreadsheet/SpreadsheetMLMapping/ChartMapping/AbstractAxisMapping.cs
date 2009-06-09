@@ -50,9 +50,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         public virtual void Apply(AxesSequence axesSequence)
         {
             // EG_AxShared
-            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElAxId, Dml.Chart.Ns);
-            _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axesSequence.IvAxisSequence.Axis.AxisId.ToString());
-            _writer.WriteEndElement();
+            writeValueElement(Dml.Chart.ElAxId, axesSequence.IvAxisSequence.Axis.AxisId.ToString());
         }
 
         #endregion

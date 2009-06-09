@@ -62,9 +62,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 // Axis Ids
                 foreach (int axisId in crtSequence.ChartFormat.AxisIds)
                 {
-                    _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElAxId, Dml.Chart.Ns);
-                    _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axisId.ToString());
-                    _writer.WriteEndElement();
+                    writeValueElement(Dml.Chart.ElAxId, axisId.ToString());
                 }
 
                 // varyColors

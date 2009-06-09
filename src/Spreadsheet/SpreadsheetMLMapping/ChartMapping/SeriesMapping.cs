@@ -50,15 +50,11 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
             // c:idx
             // TODO: check the meaning of this element
-            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElIdx, Dml.Chart.Ns);
-            _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, seriesFormatSequence.SerToCrt.id.ToString());
-            _writer.WriteEndElement(); // c:idx
-
+            writeValueElement(Dml.Chart.ElIdx, seriesFormatSequence.SerToCrt.id.ToString());
+            
             // c:order
-            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElOrder, Dml.Chart.Ns);
-            _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, seriesFormatSequence.order.ToString());
-            _writer.WriteEndElement(); // c:order
-
+            writeValueElement(Dml.Chart.ElOrder, seriesFormatSequence.order.ToString());
+            
             // c:tx
             // find BRAI record for series name
             foreach (AiSequence aiSequence in seriesFormatSequence.AiSequences)

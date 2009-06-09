@@ -60,11 +60,52 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             {
                 // EG_LineChartShared
                 // c:grouping
+                string grouping = line.fStacked ? "stacked" : line.f100 ? "percentStacked" : "standard";
+                writeValueElement(Dml.Chart.ElGrouping, grouping);
 
                 // c:varyColors
+                writeValueElement(Dml.Chart.ElVaryColors, crtSequence.ChartFormat.fVaried ? "1" : "0");
 
-                // c:ser
+                // Line Chart Series
+                foreach (SeriesFormatSequence seriesFormatSequence in this.ChartFormatsSequence.SeriesFormatSequences)
+                {
+                    if (seriesFormatSequence.SerToCrt != null && seriesFormatSequence.SerToCrt.id == crtSequence.ChartFormat.idx)
+                    {
+                        // c:ser
+                        _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElSer, Dml.Chart.Ns);
 
+                        // EG_SerShared
+                        seriesFormatSequence.Convert(new SeriesMapping(this.WorkbookContext, this.ChartContext));
+
+                        // c:marker
+
+                        // c:dPt
+                        for (int i = 1; i < seriesFormatSequence.SsSequence.Count; i++)
+                        {
+                            // write a dPt for each SsSequence
+                            SsSequence ssSequence = seriesFormatSequence.SsSequence[i];
+                            ssSequence.Convert(new DataPointMapping(this.WorkbookContext, this.ChartContext, i - 1));
+                        }
+
+                        // c:dLbls
+
+                        // c:trendline
+
+                        // c:errBars
+
+                        // c:cat
+
+                        // c:val
+                        seriesFormatSequence.Convert(new ValMapping(this.WorkbookContext, this.ChartContext));
+
+                        // c:smooth
+
+                        // c:shape
+
+                        _writer.WriteEndElement(); // c:ser
+                    }
+                }
+                
                 // c:dLbls
 
                 // dropLines
@@ -90,9 +131,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 // c:axId
                 foreach (int axisId in crtSequence.ChartFormat.AxisIds)
                 {
-                    _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElAxId, Dml.Chart.Ns);
-                    _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, axisId.ToString());
-                    _writer.WriteEndElement();
+                    writeValueElement(Dml.Chart.ElAxId, axisId.ToString());
                 }
             }
             _writer.WriteEndElement();

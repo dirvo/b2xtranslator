@@ -49,7 +49,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             // TODO: place code here
             
             // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            //Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
 
             // HACK: The length of the embedded OfficeDrawing records seems not correct in the test files
             //   Therefore we set the position of the stream to the value specified by length

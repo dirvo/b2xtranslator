@@ -84,10 +84,8 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     _writer.WriteEndElement(); // c:legend
 
                     // c:plotVisOnly
-                    _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElPlotVisOnly, Dml.Chart.Ns);
-                    _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, chartFormatsSequence.ShtProps.fPlotVisOnly ? "1" : "0");
-                    _writer.WriteEndElement(); // c:plotVisOnly
-
+                    writeValueElement(Dml.Chart.ElPlotVisOnly, chartFormatsSequence.ShtProps.fPlotVisOnly ? "1" : "0");
+                    
                     // c:dispBlanksAs
                     string dispBlanksAs = string.Empty;
                     switch (chartFormatsSequence.ShtProps.mdBlank)
@@ -106,9 +104,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     }
                     if (!string.IsNullOrEmpty(dispBlanksAs))
                     {
-                        _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElDispBlanksAs, Dml.Chart.Ns);
-                        _writer.WriteAttributeString(Dml.BaseTypes.AttrVal, dispBlanksAs);
-                        _writer.WriteEndElement(); // c:dispBlanksAs
+                        writeValueElement(Dml.Chart.ElDispBlanksAs, dispBlanksAs);
                     }
 
                     // c:showDLblsOverMax
