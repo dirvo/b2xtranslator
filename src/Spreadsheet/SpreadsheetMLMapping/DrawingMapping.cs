@@ -112,7 +112,6 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             _writer.WriteAttributeString("xmlns", Dml.SpreadsheetDrawing.Prefix, "", Dml.SpreadsheetDrawing.Ns);
             _writer.WriteAttributeString("xmlns", Dml.Prefix, "", Dml.Ns);
 
-
             foreach (DrawingsGroup drawingsGroup in objectsSequence.DrawingsGroup)
             {
                 MsoDrawing msoDrawing = drawingsGroup.MsoDrawing;

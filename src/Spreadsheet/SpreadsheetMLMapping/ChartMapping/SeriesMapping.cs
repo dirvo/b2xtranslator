@@ -54,7 +54,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             
             // c:order
             writeValueElement(Dml.Chart.ElOrder, seriesFormatSequence.order.ToString());
-            
+
             // c:tx
             // find BRAI record for series name
             foreach (AiSequence aiSequence in seriesFormatSequence.AiSequences)

@@ -45,9 +45,11 @@
     <Compile Include="ChartMapping\AreaFormatMapping.cs" />
     <Compile Include="ChartMapping\BarChartMapping.cs" />
     <Compile Include="ChartMapping\BubbleChartMapping.cs" />
+    <Compile Include="ChartMapping\CatMapping.cs" />
     <Compile Include="ChartMapping\ChartContext.cs" />
     <Compile Include="ChartMapping\ChartspaceMapping.cs" />
     <Compile Include="ChartMapping\DataPointMapping.cs" />
+    <Compile Include="ChartMapping\LegendMapping.cs" />
     <Compile Include="ChartMapping\LineFormatMapping.cs" />
     <Compile Include="ChartsheetMapping.cs" />
     <Compile Include="ChartMapping\DoughnutChartMapping.cs" />

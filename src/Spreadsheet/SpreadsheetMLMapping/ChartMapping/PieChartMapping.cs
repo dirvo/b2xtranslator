@@ -79,6 +79,13 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         // EG_SerShared
                         seriesFormatSequence.Convert(new SeriesMapping(this.WorkbookContext, this.ChartContext));
 
+                        // c:explosion
+                        SsSequence sssBase = seriesFormatSequence.SsSequence[0];
+                        if (sssBase.PieFormat != null)
+                        {
+                            writeValueElement("explosion", sssBase.PieFormat.pcExplode.ToString());
+                        }
+
                         // c:dPt (Data Points)
                         for (int i = 1; i < seriesFormatSequence.SsSequence.Count; i++)
                         {
@@ -87,11 +94,13 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             sss.Convert(new DataPointMapping(this.WorkbookContext, this.ChartContext, i-1));
                         }
 
+                        // c:cat
+                        seriesFormatSequence.Convert(new CatMapping(this.WorkbookContext, this.ChartContext));
+
                         // c:val
                         seriesFormatSequence.Convert(new ValMapping(this.WorkbookContext, this.ChartContext));
 
                         // c:shape
-
                         _writer.WriteEndElement(); // c:ser
                     }
                 }

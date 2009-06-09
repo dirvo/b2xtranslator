@@ -19,27 +19,34 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
         public void Apply(LineFormat lineFormat)
         {
-            // a:ln
-            _writer.WriteStartElement(Dml.Prefix, "ln", Dml.Ns);
+            // it seems that Excel 2007 doesn't convert hairline lines
+            if (lineFormat.we != LineFormat.LineWeight.Hairline)
             {
-                _writer.WriteAttributeString("", "w", "", mapLineWidth(lineFormat.we));
-
-                //<a:solidFill>
-                _writer.WriteStartElement(Dml.Prefix, "solidFill", Dml.Ns);
+                // a:ln
+                _writer.WriteStartElement(Dml.Prefix, "ln", Dml.Ns);
                 {
-                    //<a:srgbClr val="000000"/>
-                    _writer.WriteStartElement(Dml.Prefix, "srgbClr", Dml.Ns);
+                    _writer.WriteAttributeString("", "w", "", mapLineWidth(lineFormat.we));
+
+                    //<a:solidFill>
+                    _writer.WriteStartElement(Dml.Prefix, "solidFill", Dml.Ns);
                     {
-                        _writer.WriteAttributeString("", "val", "", lineFormat.rgb.SixDigitHexCode);
+                        //<a:srgbClr val="000000"/>
+                        _writer.WriteStartElement(Dml.Prefix, "srgbClr", Dml.Ns);
+                        {
+                            _writer.WriteAttributeString("", "val", "", lineFormat.rgb.SixDigitHexCode);
+                        }
+                        _writer.WriteEndElement();
                     }
                     _writer.WriteEndElement();
+
+                    // <a:prstDash val="solid"/>
+                    writeValueElement(Dml.Prefix, "prstDash", Dml.Ns, mapLineStyle(lineFormat.lns));
                 }
                 _writer.WriteEndElement();
 
-                // <a:prstDash val="solid"/>
-                writeValueElement(Dml.Prefix, "prstDash", Dml.Ns, mapLineStyle(lineFormat.lns));
+
+
             }
-            _writer.WriteEndElement();
         }
 
         private string mapLineWidth(LineFormat.LineWeight lineWeight)
@@ -47,9 +54,9 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             switch (lineWeight)
             {
                 case LineFormat.LineWeight.Hairline:
-                    return "";
+                    return "0";
                 case LineFormat.LineWeight.Narrow:
-                    return "";
+                    return "12700";
                 case LineFormat.LineWeight.Medium:
                     return "25400";
                 case LineFormat.LineWeight.Wide:

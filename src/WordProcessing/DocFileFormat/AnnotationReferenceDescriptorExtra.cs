@@ -20,7 +20,10 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             _reader.ReadBytes(2);
             this.CommentDepth = _reader.ReadInt32();
             this.ParentOffset = _reader.ReadInt32();
-            Int32 flag = _reader.ReadInt32();
+            if (length > 16)
+            {
+                Int32 flag = _reader.ReadInt32();
+            }
         }
     }
 }

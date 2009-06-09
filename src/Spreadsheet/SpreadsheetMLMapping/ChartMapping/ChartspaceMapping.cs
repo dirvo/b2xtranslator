@@ -59,7 +59,6 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElChartSpace, Dml.Chart.Ns);
             _writer.WriteAttributeString("xmlns", Dml.Chart.Prefix, "", Dml.Chart.Ns);
 
-
             _writer.WriteAttributeString("xmlns", Dml.Prefix, "", Dml.Ns);
             {
                 // c:chart
@@ -79,9 +78,8 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     chartFormatsSequence.Convert(new PlotAreaMapping(this.WorkbookContext, this.ChartContext));
 
                     // c:legend
-                    _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElLegend, Dml.Chart.Ns);
-
-                    _writer.WriteEndElement(); // c:legend
+                    LdSequence firstLegend = chartFormatsSequence.AxisParentSequences[0].CrtSequences[0].LdSequence;
+                    firstLegend.Convert(new LegendMapping(this.WorkbookContext, this.ChartContext));
 
                     // c:plotVisOnly
                     writeValueElement(Dml.Chart.ElPlotVisOnly, chartFormatsSequence.ShtProps.fPlotVisOnly ? "1" : "0");

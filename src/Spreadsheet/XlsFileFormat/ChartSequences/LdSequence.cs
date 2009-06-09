@@ -1,9 +1,10 @@
 ﻿using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
-    public class LdSequence : BiffRecordSequence
+    public class LdSequence : BiffRecordSequence, IVisitable
     {
         public Legend Legend;
 
@@ -70,5 +71,14 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             this.End = (End)BiffRecord.ReadRecord(reader); 
 
         }
+
+        #region IVisitable Members
+
+        public void Convert<T>(T mapping)
+        {
+            ((IMapping<LdSequence>)mapping).Apply(this);
+        }
+
+        #endregion
     }
 }

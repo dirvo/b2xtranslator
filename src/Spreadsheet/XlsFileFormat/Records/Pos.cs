@@ -43,11 +43,11 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
     {
         public enum PositionMode
         {
-            MDFX,
-            MDABS,
-            MDPARENT,
-            MDKTH,
-            MDCHART
+            MDFX = 0,
+            MDABS = 1,
+            MDPARENT = 2,
+            MDKTH = 3,
+            MDCHART = 5
         }
 
         public const RecordType ID = RecordType.Pos;

@@ -21,7 +21,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 
         public UInt32 cb;
 
-        public byte[] rgb;
+        public string rgb;
 
         public TextPropsStream(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
@@ -34,7 +34,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 
             this.dwChecksum = reader.ReadUInt32();
             this.cb = reader.ReadUInt32();
-            this.rgb = reader.ReadBytes((int)this.cb);
+
+            byte[] rgbBytes = reader.ReadBytes((int)this.cb);
+            Encoding codepage = Encoding.GetEncoding(1252);
+            this.rgb = codepage.GetString(rgbBytes);
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
