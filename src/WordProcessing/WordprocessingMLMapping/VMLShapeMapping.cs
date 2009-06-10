@@ -413,7 +413,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     case ShapeOptions.PropertyId.f3D:
                     case ShapeOptions.PropertyId.ThreeDStyleBooleanProperties:
-                    case ShapeOptions.PropertyId.fc3DLightFace:
+                    case ShapeOptions.PropertyId.ThreeDObjectBooleanProperties:
                         break;
                     case ShapeOptions.PropertyId.c3DExtrudeBackward:
                         EmuValue backwardValue = new EmuValue((int)entry.op);

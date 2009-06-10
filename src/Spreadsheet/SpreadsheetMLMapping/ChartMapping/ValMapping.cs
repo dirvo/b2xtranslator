@@ -120,20 +120,18 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     UInt32 idx = 0;
                     for (UInt32 i = 0; i < dataMatrix.GetLength(1); i++)
                     {
-                        AbstractCellContent cellContent = dataMatrix[seriesFormatSequence.order, i];
-                        if (cellContent != null)
+                        Number cellContent = dataMatrix[seriesFormatSequence.order, i] as Number;
+                        if (cellContent != null && cellContent.num != null)
                         {
-                            if (cellContent is Number)
-                            {
-                                // c:pt
-                                _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElPt, Dml.Chart.Ns);
-                                _writer.WriteAttributeString(Dml.Chart.AttrIdx, idx.ToString());
+                            // c:pt
+                            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElPt, Dml.Chart.Ns);
+                            _writer.WriteAttributeString(Dml.Chart.AttrIdx, idx.ToString());
 
-                                // c:v
-                                _writer.WriteElementString(Dml.Chart.Prefix, Dml.Chart.ElV, Dml.Chart.Ns, ((Number)cellContent).num.ToString(CultureInfo.InvariantCulture));
+                            // c:v
+                            double num = cellContent.num ?? 0.0;
+                            _writer.WriteElementString(Dml.Chart.Prefix, Dml.Chart.ElV, Dml.Chart.Ns, num.ToString(CultureInfo.InvariantCulture));
 
-                                _writer.WriteEndElement(); // c:pt
-                            }
+                            _writer.WriteEndElement(); // c:pt
                         }
                         idx++;
                     }

@@ -31,6 +31,7 @@ using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Tools;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
@@ -114,16 +115,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             this.ordUser = reader.ReadByte();
 
             //read the nullable double value (ChartNumNillable)
-            byte[] b = reader.ReadBytes(4);
-            if (b[2] == 0xFF && b[3] == 0xFF)
-            {
-                this.numIntercept = null;
-            }
-            else
-            {
-                this.numIntercept = System.BitConverter.ToDouble(b, 0);
-            }
-
+            this.numIntercept = new ChartNumNillable(reader).value;
+            
             this.fEquation = Utils.ByteToBool(reader.ReadByte());
             this.fRSquared = Utils.ByteToBool(reader.ReadByte());
             this.numForecast = reader.ReadDouble();

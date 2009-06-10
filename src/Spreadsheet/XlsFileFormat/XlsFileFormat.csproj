@@ -512,6 +512,7 @@
     <Compile Include="Records\YMult.cs" />
     <Compile Include="RecordType.cs" />
     <Compile Include="Structures\CFrtId.cs" />
+    <Compile Include="Structures\ChartNumNillable.cs" />
     <Compile Include="Structures\ChartParsedFormula.cs" />
     <Compile Include="Structures\FtCbls.cs" />
     <Compile Include="Structures\FtCblsData.cs" />
