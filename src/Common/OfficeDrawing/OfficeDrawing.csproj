@@ -47,6 +47,7 @@
     <Compile Include="ClientData.cs" />
     <Compile Include="ClientTextbox.cs" />
     <Compile Include="BlipBooleanProperties.cs" />
+    <Compile Include="ThreeDObjectBooleanProperties.cs" />
     <Compile Include="ThreeDStyleBooleanProperties.cs" />
     <Compile Include="Shapetypes\TextArchUpCurve.cs" />
     <Compile Include="Shapetypes\TextCanDown.cs" />

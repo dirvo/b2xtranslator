@@ -272,7 +272,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             f3D=700,
             fc3DMetallic=701,
             fc3DUseExtrusionColor=702,
-            fc3DLightFace=703,
+            ThreeDObjectBooleanProperties=703,
 
             //3D Style
             c3DYRotationAngle=704,

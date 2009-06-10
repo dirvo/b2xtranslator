@@ -2146,7 +2146,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 ShapeContainer container = (ShapeContainer)rec;
                 switch (container.FirstChildWithType<Shape>().Instance)
                 {
-                    case 0x88:
+                    case 0x88: // WordArt 1, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 18, 19, 25, 29, 30
                         if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.GeometryTextBooleanProperties))
                         {
                             GeometryTextBooleanProperties gbp = new GeometryTextBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.GeometryTextBooleanProperties].op);
@@ -2170,7 +2170,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteEndElement();
                         cancelAttributes = true;
                         break;
-                    case 0x8A:
+                    case 0x8A: // WordArt 20
                         _writer.WriteAttributeString("wrap", "none");
                         _writer.WriteAttributeString("fromWordArt", "1");
 
@@ -2185,7 +2185,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteEndElement();
                         cancelAttributes = true;
                         break;
-                    case 0x90:
+                    case 0x90: // WordArt 3
                         _writer.WriteAttributeString("wrap", "none");
                         _writer.WriteAttributeString("fromWordArt", "1");
 
@@ -2200,7 +2200,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteEndElement();
                         cancelAttributes = true;
                         break;
-                    case 0x98:
+                    case 0x98: // WordArt 23
                         _writer.WriteAttributeString("wrap", "none");
                         _writer.WriteAttributeString("fromWordArt", "1");
 
@@ -2215,7 +2215,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteEndElement();
                         cancelAttributes = true;
                         break;
-                    case 0x9A:
+                    case 0x9A: // WordArt 26, 28
                         _writer.WriteAttributeString("wrap", "none");
                         _writer.WriteAttributeString("fromWordArt", "1");
 
@@ -2230,7 +2230,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteEndElement();
                         cancelAttributes = true;
                         break;
-                    case 0x9C:
+                    case 0x9C: // WordArt 17
                         _writer.WriteAttributeString("wrap", "none");
                         _writer.WriteAttributeString("fromWordArt", "1");
 
@@ -2249,7 +2249,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteEndElement();
                         cancelAttributes = true;
                         break;
-                    case 0x9E:
+                    case 0x9E: //WordArt 22
                         _writer.WriteAttributeString("wrap", "none");
                         _writer.WriteAttributeString("fromWordArt", "1");
 
@@ -2268,7 +2268,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteEndElement();
                         cancelAttributes = true;
                         break;
-                    case 0x9F:
+                    case 0x9F: // WordArt 24
                         if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.GeometryTextBooleanProperties))
                         {
                             GeometryTextBooleanProperties gbp = new GeometryTextBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.GeometryTextBooleanProperties].op);
@@ -2296,7 +2296,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteEndElement();
                         cancelAttributes = true;
                         break;
-                    case 0xA1:
+                    case 0xA1: // WordArt 4
                         _writer.WriteAttributeString("wrap", "none");
                         _writer.WriteAttributeString("fromWordArt", "1");
 
@@ -2311,7 +2311,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteEndElement();
                         cancelAttributes = true;
                         break;
-                    case 0xA3:
+                    case 0xA3: // WordArt 27
                         _writer.WriteAttributeString("wrap", "none");
                         _writer.WriteAttributeString("fromWordArt", "1");
 
@@ -2326,7 +2326,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteEndElement();
                         cancelAttributes = true;
                         break;
-                    case 0xAA:
+                    case 0xAA: //WordArt 21
                         _writer.WriteAttributeString("wrap", "none");
                         _writer.WriteAttributeString("fromWordArt", "1");
 
@@ -2341,7 +2341,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteEndElement();
                         cancelAttributes = true;
                         break;
-                    case 0xAC:
+                    case 0xAC: // WordArt 2, 14
                         _writer.WriteAttributeString("wrap", "none");
                         _writer.WriteAttributeString("fromWordArt", "1");
 
@@ -2356,7 +2356,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteEndElement();
                         cancelAttributes = true;
                         break;
-                    case 0xAF:
+                    case 0xAF: // WordArt 5
                         _writer.WriteAttributeString("wrap", "none");
                         _writer.WriteAttributeString("fromWordArt", "1");
 
@@ -2467,34 +2467,44 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             RegularContainer slide = so.FirstAncestorWithType<Slide>();
             if (slide == null) slide = so.FirstAncestorWithType<Note>();
             if (slide == null) slide = so.FirstAncestorWithType<Handout>();
-            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.ThreeDStyleBooleanProperties))
+            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.ThreeDObjectBooleanProperties))
             {
-                ThreeDStyleProperties tds = new ThreeDStyleProperties(so.OptionsByID[ShapeOptions.PropertyId.ThreeDStyleBooleanProperties].op);                                
+                ThreeDObjectProperties tdo = new ThreeDObjectProperties(so.OptionsByID[ShapeOptions.PropertyId.ThreeDObjectBooleanProperties].op);
 
-                //_writer.WriteStartElement("a", "scene3d",OpenXmlNamespaces.DrawingML);
-                //_writer.WriteStartElement("a", "camera", OpenXmlNamespaces.DrawingML);
-                //_writer.WriteAttributeString("prst", "legacyObliqueRight");
-                //_writer.WriteEndElement(); //camera
-                //_writer.WriteStartElement("a", "lightRig", OpenXmlNamespaces.DrawingML);
-                //_writer.WriteAttributeString("rig", "legacyHarsh3");
-                //_writer.WriteAttributeString("dir", "t");
-                //_writer.WriteEndElement(); //lightRig
-                //_writer.WriteEndElement(); //scene3d
+                if (tdo.fc3D && tdo.fUsefc3D)
+                {
+                    ThreeDStyleProperties tds = null;
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.ThreeDStyleBooleanProperties))
+                    {
+                        tds = new ThreeDStyleProperties(so.OptionsByID[ShapeOptions.PropertyId.ThreeDStyleBooleanProperties].op);
+                    }
 
-                //_writer.WriteStartElement("a", "sp3d", OpenXmlNamespaces.DrawingML);
-                //_writer.WriteAttributeString("extrusionH", "100000");
-                //_writer.WriteAttributeString("prstMaterial", "legacyMatte");
+                    _writer.WriteStartElement("a", "scene3d", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteStartElement("a", "camera", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteAttributeString("prst", "legacyObliqueRight");
+                    _writer.WriteEndElement(); //camera
+                    _writer.WriteStartElement("a", "lightRig", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteAttributeString("rig", "legacyHarsh3");
+                    _writer.WriteAttributeString("dir", "t");
+                    _writer.WriteEndElement(); //lightRig
+                    _writer.WriteEndElement(); //scene3d
 
-                //if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.c3DExtrusionColor))
-                //{
-                //    _writer.WriteStartElement("a", "extrusionClr", OpenXmlNamespaces.DrawingML);
-                //    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                //    _writer.WriteAttributeString("val", Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.c3DExtrusionColor].op, slide, so));
-                //    _writer.WriteEndElement(); //srgbClr
-                //    _writer.WriteEndElement(); //extrusionClr
-                //}
+                    _writer.WriteStartElement("a", "sp3d", OpenXmlNamespaces.DrawingML);
+                    _writer.WriteAttributeString("extrusionH", "100000");
+                    _writer.WriteAttributeString("prstMaterial", "legacyMatte");
 
-                //_writer.WriteEndElement(); //sp3d
+                    if (tdo.fc3UseExtrusionColor && tdo.fUsefc3DUseExtrusionColor)
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.c3DExtrusionColor))
+                    {
+                        _writer.WriteStartElement("a", "extrusionClr", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("val", Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.c3DExtrusionColor].op, slide, so));
+                        _writer.WriteEndElement(); //srgbClr
+                        _writer.WriteEndElement(); //extrusionClr
+                    }
+
+                    _writer.WriteEndElement(); //sp3d
+                }
             }
 
             if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.TextBooleanProperties))
