@@ -26,6 +26,7 @@
  */
 using System;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
@@ -74,7 +75,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             this.num = ExcelHelperClass.NumFromRK(reader.ReadBytes(4));  
             
             // assert that the correct number of bytes has been read from the stream
-            // Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
         }
     }
 }

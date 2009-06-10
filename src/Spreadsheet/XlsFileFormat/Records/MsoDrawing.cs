@@ -36,7 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
     {
         public const RecordType ID = RecordType.MsoDrawing;
 
-        public RegularContainer rgChildRec;
+        public Record rgChildRec;
 
         public MsoDrawing(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
@@ -45,7 +45,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            this.rgChildRec = Record.ReadRecord(reader.BaseStream) as RegularContainer;
+            this.rgChildRec = Record.ReadRecord(reader.BaseStream);
             // TODO: place code here
             
             // assert that the correct number of bytes has been read from the stream

@@ -117,50 +117,54 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 MsoDrawing msoDrawing = drawingsGroup.MsoDrawing;
 
                 // find OfficeArtClientAnchorSheet with drawing
-                ClientAnchor clientAnchor = msoDrawing.rgChildRec.FirstDescendantWithType<ClientAnchor>();
-                if (clientAnchor != null)
+                RegularContainer container = msoDrawing.rgChildRec as RegularContainer;
+                if (container != null)
                 {
-                    OfficeArtClientAnchorSheet oartClientAnchor = new OfficeArtClientAnchorSheet(clientAnchor.RawData);
+                    ClientAnchor clientAnchor = container.FirstDescendantWithType<ClientAnchor>();
+                    if (clientAnchor != null)
+                    {
+                        OfficeArtClientAnchorSheet oartClientAnchor = new OfficeArtClientAnchorSheet(clientAnchor.RawData);
 
-                    // xdr:twoCellAnchor
-                    _writer.WriteStartElement(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElTwoCellAnchor, Dml.SpreadsheetDrawing.Ns);
-                    string editAs = "absolute";
-                    if (oartClientAnchor.fSize && oartClientAnchor.fMove)
-                    {
-                        // Move and resize with anchor cells
-                        editAs = "twoCell";
-                    }
-                    else if (!oartClientAnchor.fSize && oartClientAnchor.fMove)
-                    {
-                        // Move with cells but do not resize
-                        editAs = "oneCell";
-                    }
-                    _writer.WriteAttributeString(Dml.SpreadsheetDrawing.AttrEditAs, editAs);
-                    {
-                        // xdr:from
-                        _writer.WriteStartElement(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElFrom, Dml.SpreadsheetDrawing.Ns);
-                        _writer.WriteElementString(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElCol, Dml.SpreadsheetDrawing.Ns, oartClientAnchor.colL.ToString());
-                        _writer.WriteElementString(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElColOff, Dml.SpreadsheetDrawing.Ns, oartClientAnchor.dxL.ToString());
-                        _writer.WriteElementString(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElRow, Dml.SpreadsheetDrawing.Ns, oartClientAnchor.rwT.ToString());
-                        _writer.WriteElementString(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElRowOff, Dml.SpreadsheetDrawing.Ns, oartClientAnchor.dyT.ToString());
-                        _writer.WriteEndElement(); // xdr:from
-
-                        // xdr:to
-                        _writer.WriteStartElement(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElTo, Dml.SpreadsheetDrawing.Ns);
-                        _writer.WriteElementString(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElCol, Dml.SpreadsheetDrawing.Ns, oartClientAnchor.colR.ToString());
-                        _writer.WriteElementString(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElColOff, Dml.SpreadsheetDrawing.Ns, oartClientAnchor.dxR.ToString());
-                        _writer.WriteElementString(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElRow, Dml.SpreadsheetDrawing.Ns, oartClientAnchor.rwB.ToString());
-                        _writer.WriteElementString(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElRowOff, Dml.SpreadsheetDrawing.Ns, oartClientAnchor.dyB.ToString());
-                        _writer.WriteEndElement(); // xdr:to
-                        
-                        ObjectGroup objectGroup = drawingsGroup.Objects.Find(p => p.ChartSheetSequence != null);
-                        if (objectGroup != null)
+                        // xdr:twoCellAnchor
+                        _writer.WriteStartElement(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElTwoCellAnchor, Dml.SpreadsheetDrawing.Ns);
+                        string editAs = "absolute";
+                        if (oartClientAnchor.fSize && oartClientAnchor.fMove)
                         {
-                            ChartSheetContentSequence chartSheetContentSequence = objectGroup.ChartSheetSequence.ChartSheetContentSequence;
-                            insertObjectChoices(chartSheetContentSequence);
+                            // Move and resize with anchor cells
+                            editAs = "twoCell";
                         }
+                        else if (!oartClientAnchor.fSize && oartClientAnchor.fMove)
+                        {
+                            // Move with cells but do not resize
+                            editAs = "oneCell";
+                        }
+                        _writer.WriteAttributeString(Dml.SpreadsheetDrawing.AttrEditAs, editAs);
+                        {
+                            // xdr:from
+                            _writer.WriteStartElement(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElFrom, Dml.SpreadsheetDrawing.Ns);
+                            _writer.WriteElementString(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElCol, Dml.SpreadsheetDrawing.Ns, oartClientAnchor.colL.ToString());
+                            _writer.WriteElementString(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElColOff, Dml.SpreadsheetDrawing.Ns, oartClientAnchor.dxL.ToString());
+                            _writer.WriteElementString(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElRow, Dml.SpreadsheetDrawing.Ns, oartClientAnchor.rwT.ToString());
+                            _writer.WriteElementString(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElRowOff, Dml.SpreadsheetDrawing.Ns, oartClientAnchor.dyT.ToString());
+                            _writer.WriteEndElement(); // xdr:from
+
+                            // xdr:to
+                            _writer.WriteStartElement(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElTo, Dml.SpreadsheetDrawing.Ns);
+                            _writer.WriteElementString(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElCol, Dml.SpreadsheetDrawing.Ns, oartClientAnchor.colR.ToString());
+                            _writer.WriteElementString(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElColOff, Dml.SpreadsheetDrawing.Ns, oartClientAnchor.dxR.ToString());
+                            _writer.WriteElementString(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElRow, Dml.SpreadsheetDrawing.Ns, oartClientAnchor.rwB.ToString());
+                            _writer.WriteElementString(Dml.SpreadsheetDrawing.Prefix, Dml.SpreadsheetDrawing.ElRowOff, Dml.SpreadsheetDrawing.Ns, oartClientAnchor.dyB.ToString());
+                            _writer.WriteEndElement(); // xdr:to
+
+                            ObjectGroup objectGroup = drawingsGroup.Objects.Find(p => p.ChartSheetSequence != null);
+                            if (objectGroup != null)
+                            {
+                                ChartSheetContentSequence chartSheetContentSequence = objectGroup.ChartSheetSequence.ChartSheetContentSequence;
+                                insertObjectChoices(chartSheetContentSequence);
+                            }
+                        }
+                        _writer.WriteEndElement(); // xdr:twoCellAnchor
                     }
-                    _writer.WriteEndElement(); // xdr:twoCellAnchor
                 }
             }
 

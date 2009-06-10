@@ -105,6 +105,7 @@
     <Compile Include="DataContainer\WorkBookData.cs" />
     <Compile Include="DataContainer\XCTData.cs" />
     <Compile Include="DataContainer\XTIData.cs" />
+    <Compile Include="DataExtraction\ParseException.cs" />
     <Compile Include="DataExtraction\WorksheetExtractor.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -514,6 +515,7 @@
     <Compile Include="Structures\CFrtId.cs" />
     <Compile Include="Structures\ChartNumNillable.cs" />
     <Compile Include="Structures\ChartParsedFormula.cs" />
+    <Compile Include="Structures\ControlInfo.cs" />
     <Compile Include="Structures\FtCbls.cs" />
     <Compile Include="Structures\FtCblsData.cs" />
     <Compile Include="Structures\FtCf.cs" />
@@ -532,6 +534,10 @@
     <Compile Include="Structures\ObjLinkFmla.cs" />
     <Compile Include="Structures\OfficeArtClientAnchorSheet.cs" />
     <Compile Include="Structures\PictFmlaEmbedInfo.cs" />
+    <Compile Include="Structures\Run.cs" />
+    <Compile Include="Structures\SheetExtOptional.cs" />
+    <Compile Include="Structures\TxOLastRun.cs" />
+    <Compile Include="Structures\TxORuns.cs" />
     <Compile Include="Structures\XmlTkHeightPercent.cs" />
     <Compile Include="Structures\XmlTkRotXFrt.cs" />
     <Compile Include="Structures\XmlTkRotYFrt.cs" />

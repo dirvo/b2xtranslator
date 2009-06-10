@@ -113,8 +113,11 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             this.at = (Alignment)reader.ReadUInt16();
             this.cAutoCatLabelReal = (CatLabelType)Utils.BitmaskToUInt16(reader.ReadUInt16(), 0x0001);
 
-            // ignore last 2 bytes (reserved)
-            reader.ReadBytes(2);
+            // ignore last 2 bytes (reserved and optional)
+            if (this.Length > 10)
+            {
+                reader.ReadBytes(2);
+            }
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);

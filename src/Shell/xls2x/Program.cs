@@ -109,6 +109,11 @@ namespace DIaLOGIKa.b2xtranslator.xls2x
                         }
                     }
                 }
+                catch (ParseException ex)
+                {
+                    TraceLogger.Error(ex.Message);
+                    TraceLogger.Debug(ex.ToString());
+                }
                 catch (DirectoryNotFoundException ex)
                 {
                     TraceLogger.Error(ex.Message);

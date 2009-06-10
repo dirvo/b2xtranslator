@@ -95,6 +95,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             this.fNotSizeWith = Utils.BitmaskToBool(flags, 0x4);
             this.fManPlotArea = Utils.BitmaskToBool(flags, 0x8);
             this.fAlwaysAutoPlotArea = Utils.BitmaskToBool(flags, 0x10);
+
             this.mdBlank = (EmptyCellPlotMode)reader.ReadByte();
             reader.ReadByte(); // skip the last byte
 

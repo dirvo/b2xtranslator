@@ -27,13 +27,23 @@
 using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
+    /// <summary>
+    /// The record specifies the protection state for scenarios in a sheet. 
+    /// Scenarios are defined in Worksheet Substream.
+    /// </summary>
     [BiffRecordAttribute(RecordType.ScenarioProtect)] 
     public class ScenarioProtect : BiffRecord
     {
         public const RecordType ID = RecordType.ScenarioProtect;
+
+        /// <summary>
+        /// A Boolean that specifies whether the scenarios in the sheet are protected
+        /// </summary>
+        public bool fScenProtect;
 
         public ScenarioProtect(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
@@ -42,7 +52,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             Debug.Assert(this.Id == ID);
 
             // initialize class members from stream
-            // TODO: place code here
+            this.fScenProtect = Utils.IntToBool(reader.ReadUInt16());
             
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 

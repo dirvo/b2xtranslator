@@ -28,39 +28,32 @@
  */
 
 using System;
-using System.Diagnostics;
+using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.Tools;
 
-namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
+namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures
 {
     /// <summary>
-    /// This record specifies a continuation of the data of the preceding record. 
-    /// Records with data longer than 8,224 bytes MUST be split into several records. 
-    /// The first section of the data appears in the base record and subsequent sections appear 
-    /// in one or more Continue records that appear after the base record. Records with data 
-    /// shorter than 8,225 bytes can also store data in the base record and following Continue 
-    /// records. For example, the size of TxO record is less than 8,225 bytes, but it is 
-    /// always followed by Continue records that store the string data and formatting runs.
+    /// This structure specifies formatting information for a text run.
     /// </summary>
-    [BiffRecordAttribute(RecordType.Continue)]
-    public class Continue : BiffRecord
+    public class Run
     {
-        public const RecordType ID = RecordType.Continue;
+        /// <summary>
+        /// An unsigned integer that specifies the zero-based index of the first character of the text that contains the text run. When this record is used in an array, this value MUST be in strictly increasing order.
+        /// </summary>
+        public UInt16 ich;
 
-        public Continue(IStreamReader reader, RecordType id, UInt16 length)
-            : base(reader, id, length)
+        /// <summary>
+        /// A FontIndex record that specifies the font. If ich is equal to the length of the text, this record is undefined and MUST be ignored.
+        /// </summary>
+        public UInt16 ifnt;
+
+        public Run(IStreamReader reader)
         {
-            // assert that the correct record type is instantiated
-            Debug.Assert(this.Id == ID);
-
-            // initialize class members from stream
-            // no special fields in this record as it is just a continuation of the previous record
-            
-            // just skipping
-            this.Reader.BaseStream.Position = this.Offset + this.Length;
-
-            // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
+            this.ich = reader.ReadUInt16();
+            this.ifnt = reader.ReadUInt16();
+            reader.ReadBytes(4);            
         }
     }
 }
