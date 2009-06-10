@@ -24,17 +24,22 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             _writer.WriteStartElement(Dml.Chart.Prefix, "dPt", Dml.Chart.Ns);
             {
                 // c:bubble3D
+                // TODO
 
                 // c:explosion
+                // TODO
 
                 // c:idx
                 writeValueElement("idx", _index.ToString());
 
                 // c:invertIfNegative
+                // TODO
 
                 // c:marker
+                // TODO
 
                 // c:pictureOptions
+                // TODO
 
                 // c:spPr
                 ssSequence.Convert(new ShapePropertiesMapping(this.WorkbookContext, this.ChartContext));
