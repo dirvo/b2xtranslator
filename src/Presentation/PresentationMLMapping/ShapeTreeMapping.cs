@@ -1407,12 +1407,26 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                     {
                                         color = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.lineColor].op, slide, so);
                                     }
-                                    
-                                    _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
-                                    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                                    _writer.WriteAttributeString("val", color);
-                                    _writer.WriteEndElement();
-                                    _writer.WriteEndElement();
+
+                                    bool ignoreColor = false;
+                                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.ThreeDObjectBooleanProperties))
+                                    {
+                                        ThreeDObjectProperties tdo = new ThreeDObjectProperties(so.OptionsByID[ShapeOptions.PropertyId.ThreeDObjectBooleanProperties].op);
+
+                                        if (tdo.fc3D && tdo.fUsefc3D)
+                                        {
+                                            ignoreColor = true;
+                                        }
+                                    }
+
+                                    if (!ignoreColor)
+                                    {
+                                        _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
+                                        _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                                        _writer.WriteAttributeString("val", color);
+                                        _writer.WriteEndElement();
+                                        _writer.WriteEndElement();
+                                    }
                                     _writer.WriteEndElement();
                                 }
                             }
@@ -2554,6 +2568,36 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteStartElement("a", "scene3d", OpenXmlNamespaces.DrawingML);
                     _writer.WriteStartElement("a", "camera", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("prst", prst);
+
+                    //if (tds != null)
+                    //    if (tds.fc3DConstrainRotation && tds.fUsefc3DConstrainRotation)
+                    //    {
+                    //        double xra = 0;
+                    //        uint yra = 0;
+                    //        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.c3DXRotationAngle))
+                    //        {
+                    //            byte[] data = BitConverter.GetBytes(so.OptionsByID[ShapeOptions.PropertyId.c3DXRotationAngle].op);
+                    //            xra =  new FixedPointNumber(BitConverter.ToUInt16(data, 2),BitConverter.ToUInt16(data, 0)).Value;
+                    //        }
+                    //        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.c3DYRotationAngle))
+                    //        {
+                    //            yra = so.OptionsByID[ShapeOptions.PropertyId.c3DYRotationAngle].op;
+                    //        }
+
+                    //        if (xra + yra > 0)
+                    //        {
+                    //            //rot
+                    //            _writer.WriteStartElement("a", "rot", OpenXmlNamespaces.DrawingML);
+                    //            //@lat
+                    //            _writer.WriteAttributeString("lat", "19799999");
+                    //            //@lon
+                    //            _writer.WriteAttributeString("lon", "19439998");
+                    //            //@rev
+                    //            _writer.WriteAttributeString("rev", "0");
+                    //            _writer.WriteEndElement(); //rot
+                    //        }
+                    //    }
+
                     _writer.WriteEndElement(); //camera
                     _writer.WriteStartElement("a", "lightRig", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("rig", rig);
@@ -2563,17 +2607,17 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                     _writer.WriteStartElement("a", "sp3d", OpenXmlNamespaces.DrawingML);
 
+                    string extrusionH = "100000";
                     if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.c3DExtrudeBackward))
                     {
                         uint v = so.OptionsByID[ShapeOptions.PropertyId.c3DExtrudeBackward].op;
-                        double v2 = new Tools.EmuValue((int)v).ToPoints();
+                        extrusionH = v.ToString();
                     }
 
-
-                    _writer.WriteAttributeString("extrusionH", "100000");
+                    _writer.WriteAttributeString("extrusionH", extrusionH);
                     _writer.WriteAttributeString("prstMaterial", "legacyMatte");
 
-                    if (tdo.fc3UseExtrusionColor && tdo.fUsefc3DUseExtrusionColor)
+                    //if (tdo.fc3UseExtrusionColor && tdo.fUsefc3DUseExtrusionColor)
                     if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.c3DExtrusionColor))
                     {
                         _writer.WriteStartElement("a", "extrusionClr", OpenXmlNamespaces.DrawingML);
