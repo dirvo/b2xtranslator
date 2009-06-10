@@ -2479,17 +2479,97 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         tds = new ThreeDStyleProperties(so.OptionsByID[ShapeOptions.PropertyId.ThreeDStyleBooleanProperties].op);
                     }
 
+                    double x = -1;
+                    double y = -1;
+                    double ox = -1;
+                    double oy = -1;
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.c3DOriginX))
+                    {
+                        byte[] data = BitConverter.GetBytes(so.OptionsByID[ShapeOptions.PropertyId.c3DOriginX].op);
+                        ox = new FixedPointNumber(BitConverter.ToUInt16(data, 0), BitConverter.ToUInt16(data, 2)).Value;
+                    }
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.c3DOriginY))
+                    {
+                        byte[] data = BitConverter.GetBytes(so.OptionsByID[ShapeOptions.PropertyId.c3DOriginY].op);
+                        oy = new FixedPointNumber(BitConverter.ToUInt16(data, 0), BitConverter.ToUInt16(data, 2)).Value;
+                    }
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.c3DKeyX))
+                    {
+                        byte[] data = BitConverter.GetBytes(so.OptionsByID[ShapeOptions.PropertyId.c3DKeyX].op);
+                        x = new FixedPointNumber(BitConverter.ToUInt16(data, 0), BitConverter.ToUInt16(data, 2)).Value;
+                    }
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.c3DKeyY))
+                    {
+                        byte[] data = BitConverter.GetBytes(so.OptionsByID[ShapeOptions.PropertyId.c3DKeyY].op);
+                        y = new FixedPointNumber(BitConverter.ToUInt16(data, 0), BitConverter.ToUInt16(data, 2)).Value;
+                    }
+                    string prst = "legacyObliqueRight";
+
+                    if (ox == -1 && oy == 0)
+                    {
+                        prst = "legacyObliqueRight";
+                    }
+                    else if (((int)ox) == 32768 && oy == -1)
+                    {
+                        prst = "legacyPerspectiveTopLeft";
+                    }
+                    else if (ox == 0 && oy == 0)
+                    {
+                        prst = "legacyPerspectiveFront";
+                    }
+                    else if (ox == -1 && ((int)oy) == 32768)
+                    {
+                        prst = "legacyPerspectiveFront";
+                    }
+
+                    string dir = "t";
+                    if (((int)x) == 15536)
+                    {
+                        dir = "t";
+                    }
+                    else if (((int)y) == 15536)
+                    {
+                        dir = "r";
+                    }
+                    else if (x == -1)
+                    {
+                        dir = "b";
+                    }
+                    else if (x == 0 && y == 50000)
+                    {
+                        dir = "l";
+                    }
+
+                    string rig = "legacyHarsh3";
+                    if (ox == 0 && oy == 0 && ((int)x) == 15536 && ((int)y) == 15536)
+                    {
+                        rig = "legacyNormal2";
+                    }
+                    else if ((((int)ox) == 32768) || (ox == 0 && oy == 0))
+                    {
+                        rig = "legacyNormal3";
+                    }
+
+
                     _writer.WriteStartElement("a", "scene3d", OpenXmlNamespaces.DrawingML);
                     _writer.WriteStartElement("a", "camera", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("prst", "legacyObliqueRight");
+                    _writer.WriteAttributeString("prst", prst);
                     _writer.WriteEndElement(); //camera
                     _writer.WriteStartElement("a", "lightRig", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("rig", "legacyHarsh3");
-                    _writer.WriteAttributeString("dir", "t");
+                    _writer.WriteAttributeString("rig", rig);
+                    _writer.WriteAttributeString("dir", dir);
                     _writer.WriteEndElement(); //lightRig
                     _writer.WriteEndElement(); //scene3d
 
                     _writer.WriteStartElement("a", "sp3d", OpenXmlNamespaces.DrawingML);
+
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.c3DExtrudeBackward))
+                    {
+                        uint v = so.OptionsByID[ShapeOptions.PropertyId.c3DExtrudeBackward].op;
+                        double v2 = new Tools.EmuValue((int)v).ToPoints();
+                    }
+
+
                     _writer.WriteAttributeString("extrusionH", "100000");
                     _writer.WriteAttributeString("prstMaterial", "legacyMatte");
 
