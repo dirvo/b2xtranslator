@@ -2533,7 +2533,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     }
                     else if (ox == -1 && ((int)oy) == 32768)
                     {
-                        prst = "legacyPerspectiveFront";
+                        prst = "legacyPerspectiveBottomRight";
                     }
 
                     string dir = "t";
@@ -2614,10 +2614,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                     _writer.WriteStartElement("a", "sp3d", OpenXmlNamespaces.DrawingML);
 
-                    string extrusionH = "100000";
+                    string extrusionH = "457200";
                     if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.c3DExtrudeBackward))
                     {
-                        uint v = so.OptionsByID[ShapeOptions.PropertyId.c3DExtrudeBackward].op;
+                        //the -27000 comes from analysing PP 2003
+                        uint v = so.OptionsByID[ShapeOptions.PropertyId.c3DExtrudeBackward].op - 27000;
                         extrusionH = v.ToString();
                     }
 
