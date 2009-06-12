@@ -2569,34 +2569,41 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteStartElement("a", "camera", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("prst", prst);
 
-                    //if (tds != null)
-                    //    if (tds.fc3DConstrainRotation && tds.fUsefc3DConstrainRotation)
-                    //    {
-                    //        double xra = 0;
-                    //        uint yra = 0;
-                    //        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.c3DXRotationAngle))
-                    //        {
-                    //            byte[] data = BitConverter.GetBytes(so.OptionsByID[ShapeOptions.PropertyId.c3DXRotationAngle].op);
-                    //            xra =  new FixedPointNumber(BitConverter.ToUInt16(data, 2),BitConverter.ToUInt16(data, 0)).Value;
-                    //        }
-                    //        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.c3DYRotationAngle))
-                    //        {
-                    //            yra = so.OptionsByID[ShapeOptions.PropertyId.c3DYRotationAngle].op;
-                    //        }
+                    if (tds != null)
+                        if (tds.fc3DConstrainRotation && tds.fUsefc3DConstrainRotation)
+                        {
+                            decimal xra = 0;
+                            decimal yra = 0;
+                            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.c3DXRotationAngle))
+                            {
+                                byte[] data = BitConverter.GetBytes(so.OptionsByID[ShapeOptions.PropertyId.c3DXRotationAngle].op);
+                                int integral = BitConverter.ToInt16(data, 2);
+                                uint fractional = BitConverter.ToUInt16(data, 0);
+                                xra = -1 * (integral + ((decimal)fractional / (decimal)65536));
+                                if (xra < 0) xra += 360;
+                            }
+                            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.c3DYRotationAngle))
+                            {
+                                byte[] data = BitConverter.GetBytes(so.OptionsByID[ShapeOptions.PropertyId.c3DYRotationAngle].op);
+                                int integral = BitConverter.ToInt16(data, 2);
+                                uint fractional = BitConverter.ToUInt16(data, 0);
+                                yra = integral + ((decimal)fractional / (decimal)65536);
+                                if (yra < 0) yra += 360;
+                            }
 
-                    //        if (xra + yra > 0)
-                    //        {
-                    //            //rot
-                    //            _writer.WriteStartElement("a", "rot", OpenXmlNamespaces.DrawingML);
-                    //            //@lat
-                    //            _writer.WriteAttributeString("lat", "19799999");
-                    //            //@lon
-                    //            _writer.WriteAttributeString("lon", "19439998");
-                    //            //@rev
-                    //            _writer.WriteAttributeString("rev", "0");
-                    //            _writer.WriteEndElement(); //rot
-                    //        }
-                    //    }
+                            if (xra != 0 || yra != 0)
+                            {
+                                //rot
+                                _writer.WriteStartElement("a", "rot", OpenXmlNamespaces.DrawingML);
+                                //@lat
+                                _writer.WriteAttributeString("lat", Math.Floor(xra * 60000).ToString());
+                                //@lon
+                                _writer.WriteAttributeString("lon", Math.Floor(yra * 60000).ToString());
+                                //@rev
+                                _writer.WriteAttributeString("rev", "0");
+                                _writer.WriteEndElement(); //rot
+                            }
+                        }
 
                     _writer.WriteEndElement(); //camera
                     _writer.WriteStartElement("a", "lightRig", OpenXmlNamespaces.DrawingML);
