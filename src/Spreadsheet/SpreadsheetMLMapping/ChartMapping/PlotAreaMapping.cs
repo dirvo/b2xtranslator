@@ -285,7 +285,10 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             // c:txPr
 
                             // c:crossAx
-                            writeValueElement(Dml.Chart.ElCrossAx, axesSequence.IvAxisSequence.Axis.AxisId.ToString());
+                            if (axesSequence.IvAxisSequence != null)
+                            {
+                                writeValueElement(Dml.Chart.ElCrossAx, axesSequence.IvAxisSequence.Axis.AxisId.ToString());
+                            }
                             
                             // c:crosses or c:crossesAt
 

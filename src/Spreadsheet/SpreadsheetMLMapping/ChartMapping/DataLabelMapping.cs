@@ -49,7 +49,10 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
         public void Apply(ChartFormatsSequence chartFormatSequence)
         {
-            AttachedLabelSequence attachedLabelSequence = chartFormatSequence.AttachedLabelSequences[0];
+            if (chartFormatSequence.AttachedLabelSequences.Count != 0)
+            {
+                AttachedLabelSequence attachedLabelSequence = chartFormatSequence.AttachedLabelSequences[0];
+            
 
             _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElDLbls, Dml.Chart.Ns);
             {
@@ -130,6 +133,8 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
             }
             _writer.WriteEndElement();
+            }
+            
         }
     }
 }

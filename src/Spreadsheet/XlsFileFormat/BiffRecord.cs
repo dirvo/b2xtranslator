@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
@@ -139,6 +140,15 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                     // get the next record
                     return ReadRecord(reader);
                 }
+                else if ((RecordType)id == RecordType.StartObject)
+                {
+                    reader.ReadBytes(size);
+                    FrtWrapper frtWrapper = new FrtWrapper(reader);
+                    // returns the EndObject
+                    return ReadRecord(reader); 
+                }
+
+
 
                 Type cls;
                 if (TypeToRecordClassMapping.TryGetValue(id, out cls))

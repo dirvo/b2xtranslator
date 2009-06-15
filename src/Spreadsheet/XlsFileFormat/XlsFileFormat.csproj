@@ -516,6 +516,7 @@
     <Compile Include="Structures\ChartNumNillable.cs" />
     <Compile Include="Structures\ChartParsedFormula.cs" />
     <Compile Include="Structures\ControlInfo.cs" />
+    <Compile Include="Structures\FrtWrapper.cs" />
     <Compile Include="Structures\FtCbls.cs" />
     <Compile Include="Structures\FtCblsData.cs" />
     <Compile Include="Structures\FtCf.cs" />

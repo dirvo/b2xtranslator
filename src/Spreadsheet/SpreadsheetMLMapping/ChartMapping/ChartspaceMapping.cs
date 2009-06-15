@@ -78,7 +78,10 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
                     // c:legend
                     LdSequence firstLegend = chartFormatsSequence.AxisParentSequences[0].CrtSequences[0].LdSequence;
-                    firstLegend.Convert(new LegendMapping(this.WorkbookContext, this.ChartContext));
+                    if (firstLegend != null)
+                    {
+                        firstLegend.Convert(new LegendMapping(this.WorkbookContext, this.ChartContext));
+                    }
 
                     // c:plotVisOnly
                     writeValueElement(Dml.Chart.ElPlotVisOnly, chartFormatsSequence.ShtProps.fPlotVisOnly ? "1" : "0");

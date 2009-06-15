@@ -28,43 +28,26 @@
  */
 
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 
-namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
+namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures
 {
-    /// <summary>
-    /// This record specifies the properties of a fill pattern for parts of a chart. 
-    /// The record consists of an OfficeArtFOPT, as specified in [MS-ODRAW] section 2.2.9, 
-    /// and an OfficeArtTertiaryFOPT, as specified in [MS-ODRAW] section 2.2.11, that both
-    /// contain properties for the fill pattern applied. <55>
-    /// </summary>
-    [BiffRecordAttribute(RecordType.GelFrame)]
-    public class GelFrame : BiffRecord
+    public class FrtWrapper
     {
-        public const RecordType ID = RecordType.GelFrame;
-
-        public Record OPT1;
-
-        public Record OPT2;
-
-        public GelFrame(IStreamReader reader, RecordType id, UInt16 length)
-            : base(reader, id, length)
+        public FrtWrapper(IStreamReader reader)
         {
-            // assert that the correct record type is instantiated
-            Debug.Assert(this.Id == ID);
+            UInt16 id = UInt16.MaxValue;
+            UInt16 size;
 
-            // initialize class members from stream
-            this.OPT1 = Record.ReadRecord(reader.BaseStream);
-
-            if (this.Reader.BaseStream.Position < this.Offset + this.Length)
+            while(BiffRecord.GetNextRecordType(reader) != RecordType.EndObject)
             {
-                this.OPT2 = Record.ReadRecord(reader.BaseStream);
-            }
+                id = reader.ReadUInt16();
+                size = reader.ReadUInt16();
+                reader.ReadBytes(size);
+            }  
 
-            // assert that the correct number of bytes has been read from the stream
-            // Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
         }
     }
 }

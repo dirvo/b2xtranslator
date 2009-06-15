@@ -3,6 +3,7 @@ using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using System;
+using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
@@ -165,14 +166,23 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             }
 
             // End
-            this.End = (End)BiffRecord.ReadRecord(reader);
+
+            try
+            {
+                this.End = (End)BiffRecord.ReadRecord(reader);
+
+            }
+            catch (Exception ex)
+            {
+                TraceLogger.DebugInternal(ex.StackTrace); 
+            }
         }
 
         public class DataLabelGroup
         {
             public DataLabExt DataLabExt;
             public StartObject StartObject;
-            public AttachedLabel AttachedLabel;
+            public AttachedLabelSequence AttachedLabelSequence;
             public EndObject EndObject;
 
             public DataLabelGroup(IStreamReader reader)
@@ -182,10 +192,13 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                 if (BiffRecord.GetNextRecordType(reader) == RecordType.DataLabExt)
                 {
                     this.DataLabExt = (DataLabExt)BiffRecord.ReadRecord(reader);
-                    this.StartObject = (StartObject)BiffRecord.ReadRecord(reader);
+                    if (BiffRecord.GetNextRecordType(reader) == RecordType.StartObject)
+                    {
+                         EndObject endObj = (EndObject)BiffRecord.ReadRecord(reader);
+                    }
                 }
 
-                this.AttachedLabel = (AttachedLabel)BiffRecord.ReadRecord(reader);
+                this.AttachedLabelSequence = new AttachedLabelSequence(reader); 
 
                 if (BiffRecord.GetNextRecordType(reader) == RecordType.EndObject)
                 {
