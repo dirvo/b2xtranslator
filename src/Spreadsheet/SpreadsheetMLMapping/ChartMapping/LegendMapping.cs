@@ -45,22 +45,34 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 // c:txPr
                 if (ldSequence.TextPropsSequence != null)
                 {
+                    
                     // created by Excel 2007
                     XmlDocument xmlTextProps = new XmlDocument();
                     if (ldSequence.TextPropsSequence.TextPropsStream != null)
                     {
-                        xmlTextProps.LoadXml(ldSequence.TextPropsSequence.TextPropsStream.rgb);
+                        if (ldSequence.TextPropsSequence.TextPropsStream.rgb != null &&
+                            ldSequence.TextPropsSequence.TextPropsStream.rgb != "")
+                        {
+                            xmlTextProps.LoadXml(ldSequence.TextPropsSequence.TextPropsStream.rgb);
+                        }
                     }
                     else if (ldSequence.TextPropsSequence.RichTextStream != null)
                     {
-                        xmlTextProps.LoadXml(ldSequence.TextPropsSequence.RichTextStream.rgb);
+                        if (ldSequence.TextPropsSequence.RichTextStream.rgb != null &&
+                            ldSequence.TextPropsSequence.RichTextStream.rgb != "")
+                        {
+                            xmlTextProps.LoadXml(ldSequence.TextPropsSequence.RichTextStream.rgb);
+                        }
                     }
 
                     // NOTE: Don't use WriteTo on the document root because it might try to 
                     // add an XML declaration to the writer (BANG!). 
                     // Use it on the top-most element node instead.
                     //
-                    xmlTextProps.DocumentElement.WriteTo(_writer);
+                    if (xmlTextProps.DocumentElement != null)
+                    {
+                        xmlTextProps.DocumentElement.WriteTo(_writer);
+                    }
                 }
                 else
                 {

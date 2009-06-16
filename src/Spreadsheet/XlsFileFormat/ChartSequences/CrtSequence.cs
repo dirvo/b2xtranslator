@@ -124,6 +124,12 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                 this.ShapePropsSequences.Add(new ShapePropsSequence(reader));
             }
 
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.CrtMlFrt)
+            {
+                CrtMlfrtSequence crtmlfrtseq = new CrtMlfrtSequence(reader); 
+            }
+
+
             this.End = (End)BiffRecord.ReadRecord(reader);
         }
 

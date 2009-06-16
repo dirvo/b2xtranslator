@@ -75,10 +75,19 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         UInt32 ptCount = 0;
                         for (UInt32 i = 0; i < dataMatrix.GetLength(1); i++)
                         {
-                            if (dataMatrix[seriesFormatSequence.order, i] != null)
+                            try
                             {
-                                ptCount++;
+                                if (dataMatrix[seriesFormatSequence.order, i] != null)
+                                {
+                                    ptCount++;
+                                }
                             }
+                            catch (Exception)
+                            {
+                                
+                                
+                            }
+
                         }
 
                         // c:ptCount

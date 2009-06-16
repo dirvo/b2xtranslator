@@ -33,7 +33,13 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             }
 
             // AXS
-            this.AxsSequence = new AxsSequence(reader); 
+            this.AxsSequence = new AxsSequence(reader);
+
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.CrtMlFrt)
+            {
+                CrtMlfrtSequence crtmlfrtseq = new CrtMlfrtSequence(reader);
+            }
+
             
             // End 
             this.End = (End)BiffRecord.ReadRecord(reader); 
