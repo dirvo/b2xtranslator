@@ -61,8 +61,6 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public TablePropertyExceptions(ParagraphPropertyExceptions papx, VirtualStream dataStream)
         {
             this.grpprl = new List<SinglePropertyModifier>();
-            IStreamReader reader = new VirtualStreamReader(dataStream);
-
             foreach (SinglePropertyModifier sprm in papx.grpprl)
             {
                 if (sprm.Type == SinglePropertyModifier.SprmType.TAP)
@@ -71,6 +69,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 }
                 else if ((int)sprm.OpCode == 0x646b)
                 {
+                    IStreamReader reader = new VirtualStreamReader(dataStream);
+
                     //there is a native TAP in the data stream
                     UInt32 fc = System.BitConverter.ToUInt32(sprm.Arguments, 0);
                     

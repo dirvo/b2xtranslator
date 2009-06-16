@@ -347,8 +347,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case ShapeOptions.PropertyId.fillBlip:
                         BlipStoreEntry fillBlip = (BlipStoreEntry)_blipStore.Children[(int)entry.op - 1];
                         ImagePart fillBlipPart = copyPicture(fillBlip);
-                        appendValueAttribute(_fill, "r", "id", fillBlipPart.RelIdToString, OpenXmlNamespaces.Relationships);
-                        appendValueAttribute(_imagedata, "o", "title", "", OpenXmlNamespaces.Office);
+                        if (fillBlipPart != null)
+                        {
+                            appendValueAttribute(_fill, "r", "id", fillBlipPart.RelIdToString, OpenXmlNamespaces.Relationships);
+                            appendValueAttribute(_imagedata, "o", "title", "", OpenXmlNamespaces.Office);
+                        }
                         break;
 
                     case ShapeOptions.PropertyId.fillOpacity:
@@ -400,7 +403,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         int index = (int)entry.op - 1;
                         BlipStoreEntry bse = (BlipStoreEntry)_blipStore.Children[index];
                         ImagePart part = copyPicture(bse);
-                        appendValueAttribute(_imagedata, "r", "id", part.RelIdToString, OpenXmlNamespaces.Relationships);
+                        if (part != null)
+                        {
+                            appendValueAttribute(_imagedata, "r", "id", part.RelIdToString, OpenXmlNamespaces.Relationships);
+                        }
                         break;
 
                     case ShapeOptions.PropertyId.pibName:
@@ -1100,33 +1106,36 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     break;
             }
 
-            Stream outStream = imgPart.GetStream();
-
-            _ctx.Doc.WordDocumentStream.Seek((long)bse.foDelay, SeekOrigin.Begin);
-            BinaryReader reader = new BinaryReader(_ctx.Doc.WordDocumentStream);
-
-            switch (bse.btWin32)
+            if (imgPart != null)
             {
-                case BlipStoreEntry.BlipType.msoblipEMF:
-                case BlipStoreEntry.BlipType.msoblipWMF:
+                Stream outStream = imgPart.GetStream();
 
-                    //it's a meta image
-                    MetafilePictBlip metaBlip = (MetafilePictBlip)Record.ReadRecord(reader);
+                _ctx.Doc.WordDocumentStream.Seek((long)bse.foDelay, SeekOrigin.Begin);
+                BinaryReader reader = new BinaryReader(_ctx.Doc.WordDocumentStream);
 
-                    //meta images can be compressed
-                    byte[] decompressed = metaBlip.Decrompress();
-                    outStream.Write(decompressed, 0, decompressed.Length);
+                switch (bse.btWin32)
+                {
+                    case BlipStoreEntry.BlipType.msoblipEMF:
+                    case BlipStoreEntry.BlipType.msoblipWMF:
 
-                    break;
-                case BlipStoreEntry.BlipType.msoblipJPEG:
-                case BlipStoreEntry.BlipType.msoblipCMYKJPEG:
-                case BlipStoreEntry.BlipType.msoblipPNG:
-                case BlipStoreEntry.BlipType.msoblipTIFF:
+                        //it's a meta image
+                        MetafilePictBlip metaBlip = (MetafilePictBlip)Record.ReadRecord(reader);
 
-                    //it's a bitmap image
-                    BitmapBlip bitBlip = (BitmapBlip)Record.ReadRecord(reader);
-                    outStream.Write(bitBlip.m_pvBits, 0, bitBlip.m_pvBits.Length);
-                    break;
+                        //meta images can be compressed
+                        byte[] decompressed = metaBlip.Decrompress();
+                        outStream.Write(decompressed, 0, decompressed.Length);
+
+                        break;
+                    case BlipStoreEntry.BlipType.msoblipJPEG:
+                    case BlipStoreEntry.BlipType.msoblipCMYKJPEG:
+                    case BlipStoreEntry.BlipType.msoblipPNG:
+                    case BlipStoreEntry.BlipType.msoblipTIFF:
+
+                        //it's a bitmap image
+                        BitmapBlip bitBlip = (BitmapBlip)Record.ReadRecord(reader);
+                        outStream.Write(bitBlip.m_pvBits, 0, bitBlip.m_pvBits.Length);
+                        break;
+                }
             }
 
             return imgPart;

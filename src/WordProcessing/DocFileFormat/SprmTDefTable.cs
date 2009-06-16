@@ -42,45 +42,48 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             {
                 TC80 tc = new TC80();
 
-                //the flags
-                UInt16 flags = System.BitConverter.ToUInt16(bytes, pointer);
-                tc.horzMerge = (byte)Utils.BitmaskToInt((int)flags, 0x3);
-                tc.textFlow = (Global.TextFlow)Utils.BitmaskToInt((int)flags, 0x1C);
-                tc.vertMerge = (Global.VerticalMergeFlag)Utils.BitmaskToInt((int)flags, 0x60);
-                tc.vertAlign = (Global.VerticalAlign)Utils.BitmaskToInt((int)flags, 0x180);
-                tc.ftsWidth = (Global.CellWidthType)Utils.BitmaskToInt((int)flags, 0xE00);
-                tc.fFitText = Utils.BitmaskToBool(flags, 0x1000);
-                tc.fNoWrap = Utils.BitmaskToBool(flags, 0x2000);
-                tc.fHideMark = Utils.BitmaskToBool(flags, 0x4000);
-                pointer += 2;
+                if (pointer < bytes.Length)
+                {
+                    //the flags
+                    UInt16 flags = System.BitConverter.ToUInt16(bytes, pointer);
+                    tc.horzMerge = (byte)Utils.BitmaskToInt((int)flags, 0x3);
+                    tc.textFlow = (Global.TextFlow)Utils.BitmaskToInt((int)flags, 0x1C);
+                    tc.vertMerge = (Global.VerticalMergeFlag)Utils.BitmaskToInt((int)flags, 0x60);
+                    tc.vertAlign = (Global.VerticalAlign)Utils.BitmaskToInt((int)flags, 0x180);
+                    tc.ftsWidth = (Global.CellWidthType)Utils.BitmaskToInt((int)flags, 0xE00);
+                    tc.fFitText = Utils.BitmaskToBool(flags, 0x1000);
+                    tc.fNoWrap = Utils.BitmaskToBool(flags, 0x2000);
+                    tc.fHideMark = Utils.BitmaskToBool(flags, 0x4000);
+                    pointer += 2;
 
-                //cell width
-                tc.wWidth = System.BitConverter.ToInt16(bytes, pointer);
-                pointer += 2;
+                    //cell width
+                    tc.wWidth = System.BitConverter.ToInt16(bytes, pointer);
+                    pointer += 2;
 
-                //border top
-                byte[] brcTopBytes = new byte[4];
-                Array.Copy(bytes, pointer, brcTopBytes, 0, 4);
-                tc.brcTop = new BorderCode(brcTopBytes);
-                pointer += 4;
+                    //border top
+                    byte[] brcTopBytes = new byte[4];
+                    Array.Copy(bytes, pointer, brcTopBytes, 0, 4);
+                    tc.brcTop = new BorderCode(brcTopBytes);
+                    pointer += 4;
 
-                //border left
-                byte[] brcLeftBytes = new byte[4];
-                Array.Copy(bytes, pointer, brcLeftBytes, 0, 4);
-                tc.brcLeft = new BorderCode(brcLeftBytes);
-                pointer += 4;
+                    //border left
+                    byte[] brcLeftBytes = new byte[4];
+                    Array.Copy(bytes, pointer, brcLeftBytes, 0, 4);
+                    tc.brcLeft = new BorderCode(brcLeftBytes);
+                    pointer += 4;
 
-                //border bottom
-                byte[] brcBottomBytes = new byte[4];
-                Array.Copy(bytes, pointer, brcBottomBytes, 0, 4);
-                tc.brcBottom = new BorderCode(brcBottomBytes);
-                pointer += 4;
+                    //border bottom
+                    byte[] brcBottomBytes = new byte[4];
+                    Array.Copy(bytes, pointer, brcBottomBytes, 0, 4);
+                    tc.brcBottom = new BorderCode(brcBottomBytes);
+                    pointer += 4;
 
-                //border top
-                byte[] brcRightBytes = new byte[4];
-                Array.Copy(bytes, pointer, brcRightBytes, 0, 4);
-                tc.brcRight = new BorderCode(brcRightBytes);
-                pointer += 4;
+                    //border top
+                    byte[] brcRightBytes = new byte[4];
+                    Array.Copy(bytes, pointer, brcRightBytes, 0, 4);
+                    tc.brcRight = new BorderCode(brcRightBytes);
+                    pointer += 4;
+                }
 
                 rgTc80[i] = tc;
             }
