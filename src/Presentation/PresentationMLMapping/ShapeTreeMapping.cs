@@ -301,9 +301,13 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             //vertical
                             if (!verticallinelist.ContainsKey(anch.Top)) verticallinelist.Add(anch.Top, new SortedList<int, ShapeContainer>());
                             verticallinelist[anch.Top].Add(anch.Left, scontainer);
-                        }                       
+                        }
 
                         //Lines.Add(scontainer);
+                    }
+                    else
+                    {
+                        string s = Utils.getPrstForShape(shape.Instance);
                     }
                 } 
             }
@@ -676,30 +680,18 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     foreach (int lineleft in lst.Keys)
                     {
                         ShapeContainer line = lst[lineleft];
-                        if (topLine == null)
-                        {
-                            //set first as default
-                            topLine = line;
-                        }
-                        else
-                        {
-                            if (lineleft == anch.Left) topLine = line;
-                        }
+                        int w = line.FirstChildWithType<ChildAnchor>().rcgBounds.Width;
+
+                        if (lineleft <= anch.Left && lineleft + w >= anch.Right) topLine = line;
                     }
 
                 if (linetop == anch.Bottom)
                     foreach (int lineleft in lst.Keys)
                     {
                         ShapeContainer line = lst[lineleft];
-                        if (bottomLine == null)
-                        {
-                            //set first as default
-                            bottomLine = line;
-                        }
-                        else
-                        {
-                            if (lineleft == anch.Left) bottomLine = line;
-                        }
+                        int w = line.FirstChildWithType<ChildAnchor>().rcgBounds.Width;
+
+                        if (lineleft <= anch.Left && lineleft + w >= anch.Right) bottomLine = line;
                     }
             }
 
@@ -710,28 +702,16 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 foreach (int lineleft in lst.Keys)
                 {
                     ShapeContainer line = lst[lineleft];
+                    int h = line.FirstChildWithType<ChildAnchor>().rcgBounds.Height;
+
 
                     if (lineleft == anch.Left)
-                        if (leftLine == null)
-                        {
-                            //set first as default
-                            leftLine = line;
-                        }
-                        else
-                        {
-                            if (linetop == anch.Top) leftLine = line;
-                        }
-
+                    //if (linetop == anch.Top) leftLine = line;
+                    if (linetop <= anch.Top && linetop + h >= anch.Bottom) leftLine = line;
+                    
                     if (lineleft == anch.Right)
-                        if (rightLine == null)
-                        {
-                            //set first as default
-                            rightLine = line;
-                        }
-                        else
-                        {
-                            if (linetop == anch.Top) rightLine = line;
-                        }
+                    //if (linetop == anch.Top) rightLine = line;
+                    if (linetop <= anch.Top && linetop + h >= anch.Bottom) rightLine = line;
                 }
 
             }
@@ -762,9 +742,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 //isRight = (col + span - 1 == columns - 1);
             }
             
-
-            
-     
             _writer.WriteStartElement("a", "lnL", OpenXmlNamespaces.DrawingML);
             WriteLineProperties(leftLine, so);
             //if (isLeft) WriteLineProperties(outerLine, so); else WriteLineProperties(innerLine, null); 
@@ -829,13 +806,12 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 _writer.WriteAttributeString("cmpd", "sng");
                 _writer.WriteAttributeString("algn", "ctr");
 
-                
+
                 if (soline.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineStyleBooleans))
                 {
                     LineStyleBooleans fsb = new LineStyleBooleans(soline.OptionsByID[ShapeOptions.PropertyId.lineStyleBooleans].op);
                     if (fsb.fUsefLine && fsb.fLine)
                     {
-                                 
                         if (soline.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineColor))
                         {
                             _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
@@ -855,7 +831,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             _writer.WriteEndElement();
                             _writer.WriteEndElement();
                         }
-                       
+                        else
+                        {
+                            _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("val", "000000");
+                            _writer.WriteEndElement();
+                            _writer.WriteEndElement();
+                        }
                     }
                 } else if (soframe != null && soframe.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineStyleBooleans))
                 {
