@@ -1074,6 +1074,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             int exObjIdRef = -1;
                             CheckClientData(container.FirstChildWithType<ClientData>(), ref placeholder, ref exObjIdRef);
                             ExOleEmbedContainer oleContainer = this._ctx.Ppt.OleObjects[exObjIdRef];
+                            if (oleContainer.FirstChildWithType<CStringAtom>() != null)
                             if (oleContainer.FirstChildWithType<CStringAtom>().Text == "Chart")
                             {
                                 writeOle(container, oleContainer);
