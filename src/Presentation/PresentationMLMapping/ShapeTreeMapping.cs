@@ -483,7 +483,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                         if (anch.rcgBounds.Height > RowHeights[row] && GetRowSpanCount(anch, row) > 1)
                         {
-                            _writer.WriteAttributeString("rowSpan", GetRowSpanCount(anch, row).ToString());
+                            if (table[row + 1, col] == null)
+                            {
+                                _writer.WriteAttributeString("rowSpan", GetRowSpanCount(anch, row).ToString());
+                            }
                         }
                         
                         if (anch.rcgBounds.Width > colWidth)
