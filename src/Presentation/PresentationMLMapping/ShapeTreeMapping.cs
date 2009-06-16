@@ -110,6 +110,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         {
             GroupShapeRecord gsr = group.FirstChildWithType<ShapeContainer>().FirstChildWithType<GroupShapeRecord>();
             ClientAnchor anchor = group.FirstChildWithType<ShapeContainer>().FirstChildWithType<ClientAnchor>();
+            ChildAnchor chanchor = group.FirstChildWithType<ShapeContainer>().FirstChildWithType<ChildAnchor>();
 
             foreach (ShapeOptions ops in group.FirstChildWithType<ShapeContainer>().AllChildrenWithType<ShapeOptions>())
             {
@@ -158,6 +159,32 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 _writer.WriteAttributeString("cx", (gsr.rcgBounds.Right - gsr.rcgBounds.Left).ToString());
                 _writer.WriteAttributeString("cy", (gsr.rcgBounds.Bottom - gsr.rcgBounds.Top).ToString());
                 _writer.WriteEndElement();       
+
+                _writer.WriteEndElement();
+            }
+            else if (chanchor != null && chanchor.Right >= chanchor.Left && chanchor.Bottom >= chanchor.Top)
+            {
+                _writer.WriteStartElement("a", "xfrm", OpenXmlNamespaces.DrawingML);
+
+                _writer.WriteStartElement("a", "off", OpenXmlNamespaces.DrawingML);
+                _writer.WriteAttributeString("x", (chanchor.Left).ToString());
+                _writer.WriteAttributeString("y", (chanchor.Top).ToString());
+                _writer.WriteEndElement();
+
+                _writer.WriteStartElement("a", "ext", OpenXmlNamespaces.DrawingML);
+                _writer.WriteAttributeString("cx", (chanchor.Right - chanchor.Left).ToString());
+                _writer.WriteAttributeString("cy", (chanchor.Bottom - chanchor.Top).ToString());
+                _writer.WriteEndElement();
+
+                _writer.WriteStartElement("a", "chOff", OpenXmlNamespaces.DrawingML);
+                _writer.WriteAttributeString("x", gsr.rcgBounds.Left.ToString());
+                _writer.WriteAttributeString("y", gsr.rcgBounds.Top.ToString());
+                _writer.WriteEndElement();
+
+                _writer.WriteStartElement("a", "chExt", OpenXmlNamespaces.DrawingML);
+                _writer.WriteAttributeString("cx", (gsr.rcgBounds.Right - gsr.rcgBounds.Left).ToString());
+                _writer.WriteAttributeString("cy", (gsr.rcgBounds.Bottom - gsr.rcgBounds.Top).ToString());
+                _writer.WriteEndElement();
 
                 _writer.WriteEndElement();
             }
@@ -1252,23 +1279,47 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     }
                     else
                     {
-                        _writer.WriteStartElement("a", "off", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("x", Utils.MasterCoordToEMU(anchor.Left).ToString());
-                        _writer.WriteAttributeString("y", Utils.MasterCoordToEMU(anchor.Top).ToString());
-                        _writer.WriteEndElement();
-
-                        _writer.WriteStartElement("a", "ext", OpenXmlNamespaces.DrawingML);
-                        if (swapHeightWidth)
+                        ClientAnchor clanchor = container.FirstChildWithType<ClientAnchor>();
+                        if (clanchor == null)
                         {
-                            _writer.WriteAttributeString("cx", Utils.MasterCoordToEMU(anchor.Bottom - anchor.Top).ToString());
-                            _writer.WriteAttributeString("cy", Utils.MasterCoordToEMU(anchor.Right - anchor.Left).ToString());                            
+                            _writer.WriteStartElement("a", "off", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("x", Utils.MasterCoordToEMU(anchor.Left).ToString());
+                            _writer.WriteAttributeString("y", Utils.MasterCoordToEMU(anchor.Top).ToString());
+                            _writer.WriteEndElement();
+
+                            _writer.WriteStartElement("a", "ext", OpenXmlNamespaces.DrawingML);
+                            if (swapHeightWidth)
+                            {
+                                _writer.WriteAttributeString("cx", Utils.MasterCoordToEMU(anchor.Bottom - anchor.Top).ToString());
+                                _writer.WriteAttributeString("cy", Utils.MasterCoordToEMU(anchor.Right - anchor.Left).ToString());
+                            }
+                            else
+                            {
+                                _writer.WriteAttributeString("cx", Utils.MasterCoordToEMU(anchor.Right - anchor.Left).ToString());
+                                _writer.WriteAttributeString("cy", Utils.MasterCoordToEMU(anchor.Bottom - anchor.Top).ToString());
+                            }
+                            _writer.WriteEndElement();
                         }
                         else
                         {
-                            _writer.WriteAttributeString("cx", Utils.MasterCoordToEMU(anchor.Right - anchor.Left).ToString());
-                            _writer.WriteAttributeString("cy", Utils.MasterCoordToEMU(anchor.Bottom - anchor.Top).ToString());
-                        }         
-                        _writer.WriteEndElement();
+                            _writer.WriteStartElement("a", "off", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("x", (anchor.Left).ToString());
+                            _writer.WriteAttributeString("y", (anchor.Top).ToString());
+                            _writer.WriteEndElement();
+
+                            _writer.WriteStartElement("a", "ext", OpenXmlNamespaces.DrawingML);
+                            if (swapHeightWidth)
+                            {
+                                _writer.WriteAttributeString("cx", (anchor.Bottom - anchor.Top).ToString());
+                                _writer.WriteAttributeString("cy", (anchor.Right - anchor.Left).ToString());
+                            }
+                            else
+                            {
+                                _writer.WriteAttributeString("cx", (anchor.Right - anchor.Left).ToString());
+                                _writer.WriteAttributeString("cy", (anchor.Bottom - anchor.Top).ToString());
+                            }
+                            _writer.WriteEndElement();
+                        }
                     }
                     _writer.WriteEndElement();
                 }
@@ -1342,7 +1393,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 {
 
                     _writer.WriteStartElement("p", "txBody", OpenXmlNamespaces.PresentationML);
-                    writeBodyPr(container, false);
+                    writeBodyPr(container, false, false);
                     _writer.WriteElementString("a", "lstStyle", OpenXmlNamespaces.DrawingML, "");
                     _writer.WriteStartElement("a", "p", OpenXmlNamespaces.DrawingML);
 
@@ -1489,7 +1540,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
                     _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
                     _writer.WriteAttributeString("val", colorval);
-                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity))
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity) && so.OptionsByID[ShapeOptions.PropertyId.fillOpacity].op != 65536)
                     {
                         _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
                         _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillOpacity].op / 65536 * 100000)).ToString()); //we need the percentage of the opacity (65536 means 100%)
@@ -2151,7 +2202,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         }
 
-        public void writeBodyPr(Record rec, bool cancelAttributes)
+        public void writeBodyPr(Record rec, bool cancelAttributes, bool no3D)
         {
             _writer.WriteStartElement("a", "bodyPr", OpenXmlNamespaces.DrawingML);
             //bool cancelAttributes = false;
@@ -2481,7 +2532,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             RegularContainer slide = so.FirstAncestorWithType<Slide>();
             if (slide == null) slide = so.FirstAncestorWithType<Note>();
             if (slide == null) slide = so.FirstAncestorWithType<Handout>();
-            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.ThreeDObjectBooleanProperties))
+            if (!no3D && so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.ThreeDObjectBooleanProperties))
             {
                 ThreeDObjectProperties tdo = new ThreeDObjectProperties(so.OptionsByID[ShapeOptions.PropertyId.ThreeDObjectBooleanProperties].op);
 
@@ -2832,7 +2883,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             {
                 _writer.WriteStartElement("p", "txBody", OpenXmlNamespaces.PresentationML);
             }
-            writeBodyPr(textbox, insideTable);
+            writeBodyPr(textbox, insideTable, true);
 
             _writer.WriteStartElement("a", "lstStyle", OpenXmlNamespaces.DrawingML);
             bool lvlRprWritten = false;

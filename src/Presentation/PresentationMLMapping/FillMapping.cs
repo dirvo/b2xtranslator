@@ -83,8 +83,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
                         _writer.WriteAttributeString("val", SchemeType);
                     }
-                    
-                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity))
+
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity) && so.OptionsByID[ShapeOptions.PropertyId.fillOpacity].op != 65536)
                     {
                         _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
                         _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillOpacity].op / 65536 * 100000)).ToString()); //we need the percentage of the opacity (65536 means 100%)
@@ -286,7 +286,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                                 _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
                                 _writer.WriteAttributeString("val", colorval);
-                                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity))
+                                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity) && so.OptionsByID[ShapeOptions.PropertyId.fillOpacity].op != 65536)
                                 {
                                     _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
                                     _writer.WriteAttributeString("val", alphas[i / cbElem]); //we need the percentage of the opacity (65536 means 100%)
@@ -308,7 +308,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteAttributeString("pos", "0");
                         _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
                         _writer.WriteAttributeString("val", colorval);
-                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity))
+                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity) && so.OptionsByID[ShapeOptions.PropertyId.fillOpacity].op != 65536)
                         {
                             _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
                             _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillOpacity].op / 65536 * 100000)).ToString()); //we need the percentage of the opacity (65536 means 100%)
@@ -337,7 +337,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteAttributeString("pos", "100000");
                         _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
                         _writer.WriteAttributeString("val", colorval);
-                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillBackOpacity))
+                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillBackOpacity) && so.OptionsByID[ShapeOptions.PropertyId.fillBackOpacity].op != 65536)
                         {
                             _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
                             _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillBackOpacity].op / 65536 * 100000)).ToString()); //we need the percentage of the opacity (65536 means 100%)
@@ -404,7 +404,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                     Dictionary<int, string> shadeColorsDic = new Dictionary<int, string>();
                     List<string> shadeColors = new List<string>();
-                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillShadeColors))
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillShadeColors) && so.OptionsByID[ShapeOptions.PropertyId.fillShadeColors].opComplex.Length > 0)
                     {
                         uint length = so.OptionsByID[ShapeOptions.PropertyId.fillShadeColors].op;
 
@@ -502,7 +502,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteAttributeString("pos", gspos.ToString());
                         _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
                         _writer.WriteAttributeString("val", col);
-                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity))
+                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillOpacity) && so.OptionsByID[ShapeOptions.PropertyId.fillOpacity].op != 65536)
                         {
                             _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
                             _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.fillOpacity].op / 65536 * 100000)).ToString()); //we need the percentage of the opacity (65536 means 100%)

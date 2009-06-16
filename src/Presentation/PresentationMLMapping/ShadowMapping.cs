@@ -217,7 +217,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
                         string colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.shadowColor].op, so.FirstAncestorWithType<Slide>(), so);
                         _writer.WriteAttributeString("val", colorval);
-                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.shadowOpacity))
+                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.shadowOpacity) && so.OptionsByID[ShapeOptions.PropertyId.shadowOpacity].op != 65536)
                         {
                             _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
                             _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.shadowOpacity].op / 65536 * 100000)).ToString()); //we need the percentage of the opacity (65536 means 100%)
@@ -261,7 +261,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             string colorval = "808080";
             if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.shadowColor)) colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.shadowColor].op, so.FirstAncestorWithType<Slide>(), so);
             _writer.WriteAttributeString("val", colorval);
-            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.shadowOpacity))
+            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.shadowOpacity) && so.OptionsByID[ShapeOptions.PropertyId.shadowOpacity].op != 65536)
             {
                 _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
                 _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.shadowOpacity].op / 65536 * 100000)).ToString()); //we need the percentage of the opacity (65536 means 100%)

@@ -100,6 +100,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
                 }
 
                 if (path == "ppt\\slides\\media") return "ppt\\media";
+                if (path == "ppt\\slideLayouts\\media") return "ppt\\media";
                 if (path == "ppt\\notesSlides\\media") return "ppt\\media";
                 if (path == "ppt\\slideMasters\\..\\slideLayouts") return "ppt\\slideLayouts";
                 if (path == "ppt\\slideMasters\\..\\slideLayouts\\..\\media") return "ppt\\media";
