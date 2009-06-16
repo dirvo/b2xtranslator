@@ -48,7 +48,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             Record recBs = _ctx.Doc.OfficeArtContent.DrawingGroupData.FirstChildWithType<BlipStoreContainer>();
             if (recBs != null)
+            {
                 _blipStore = (BlipStoreContainer)recBs;
+            }
         }
 
 
@@ -163,6 +165,11 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             EmuValue secondShadowOffsetY = null;
             double shadowOriginX = 0;
             double shadowOriginY = 0;
+            EmuValue viewPointX = null;
+            EmuValue viewPointY = null;
+            EmuValue viewPointZ = null;
+            double? viewPointOriginX = null;
+            double? viewPointOriginY = null;
             string[] adjValues = new string[8];
             int numberAdjValues = 0;
             uint xCoord = 0;
@@ -332,8 +339,17 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         appendValueAttribute(_fill, null, "color2", "#" + fillBackColor.SixDigitHexCode, null);
                         break;
 
+                    case ShapeOptions.PropertyId.fillAngle:
+                        FixedPointNumber fllAngl = new FixedPointNumber(entry.op);
+                        appendValueAttribute(_fill, null, "angle", fllAngl.ToAngle().ToString(), null);
+                        break;
+
                     case ShapeOptions.PropertyId.fillShadeType:
                         appendValueAttribute(_fill, null, "method", getFillMethod(entry.op), null);
+                        break;
+
+                    case ShapeOptions.PropertyId.fillShadeColors:
+                        appendValueAttribute(_fill, null, "colors", getFillColorString(entry.opComplex), null);
                         break;
 
                     case ShapeOptions.PropertyId.fillFocus:
@@ -345,8 +361,17 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         break;
 
                     case ShapeOptions.PropertyId.fillBlip:
-                        BlipStoreEntry fillBlip = (BlipStoreEntry)_blipStore.Children[(int)entry.op - 1];
-                        ImagePart fillBlipPart = copyPicture(fillBlip);
+                        ImagePart fillBlipPart = null;
+                        if (_pict != null && _pict.BlipStoreEntry != null)
+                        {
+                            // Word Art Texture
+                            //fillBlipPart = copyPicture(_pict.BlipStoreEntry);
+                        }
+                        else
+                        {
+                            BlipStoreEntry fillBlip = (BlipStoreEntry)_blipStore.Children[(int)entry.op - 1];
+                            fillBlipPart = copyPicture(fillBlip);
+                        }
                         if (fillBlipPart != null)
                         {
                             appendValueAttribute(_fill, "r", "id", fillBlipPart.RelIdToString, OpenXmlNamespaces.Relationships);
@@ -394,7 +419,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         break;
 
                     case ShapeOptions.PropertyId.shadowOpacity:
-                        appendValueAttribute(_shadow, null, "opacity", (entry.op / Math.Pow(2, 16)).ToString(), null);
+                        double shadowOpa = (entry.op / Math.Pow(2, 16));
+                        appendValueAttribute(_shadow, null, "opacity", String.Format(CultureInfo.CreateSpecificCulture("EN"), "{0:0.00}", shadowOpa), null);
                         break;
 
                     // PICTURE
@@ -425,6 +451,26 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         EmuValue backwardValue = new EmuValue((int)entry.op);
                         appendValueAttribute(_3dstyle, "backdepth", backwardValue.ToPoints().ToString());
                         break; 
+                    case ShapeOptions.PropertyId.c3DSkewAngle:
+                        FixedPointNumber skewAngle = new FixedPointNumber(entry.op);
+                        appendValueAttribute(_3dstyle, "", "skewangle", skewAngle.ToAngle().ToString(), "");
+                        break;
+                    case ShapeOptions.PropertyId.c3DXViewpoint:
+                        viewPointX = new EmuValue(new FixedPointNumber(entry.op).Integral);
+                        break;
+                    case ShapeOptions.PropertyId.c3DYViewpoint:
+                        viewPointY = new EmuValue(new FixedPointNumber(entry.op).Integral);
+                        break;
+                    case ShapeOptions.PropertyId.c3DZViewpoint:
+                        viewPointZ = new EmuValue(new FixedPointNumber(entry.op).Integral);
+                        break;
+                    case ShapeOptions.PropertyId.c3DOriginX:
+                        FixedPointNumber dOriginX = new FixedPointNumber(entry.op);
+                        viewPointOriginX = dOriginX.Integral / 65536.0;
+                        break;
+                    case ShapeOptions.PropertyId.c3DOriginY:
+                        FixedPointNumber dOriginY = new FixedPointNumber(entry.op);
+                        break;
 
                     // TEXTBOX
 
@@ -436,6 +482,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     case ShapeOptions.PropertyId.gtextUNICODE:
                         String text = Encoding.Unicode.GetString(entry.opComplex);
+                        text = text.Replace("\n", "");
                         text = text.Replace("\0", "");
                         appendValueAttribute(_textpath, "", "string", text, "");
                         break;
@@ -448,11 +495,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         GeometryTextBooleanProperties props = new GeometryTextBooleanProperties(entry.op);
                         if (props.fUsegtextFBestFit && props.gtextFBestFit)
                         {
-                            appendValueAttribute(_textpath, "", "fitpath", "t", "");
+                            appendValueAttribute(_textpath, "", "fitshape", "t", "");
                         }
                         if (props.fUsegtextFShrinkFit && props.gtextFShrinkFit)
                         {
                             appendValueAttribute(_textpath, "", "trim", "t", "");
+                        }
+                        if (props.fUsegtextFVertical && props.gtextFVertical)
+                        {
+                            appendStyleProperty(_textPathStyle, "v-rotate-letters", "t");
                         }
                         if (props.fUsegtextFKern && props.gtextFKern)
                         {
@@ -461,6 +512,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         if (props.fUsegtextFItalic && props.gtextFItalic)
                         {
                             appendStyleProperty(_textPathStyle, "font-style", "italic");
+                        }
+                        if (props.fUsegtextFBold && props.gtextFBold)
+                        {
+                            appendStyleProperty(_textPathStyle, "font-weight", "bold");
                         }
                         break;
                     
@@ -558,6 +613,45 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             {
                 appendValueAttribute(_3dstyle, "v", "ext", "view", OpenXmlNamespaces.VectorML);
                 appendValueAttribute(_3dstyle, null, "on", "t", null);
+
+                //write the viewpoint
+                if (viewPointX != null || viewPointY != null || viewPointZ != null)
+                {
+                    StringBuilder viewPoint = new StringBuilder();
+                    if (viewPointX != null)
+                    {
+                        viewPoint.Append(viewPointX.Value);
+                    }
+                    if (viewPointY != null)
+                    {
+                        viewPoint.Append(",");
+                        viewPoint.Append(viewPointY.Value);
+                    }
+                    
+                    if (viewPointZ != null)
+                    {
+                        viewPoint.Append(",");
+                        viewPoint.Append(viewPointZ.Value);
+                    }
+                    appendValueAttribute(_3dstyle, null, "viewpoint", viewPoint.ToString(), null);
+                }
+
+                // write the viewpointorigin
+                if (viewPointOriginX != null || viewPointOriginY != null)
+                {
+                    StringBuilder viewPointOrigin = new StringBuilder();
+                    if (viewPointOriginX != null)
+                    {
+                        viewPointOrigin.Append(String.Format(CultureInfo.CreateSpecificCulture("EN"), "{0:0.00}", viewPointOriginX));
+                    }
+                    if (viewPointOriginY != null)
+                    {
+                        viewPointOrigin.Append(",");
+                        viewPointOrigin.Append(String.Format(CultureInfo.CreateSpecificCulture("EN"), "{0:0.00}", viewPointOriginY));
+                    }
+                    appendValueAttribute(_3dstyle, null, "viewpointorigin", viewPointOrigin.ToString(), null);
+                }
+
                 _3dstyle.WriteTo(_writer);
             }
 
@@ -626,6 +720,30 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             //write the shape
             _writer.WriteEndElement();
             _writer.Flush();
+        }
+
+        private string getFillColorString(byte[] p)
+        {
+            StringBuilder result = new StringBuilder();
+
+            // parse the IMsoArray
+            UInt16 nElems = System.BitConverter.ToUInt16(p, 0);
+            UInt16 nElemsAlloc = System.BitConverter.ToUInt16(p, 2);
+            UInt16 cbElem = System.BitConverter.ToUInt16(p, 4);
+            for (int i = 0; i < nElems; i++)
+            {
+                int pos = 6 + i * cbElem;
+
+                RGBColor color = new RGBColor(System.BitConverter.ToInt32(p, pos), RGBColor.ByteOrder.RedFirst);
+                Int32 colorPos = System.BitConverter.ToInt32(p, pos + 4);
+
+                result.Append(colorPos);
+                result.Append("f #");
+                result.Append(color.SixDigitHexCode);
+                result.Append(";");
+            }
+
+            return result.ToString();
         }
 
         private string parsePath(List<ShapeOptions.OptionEntry> options)
@@ -774,7 +892,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private StringBuilder buildStyle(Shape shape, ChildAnchor anchor, List<ShapeOptions.OptionEntry> options, int zIndex)
         {
             StringBuilder style = new StringBuilder();
-            appendStyleProperty(style, "position", "absolute");
 
             //don't append the dimension info to lines, 
             // because they have "from" and "to" attributes to decline the dimension
@@ -1179,6 +1296,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //POSITIONING
 
                     case ShapeOptions.PropertyId.posh:
+                        appendStyleProperty(style, "position", "absolute");
                         appendStyleProperty(
                             style,
                             "mso-position-horizontal",

@@ -46,13 +46,26 @@ namespace DIaLOGIKa.b2xtranslator.Tools
     /// </summary>
     public class FixedPointNumber
     {
-        private UInt16 integral;
-        private UInt16 fractional;
+        public UInt16 Integral;
+        public UInt16 Fractional;
 
         public FixedPointNumber(UInt16 integral, UInt16 fractional)
         {
-            this.integral = integral;
-            this.fractional = fractional;
+            this.Integral = integral;
+            this.Fractional = fractional;
+        }
+
+        public FixedPointNumber(UInt32 value)
+        {
+            byte[] bytes = System.BitConverter.GetBytes(value);
+            this.Integral = System.BitConverter.ToUInt16(bytes, 0);
+            this.Fractional = System.BitConverter.ToUInt16(bytes, 2);
+        }
+
+        public FixedPointNumber(byte[] bytes)
+        {
+            this.Integral = System.BitConverter.ToUInt16(bytes, 0);
+            this.Fractional = System.BitConverter.ToUInt16(bytes, 2);
         }
 
         //public FixedPointNumber(IStreamReader reader)
@@ -61,11 +74,29 @@ namespace DIaLOGIKa.b2xtranslator.Tools
         //    this.fractional = reader.ReadUInt16();
         //}
 
+        public double ToAngle()
+        {
+            if (this.Fractional != 0)
+            {
+                // negative angle
+                return (this.Fractional - 65536.0);
+            }
+            else if (this.Integral != 0)
+            {
+                //positive angle
+                return (65536.0 - this.Integral);
+            }
+            else
+            {
+                return 0.0;
+            }
+        }
+
         public double Value
         {
             get
             {
-                return (double)this.integral + (double)this.fractional / 65536.0d;
+                return (double)this.Integral + (double)this.Fractional / 65536.0d;
             }
         }
     }

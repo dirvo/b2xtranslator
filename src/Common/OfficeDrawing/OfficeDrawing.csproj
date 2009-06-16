@@ -47,6 +47,10 @@
     <Compile Include="ClientData.cs" />
     <Compile Include="ClientTextbox.cs" />
     <Compile Include="BlipBooleanProperties.cs" />
+    <Compile Include="Shapetypes\TextArchUpPour.cs" />
+    <Compile Include="Shapetypes\TextCirclePour.cs" />
+    <Compile Include="Shapetypes\TextDeflateInflate.cs" />
+    <Compile Include="Shapetypes\TextRingInside.cs" />
     <Compile Include="ThreeDObjectBooleanProperties.cs" />
     <Compile Include="ThreeDStyleBooleanProperties.cs" />
     <Compile Include="Shapetypes\TextArchUpCurve.cs" />

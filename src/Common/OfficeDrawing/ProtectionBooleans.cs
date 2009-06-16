@@ -29,6 +29,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
         public bool fUsefLockRotation;
         public bool fUsefLockAgainstUngrouping;
 
+        public ProtectionBooleans()
+        {
+        }
+
         public ProtectionBooleans(UInt32 entryOperand)
         {
             fLockAgainstGrouping = Utils.BitmaskToBool(entryOperand, 0x1);

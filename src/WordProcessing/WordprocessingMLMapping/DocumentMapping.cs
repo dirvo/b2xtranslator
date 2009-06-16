@@ -927,15 +927,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         _writer.WriteEndElement();
                         _writer.WriteStartElement("w", "pict", OpenXmlNamespaces.WordprocessingML);
 
-                        if (pict.BlipStoreEntry != null)
-                        {
-                            // it's a normal picture
-                            pict.Convert(new VMLPictureMapping(_writer, _targetPart, false));
-                        }
-                        else
+                        if (isWordArtShape(pict.ShapeContainer))
                         {
                             // a PICT without a BSE can stand for a WordArt Shape
                             pict.ShapeContainer.Convert(new VMLShapeMapping(_writer, _targetPart, null, pict, _ctx));
+                        }
+                        else
+                        {
+                            // it's a normal picture
+                            pict.Convert(new VMLPictureMapping(_writer, _targetPart, false));
                         }
 
                         _writer.WriteEndElement();
@@ -1079,6 +1079,21 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         #endregion
 
         #region HelpFunctions
+
+        protected bool isWordArtShape(ShapeContainer shape)
+        {
+            bool result = false;
+            List<ShapeOptions.OptionEntry> options = shape.ExtractOptions();
+            foreach (ShapeOptions.OptionEntry entry in options)
+            {
+                if (entry.pid == ShapeOptions.PropertyId.gtextUNICODE)
+                {
+                    result = true;
+                    break;
+                }
+            }
+            return result;
+        }
 
         /// <summary>
         /// Splits a list of characters into several lists

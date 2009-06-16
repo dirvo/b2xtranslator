@@ -74,6 +74,10 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
 
         public string ConnectorType;
 
+        public bool PreferRelative;
+
+        public bool ExtrusionOk = false;
+
         /// <summary>
         /// This section specifies the properties of each adjust handle on the shape. <br/>
         /// One adjust handle is specified per line. <br/>
@@ -131,7 +135,11 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
         /// </summary>
         public ProtectionBooleans Lock = new ProtectionBooleans(0);
 
+        public bool LockShapeType;
+
         public bool TextPath;
+
+        public bool TextKerning;
 
         public UInt32 TypeCode
         {

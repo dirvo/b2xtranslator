@@ -64,6 +64,16 @@ namespace DIaLOGIKa.b2xtranslator.Tools
             return this.Value / 635;
         }
 
+        public double ToCm()
+        {
+            return this.Value / 36000.0;
+        }
+
+        public double ToMm()
+        {
+            return ToCm() * 10.0;
+        }
+
         /// <summary>
         /// returns the original value as string 
         /// </summary>

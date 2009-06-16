@@ -51,7 +51,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 // always write this attribute 
                 // if this causes regression bugs, remove it.
                 // this was inserted due to a bug in Word 2007 (sf.net item: 2256373)
-                _writer.WriteAttributeString("o", "preferrelative",OpenXmlNamespaces.Office, "t");
+                if(shapeType.PreferRelative)
+                {
+                    _writer.WriteAttributeString("o", "preferrelative",OpenXmlNamespaces.Office, "t");
+                }
 
                 //Default fill / stroke
                 if (shapeType.Filled == false)
@@ -64,12 +67,12 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 }
 
                 //stroke
-                _writer.WriteStartElement("v", "stroke", OpenXmlNamespaces.VectorML);
                 if (shapeType.Joins != ShapeType.JoinStyle.none)
                 {
+                    _writer.WriteStartElement("v", "stroke", OpenXmlNamespaces.VectorML);
                     _writer.WriteAttributeString("joinstyle", shapeType.Joins.ToString());
+                    _writer.WriteEndElement();
                 }
-                _writer.WriteEndElement();
 
                 //Formulas
                 if (shapeType.Formulas != null && shapeType.Formulas.Count > 0)
@@ -123,7 +126,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 // always write this attribute 
                 // if this causes regression bugs, remove it.
                 // this was inserted due to a bug in Word 2007 (sf.net item: 2256373)
-                _writer.WriteAttributeString("o", "extrusionok", OpenXmlNamespaces.Office, "f");
+                if (shapeType.ExtrusionOk == false)
+                {
+                    _writer.WriteAttributeString("o", "extrusionok", OpenXmlNamespaces.Office, "f");
+                }
 
                 _writer.WriteEndElement();
 
@@ -131,6 +137,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 if (shapeType.Lock.fUsefLockAspectRatio && shapeType.Lock.fLockAspectRatio)
                 {
                     appendValueAttribute(_lock, null, "aspectratio", "t", null);
+                }
+                if (shapeType.Lock.fUsefLockText && shapeType.Lock.fLockText)
+                {
+                    appendValueAttribute(_lock, "v", "ext", "edit", OpenXmlNamespaces.VectorML);
+                    appendValueAttribute(_lock, null, "text", "t", null);
+                }
+                if (shapeType.LockShapeType)
+                {
+                    appendValueAttribute(_lock, null, "shapetype", "t", null);
                 }
                 if (_lock.Attributes.Count > 1)
                 {
@@ -142,7 +157,16 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 {
                     _writer.WriteStartElement("v", "textpath", OpenXmlNamespaces.VectorML);
                     _writer.WriteAttributeString("on", "t");
-                    _writer.WriteAttributeString("fitshape", "t");
+                    StringBuilder textPathStyle = new StringBuilder();
+                    if (shapeType.TextKerning)
+                    {
+                        textPathStyle.Append("v-text-kern:t;");
+                    }
+                    if (textPathStyle.Capacity > 0)
+                    {
+                        _writer.WriteAttributeString("style", textPathStyle.ToString());
+                    }
+                    _writer.WriteAttributeString("fitpath", "t");
                     _writer.WriteEndElement();
                 }
 

@@ -4,23 +4,22 @@ using System.Text;
 
 namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
 {
-    [OfficeShapeTypeAttribute(144)]
-    public class TextArchUpCurve : ShapeType
+    [OfficeShapeTypeAttribute(148)]
+    public class TextArchUpPour : ShapeType
     {
-        public TextArchUpCurve()
+        public TextArchUpPour()
         {
             this.TextPath = true;
             this.Joins = JoinStyle.none;
-            this.AdjustmentValues = "11796480";
-            this.Path = "al10800,10800,10800,10800@2@14e";
-            this.ConnectorLocations = "10800,@22;@19,@20;@21,@20";
-            this.PreferRelative = false;
-            this.TextKerning = true;
             this.ExtrusionOk = true;
             this.Lock = new ProtectionBooleans();
             this.Lock.fUsefLockText = true;
             this.Lock.fLockText = true;
             this.LockShapeType = true;
+
+            this.AdjustmentValues = "11796480,5400";
+            this.Path = "al10800,10800,10800,10800@2@14al10800,10800@0@0@2@14e";
+            this.ConnectorLocations = "10800,@27;@22,@23;10800,@26;@24,@23";
 
             this.Formulas = new List<string>();
             this.Formulas.Add("val #1");
@@ -40,18 +39,23 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
             this.Formulas.Add("if @12 @13 @12");
             this.Formulas.Add("sum 0 0 @14");
             this.Formulas.Add("val 10800");
-            this.Formulas.Add("cos 10800 #0");
-            this.Formulas.Add("sin 10800 #0");
-            this.Formulas.Add("sum @17 10800 0");
-            this.Formulas.Add("sum @18 10800 0");
-            this.Formulas.Add("sum 10800 0 @17");
+            this.Formulas.Add("sum 10800 0 #1");
+            this.Formulas.Add("prod #1 1 2");
+            this.Formulas.Add("sum @18 5400 0");
+            this.Formulas.Add("cos @19 #0");
+            this.Formulas.Add("sin @19 #0");
+            this.Formulas.Add("sum @20 10800 0");
+            this.Formulas.Add("sum @21 10800 0");
+            this.Formulas.Add("sum 10800 0 @20");
+            this.Formulas.Add("sum #1 10800 0");
+            this.Formulas.Add("if @9 @17 @25");
             this.Formulas.Add("if @9 0 21600");
-            this.Formulas.Add("sum 10800 0 @18");
 
             this.Handles = new List<Handle>();
             Handle h1 = new Handle();
-            h1.polar = "10800,10800";
-            h1.position = "@16,#0";
+            h1.position="#1,#0";
+            h1.polar="10800,10800";
+            h1.radiusrange = "0,10800";
             this.Handles.Add(h1);
         }
     }

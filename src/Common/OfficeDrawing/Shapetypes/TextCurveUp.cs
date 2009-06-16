@@ -11,7 +11,6 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing.Shapetypes
         {
             this.TextPath = true;
             this.Joins = JoinStyle.none;
-
             this.AdjustmentValues = "9931";
             this.Path = "m0@0c7200@2,14400@1,21600,m0@5c7200@6,14400@6,21600@5e";
             this.ConnectorLocations = "10800,@10;0,@9;10800,21600;21600,@8";
