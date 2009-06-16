@@ -66,7 +66,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// A Plex containing all section descriptors
         /// </summary>
-        public Plex SectionPlex;
+        public Plex<SectionDescriptor> SectionPlex;
 
         /// <summary>
         /// Contains the names of all author who revised something in the document
@@ -122,7 +122,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// A plex with all ATRDPre10 structs
         /// </summary>
-        public Plex AnnotationsReferencePlex;
+        public Plex<AnnotationReferenceDescriptor> AnnotationsReferencePlex;
 
         public AnnotationOwnerList AnnotationOwners;
 
@@ -145,32 +145,35 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// <summary>
         /// 
         /// </summary>
-        public Plex OfficeDrawingPlex;
+        public Plex<FileShapeAddress> OfficeDrawingPlex;
 
         /// <summary>
         /// 
         /// </summary>
-        public Plex OfficeDrawingPlexHeader;
+        public Plex<FileShapeAddress> OfficeDrawingPlexHeader;
 
         /// <summary>
         /// Each character position specifies the beginning of a range of text 
         /// that constitutes the contents of an AutoText item.
         /// </summary>
-        public Plex AutoTextPlex;
+        public Plex<Exception> AutoTextPlex;
+
+        public Plex<Int16> EndnoteReferencePlex;
+        public Plex<Int16> FootnoteReferencePlex;
 
         /// <summary>
         /// Describes the breaks inside the textbox subdocument
         /// </summary>
-        public Plex TextboxBreakPlex;
+        public Plex<BreakDescriptor> TextboxBreakPlex;
 
         /// <summary>
         /// Describes the breaks inside the header textbox subdocument
         /// </summary>
-        public Plex TextboxBreakPlexHeader;
+        public Plex<BreakDescriptor> TextboxBreakPlexHeader;
 
-        public Plex BookmarkStartPlex;
+        public Plex<BookmarkFirst> BookmarkStartPlex;
 
-        public Plex BookmarkEndPlex;
+        public Plex<Exception> BookmarkEndPlex;
 
         /// <summary>
         /// The DocumentProperties of the word document
@@ -261,15 +264,18 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             //this.ProtectionUsers = new StringTable(typeof(String), this.TableStream, this.FIB.fcSttbProtUser, this.FIB.lcbSttbProtUser);
 
             //Read all needed PLCFs
-            this.AnnotationsReferencePlex = new Plex(typeof(AnnotationReferenceDescriptor), 30, this.TableStream, this.FIB.fcPlcfandRef, this.FIB.lcbPlcfandRef);
-            this.TextboxBreakPlex = new Plex(typeof(BreakDescriptor), 6, this.TableStream, this.FIB.fcPlcfTxbxBkd, this.FIB.lcbPlcfTxbxBkd);
-            this.TextboxBreakPlexHeader = new Plex(typeof(BreakDescriptor), 6, this.TableStream, this.FIB.fcPlcfTxbxHdrBkd, this.FIB.lcbPlcfTxbxHdrBkd);
-            this.OfficeDrawingPlex = new Plex(typeof(FileShapeAddress), 26, this.TableStream, this.FIB.fcPlcSpaMom, this.FIB.lcbPlcSpaMom);
-            this.OfficeDrawingPlexHeader = new Plex(typeof(FileShapeAddress), 26, this.TableStream, this.FIB.fcPlcSpaHdr, this.FIB.lcbPlcSpaHdr);
-            this.SectionPlex = new Plex(typeof(SectionDescriptor), 12, this.TableStream, this.FIB.fcPlcfSed, this.FIB.lcbPlcfSed);
-            this.BookmarkStartPlex = new Plex(typeof(BookmarkFirst), 4, this.TableStream, this.FIB.fcPlcfBkf, this.FIB.lcbPlcfBkf);
-            this.BookmarkEndPlex = new Plex(null, 0, this.TableStream, this.FIB.fcPlcfBkl, this.FIB.lcbPlcfBkl);
-            this.AutoTextPlex = new Plex(null, 0, this.TableStream, this.FIB.fcPlcfGlsy, this.FIB.lcbPlcfGlsy);
+            this.AnnotationsReferencePlex = new Plex<AnnotationReferenceDescriptor>(30, this.TableStream, this.FIB.fcPlcfandRef, this.FIB.lcbPlcfandRef);
+            this.TextboxBreakPlex = new Plex<BreakDescriptor>(6, this.TableStream, this.FIB.fcPlcfTxbxBkd, this.FIB.lcbPlcfTxbxBkd);
+            this.TextboxBreakPlexHeader = new Plex<BreakDescriptor>(6, this.TableStream, this.FIB.fcPlcfTxbxHdrBkd, this.FIB.lcbPlcfTxbxHdrBkd);
+            this.OfficeDrawingPlex = new Plex<FileShapeAddress>(26, this.TableStream, this.FIB.fcPlcSpaMom, this.FIB.lcbPlcSpaMom);
+            this.OfficeDrawingPlexHeader = new Plex<FileShapeAddress>(26, this.TableStream, this.FIB.fcPlcSpaHdr, this.FIB.lcbPlcSpaHdr);
+            this.SectionPlex = new Plex<SectionDescriptor>(12, this.TableStream, this.FIB.fcPlcfSed, this.FIB.lcbPlcfSed);
+            this.BookmarkStartPlex = new Plex<BookmarkFirst>(4, this.TableStream, this.FIB.fcPlcfBkf, this.FIB.lcbPlcfBkf);
+            this.EndnoteReferencePlex = new Plex<Int16>( 2, this.TableStream, this.FIB.fcPlcfendRef, this.FIB.lcbPlcfendRef);
+            this.FootnoteReferencePlex = new Plex<Int16>(2, this.TableStream, this.FIB.fcPlcffndRef, this.FIB.lcbPlcffndRef);
+            // PLCFs without types
+            this.BookmarkEndPlex = new Plex<Exception>(0, this.TableStream, this.FIB.fcPlcfBkl, this.FIB.lcbPlcfBkl);
+            this.AutoTextPlex = new Plex<Exception>(0, this.TableStream, this.FIB.fcPlcfGlsy, this.FIB.lcbPlcfGlsy);
 
             //read the FKPs
             this.AllPapxFkps = FormattedDiskPagePAPX.GetAllPAPXFKPs(this.FIB, this.WordDocumentStream, this.TableStream, this.DataStream);

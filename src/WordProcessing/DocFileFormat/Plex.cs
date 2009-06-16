@@ -33,14 +33,14 @@ using System.Reflection;
 
 namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 {
-    public class Plex
+    public class Plex<T>
     {
         protected const int CP_LENGTH = 4;
 
         public List<Int32> CharacterPositions;
-        public List<ByteStructure> Elements;
+        public List<T> Elements;
 
-        public Plex(Type elementType, int structureLength, VirtualStream tableStream, UInt32 fc, UInt32 lcb)
+        public Plex(int structureLength, VirtualStream tableStream, UInt32 fc, UInt32 lcb)
         {
             tableStream.Seek((long)fc, System.IO.SeekOrigin.Begin);
             VirtualStreamReader reader = new VirtualStreamReader(tableStream);
@@ -65,16 +65,29 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             }
 
             //read the n structs
-            if (elementType != null && structureLength > 0)
+            this.Elements = new List<T>();
+            Type genericType = typeof(T);
+            if (genericType == typeof(Int16))
             {
-                this.Elements = new List<ByteStructure>();
+                this.Elements = new List<T>();
                 for (int i = 0; i < n; i++)
                 {
-                    ConstructorInfo constructor = elementType.GetConstructor(new Type[] { typeof(VirtualStreamReader), typeof(int) });
-                    ByteStructure st = (ByteStructure)constructor.Invoke(new object[] { reader, structureLength });
-                    this.Elements.Add(st);
+                    Int16 value = reader.ReadInt16();
+                    T genericValue = (T)Convert.ChangeType(value, typeof(T));
+                    this.Elements.Add(genericValue);
                 }
             }
+            else if(structureLength > 0)
+            {
+                for (int i = 0; i < n; i++)
+                {
+                    ConstructorInfo constructor = genericType.GetConstructor(new Type[] { typeof(VirtualStreamReader), typeof(int) });
+                    Object value = constructor.Invoke(new object[] { reader, structureLength });
+                    T genericValue = (T)Convert.ChangeType(value, typeof(T));
+                    this.Elements.Add(genericValue);
+                }
+            }
+            
         }
 
         /// <summary>
@@ -82,7 +95,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         /// <param name="cp">The character position</param>
         /// <returns>The matching struct</returns>
-        public ByteStructure GetStruct(Int32 cp)
+        public T GetStruct(Int32 cp)
         {
             int index = -1;
             for (int i = 0; i < this.CharacterPositions.Count; i++)
@@ -100,7 +113,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             }
             else
             {
-                return null;
+                return default(T);
             }
         }
     }

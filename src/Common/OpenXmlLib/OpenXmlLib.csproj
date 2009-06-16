@@ -65,6 +65,7 @@
     <Compile Include="CorePropertiesPart.cs" />
     <Compile Include="CustomXmlPart.cs" />
     <Compile Include="CustomXmlPropertiesPart.cs" />
+    <Compile Include="WordprocessingML\EndnotesPart.cs" />
     <Compile Include="WordprocessingML\FontTablePart.cs" />
     <Compile Include="WordprocessingML\FooterPart.cs" />
     <Compile Include="WordprocessingML\FootnotesPart.cs" />

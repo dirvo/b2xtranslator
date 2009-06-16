@@ -124,6 +124,9 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 //write the footnotes
                 doc.Convert(new FootnotesMapping(context));
 
+                //write the endnotes
+                doc.Convert(new EndnotesMapping(context));
+
                 //write the comments
                 doc.Convert(new CommentsMapping(context));
 

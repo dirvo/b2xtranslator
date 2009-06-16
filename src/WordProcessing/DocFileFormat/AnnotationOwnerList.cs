@@ -14,7 +14,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             while (tableStream.Position < (fib.fcGrpXstAtnOwners + fib.lcbGrpXstAtnOwners))
             {
-                this.Add(Utils.ReadXstz(tableStream));
+                this.Add(Utils.ReadXst(tableStream));
             }
         }
     }

@@ -377,5 +377,18 @@ namespace DIaLOGIKa.b2xtranslator.Tools
 
             return result.ToString();
         }
+
+        public static String GetWritableString(String s)
+        {
+            StringBuilder result = new StringBuilder();
+            foreach (char c in s)
+            {
+                if ((int)c >= 0x20)
+                {
+                    result.Append(c);
+                }
+            }
+            return result.ToString();
+        }
     }
 }

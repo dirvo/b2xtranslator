@@ -53,6 +53,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         protected int _skipRuns = 0;
         protected int _sectionNr = 0;
         protected int _footnoteNr = 0;
+        protected int _endnoteNr = 0;
         protected int _commentNr = 0;
         protected bool _writeInstrText = false;
         protected ContentPart _targetPart;
@@ -946,18 +947,36 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //close previous w:t ...
                     _writer.WriteEndElement();
 
-                    if (this.GetType() != typeof(FootnotesMapping))
+                    if (this.GetType() != typeof(FootnotesMapping) && this.GetType() != typeof(EndnotesMapping))
                     {
-                        _writer.WriteStartElement("w", "footnoteReference", OpenXmlNamespaces.WordprocessingML);
-                        _writer.WriteAttributeString("w", "id", OpenXmlNamespaces.WordprocessingML, _footnoteNr.ToString());
-                        _writer.WriteEndElement();
+                        //it's in the document
+                        if (this._doc.FootnoteReferencePlex.CharacterPositions.Contains(cp))
+                        {
+                            _writer.WriteStartElement("w", "footnoteReference", OpenXmlNamespaces.WordprocessingML);
+                            _writer.WriteAttributeString("w", "id", OpenXmlNamespaces.WordprocessingML, _footnoteNr.ToString());
+                            _writer.WriteEndElement();
+                            _footnoteNr++;
+                        }
+                        else if (this._doc.EndnoteReferencePlex.CharacterPositions.Contains(cp))
+                        {
+                            _writer.WriteStartElement("w", "endnoteReference", OpenXmlNamespaces.WordprocessingML);
+                            _writer.WriteAttributeString("w", "id", OpenXmlNamespaces.WordprocessingML, _endnoteNr.ToString());
+                            _writer.WriteEndElement();
+                            _endnoteNr++;
+                        }
                     }
                     else
                     {
-                        _writer.WriteElementString("w", "footnoteRef", OpenXmlNamespaces.WordprocessingML, "");
+                        // it's not the document, write the short ref
+                        if(this.GetType() != typeof(FootnotesMapping))
+                        {
+                            _writer.WriteElementString("w", "footnoteRef", OpenXmlNamespaces.WordprocessingML, "");
+                        }
+                        if (this.GetType() != typeof(EndnotesMapping))
+                        {
+                            _writer.WriteElementString("w", "endnoteRef", OpenXmlNamespaces.WordprocessingML, "");
+                        }
                     }
-
-                    _footnoteNr++;
 
                     writeTextStart(textType);
                 }

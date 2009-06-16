@@ -49,6 +49,7 @@
     <Compile Include="Converter.cs" />
     <Compile Include="DateMapping.cs" />
     <Compile Include="ApplicationPropertiesMapping.cs" />
+    <Compile Include="EndnotesMapping.cs" />
     <Compile Include="FormFieldDataMapping.cs" />
     <Compile Include="Field.cs" />
     <Compile Include="FontTableMapping.cs" />

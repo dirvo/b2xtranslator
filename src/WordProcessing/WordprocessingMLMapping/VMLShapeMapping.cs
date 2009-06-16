@@ -405,7 +405,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
                     case ShapeOptions.PropertyId.pibName:
                         string name = Encoding.Unicode.GetString(entry.opComplex);
-                        name = name.Substring(0, name.Length - 1);
+                        name = Utils.GetWritableString(name.Substring(0, name.Length - 1));
                         appendValueAttribute(_imagedata, "o", "title", name, OpenXmlNamespaces.Office);
                         break;
 

@@ -58,6 +58,18 @@
         "Entry"
         {
         "MsmKey" = "8:_8358AF47DF1DD54E0C53A6DDFA241B23"
+        "OwnerKey" = "8:_DC9402D7A386B5A9008CE6F4AB8ACFD7"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8358AF47DF1DD54E0C53A6DDFA241B23"
+        "OwnerKey" = "8:_A9480C79C3831F11E410F33C18BF9458"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8358AF47DF1DD54E0C53A6DDFA241B23"
         "OwnerKey" = "8:_E36099495ABCC18A2E343E0D2F4E8367"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -166,6 +178,12 @@
         "Entry"
         {
         "MsmKey" = "8:_B59E07FEFDB752940FD987B496301859"
+        "OwnerKey" = "8:_F61B7BB8746ED992ED6AE040F9DA4B7C"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B59E07FEFDB752940FD987B496301859"
         "OwnerKey" = "8:_72C04B73685A44358E3CF54DDD93CFED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -221,6 +239,12 @@
         {
         "MsmKey" = "8:_BC963764E95D5365FAA103AD8226177B"
         "OwnerKey" = "8:_DC9402D7A386B5A9008CE6F4AB8ACFD7"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BC963764E95D5365FAA103AD8226177B"
+        "OwnerKey" = "8:_A9480C79C3831F11E410F33C18BF9458"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -298,6 +322,12 @@
         "Entry"
         {
         "MsmKey" = "8:_F263277A2D46A88EF5C0196B98971B5B"
+        "OwnerKey" = "8:_F61B7BB8746ED992ED6AE040F9DA4B7C"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F263277A2D46A88EF5C0196B98971B5B"
         "OwnerKey" = "8:_72C04B73685A44358E3CF54DDD93CFED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -364,6 +394,12 @@
         "Entry"
         {
         "MsmKey" = "8:_F5D5C84C6D373A4A3C144659E531C645"
+        "OwnerKey" = "8:_F61B7BB8746ED992ED6AE040F9DA4B7C"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F5D5C84C6D373A4A3C144659E531C645"
         "OwnerKey" = "8:_72C04B73685A44358E3CF54DDD93CFED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -399,6 +435,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_F61B7BB8746ED992ED6AE040F9DA4B7C"
+        "OwnerKey" = "8:_72C04B73685A44358E3CF54DDD93CFED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_FD617B3444A0C930624376E23D7467C0"
         "OwnerKey" = "8:_2D72D07F6CBB4845BA8090BDC63F17E6"
         "MsmSig" = "8:_UNDEFINED"
@@ -425,6 +467,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_A9480C79C3831F11E410F33C18BF9458"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_F61B7BB8746ED992ED6AE040F9DA4B7C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1108,6 +1156,37 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_F61B7BB8746ED992ED6AE040F9DA4B7C"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:DIaLOGIKa.b2xtranslator.OfficeDrawing, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_F61B7BB8746ED992ED6AE040F9DA4B7C"
+                    {
+                    "Name" = "8:DIaLOGIKa.b2xtranslator.OfficeDrawing.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:DIaLOGIKa.b2xtranslator.OfficeDrawing.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_5EB118D7EC5A44419EC1F1ECCBECF1EC"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_FD617B3444A0C930624376E23D7467C0"
             {
             "AssemblyRegister" = "3:1"
@@ -1195,14 +1274,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:b2xtranslator"
-        "ProductCode" = "8:{4A822275-D6A3-48F6-96B7-FE162B4B78B5}"
-        "PackageCode" = "8:{3DBCAF81-9ABA-40C8-8D58-1808EAA761EC}"
+        "ProductCode" = "8:{C5B27C1A-7E4B-4F80-8F03-89459E078A67}"
+        "PackageCode" = "8:{1E3A2912-D414-4254-A9F3-056EA8B64E8A}"
         "UpgradeCode" = "8:{E68E473D-387B-4BE5-A100-65E99C11CF7A}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:3.3.478"
+        "ProductVersion" = "8:3.4.606"
         "Manufacturer" = "8:DIaLOGIKa"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
