@@ -68,35 +68,32 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
 
         public void DoTheMagic()
         {
-            StructuredStorageReader reader = null;
-            StreamWriter sw = null;
             try
             {
-                reader = new StructuredStorageReader(this.Options.InputDocument);
-                IStreamReader workbookReader = new VirtualStreamReader(reader.GetStream("Workbook"));
+                using (StructuredStorageReader reader = new StructuredStorageReader(this.Options.InputDocument))
+                {
+                    IStreamReader workbookReader = new VirtualStreamReader(reader.GetStream("Workbook"));
 
-                if (this.Options.Mode == BiffViewerMode.File)
-                {
-                    sw = File.CreateText(this.Options.OutputFileName);
-                }
-                else
-                {
-                    sw = new StreamWriter(Console.OpenStandardOutput());
-                }
-                sw.AutoFlush = true;
+                    using (StreamWriter sw = this.Options.Mode == BiffViewerMode.File 
+                        ? File.CreateText(this.Options.OutputFileName) 
+                        : new StreamWriter(Console.OpenStandardOutput()))
+                    {
+                        sw.AutoFlush = true;
 
-                if (this.Options.PrintTextOnly)
-                {
-                    PrintText(sw, workbookReader);
-                }
-                else
-                {
-                    PrintHtml(sw, workbookReader);
-                }
+                        if (this.Options.PrintTextOnly)
+                        {
+                            PrintText(sw, workbookReader);
+                        }
+                        else
+                        {
+                            PrintHtml(sw, workbookReader);
+                        }
 
-                if (!_isCancelled && this.Options.ShowInBrowser && this.Options.Mode == BiffViewerMode.File)
-                {
-                    Util.VisitLink(this.Options.OutputFileName);
+                        if (!_isCancelled && this.Options.ShowInBrowser && this.Options.Mode == BiffViewerMode.File)
+                        {
+                            Util.VisitLink(this.Options.OutputFileName);
+                        }
+                    }
                 }
             }
             catch (MagicNumberException ex)
@@ -119,17 +116,6 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
                 else
                 {
                     Console.WriteLine(ex.ToString());
-                }
-            }
-            finally
-            {
-                if (reader != null)
-                {
-                    reader.Close();
-                }
-                if (sw != null)
-                {
-                    sw.Close();
                 }
             }
         }
@@ -196,6 +182,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
         protected void PrintHtml(StreamWriter sw, IStreamReader workbookReader)
         {
             BiffHeader bh;
+            int indentLevel = 0;
 
             Uri baseUrl = new Uri(new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName);
 
@@ -204,7 +191,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             sw.WriteLine("<title>" + this.Options.InputDocument + "</title>");
             sw.WriteLine("<link href=\"style.css\" rel=\"stylesheet\" type=\"text/css\">");
             sw.WriteLine("<style>");
-            sw.WriteLine("    td { font-family: Monospace, Courier; vertical-align: top; border-top: 1px solid black;  }");
+            sw.WriteLine("    td { font-family: Monospace, Courier; vertical-align: top; border-top: 1px solid black; padding-left: 2px; padding-right: 2px }");
             sw.WriteLine("    table { border: 1px solid black; empty-cells:show; border-collapse:collapse}");
             sw.WriteLine("</style>");
             sw.WriteLine("</head>");
@@ -215,6 +202,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             {
                 while (workbookReader.BaseStream.Position < workbookReader.BaseStream.Length)
                 {
+                    long offset = workbookReader.BaseStream.Position;
+                    
                     bh.id = (RecordType)workbookReader.ReadUInt16();
                     bh.length = workbookReader.ReadUInt16();
 
@@ -228,39 +217,76 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
                         workbookReader.BaseStream.Seek(-bh.length, System.IO.SeekOrigin.Current);
                     }
 
+                    if (bh.id == RecordType.Begin
+                        || bh.id == RecordType.StartObject
+                        || bh.id == RecordType.StartBlock)
+                    {
+                        indentLevel++;
+                    }
+                    if (bh.id == RecordType.End
+                        || bh.id == RecordType.EndObject
+                        || bh.id == RecordType.EndBlock)
+                    {
+                        indentLevel--;
+                    }
+
                     XlsFileFormat.RecordType id = (XlsFileFormat.RecordType)bh.id;
                     sw.WriteLine("<tr>");
-                    sw.WriteLine("<td>");
-                    byte[] buffer = workbookReader.ReadBytes(bh.length);
-                    
-                    string url = string.Format("{0}/xlsspec/{1}.html", baseUrl, id);
-                    Uri uri = new Uri(url);
-                    if (!File.Exists(uri.LocalPath))
                     {
-                        // unspecified record id
-                        url = string.Format("{0}/xlsspec/404.html", baseUrl);
+                        byte[] buffer = workbookReader.ReadBytes(bh.length);
+
+                        sw.WriteLine("<td>");
+                        {
+                            string url = string.Format("{0}/xlsspec/{1}.html", baseUrl, id);
+                            Uri uri = new Uri(url);
+                            if (!File.Exists(uri.LocalPath))
+                            {
+                                // unspecified record id
+                                url = string.Format("{0}/xlsspec/404.html", baseUrl);
+                            }
+
+                            // write record type
+                            sw.Write("BIFF ");
+                            for (int i = 0; i < 4*indentLevel; i++)
+                            {
+                                sw.Write("&nbsp;");
+                            }
+                            sw.WriteLine("<a href=\"{0}\">{1}</a> {2} (0x{3:X02})", url, id, documentType, (int)bh.id);
+                        }
+                        sw.WriteLine("</td>");
+
+                        // offset
+                        sw.WriteLine("<td>");
+                        {
+                            sw.WriteLine("0x{0:X04}", offset);
+                        }
+                        sw.WriteLine("</td>");
+
+                        // record length
+                        sw.WriteLine("<td>");
+                        {
+                            sw.WriteLine("0x{0:X02}", bh.length);
+                        }
+                        sw.WriteLine("</td>");
+
+                        // raw data
+                        sw.WriteLine("<td>");
+                        {
+                            //Dump(buffer);
+                            int count = 0;
+                            foreach (byte b in buffer)
+                            {
+                                sw.Write("{0:X02}&nbsp;", b);
+                                count++;
+                                if (count % 16 == 0 && count < buffer.Length)
+                                    sw.Write("</br>");
+                                else if (count % 8 == 0 && count < buffer.Length)
+                                    sw.Write("&nbsp;");
+                            }
+                        }
+                        sw.Write("</td>");
                     }
-
-                    // write record type
-                    sw.WriteLine("BIFF <a href=\"{0}\">{1}</a> {2} ({3:X02}h)", url, id, documentType, (int)bh.id);
-                    sw.WriteLine("</td><td>");
-                    sw.WriteLine("{0}", bh.length);
-
-                    sw.WriteLine("</td><td>");
-
-
-                    //Dump(buffer);
-                    int count = 0;
-                    foreach (byte b in buffer)
-                    {
-                        sw.Write("{0:X02}&nbsp;", b);
-                        count++;
-                        if (count % 16 == 0 && count < buffer.Length)
-                            sw.Write("</br>");
-                        else if (count % 8 == 0 && count < buffer.Length)
-                            sw.Write("&nbsp;");
-                    }
-                    sw.Write("</td></tr>");
+                    sw.Write("</tr>");
 
                     if (_backgroundWorker != null)
                     {
