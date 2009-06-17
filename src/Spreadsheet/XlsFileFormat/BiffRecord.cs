@@ -99,42 +99,51 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
         public static RecordType GetNextRecordType(IStreamReader reader)
         {
+            long position = reader.BaseStream.Position;
+                
             // read type of the next record
             RecordType nextRecord = (RecordType)reader.ReadUInt16();
-            
+            UInt16 length = reader.ReadUInt16();
+
             // skip leading StartBlock/EndBlock records
             if (nextRecord == RecordType.StartBlock
                 || nextRecord == RecordType.EndBlock 
                 || nextRecord == RecordType.ChartFrtInfo)
             {
                 // skip the body of the record
-                UInt16 size = reader.ReadUInt16();
-                reader.ReadBytes(size);
+                reader.ReadBytes(length);
                 // get the type of the next record
                 return GetNextRecordType(reader);
             }
-            if (nextRecord == RecordType.StartObject)
+            else if (nextRecord == RecordType.FrtWrapper)
             {
-                UInt16 size;
-                do
-                {
-                    // skip the body of the record
-                    size = reader.ReadUInt16();
-                    reader.ReadBytes(size);
-                    // get the type of the next record
-                    nextRecord = (RecordType)reader.ReadUInt16();
-                }
-                while (nextRecord != RecordType.EndObject);
-                // skip the body of the record
-                size = reader.ReadUInt16();
-                reader.ReadBytes(size);
-
-                return GetNextRecordType(reader);
+                // return type of wrapped Biff record
+                FrtWrapper frtWrapper = new FrtWrapper(reader, nextRecord, length);
+                reader.BaseStream.Position = position;
+                return frtWrapper.wrappedRecord.Id;
             }
+            //else if (nextRecord == RecordType.StartObject)
+            //{
+            //    UInt16 size;
+            //    do
+            //    {
+            //        // skip the body of the record
+            //        size = reader.ReadUInt16();
+            //        reader.ReadBytes(size);
+            //        // get the type of the next record
+            //        nextRecord = (RecordType)reader.ReadUInt16();
+            //    }
+            //    while (nextRecord != RecordType.EndObject);
+            //    // skip the body of the record
+            //    size = reader.ReadUInt16();
+            //    reader.ReadBytes(size);
+
+            //    return GetNextRecordType(reader);
+            //}
             else
             {
                 // seek back to the begin of the current record
-                reader.BaseStream.Seek(-sizeof(UInt16), System.IO.SeekOrigin.Current);
+                reader.BaseStream.Position = position;
                 return nextRecord;
             }
         }
@@ -144,32 +153,38 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             BiffRecord result = null;
             try
             {
-                UInt16 id = reader.ReadUInt16();
-                UInt16 size = reader.ReadUInt16();
+                RecordType id = (RecordType)reader.ReadUInt16();
+                UInt16 length = reader.ReadUInt16();
 
                 // skip leading StartBlock/EndBlock records
-                if ((RecordType)id == RecordType.StartBlock ||
-                    (RecordType)id == RecordType.EndBlock ||
-                    (RecordType)id == RecordType.ChartFrtInfo)
+                if (id == RecordType.StartBlock ||
+                    id == RecordType.EndBlock ||
+                    id == RecordType.ChartFrtInfo)
                 {
                     // skip the body of this record
-                    reader.ReadBytes(size);
+                    reader.ReadBytes(length);
 
                     // get the next record
                     return ReadRecord(reader);
                 }
-                else if ((RecordType)id == RecordType.StartObject)
+                else if (id == RecordType.FrtWrapper)
                 {
-                    reader.ReadBytes(size);
-                    FrtWrapper frtWrapper = new FrtWrapper(reader);
-                    // returns the EndObject
-                    return ReadRecord(reader);
+                    // return type of wrapped Biff record
+                    FrtWrapper frtWrapper = new FrtWrapper(reader, id, length);
+                    return frtWrapper.wrappedRecord;
                 }
 
 
-
+                //else if ((RecordType)id == RecordType.StartObject)
+                //{
+                //    reader.ReadBytes(size);
+                //    FrtWrapper frtWrapper = new FrtWrapper(reader);
+                //    // returns the EndObject
+                //    return ReadRecord(reader);
+                //}
+                
                 Type cls;
-                if (TypeToRecordClassMapping.TryGetValue(id, out cls))
+                if (TypeToRecordClassMapping.TryGetValue((UInt16)id, out cls))
                 {
                     ConstructorInfo constructor = cls.GetConstructor(
                         new Type[] { typeof(IStreamReader), typeof(RecordType), typeof(UInt16) }
@@ -178,7 +193,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                     try
                     {
                         result = (BiffRecord)constructor.Invoke(
-                            new object[] { reader, id, size }
+                            new object[] { reader, id, length }
                             );
                     }
                     catch (TargetInvocationException e)
@@ -188,7 +203,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                 }
                 else
                 {
-                    result = new UnknownBiffRecord(reader, (RecordType)id, size);
+                    result = new UnknownBiffRecord(reader, (RecordType)id, length);
                 }
 
                 return result;

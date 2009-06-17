@@ -299,6 +299,7 @@
     <Compile Include="Records\Formula.cs" />
     <Compile Include="Records\Frame.cs" />
     <Compile Include="Records\FrtFontList.cs" />
+    <Compile Include="Records\FrtWrapper.cs" />
     <Compile Include="Records\GCW.cs" />
     <Compile Include="Records\GelFrame.cs" />
     <Compile Include="Records\GridSet.cs" />
@@ -516,7 +517,6 @@
     <Compile Include="Structures\ChartNumNillable.cs" />
     <Compile Include="Structures\ChartParsedFormula.cs" />
     <Compile Include="Structures\ControlInfo.cs" />
-    <Compile Include="Structures\FrtWrapper.cs" />
     <Compile Include="Structures\FtCbls.cs" />
     <Compile Include="Structures\FtCblsData.cs" />
     <Compile Include="Structures\FtCf.cs" />

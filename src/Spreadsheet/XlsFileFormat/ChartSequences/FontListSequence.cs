@@ -4,12 +4,12 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
-    public class FontFbiWrapper
+    public class FontFbiGroup
     {
         private Font _font;
         private Fbi _fbi;
 
-        public FontFbiWrapper(Font font, Fbi fbi)
+        public FontFbiGroup(Font font, Fbi fbi)
         {
             this._font = font;
             this._fbi = fbi;
@@ -34,7 +34,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
         public StartObject StartObject;
 
-        public List<FontFbiWrapper> Fonts;
+        public List<FontFbiGroup> Fonts;
 
         public EndObject EndObject;
 
@@ -47,6 +47,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             this.StartObject = (StartObject)BiffRecord.ReadRecord(reader);
             
             //*(Font [Fbi]) 
+            this.Fonts = new List<FontFbiGroup>();
             while (BiffRecord.GetNextRecordType(reader) != RecordType.EndObject)
             {
                 Font font = (Font)BiffRecord.ReadRecord(reader);
@@ -55,7 +56,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                 {
                     fbi = (Fbi)BiffRecord.ReadRecord(reader);
                 }
-                this.Fonts.Add(new FontFbiWrapper(font, fbi));
+                this.Fonts.Add(new FontFbiGroup(font, fbi));
             }
 
             //EndObject

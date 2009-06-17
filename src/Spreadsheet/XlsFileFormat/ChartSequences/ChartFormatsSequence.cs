@@ -184,10 +184,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                 if (BiffRecord.GetNextRecordType(reader) == RecordType.DataLabExt)
                 {
                     this.DataLabExt = (DataLabExt)BiffRecord.ReadRecord(reader);
-                    if (BiffRecord.GetNextRecordType(reader) == RecordType.StartObject)
-                    {
-                         EndObject endObj = (EndObject)BiffRecord.ReadRecord(reader);
-                    }
+                    this.StartObject = (StartObject)BiffRecord.ReadRecord(reader);
                 }
 
                 this.AttachedLabelSequence = new AttachedLabelSequence(reader); 

@@ -31,22 +31,31 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures;
 
-namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures
+namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
-    public class FrtWrapper
+    /// <summary>
+    /// This record wraps around a non-Future Record Type (FRT) record and converts it into an FRT record.
+    /// </summary>
+    [BiffRecordAttribute(RecordType.FrtWrapper)]
+    public class FrtWrapper : BiffRecord
     {
-        public FrtWrapper(IStreamReader reader)
-        {
-            UInt16 id;
-            UInt16 size;
+        public const RecordType ID = RecordType.FrtWrapper;
 
-            while(BiffRecord.GetNextRecordType(reader) != RecordType.EndObject)
-            {
-                id = reader.ReadUInt16();
-                size = reader.ReadUInt16();
-                reader.ReadBytes(size);
-            }  
+        public FrtHeaderOld frtHeaderOld;
+
+        public BiffRecord wrappedRecord;
+
+        public FrtWrapper(IStreamReader reader, RecordType id, UInt16 length)
+            : base(reader, id, length)
+        {
+            this.frtHeaderOld = new FrtHeaderOld(reader);
+
+            this.wrappedRecord = BiffRecord.ReadRecord(reader);
+
+            // skip padding bytes
+            this.Reader.BaseStream.Position = this.Offset + this.Length;
         }
     }
 }

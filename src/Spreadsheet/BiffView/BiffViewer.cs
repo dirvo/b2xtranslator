@@ -33,6 +33,7 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
+using System.Collections.Generic;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
 {
@@ -181,7 +182,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
 
         protected void PrintHtml(StreamWriter sw, IStreamReader workbookReader)
         {
-            BiffHeader bh;
+            BiffHeader bh = new BiffHeader();
+            BiffHeader prevHeader;
+            Stack<BiffHeader> blocks = new Stack<BiffHeader>();
+
             int indentLevel = 0;
 
             Uri baseUrl = new Uri(new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName);
@@ -203,7 +207,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
                 while (workbookReader.BaseStream.Position < workbookReader.BaseStream.Length)
                 {
                     long offset = workbookReader.BaseStream.Position;
-                    
+
+                    prevHeader = bh;
+
                     bh.id = (RecordType)workbookReader.ReadUInt16();
                     bh.length = workbookReader.ReadUInt16();
 
@@ -217,27 +223,35 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
                         workbookReader.BaseStream.Seek(-bh.length, System.IO.SeekOrigin.Current);
                     }
 
-                    if (bh.id == RecordType.Begin
-                        || bh.id == RecordType.StartObject
-                        || bh.id == RecordType.StartBlock)
+                    string strId = ((XlsFileFormat.RecordType)bh.id).ToString();
+                    string strCurrentBlock = "";
+                    
+                    int indent = 4 * indentLevel;
+                            
+                    if (bh.id == RecordType.Begin)
+                        //|| bh.id == RecordType.StartObject
+                        //|| bh.id == RecordType.StartBlock)
                     {
+                        indent += 2; 
                         indentLevel++;
+                        blocks.Push(prevHeader);
+                        strCurrentBlock = " " + prevHeader.id;
                     }
-                    if (bh.id == RecordType.End
-                        || bh.id == RecordType.EndObject
-                        || bh.id == RecordType.EndBlock)
+                    else if (bh.id == RecordType.End)
+                        //|| bh.id == RecordType.EndObject
+                        //|| bh.id == RecordType.EndBlock)
                     {
-                        indentLevel--;
+                        indent -= 2;
+                        strCurrentBlock = " " + blocks.Pop().id;
                     }
-
-                    XlsFileFormat.RecordType id = (XlsFileFormat.RecordType)bh.id;
+                    
                     sw.WriteLine("<tr>");
                     {
                         byte[] buffer = workbookReader.ReadBytes(bh.length);
 
                         sw.WriteLine("<td>");
                         {
-                            string url = string.Format("{0}/xlsspec/{1}.html", baseUrl, id);
+                            string url = string.Format("{0}/xlsspec/{1}.html", baseUrl, strId);
                             Uri uri = new Uri(url);
                             if (!File.Exists(uri.LocalPath))
                             {
@@ -247,11 +261,11 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
 
                             // write record type
                             sw.Write("BIFF ");
-                            for (int i = 0; i < 4*indentLevel; i++)
+                            for (int i = 0; i < indent; i++)
                             {
                                 sw.Write("&nbsp;");
                             }
-                            sw.WriteLine("<a href=\"{0}\">{1}</a> {2} (0x{3:X02})", url, id, documentType, (int)bh.id);
+                            sw.WriteLine("<a href=\"{0}\">{1}</a> {2}{3} (0x{4:X02})", url, strId, strCurrentBlock, documentType, (int)bh.id);
                         }
                         sw.WriteLine("</td>");
 
@@ -287,6 +301,13 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
                         sw.Write("</td>");
                     }
                     sw.Write("</tr>");
+
+                    if (bh.id == RecordType.End)
+                        //|| bh.id == RecordType.EndObject
+                        //|| bh.id == RecordType.EndBlock)
+                    {
+                        indentLevel--;
+                    }
 
                     if (_backgroundWorker != null)
                     {
