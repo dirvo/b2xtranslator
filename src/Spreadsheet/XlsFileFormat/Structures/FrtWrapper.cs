@@ -38,7 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures
     {
         public FrtWrapper(IStreamReader reader)
         {
-            UInt16 id = UInt16.MaxValue;
+            UInt16 id;
             UInt16 size;
 
             while(BiffRecord.GetNextRecordType(reader) != RecordType.EndObject)
@@ -47,7 +47,6 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures
                 size = reader.ReadUInt16();
                 reader.ReadBytes(size);
             }  
-
         }
     }
 }

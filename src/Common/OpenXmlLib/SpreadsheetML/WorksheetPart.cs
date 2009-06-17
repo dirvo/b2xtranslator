@@ -36,7 +36,6 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.SpreadsheetML
 
     public class WorksheetPart : OpenXmlPart
     {
-        private static int _drawingNumber = 0; 
         private DrawingsPart _drawingsPart = null;
         
         public WorksheetPart(WorkbookPart parent, int partIndex)
@@ -64,7 +63,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.SpreadsheetML
             {
                 if (this._drawingsPart == null)
                 {
-                    this._drawingsPart = this.AddPart(new DrawingsPart(this, ++WorksheetPart._drawingNumber));
+                    this._drawingsPart = this.AddPart(new DrawingsPart(this, ++((WorkbookPart)this.Parent).DrawingsNumber));
                     //this._drawingsPart = ((WorkbookPart)this.Parent).AddDrawingsPart();
                 }
                 return this._drawingsPart;

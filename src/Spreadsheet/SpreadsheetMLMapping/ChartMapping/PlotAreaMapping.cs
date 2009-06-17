@@ -243,7 +243,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                                 // c:logBase
 
                                 // c:orientation
-                                writeValueElement(Dml.Chart.ElOrientation, axesSequence.DvAxisSequence.ValueRange.fReversed ? "maxMin" : "minMax");
+                                writeValueElement(Dml.Chart.ElOrientation, (axesSequence.DvAxisSequence.ValueRange == null || axesSequence.DvAxisSequence.ValueRange.fReversed) ? "maxMin" : "minMax");
                                 
                                 // c:max
 

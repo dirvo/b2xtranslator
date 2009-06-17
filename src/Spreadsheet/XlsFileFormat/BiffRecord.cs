@@ -36,7 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
     public abstract class BiffRecord
     {
         IStreamReader _reader;
-        
+
         RecordType _id;
         UInt32 _length;
         long _offset;
@@ -113,6 +113,24 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                 // get the type of the next record
                 return GetNextRecordType(reader);
             }
+            if (nextRecord == RecordType.StartObject)
+            {
+                UInt16 size;
+                do
+                {
+                    // skip the body of the record
+                    size = reader.ReadUInt16();
+                    reader.ReadBytes(size);
+                    // get the type of the next record
+                    nextRecord = (RecordType)reader.ReadUInt16();
+                }
+                while (nextRecord != RecordType.EndObject);
+                // skip the body of the record
+                size = reader.ReadUInt16();
+                reader.ReadBytes(size);
+
+                return GetNextRecordType(reader);
+            }
             else
             {
                 // seek back to the begin of the current record
@@ -145,7 +163,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                     reader.ReadBytes(size);
                     FrtWrapper frtWrapper = new FrtWrapper(reader);
                     // returns the EndObject
-                    return ReadRecord(reader); 
+                    return ReadRecord(reader);
                 }
 
 
@@ -185,7 +203,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         {
             get { return _id; }
         }
-        
+
         public UInt32 Length
         {
             get { return _length; }

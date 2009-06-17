@@ -146,7 +146,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
             // *([DataLabExt StartObject] ATTACHEDLABEL [EndObject])
             this.DataLabelGroups = new List<DataLabelGroup>();
-            while (BiffRecord.GetNextRecordType(reader) == RecordType.DataLabExt)
+            while (BiffRecord.GetNextRecordType(reader) == RecordType.DataLabExt
+                || BiffRecord.GetNextRecordType(reader) == RecordType.Text)
             {
                this.DataLabelGroups.Add(new DataLabelGroup(reader));
             }
@@ -166,16 +167,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             }
 
             // End
-
-            try
-            {
-                this.End = (End)BiffRecord.ReadRecord(reader);
-
-            }
-            catch (Exception ex)
-            {
-                TraceLogger.DebugInternal(ex.StackTrace); 
-            }
+            this.End = (End)BiffRecord.ReadRecord(reader);
         }
 
         public class DataLabelGroup

@@ -52,89 +52,88 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             if (chartFormatSequence.AttachedLabelSequences.Count != 0)
             {
                 AttachedLabelSequence attachedLabelSequence = chartFormatSequence.AttachedLabelSequences[0];
-            
 
-            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElDLbls, Dml.Chart.Ns);
-            {
-                //<xsd:element name="dLbl" type="CT_DLbl" minOccurs="0" maxOccurs="unbounded"/>
-                // TODO
-
-                //<xsd:element name="dLblPos" type="CT_DLblPos" minOccurs="0" maxOccurs="1">
-                // TODO
-
-                //<xsd:element name="leaderLines" type="CT_ChartLines" minOccurs="0" maxOccurs="1">
-                // TODO
-
-                //<xsd:element name="numFmt" type="CT_NumFmt" minOccurs="0" maxOccurs="1">
-                // TODO
-
-                //<xsd:element name="showLeaderLines" type="CT_Boolean" minOccurs="0" maxOccurs="1">
-                // TODO
-
-                if (attachedLabelSequence != null)
+                _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElDLbls, Dml.Chart.Ns);
                 {
-                    if (attachedLabelSequence.Text != null)
+                    //<xsd:element name="dLbl" type="CT_DLbl" minOccurs="0" maxOccurs="unbounded"/>
+                    // TODO
+
+                    //<xsd:element name="dLblPos" type="CT_DLblPos" minOccurs="0" maxOccurs="1">
+                    // TODO
+
+                    //<xsd:element name="leaderLines" type="CT_ChartLines" minOccurs="0" maxOccurs="1">
+                    // TODO
+
+                    //<xsd:element name="numFmt" type="CT_NumFmt" minOccurs="0" maxOccurs="1">
+                    // TODO
+
+                    //<xsd:element name="showLeaderLines" type="CT_Boolean" minOccurs="0" maxOccurs="1">
+                    // TODO
+
+                    if (attachedLabelSequence != null)
                     {
-                        //<xsd:element name="showLegendKey" type="CT_Boolean" minOccurs="0" maxOccurs="1">
-                        if (attachedLabelSequence.Text.fShowKey)
+                        if (attachedLabelSequence.Text != null)
                         {
-                            writeValueElement("showLegendKey", "1");
+                            //<xsd:element name="showLegendKey" type="CT_Boolean" minOccurs="0" maxOccurs="1">
+                            if (attachedLabelSequence.Text.fShowKey)
+                            {
+                                writeValueElement("showLegendKey", "1");
+                            }
                         }
+
+                        if (attachedLabelSequence.DataLabExtContents != null)
+                        {
+                            //<xsd:element name="separator" type="xsd:string" minOccurs="0" maxOccurs="1">
+                            _writer.WriteElementString(Dml.Chart.Prefix, "separator", Dml.Chart.Ns, attachedLabelSequence.DataLabExtContents.rgchSep.st.Value);
+
+                            //<xsd:element name="showBubbleSize" type="CT_Boolean" minOccurs="0" maxOccurs="1">
+                            if (attachedLabelSequence.DataLabExtContents.fBubSizes)
+                            {
+                                writeValueElement("showBubbleSize", "1");
+                            }
+
+                            //<xsd:element name="showCatName" type="CT_Boolean" minOccurs="0" maxOccurs="1">
+                            if (attachedLabelSequence.DataLabExtContents.fCatName)
+                            {
+                                writeValueElement("showCatName", "1");
+                            }
+
+                            //<xsd:element name="showPercent" type="CT_Boolean" minOccurs="0" maxOccurs="1">
+                            if (attachedLabelSequence.DataLabExtContents.fPercent)
+                            {
+                                writeValueElement("showPercent", "1");
+                            }
+
+                            //<xsd:element name="showSerName" type="CT_Boolean" minOccurs="0" maxOccurs="1">
+                            if (attachedLabelSequence.DataLabExtContents.fSerName)
+                            {
+                                writeValueElement("showSerName", "1");
+                            }
+
+                            //<xsd:element name="showVal" type="CT_Boolean" minOccurs="0" maxOccurs="1">
+                            if (attachedLabelSequence.DataLabExtContents.fValue)
+                            {
+                                writeValueElement("showVal", "1");
+                            }
+                        }
+
+                    }
+                    //<xsd:element name="spPr" type="a:CT_ShapeProperties" minOccurs="0" maxOccurs="1">
+                    if (attachedLabelSequence.FrameSequence != null)
+                    {
+                        attachedLabelSequence.FrameSequence.Convert(new ShapePropertiesMapping(this.WorkbookContext, this.ChartContext));
                     }
 
-                    if(attachedLabelSequence.DataLabExtContents != null)
-                    {
-                        //<xsd:element name="separator" type="xsd:string" minOccurs="0" maxOccurs="1">
-                        _writer.WriteElementString(Dml.Chart.Prefix, "separator", Dml.Chart.Ns, attachedLabelSequence.DataLabExtContents.rgchSep.st.Value);
+                    //<xsd:element name="txPr" type="a:CT_TextBody" minOccurs="0" maxOccurs="1">
+                    // TODO
 
-                        //<xsd:element name="showBubbleSize" type="CT_Boolean" minOccurs="0" maxOccurs="1">
-                        if (attachedLabelSequence.DataLabExtContents.fBubSizes)
-                        {
-                            writeValueElement("showBubbleSize", "1");
-                        }
-
-                        //<xsd:element name="showCatName" type="CT_Boolean" minOccurs="0" maxOccurs="1">
-                        if (attachedLabelSequence.DataLabExtContents.fCatName)
-                        {
-                            writeValueElement("showCatName", "1");
-                        }
-
-                        //<xsd:element name="showPercent" type="CT_Boolean" minOccurs="0" maxOccurs="1">
-                        if (attachedLabelSequence.DataLabExtContents.fPercent)
-                        {
-                            writeValueElement("showPercent", "1");
-                        }
-
-                        //<xsd:element name="showSerName" type="CT_Boolean" minOccurs="0" maxOccurs="1">
-                        if (attachedLabelSequence.DataLabExtContents.fSerName)
-                        {
-                            writeValueElement("showSerName", "1");
-                        }
-
-                        //<xsd:element name="showVal" type="CT_Boolean" minOccurs="0" maxOccurs="1">
-                        if (attachedLabelSequence.DataLabExtContents.fValue)
-                        {
-                            writeValueElement("showVal", "1");
-                        }
-                    }
+                    //<xsd:element name="extLst" type="CT_ExtensionList" minOccurs="0" maxOccurs="1"/>
+                    // TODO
 
                 }
-                //<xsd:element name="spPr" type="a:CT_ShapeProperties" minOccurs="0" maxOccurs="1">
-                if (attachedLabelSequence.FrameSequence != null)
-                {
-                    attachedLabelSequence.FrameSequence.Convert(new ShapePropertiesMapping(this.WorkbookContext, this.ChartContext));
-                }
-
-                //<xsd:element name="txPr" type="a:CT_TextBody" minOccurs="0" maxOccurs="1">
-                // TODO
-
-                //<xsd:element name="extLst" type="CT_ExtensionList" minOccurs="0" maxOccurs="1"/>
-                // TODO
-
+                _writer.WriteEndElement();
             }
-            _writer.WriteEndElement();
-            }
-            
+
         }
     }
 }

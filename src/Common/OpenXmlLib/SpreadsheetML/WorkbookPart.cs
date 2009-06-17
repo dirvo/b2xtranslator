@@ -52,7 +52,6 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.SpreadsheetML
             this._worksheetNumber = 1;
             this._chartsheetNumber = 1;
             this._externalLinkNumber = 1;
-            this._drawingsNumber = 1;
             this._type = contentType;
         }
 
@@ -155,6 +154,12 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.SpreadsheetML
         {
             this._stylesPart = new StylesPart(this);
             return this.AddPart(this._stylesPart);
+        }
+
+        internal int DrawingsNumber
+        {
+            get { return this._drawingsNumber; }
+            set { this._drawingsNumber = value; }
         }
 
     }

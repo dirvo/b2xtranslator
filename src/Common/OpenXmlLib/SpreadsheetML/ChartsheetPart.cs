@@ -64,7 +64,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.SpreadsheetML
             {
                 if (this._drawingsPart == null)
                 {
-                    this._drawingsPart = this.AddPart(new DrawingsPart(this, ++this._drawingNumber));
+                    this._drawingsPart = this.AddPart(new DrawingsPart(this, ++((WorkbookPart)this.Parent).DrawingsNumber));
                     //this._drawingsPart = ((WorkbookPart)this.Parent).AddDrawingsPart();
                 }
                 return this._drawingsPart;
