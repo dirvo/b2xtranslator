@@ -46,7 +46,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 cpEnd = txtbxSubdocStart + doc.TextboxBreakPlex.CharacterPositions[_textboxIndex + 1];
                 bkd = (BreakDescriptor)doc.TextboxBreakPlex.Elements[_textboxIndex];
             }
-            if(_targetPart.GetType() == typeof(HeaderPart))
+            if (_targetPart.GetType() == typeof(HeaderPart) || _targetPart.GetType() == typeof(FooterPart))
             {
                 txtbxSubdocStart += doc.FIB.ccpTxbx;
                 cp = txtbxSubdocStart + doc.TextboxBreakPlexHeader.CharacterPositions[_textboxIndex];

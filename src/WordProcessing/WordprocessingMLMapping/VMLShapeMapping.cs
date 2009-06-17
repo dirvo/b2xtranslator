@@ -504,6 +504,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         if (props.fUsegtextFVertical && props.gtextFVertical)
                         {
                             appendStyleProperty(_textPathStyle, "v-rotate-letters", "t");
+                            //_twistDimension = true;
                         }
                         if (props.fUsegtextFKern && props.gtextFKern)
                         {
@@ -893,6 +894,20 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         {
             StringBuilder style = new StringBuilder();
 
+            // Check if some properties are set that cause the dimensions to be twisted
+            bool twistDimensions = false;
+            foreach (ShapeOptions.OptionEntry entry in options)
+            {
+                if (entry.pid == ShapeOptions.PropertyId.GeometryTextBooleanProperties)
+                {
+                    GeometryTextBooleanProperties props = new GeometryTextBooleanProperties(entry.op);
+                    if (props.fUsegtextFVertical && props.gtextFVertical)
+                    {
+                        twistDimensions = true;
+                    }
+                }
+            }
+
             //don't append the dimension info to lines, 
             // because they have "from" and "to" attributes to decline the dimension
             if(!(shape.ShapeType is LineType))
@@ -901,18 +916,18 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 {
                     //this shape is placed directly in the document, 
                     //so use the FSPA to build the style
-                    AppendDimensionToStyle(style, _fspa);
+                    AppendDimensionToStyle(style, _fspa, twistDimensions);
                 }
                 else if(anchor != null)
                 {
                     //the style is part of a group, 
                     //so use the anchor
-                    AppendDimensionToStyle(style, anchor);
+                    AppendDimensionToStyle(style, anchor, twistDimensions);
                 }
                 else if(_pict != null)
                 {
                     // it is some kind of PICT shape (e.g. WordArt)
-                    AppendDimensionToStyle(style, _pict);
+                    AppendDimensionToStyle(style, _pict, twistDimensions);
                 }
             }
 
@@ -930,18 +945,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             appendStyleProperty(style, "z-index", zIndex.ToString());
 
             return style;
-        }
-
-        private void AppendDimensionToStyle(StringBuilder style, PictureDescriptor pict)
-        {
-            double xScaling = pict.mx / 1000.0;
-            double yScaling = pict.my / 1000.0;
-            TwipsValue width = new TwipsValue(pict.dxaGoal * xScaling);
-            TwipsValue height = new TwipsValue(pict.dyaGoal * yScaling);
-            string widthString = Convert.ToString(width.ToPoints(), CultureInfo.GetCultureInfo("en-US"));
-            string heightString = Convert.ToString(height.ToPoints(), CultureInfo.GetCultureInfo("en-US"));
-            style.Append("width:").Append(widthString).Append("pt;");
-            style.Append("height:").Append(heightString).Append("pt;");
         }
 
         private void writeStartShapeElement(Shape shape)
@@ -1262,13 +1265,40 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         //                                                     STATIC METHODS
         //*******************************************************************
 
-        public static void AppendDimensionToStyle(StringBuilder style, FileShapeAddress fspa)
+        private static void AppendDimensionToStyle(StringBuilder style, PictureDescriptor pict, bool twistDimensions)
+        {
+            double xScaling = pict.mx / 1000.0;
+            double yScaling = pict.my / 1000.0;
+            TwipsValue width = new TwipsValue(pict.dxaGoal * xScaling);
+            TwipsValue height = new TwipsValue(pict.dyaGoal * yScaling);
+
+            if (twistDimensions)
+            {
+                width = new TwipsValue(pict.dyaGoal * yScaling);
+                height = new TwipsValue(pict.dxaGoal * xScaling);
+            }
+
+            string widthString = Convert.ToString(width.ToPoints(), CultureInfo.GetCultureInfo("en-US"));
+            string heightString = Convert.ToString(height.ToPoints(), CultureInfo.GetCultureInfo("en-US"));
+
+            style.Append("width:").Append(widthString).Append("pt;");
+            style.Append("height:").Append(heightString).Append("pt;");
+        }
+
+        public static void AppendDimensionToStyle(StringBuilder style, FileShapeAddress fspa, bool twistDimensions)
         {
             //append size and position ...
+            appendStyleProperty(style, "position", "absolute");
             TwipsValue left = new TwipsValue(fspa.xaLeft);
             TwipsValue top = new TwipsValue(fspa.yaTop);
             TwipsValue width = new TwipsValue(fspa.xaRight - fspa.xaLeft);
             TwipsValue height = new TwipsValue(fspa.yaBottom - fspa.yaTop);
+
+            if (twistDimensions)
+            {
+                width = new TwipsValue(fspa.yaBottom - fspa.yaTop);
+                height = new TwipsValue(fspa.xaRight - fspa.xaLeft);
+            }
 
             appendStyleProperty(style, "margin-left", Convert.ToString(left.ToPoints(), CultureInfo.GetCultureInfo("en-US")) + "pt");
             appendStyleProperty(style, "margin-top", Convert.ToString(top.ToPoints(), CultureInfo.GetCultureInfo("en-US")) + "pt");
@@ -1276,14 +1306,22 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             appendStyleProperty(style, "height", Convert.ToString(height.ToPoints(), CultureInfo.GetCultureInfo("en-US")) + "pt");
         }
 
-        public static void AppendDimensionToStyle(StringBuilder style, ChildAnchor anchor)
+        public static void AppendDimensionToStyle(StringBuilder style, ChildAnchor anchor, bool twistDimensions)
         {
             //append size and position ...
             appendStyleProperty(style, "position", "absolute");
             appendStyleProperty(style, "left", anchor.rcgBounds.Left.ToString());
             appendStyleProperty(style, "top", anchor.rcgBounds.Top.ToString());
-            appendStyleProperty(style, "width", anchor.rcgBounds.Width.ToString());
-            appendStyleProperty(style, "height", anchor.rcgBounds.Height.ToString());
+            if (twistDimensions)
+            {
+                appendStyleProperty(style, "width", anchor.rcgBounds.Height.ToString());
+                appendStyleProperty(style, "height", anchor.rcgBounds.Width.ToString());
+            }
+            else
+            {
+                appendStyleProperty(style, "width", anchor.rcgBounds.Width.ToString());
+                appendStyleProperty(style, "height", anchor.rcgBounds.Height.ToString());
+            }
         }
 
         public static void AppendOptionsToStyle(StringBuilder style, List<ShapeOptions.OptionEntry> options)
@@ -1296,7 +1334,6 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     //POSITIONING
 
                     case ShapeOptions.PropertyId.posh:
-                        appendStyleProperty(style, "position", "absolute");
                         appendStyleProperty(
                             style,
                             "mso-position-horizontal",

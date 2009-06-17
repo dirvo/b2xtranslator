@@ -897,7 +897,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     {
                         fspa = (FileShapeAddress)_doc.OfficeDrawingPlex.GetStruct(cp);
                     }
-                    else if (GetType() == typeof(HeaderMapping))
+                    else if (GetType() == typeof(HeaderMapping) || GetType() == typeof(FooterMapping))
                     {
                         int headerCp = cp - _doc.FIB.ccpText - _doc.FIB.ccpFtn;
                         fspa = (FileShapeAddress)_doc.OfficeDrawingPlexHeader.GetStruct(headerCp);
