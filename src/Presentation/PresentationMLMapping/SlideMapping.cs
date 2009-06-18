@@ -203,6 +203,59 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
         }
 
+        private string readFooterFromClientTextBox(ClientTextbox textbox)
+        {
+            System.IO.MemoryStream ms = new System.IO.MemoryStream(textbox.Bytes);
+            TextHeaderAtom thAtom = null;
+            TextStyleAtom style = null;
+            List<int> lst = new List<int>();
+            while (ms.Position < ms.Length)
+            {
+                Record rec = Record.ReadRecord(ms);
+
+                switch (rec.TypeCode)
+                {
+                    case 0xf9e: //OutlineTextRefAtom
+                        OutlineTextRefAtom otrAtom = (OutlineTextRefAtom)rec;
+                        SlideListWithText slideListWithText = _ctx.Ppt.DocumentRecord.RegularSlideListWithText;
+
+                        List<TextHeaderAtom> thAtoms = slideListWithText.SlideToPlaceholderTextHeaders[textbox.FirstAncestorWithType<Slide>().PersistAtom];
+                        thAtom = thAtoms[otrAtom.Index];
+
+                        //if (thAtom.TextAtom != null) text = thAtom.TextAtom.Text;
+                        if (thAtom.TextStyleAtom != null) style = thAtom.TextStyleAtom;
+                        break;
+                    case 0xf9f: //TextHeaderAtom
+                        thAtom = (TextHeaderAtom)rec;
+                        break;
+                    case 0xfa0: //TextCharsAtom
+                        thAtom.TextAtom = (TextAtom)rec;
+                        break;
+                    case 0xfa1: //StyleTextPropAtom
+                        style = (TextStyleAtom)rec;
+                        style.TextHeaderAtom = thAtom;
+                        break;
+                    case 0xfa2: //MasterTextPropAtom
+                        break;
+                    case 0xfa8: //TextBytesAtom
+                        //text = ((TextBytesAtom)rec).Text;
+                        thAtom.TextAtom = (TextAtom)rec;
+                        return thAtom.TextAtom.Text;
+                    case 0xfaa: //TextSpecialInfoAtom
+                    case 0xfd8: //SlideNumberMCAtom
+                    case 0xff9: //HeaderMCAtom
+                        break;
+                    case 0xffa: //FooterMCAtom
+                        break;
+                    case 0xff8: //GenericDateMCAtom                        
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            return "";
+        }
 
         private void checkHeaderFooter(ShapeTreeMapping stm)
         {
@@ -306,8 +359,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             if (date)
             {
-                if (!(userDate & userdatetext.Length == 0))
-                {
+                //if (!(userDate & userdatetext.Length == 0))
+                //{
                     foreach (Slide master in this._ctx.Ppt.MainMasterRecords)
                     {
                         if (master.PersistAtom.SlideId == slideAtom.MasterId)
@@ -337,7 +390,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                         }
                     }
-                }
+               // }
             }
 
             if (footer)
@@ -403,6 +456,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                     {
                                         if (placeholder.PlacementId == PlaceholderEnum.MasterFooter)
                                         {
+                                            if (footertext.Length == 0 & shapecontainer.AllChildrenWithType<ClientTextbox>().Count > 0) footertext = readFooterFromClientTextBox(shapecontainer.FirstChildWithType<ClientTextbox>());
+
                                             bool doit = footertext.Length > 0;
                                             if (!doit)
                                             {

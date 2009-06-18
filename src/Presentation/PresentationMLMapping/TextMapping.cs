@@ -248,7 +248,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                                 _writer.WriteStartElement("a", "fld", OpenXmlNamespaces.DrawingML);
                                 _writer.WriteAttributeString("id", "{1023E2E8-AA53-4FEA-8F5C-1FABD68F61AB}");
-                                _writer.WriteAttributeString("type", "datetime9");
+                                _writer.WriteAttributeString("type", "datetime1");
 
                                 CharacterRun r = GetCharacterRun(style, 0);
                                 if (r != null)
