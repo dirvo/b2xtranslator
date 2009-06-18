@@ -240,7 +240,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             bool slideNumber = false;
             bool date = false;
             bool userDate = false;
-            
+            if (!(_ctx.Ppt.DocumentRecord.FirstChildWithType<DocumentAtom>().OmitTitlePlace && this.Slide.FirstChildWithType<SlideAtom>().Layout.Geom == SlideLayoutType.TitleSlide))
             foreach (SlideHeadersFootersContainer c in this._ctx.Ppt.DocumentRecord.AllChildrenWithType<SlideHeadersFootersContainer>())
             {
                 switch (c.Instance)
@@ -256,6 +256,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             if (a.fHasUserDate) userDate = true;
 
                             //if (a.fHasHeader) header = true;
+                        }
+
+                        if (footer && footertext.Length == 0 && c.FirstChildWithType<CStringAtom>() != null)
+                        {
+                            footertext = c.FirstChildWithType<CStringAtom>().Text;
                         }
                         break;
                     case 4: //NotesHeadersFootersContainer
