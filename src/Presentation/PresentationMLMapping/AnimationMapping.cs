@@ -198,7 +198,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     if (c2 != null)
                     {
 
-                        ExtTimeNodeContainer c3 = c2.FirstChildWithType<ExtTimeNodeContainer>();
+                        //ExtTimeNodeContainer c3 = c2.FirstChildWithType<ExtTimeNodeContainer>();
+                        foreach (ExtTimeNodeContainer c3 in c2.AllChildrenWithType<ExtTimeNodeContainer>())
                         if (c3 != null)
                         {
 
@@ -638,7 +639,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteStartElement("p", "cTn", OpenXmlNamespaces.PresentationML);
             _writer.WriteAttributeString("id", (++lastID).ToString());
-            _writer.WriteAttributeString("dur", "1");
+            _writer.WriteAttributeString("dur", "1000");
             _writer.WriteAttributeString("fill", "hold");
 
             _writer.WriteStartElement("p", "stCondLst", OpenXmlNamespaces.PresentationML);
