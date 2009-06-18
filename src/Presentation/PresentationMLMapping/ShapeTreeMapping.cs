@@ -2166,6 +2166,24 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                 _writer.WriteEndElement();
             }
+            else
+            {
+                ChildAnchor chanchor = container.FirstChildWithType<ChildAnchor>();
+
+                _writer.WriteStartElement("a", "xfrm", OpenXmlNamespaces.DrawingML);
+
+                _writer.WriteStartElement("a", "off", OpenXmlNamespaces.DrawingML);
+                _writer.WriteAttributeString("x", (chanchor.Left).ToString());
+                _writer.WriteAttributeString("y", (chanchor.Top).ToString());
+                _writer.WriteEndElement();
+
+                _writer.WriteStartElement("a", "ext", OpenXmlNamespaces.DrawingML);
+                _writer.WriteAttributeString("cx", (chanchor.Right - chanchor.Left).ToString());
+                _writer.WriteAttributeString("cy", (chanchor.Bottom - chanchor.Top).ToString());
+                _writer.WriteEndElement();
+
+                _writer.WriteEndElement();
+            }
 
             _writer.WriteStartElement("a", "prstGeom", OpenXmlNamespaces.DrawingML);
             _writer.WriteAttributeString("prst", "rect");
