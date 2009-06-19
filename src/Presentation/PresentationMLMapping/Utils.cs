@@ -466,6 +466,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 switch (bytes[0])
                 {
                     case 0x00: //background
+                        SchemeType = "bg1";
                         return new RGBColor(MasterScheme.Background, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
                     case 0x01: //text
                         SchemeType = "tx1";
