@@ -478,22 +478,24 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             //}                            
 
                             _writer.WriteStartElement("a", "r", OpenXmlNamespaces.DrawingML);
-                            if (r != null)
+
+                            string dummy = "";
+                            string dummy2 = "";
+                            string dummy3 = "";
+                            RegularContainer slide = textbox.FirstAncestorWithType<Slide>();
+                            if (slide == null) slide = textbox.FirstAncestorWithType<Note>();
+                            if (slide == null) slide = textbox.FirstAncestorWithType<Handout>();
+
+                            if (r != null || defaultStyle != null)
                             {
-                                string dummy = "";
-                                string dummy2 = "";
-                                string dummy3 = "";
-                                RegularContainer slide = textbox.FirstAncestorWithType<Slide>();
-                                if (slide == null) slide = textbox.FirstAncestorWithType<Note>();
-                                if (slide == null) slide = textbox.FirstAncestorWithType<Handout>();
+                                
                                 new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", slide,ref dummy, ref dummy2, ref dummy3, lang, defaultStyle);
                             }
                             else
-                            {
-                                //TODO: read real language
+                            {                              
                                 _writer.WriteStartElement("a", "rPr", OpenXmlNamespaces.DrawingML);
                                 _writer.WriteAttributeString("lang", lang);
-                                _writer.WriteEndElement();
+                                _writer.WriteEndElement(); 
                             }
 
                             _writer.WriteStartElement("a", "t", OpenXmlNamespaces.DrawingML);
@@ -551,7 +553,119 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteStartElement("a", "pPr", OpenXmlNamespaces.DrawingML);
             if (p == null)
             {
-                _writer.WriteAttributeString("lvl", tp.indentLevel.ToString()); 
+                _writer.WriteAttributeString("lvl", tp.indentLevel.ToString());
+                               
+
+                if (defaultStyle != null && defaultStyle.PRuns.Count > tp.indentLevel)
+                {
+                    if (defaultStyle.PRuns[tp.indentLevel].LeftMarginPresent)
+                    {
+                        _writer.WriteAttributeString("marL", Utils.MasterCoordToEMU((int)defaultStyle.PRuns[tp.indentLevel].LeftMargin).ToString());
+                        writtenLeftMargin = (int)defaultStyle.PRuns[tp.indentLevel].LeftMargin;
+                    }
+                    if (defaultStyle.PRuns[tp.indentLevel].IndentPresent)
+                    {
+                        _writer.WriteAttributeString("indent", (-1 * (Utils.MasterCoordToEMU((int)(defaultStyle.PRuns[tp.indentLevel].LeftMargin - defaultStyle.PRuns[tp.indentLevel].Indent)))).ToString());
+                    }
+
+
+                    if (defaultStyle.PRuns[tp.indentLevel].AlignmentPresent)
+                    {
+                        switch (defaultStyle.PRuns[tp.indentLevel].Alignment)
+                        {
+                            case 0x0000: //Left
+                                _writer.WriteAttributeString("algn", "l");
+                                break;
+                            case 0x0001: //Center
+                                _writer.WriteAttributeString("algn", "ctr");
+                                break;
+                            case 0x0002: //Right
+                                _writer.WriteAttributeString("algn", "r");
+                                break;
+                            case 0x0003: //Justify
+                                _writer.WriteAttributeString("algn", "just");
+                                break;
+                            case 0x0004: //Distributed
+                                _writer.WriteAttributeString("algn", "dist");
+                                break;
+                            case 0x0005: //ThaiDistributed
+                                _writer.WriteAttributeString("algn", "thaiDist");
+                                break;
+                            case 0x0006: //JustifyLow
+                                _writer.WriteAttributeString("algn", "justLow");
+                                break;
+                        }
+                    }
+
+                    if (defaultStyle.PRuns[tp.indentLevel].BulletFlagsFieldPresent)
+                    {
+                        if ((defaultStyle.PRuns[tp.indentLevel].BulletFlags & (ushort)ParagraphMask.HasBullet) == 0)
+                        {
+                            _writer.WriteElementString("a", "buNone", OpenXmlNamespaces.DrawingML, "");
+                        }
+                        else
+                        {
+                            //if (defaultStyle.PRuns[tp.indentLevel].BulletColorPresent)
+                            //{
+                            //    _writer.WriteStartElement("a", "buClr", OpenXmlNamespaces.DrawingML);
+                            //    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                            //    string s = defaultStyle.PRuns[tp.indentLevel].BulletColor.Red.ToString("X").PadLeft(2, '0') + defaultStyle.PRuns[tp.indentLevel].BulletColor.Green.ToString("X").PadLeft(2, '0') + defaultStyle.PRuns[tp.indentLevel].BulletColor.Blue.ToString("X").PadLeft(2, '0');
+                            //    _writer.WriteAttributeString("val", s);
+                            //    _writer.WriteEndElement();
+                            //    _writer.WriteEndElement(); //buClr
+                            //}
+                            if (defaultStyle.PRuns[tp.indentLevel].BulletSizePresent)
+                            {
+                                if (defaultStyle.PRuns[tp.indentLevel].BulletSize > 0)
+                                {
+                                    _writer.WriteStartElement("a", "buSzPct", OpenXmlNamespaces.DrawingML);
+                                    _writer.WriteAttributeString("val", (defaultStyle.PRuns[tp.indentLevel].BulletSize * 1000).ToString());
+                                    _writer.WriteEndElement(); //buSzPct
+                                }
+                                else
+                                {
+                                    //TODO
+                                }
+                            }
+                            if (defaultStyle.PRuns[tp.indentLevel].BulletFontPresent)
+                            {
+                                _writer.WriteStartElement("a", "buFont", OpenXmlNamespaces.DrawingML);
+                                FontCollection fonts = _ctx.Ppt.DocumentRecord.FirstChildWithType<DIaLOGIKa.b2xtranslator.PptFileFormat.Environment>().FirstChildWithType<FontCollection>();
+                                FontEntityAtom entity = fonts.entities[(int)defaultStyle.PRuns[tp.indentLevel].BulletTypefaceIdx];
+                                if (entity.TypeFace.IndexOf('\0') > 0)
+                                {
+                                    _writer.WriteAttributeString("typeface", entity.TypeFace.Substring(0, entity.TypeFace.IndexOf('\0')));
+                                }
+                                else
+                                {
+                                    _writer.WriteAttributeString("typeface", entity.TypeFace);
+                                }
+                                _writer.WriteEndElement(); //buChar
+                            }
+
+
+                            if (parentShapeTreeMapping != null && parentShapeTreeMapping.ShapeStyleTextProp9Atom != null && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs.Count > p.IndentLevel && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[p.IndentLevel].fBulletHasAutoNumber == 1 && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[p.IndentLevel].bulletAutoNumberScheme == -1)
+                            {
+                                _writer.WriteStartElement("a", "buAutoNum", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("type", "arabicPeriod");
+                                _writer.WriteEndElement();
+                            }
+                            else if (defaultStyle.PRuns[tp.indentLevel].BulletCharPresent)
+                            {
+                                _writer.WriteStartElement("a", "buChar", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("char", defaultStyle.PRuns[tp.indentLevel].BulletChar.ToString());
+                                _writer.WriteEndElement(); //buChar
+                            }
+                            else if (!defaultStyle.PRuns[tp.indentLevel].BulletCharPresent)
+                            {
+                                _writer.WriteStartElement("a", "buChar", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("char", "•");
+                                _writer.WriteEndElement(); //buChar
+                            }
+
+                        }
+                    }
+                }
             }
             else
             {

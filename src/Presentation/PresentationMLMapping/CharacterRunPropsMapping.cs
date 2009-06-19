@@ -55,7 +55,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteAttributeString("lang", lang);
 
-            if (run.SizePresent)
+            bool runExists = run != null;
+
+            if (runExists && run.SizePresent)
             {
                 if (run.Size > 0)
                 {
@@ -73,14 +75,21 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteAttributeString("sz", (defaultStyle.CRuns[0].Size * 100).ToString());
                 }
             }
-            
-            if (run.StyleFlagsFieldPresent)
+
+            if (runExists && run.StyleFlagsFieldPresent)
             {
                 if ((run.Style & StyleMask.IsBold) == StyleMask.IsBold) _writer.WriteAttributeString("b", "1");
                 if ((run.Style & StyleMask.IsItalic) == StyleMask.IsItalic) _writer.WriteAttributeString("i", "1");
                 if ((run.Style & StyleMask.IsUnderlined) == StyleMask.IsUnderlined) _writer.WriteAttributeString("u", "sng");
             }
-            if (run.ColorPresent)
+            else if (defaultStyle != null && defaultStyle.CRuns[0].StyleFlagsFieldPresent)
+            {
+                if ((defaultStyle.CRuns[0].Style & StyleMask.IsBold) == StyleMask.IsBold) _writer.WriteAttributeString("b", "1");
+                if ((defaultStyle.CRuns[0].Style & StyleMask.IsItalic) == StyleMask.IsItalic) _writer.WriteAttributeString("i", "1");
+                if ((defaultStyle.CRuns[0].Style & StyleMask.IsUnderlined) == StyleMask.IsUnderlined) _writer.WriteAttributeString("u", "sng");
+            }
+
+            if (runExists && run.ColorPresent)
             {
                 writeSolidFill(slide, run, ref lastColor);
             }
@@ -100,7 +109,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 }
             }
 
-            if (run.StyleFlagsFieldPresent)
+            if (runExists && run.StyleFlagsFieldPresent)
             {
                 if ((run.Style & StyleMask.HasShadow) == StyleMask.HasShadow)
                 {
@@ -173,7 +182,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             //run.SymbolTypefacePresent
             //run.TypefacePresent
 
-            if (run.TypefacePresent)
+            if (runExists && run.TypefacePresent)
             {
                 //List<ColorSchemeAtom> colors = slide.AllChildrenWithType<ColorSchemeAtom>();
                 //ColorSchemeAtom MasterScheme = null;
@@ -211,6 +220,32 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             {
                 _writer.WriteStartElement("a", "latin", OpenXmlNamespaces.DrawingML);
                 _writer.WriteAttributeString("typeface", lastTypeface);
+                _writer.WriteEndElement();
+            }
+            else if (defaultStyle != null && defaultStyle.CRuns[0].TypefacePresent)
+            {
+                _writer.WriteStartElement("a", "latin", OpenXmlNamespaces.DrawingML);
+                try
+                {
+                    FontCollection fonts = _ctx.Ppt.DocumentRecord.FirstChildWithType<DIaLOGIKa.b2xtranslator.PptFileFormat.Environment>().FirstChildWithType<FontCollection>();
+                    FontEntityAtom entity = fonts.entities[(int)defaultStyle.CRuns[0].TypefaceIdx];
+                    if (entity.TypeFace.IndexOf('\0') > 0)
+                    {
+                        _writer.WriteAttributeString("typeface", entity.TypeFace.Substring(0, entity.TypeFace.IndexOf('\0')));
+                        lastTypeface = entity.TypeFace.Substring(0, entity.TypeFace.IndexOf('\0'));
+                    }
+                    else
+                    {
+                        _writer.WriteAttributeString("typeface", entity.TypeFace);
+                        lastTypeface = entity.TypeFace;
+                    }
+                    //_writer.WriteAttributeString("charset", "0");
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+
                 _writer.WriteEndElement();
             }
 
