@@ -63,8 +63,6 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 {
                     BRAI brai = aiSequence.BRAI;
                     
-                    string formula = FormulaInfixMapping.mapFormula(brai.formula.formula, this.WorkbookContext);
-
                     if (aiSequence.SeriesText != null)
                     {
                         switch (brai.rt)
@@ -80,12 +78,20 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             case BRAI.DataSource.Reference:
                                 // c:tx
                                 _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElTx, Dml.Chart.Ns);
-                                // c:f
-                                _writer.WriteElementString(Dml.Chart.Prefix, Dml.Chart.ElF, Dml.Chart.Ns, formula);
 
-                                // TODO: optional data cache
-                                // c:strCache
 
+                                // c:strRef
+                                _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElStrRef, Dml.Chart.Ns);
+                                {
+                                    // c:f
+                                    string formula = FormulaInfixMapping.mapFormula(brai.formula.formula, this.WorkbookContext);
+                                    _writer.WriteElementString(Dml.Chart.Prefix, Dml.Chart.ElF, Dml.Chart.Ns, formula);
+
+                                    // c:strCache
+                                    //convertStringCache(seriesFormatSequence);
+                                }
+                                
+                                _writer.WriteEndElement(); // c:strRef
                                 _writer.WriteEndElement(); // c:tx
                                 break;
                         }

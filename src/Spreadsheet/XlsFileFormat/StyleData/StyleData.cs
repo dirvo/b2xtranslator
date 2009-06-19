@@ -288,7 +288,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
             fontdata.size = new TwipsValue(font.dyHeight);
 
 
-            fontdata.fontFamily = (int)font.bFamily;
+            fontdata.fontFamily = font.bFamily;
             fontdata.charSet = font.bCharSet; 
 
             // boolean values 

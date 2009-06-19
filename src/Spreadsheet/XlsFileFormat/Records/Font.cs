@@ -64,6 +64,16 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             Double = 0x02
         }
 
+        public enum FontFamily : byte
+        {
+            NotApplicable = 0x00,
+            Roman = 0x01,
+            Swiss = 0x02,
+            Modern = 0x03,
+            Script = 0x04,
+            Decorative = 0x05
+        }
+
         /// <summary>
         /// An unsigned integer that specifies the height of the font in twips. 
         /// 
@@ -135,7 +145,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
         /// 
         /// MUST be greater than or equal to 0 and less than or equal to 5.
         /// </summary>
-        public byte bFamily;
+        public FontFamily bFamily;
 
         /// <summary>
         /// An unsigned integer that specifies the character set, as defined 
@@ -174,7 +184,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             this.bls = (FontWeight)reader.ReadUInt16();
             this.sss = (ScriptStyle)reader.ReadUInt16();
             this.uls = (UnderlineStyle)reader.ReadByte();
-            this.bFamily = reader.ReadByte();
+            this.bFamily = (FontFamily)reader.ReadByte();
             this.bCharSet = reader.ReadByte();
 
             // skip unused byte

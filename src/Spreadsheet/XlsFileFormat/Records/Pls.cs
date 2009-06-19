@@ -27,6 +27,7 @@
 using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using System.IO;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
@@ -35,18 +36,46 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
     {
         public const RecordType ID = RecordType.Pls;
 
+        public byte[] rgb;
+
         public Pls(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
         {
             // assert that the correct record type is instantiated
             Debug.Assert(this.Id == ID);
 
-            // initialize class members from stream
-            // TODO: place code here
-            reader.ReadBytes(length);
-            
-            // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            using (MemoryStream ms = new MemoryStream())
+            {
+                byte[] buffer = reader.ReadBytes(length);
+                ms.Write(buffer, 0, length);
+
+                while (BiffRecord.GetNextRecordType(reader) == RecordType.Pls)
+                {
+                    RecordType nextId = (RecordType)reader.ReadUInt16();
+                    UInt16 nextLength = reader.ReadUInt16();
+
+                    buffer = reader.ReadBytes(nextLength);
+                    ms.Write(buffer, 0, nextLength);
+                }
+
+                while (BiffRecord.GetNextRecordType(reader) == RecordType.Continue)
+                {
+                    RecordType nextId = (RecordType)reader.ReadUInt16();
+                    UInt16 nextLength = reader.ReadUInt16();
+
+                    buffer = reader.ReadBytes(nextLength);
+                    ms.Write(buffer, 0, nextLength);
+                }
+
+                ms.Position = 0;
+
+                // initialize class members from stream
+                this.rgb = new byte[ms.Length];
+                ms.Read(this.rgb, 0, (int)ms.Length);
+
+                // assert that the correct number of bytes has been read from the stream
+                //Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            }
         }
     }
 }

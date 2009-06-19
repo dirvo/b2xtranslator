@@ -68,6 +68,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
         /// <summary>
         /// Method converts a colorID to a RGB color value 
+        /// TODO: This conversion works currently only if there is no Palette record.
         /// </summary>
         /// <param name="colorID"></param>
         /// <returns></returns>
@@ -190,14 +191,25 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
             // begin font element 
             if (type == FontElementType.NormalStyle)
+            {
                 _writer.WriteStartElement("font");
+            }
             else if (type == FontElementType.String)
-                _writer.WriteStartElement("rPr"); 
+            {
+                _writer.WriteStartElement("rPr");
+            }
 
             // font size 
-            _writer.WriteStartElement("sz");
-            _writer.WriteAttributeString("val", Convert.ToString(font.size.ToPoints(), CultureInfo.GetCultureInfo("en-US")));
-            _writer.WriteEndElement();
+            // NOTE: Excel 97, Excel 2000, Excel 2002, Office Excel 2003 and Office Excel 2007 can 
+            //   save out 0 for certain fonts. This is not valid in ECMA 376
+            //
+            if (font.size.ToPoints() != 0)
+            {
+                _writer.WriteStartElement("sz");
+                _writer.WriteAttributeString("val", Convert.ToString(font.size.ToPoints(), CultureInfo.GetCultureInfo("en-US")));
+                _writer.WriteEndElement();
+            }
+            
             // font name 
             if (type == FontElementType.NormalStyle)
                 _writer.WriteStartElement("name");
@@ -209,7 +221,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             if (font.fontFamily != 0)
             {
                 _writer.WriteStartElement("family");
-                _writer.WriteAttributeString("val", font.fontFamily.ToString());
+                _writer.WriteAttributeString("val", ((int)font.fontFamily).ToString());
                 _writer.WriteEndElement();
             }
             // font charset 

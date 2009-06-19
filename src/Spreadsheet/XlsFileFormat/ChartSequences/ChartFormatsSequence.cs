@@ -173,9 +173,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public class DataLabelGroup
         {
             public DataLabExt DataLabExt;
-            public StartObject StartObject;
+            //public StartObject StartObject;
             public AttachedLabelSequence AttachedLabelSequence;
-            public EndObject EndObject;
+            //public EndObject EndObject;
 
             public DataLabelGroup(IStreamReader reader)
             {
@@ -184,15 +184,15 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                 if (BiffRecord.GetNextRecordType(reader) == RecordType.DataLabExt)
                 {
                     this.DataLabExt = (DataLabExt)BiffRecord.ReadRecord(reader);
-                    this.StartObject = (StartObject)BiffRecord.ReadRecord(reader);
+                    //this.StartObject = (StartObject)BiffRecord.ReadRecord(reader);
                 }
 
-                this.AttachedLabelSequence = new AttachedLabelSequence(reader); 
+                this.AttachedLabelSequence = new AttachedLabelSequence(reader);
 
-                if (BiffRecord.GetNextRecordType(reader) == RecordType.EndObject)
-                {
-                    this.EndObject = (EndObject)BiffRecord.ReadRecord(reader);
-                }
+                //if (BiffRecord.GetNextRecordType(reader) == RecordType.EndObject)
+                //{
+                //    this.EndObject = (EndObject)BiffRecord.ReadRecord(reader);
+                //}
             }
         }
 

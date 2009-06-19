@@ -67,8 +67,8 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 string grouping = bar.fStacked ? "stacked" : bar.f100 ? "percentStacked" : this.Is3DChart && !crtSequence.Chart3d.fCluster ? "standard" : "clustered";
                 writeValueElement(Dml.Chart.ElGrouping, grouping);
 
-                // c:varyColors
-                writeValueElement(Dml.Chart.ElVaryColors, crtSequence.ChartFormat.fVaried ? "1" : "0");
+                // c:varyColors: This setting needs to be ignored if the chart has 
+                //writeValueElement(Dml.Chart.ElVaryColors, crtSequence.ChartFormat.fVaried ? "1" : "0");
 
                 // Bar Chart Series
                 foreach (SeriesFormatSequence seriesFormatSequence in this.ChartFormatsSequence.SeriesFormatSequences)
@@ -140,7 +140,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     writeValueElement(Dml.Chart.ElGapWidth, bar.pcGap.ToString());
 
                     // c:overlap
-                    writeValueElement(Dml.Chart.ElOverlap, bar.pcOverlap.ToString());
+                    writeValueElement(Dml.Chart.ElOverlap, (-bar.pcOverlap).ToString());
 
                     // Series Lines
 

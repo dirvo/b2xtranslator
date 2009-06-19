@@ -7,11 +7,11 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
     {
         public YMult YMult;
 
-        public StartObject StartObject;
+        //public StartObject StartObject;
 
         public AttachedLabelSequence AttachedLabelSequence;
 
-        public EndObject EndObject;
+        //public EndObject EndObject;
         
         public AxmSequence(IStreamReader reader)
             : base(reader)
@@ -22,13 +22,13 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             this.YMult = (YMult)BiffRecord.ReadRecord(reader);
 
             //StartObject 
-            this.StartObject = (StartObject)BiffRecord.ReadRecord(reader);
+            //this.StartObject = (StartObject)BiffRecord.ReadRecord(reader);
             
             //ATTACHEDLABEL 
             this.AttachedLabelSequence = new AttachedLabelSequence(reader);
 
             //EndObject
-            this.EndObject = (EndObject)BiffRecord.ReadRecord(reader);
+            //this.EndObject = (EndObject)BiffRecord.ReadRecord(reader);
         }
     }
 }

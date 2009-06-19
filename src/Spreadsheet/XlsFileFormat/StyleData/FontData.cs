@@ -47,7 +47,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData
 
         public string fontName;
         public TwipsValue size;
-        public int fontFamily;
+        public Font.FontFamily fontFamily;
         public byte charSet;
 
 

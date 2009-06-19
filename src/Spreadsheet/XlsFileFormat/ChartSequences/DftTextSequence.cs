@@ -7,13 +7,13 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
     {
         public DataLabExt DataLabExt;
 
-        public StartObject StartObject;
+        //public StartObject StartObject;
 
         public DefaultText DefaultText;
 
         public AttachedLabelSequence AttachedLabelSequence;
 
-        public EndObject EndObject;
+        //public EndObject EndObject;
 
         public DftTextSequence(IStreamReader reader)
             : base(reader)
@@ -24,7 +24,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             if (BiffRecord.GetNextRecordType(reader) == RecordType.DataLabExt)
             {
                 this.DataLabExt = (DataLabExt)BiffRecord.ReadRecord(reader);
-                this.StartObject = (StartObject)BiffRecord.ReadRecord(reader);
+                //this.StartObject = (StartObject)BiffRecord.ReadRecord(reader);
             }
 
             // DefaultText
@@ -34,10 +34,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             this.AttachedLabelSequence = new AttachedLabelSequence(reader);
 
             // [EndObject]
-            if (BiffRecord.GetNextRecordType(reader) == RecordType.EndObject)
-            {
-                this.EndObject = (EndObject)BiffRecord.ReadRecord(reader);
-            }
+            //if (BiffRecord.GetNextRecordType(reader) == RecordType.EndObject)
+            //{
+            //    this.EndObject = (EndObject)BiffRecord.ReadRecord(reader);
+            //}
         }
     }
 }

@@ -36,7 +36,7 @@ namespace DIaLOGIKa.b2xtranslator.Tools
         /// <summary>
         /// The dots per inch value that should be used.
         /// </summary>
-        public double Dpi = 72.0;
+        public const double Dpi = 72.0;
 
         private double value;
 
@@ -64,7 +64,7 @@ namespace DIaLOGIKa.b2xtranslator.Tools
         /// <returns></returns>
         public double ToInch()
         {
-            return this.value / (this.Dpi * 20);
+            return this.value / (TwipsValue.Dpi * 20);
         }
 
         /// <summary>

@@ -36,6 +36,12 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     writeValueElement("legendPos", mapLegendPos(ldSequence.Pos));
                 }
 
+                // c:legendEntry
+
+                // c:layout
+
+                // c:overlay
+
                 // c:spPr
                 if (ldSequence.FrameSequence != null)
                 {
@@ -45,7 +51,6 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 // c:txPr
                 if (ldSequence.TextPropsSequence != null)
                 {
-                    
                     // created by Excel 2007
                     XmlDocument xmlTextProps = new XmlDocument();
                     if (ldSequence.TextPropsSequence.TextPropsStream != null)
@@ -77,6 +82,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 else
                 {
                     // TODO: older Excel Versions
+                    ldSequence.AttachedLabelSequence.Convert(new TextBodyMapping(this.WorkbookContext, this.ChartContext));
                 }
             }
             _writer.WriteEndElement(); // c:legend
@@ -105,7 +111,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         if (pos.y1 > pos.x1)
                         {
                             // positioned at the bottom border
-                            result = "bottom";
+                            result = "b";
                         }
                     }
                 }

@@ -108,6 +108,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             // skip leading StartBlock/EndBlock records
             if (nextRecord == RecordType.StartBlock
                 || nextRecord == RecordType.EndBlock 
+                || nextRecord == RecordType.StartObject
+                || nextRecord == RecordType.EndObject
                 || nextRecord == RecordType.ChartFrtInfo)
             {
                 // skip the body of the record
@@ -159,6 +161,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                 // skip leading StartBlock/EndBlock records
                 if (id == RecordType.StartBlock ||
                     id == RecordType.EndBlock ||
+                    id == RecordType.StartObject ||
+                    id == RecordType.EndObject ||
                     id == RecordType.ChartFrtInfo)
                 {
                     // skip the body of this record

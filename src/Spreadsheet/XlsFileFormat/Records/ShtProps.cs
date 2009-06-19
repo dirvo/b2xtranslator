@@ -97,7 +97,11 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             this.fAlwaysAutoPlotArea = Utils.BitmaskToBool(flags, 0x10);
 
             this.mdBlank = (EmptyCellPlotMode)reader.ReadByte();
-            reader.ReadByte(); // skip the last byte
+            if (length > 3)
+            {
+                // skip the last optional byte
+                reader.ReadByte(); 
+            }
 
             // assert that the correct number of bytes has been read from the stream
             Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
