@@ -478,6 +478,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         SchemeType = "accent1";
                         return new RGBColor(MasterScheme.Fills, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
                     case 0x05: //accent1
+                        SchemeType = "accent2";
                         return new RGBColor(MasterScheme.Accent, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
                     case 0x06: //accent2
                         SchemeType = "hlink";

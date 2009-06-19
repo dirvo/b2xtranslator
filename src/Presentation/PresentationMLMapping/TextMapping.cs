@@ -906,10 +906,22 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         if (p.BulletColorPresent)
                         {
                             _writer.WriteStartElement("a", "buClr", OpenXmlNamespaces.DrawingML);
-                            _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                            
                             string s = p.BulletColor.Red.ToString("X").PadLeft(2, '0') + p.BulletColor.Green.ToString("X").PadLeft(2, '0') + p.BulletColor.Blue.ToString("X").PadLeft(2, '0');
-                            _writer.WriteAttributeString("val", s);
-                            _writer.WriteEndElement();
+                            switch (p.BulletColor.Index)
+                            {
+                                case 6:
+                                    _writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
+                                    _writer.WriteAttributeString("val", "hlink");
+                                    _writer.WriteEndElement();
+                                    break;
+                                default:
+                                    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                                    _writer.WriteAttributeString("val", s);
+                                    _writer.WriteEndElement();
+                                    break;
+                            }
+                           
                             _writer.WriteEndElement(); //buClr
                         }
                         if (p.BulletSizePresent)
