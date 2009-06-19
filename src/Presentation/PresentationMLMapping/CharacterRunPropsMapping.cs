@@ -48,7 +48,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _ctx = ctx;
         }
 
-        public void Apply(CharacterRun run, string startElement, RegularContainer slide, ref string lastColor, ref string lastSize, ref string lastTypeface, string lang, TextMasterStyleAtom defaultStyle)
+        public void Apply(CharacterRun run, string startElement, RegularContainer slide, ref string lastColor, ref string lastSize, ref string lastTypeface, string lang, TextMasterStyleAtom defaultStyle, int lvl)
         {
 
             _writer.WriteStartElement("a", startElement, OpenXmlNamespaces.DrawingML);
@@ -70,9 +70,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
             else if (defaultStyle != null)
             {
-                if (defaultStyle.CRuns[0].SizePresent)
+                if (defaultStyle.CRuns[lvl].SizePresent)
                 {
-                    _writer.WriteAttributeString("sz", (defaultStyle.CRuns[0].Size * 100).ToString());
+                    _writer.WriteAttributeString("sz", (defaultStyle.CRuns[lvl].Size * 100).ToString());
                 }
             }
 
@@ -82,11 +82,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 if ((run.Style & StyleMask.IsItalic) == StyleMask.IsItalic) _writer.WriteAttributeString("i", "1");
                 if ((run.Style & StyleMask.IsUnderlined) == StyleMask.IsUnderlined) _writer.WriteAttributeString("u", "sng");
             }
-            else if (defaultStyle != null && defaultStyle.CRuns[0].StyleFlagsFieldPresent)
+            else if (defaultStyle != null && defaultStyle.CRuns[lvl].StyleFlagsFieldPresent)
             {
-                if ((defaultStyle.CRuns[0].Style & StyleMask.IsBold) == StyleMask.IsBold) _writer.WriteAttributeString("b", "1");
-                if ((defaultStyle.CRuns[0].Style & StyleMask.IsItalic) == StyleMask.IsItalic) _writer.WriteAttributeString("i", "1");
-                if ((defaultStyle.CRuns[0].Style & StyleMask.IsUnderlined) == StyleMask.IsUnderlined) _writer.WriteAttributeString("u", "sng");
+                if ((defaultStyle.CRuns[lvl].Style & StyleMask.IsBold) == StyleMask.IsBold) _writer.WriteAttributeString("b", "1");
+                if ((defaultStyle.CRuns[lvl].Style & StyleMask.IsItalic) == StyleMask.IsItalic) _writer.WriteAttributeString("i", "1");
+                if ((defaultStyle.CRuns[lvl].Style & StyleMask.IsUnderlined) == StyleMask.IsUnderlined) _writer.WriteAttributeString("u", "sng");
             }
 
             if (runExists && run.ColorPresent)
@@ -103,9 +103,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
             else if (defaultStyle != null)
             {
-                if (defaultStyle.CRuns[0].ColorPresent)
+                if (defaultStyle.CRuns[lvl].ColorPresent)
                 {
-                    writeSolidFill((RegularContainer)defaultStyle.ParentRecord, defaultStyle.CRuns[0], ref lastColor);
+                    writeSolidFill((RegularContainer)defaultStyle.ParentRecord, defaultStyle.CRuns[lvl], ref lastColor);
                 }
             }
 
@@ -222,13 +222,13 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 _writer.WriteAttributeString("typeface", lastTypeface);
                 _writer.WriteEndElement();
             }
-            else if (defaultStyle != null && defaultStyle.CRuns[0].TypefacePresent)
+            else if (defaultStyle != null && defaultStyle.CRuns[lvl].TypefacePresent)
             {
                 _writer.WriteStartElement("a", "latin", OpenXmlNamespaces.DrawingML);
                 try
                 {
                     FontCollection fonts = _ctx.Ppt.DocumentRecord.FirstChildWithType<DIaLOGIKa.b2xtranslator.PptFileFormat.Environment>().FirstChildWithType<FontCollection>();
-                    FontEntityAtom entity = fonts.entities[(int)defaultStyle.CRuns[0].TypefaceIdx];
+                    FontEntityAtom entity = fonts.entities[(int)defaultStyle.CRuns[lvl].TypefaceIdx];
                     if (entity.TypeFace.IndexOf('\0') > 0)
                     {
                         _writer.WriteAttributeString("typeface", entity.TypeFace.Substring(0, entity.TypeFace.IndexOf('\0')));
