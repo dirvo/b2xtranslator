@@ -47,6 +47,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         private int lastSpaceBefore = 0;
         private string lastColor = "";
         private string lastBulletFont = "";
+        private string lastBulletChar = "";
         private string lastBulletColor = "";
         private string lastSize = "";
         private string lastTypeface = "";
@@ -102,6 +103,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             {
                 lastSpaceBefore = 0;
                 lastBulletFont = "";
+                lastBulletChar = "";
                 lastColor = "";
                 lastBulletColor = "";
                 lastSize = "";
@@ -128,6 +130,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 lastSpaceBefore = 0;
                 lastColor = "";
                 lastBulletFont = "";
+                lastBulletChar = "";
                 lastBulletColor = "";
                 lastSize = "";
                 for (int i = 0; i < atom.IndentLevelCount; i++)
@@ -166,6 +169,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             {
                 lastSpaceBefore = 0;
                 lastBulletFont = "";
+                lastBulletChar = "";
                 lastBulletColor = "";
                 lastColor = "";
                 lastSize = "";
@@ -201,6 +205,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             {
                 lastSpaceBefore = 0;
                 lastBulletFont = "";
+                lastBulletChar = "";
                 lastBulletColor = "";
                 lastColor = "";
                 lastSize = "";
@@ -433,7 +438,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 }
                 else
                 {
-                    if (pr.BulletColorPresent && pr.BulletFlagsFieldPresent && (pr.BulletFlags & 1 << 2) != 0)
+                    if (pr.BulletColorPresent) // && pr.BulletFlagsFieldPresent && (pr.BulletFlags & 1 << 2) != 0)
                     {
                         writeBuClr((RegularContainer)this._Master, pr.BulletColor, ref lastBulletColor);
                     }
@@ -493,9 +498,16 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                      }
                      if (pr.BulletCharPresent)
                      {
-                        _writer.WriteStartElement("a", "buChar", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("char", pr.BulletChar.ToString());
-                        _writer.WriteEndElement(); //buChar
+                         _writer.WriteStartElement("a", "buChar", OpenXmlNamespaces.DrawingML);
+                         _writer.WriteAttributeString("char", pr.BulletChar.ToString());
+                         _writer.WriteEndElement(); //buChar
+                         lastBulletChar = pr.BulletChar.ToString();
+                     }
+                     else if (lastBulletChar.Length > 0)
+                     {
+                         _writer.WriteStartElement("a", "buChar", OpenXmlNamespaces.DrawingML);
+                         _writer.WriteAttributeString("char", lastBulletChar);
+                         _writer.WriteEndElement(); //buChar
                      }
                  }
             }
