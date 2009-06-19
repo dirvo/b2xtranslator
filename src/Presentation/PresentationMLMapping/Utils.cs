@@ -475,6 +475,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     case 0x03: //title
                         return new RGBColor(MasterScheme.TitleText, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
                     case 0x04: //fill
+                        SchemeType = "accent1";
                         return new RGBColor(MasterScheme.Fills, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
                     case 0x05: //accent1
                         return new RGBColor(MasterScheme.Accent, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
