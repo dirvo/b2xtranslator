@@ -438,7 +438,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 }
                 else
                 {
-                    if (pr.BulletColorPresent) // && pr.BulletFlagsFieldPresent && (pr.BulletFlags & 1 << 2) != 0)
+                    if (pr.BulletColorPresent && (!pr.BulletFlagsFieldPresent && (pr.BulletFlags & 1 << 2) == 0))
                     {
                         writeBuClr((RegularContainer)this._Master, pr.BulletColor, ref lastBulletColor);
                     }

@@ -456,14 +456,16 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             if (idx + (uint)internalOffset == 0)
                             {
                                 r = GetCharacterRun(style, 0);
+                                CharacterRunStart = GetCharacterRunStart(style, 0);
                             }
                             else
                             {
-                                r = GetCharacterRun(style, idx + (uint)internalOffset + 1);
+                                r = GetCharacterRun(style, idx + (uint)internalOffset);
+                                CharacterRunStart = GetCharacterRunStart(style, idx + (uint)internalOffset);
                             }
                             if (r != null)
                             {
-                                CharacterRunStart = GetCharacterRunStart(style, idx + (uint)internalOffset + 1);
+                                
                                 len = (int)(CharacterRunStart + r.Length - idx - internalOffset);
                                 if (len > line.Length - idx + offset) len = (int)(line.Length - idx + offset);
                                 if (len < 0) len = (int)(line.Length - idx + offset);
