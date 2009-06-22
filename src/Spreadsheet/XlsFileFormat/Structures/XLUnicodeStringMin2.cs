@@ -61,5 +61,17 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures
                 this.st = new XLUnicodeStringNoCch(reader, this.cch);
             }
         }
+
+        public string Value
+        {
+            get
+            {
+                if (this.st != null)
+                {
+                    return this.st.Value;
+                }
+                return string.Empty;
+            }
+        }
     }
 }

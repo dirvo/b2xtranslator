@@ -56,19 +56,23 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
             Pie pie = crtSequence.ChartType as Pie;
 
-            // c:pieChart or c:pie3DChart 
-            _writer.WriteStartElement(Dml.Chart.Prefix, this._is3DChart ? Dml.Chart.ElPie3DChart : Dml.Chart.ElPieChart, Dml.Chart.Ns);
+            bool isDoughnutChart = (pie.pcDonut != 0);
+            
+            string chartType = this._is3DChart ? Dml.Chart.ElPie3DChart : Dml.Chart.ElPieChart; 
+            if (isDoughnutChart)
             {
-                // Axis Ids
-                foreach (int axisId in crtSequence.ChartFormat.AxisIds)
-                {
-                    writeValueElement(Dml.Chart.ElAxId, axisId.ToString());
-                }
+                chartType = Dml.Chart.ElDoughnutChart;
+            }
+
+            // c:pieChart or c:pie3DChart or c:doughnutChart
+            _writer.WriteStartElement(Dml.Chart.Prefix, chartType, Dml.Chart.Ns);
+            {
+                // EG_PieChartShared
 
                 // varyColors
                 writeValueElement("varyColors", crtSequence.ChartFormat.fVaried ? "1" : "0");
 
-                // Pie Chart Series
+                // Pie Chart Series (CT_PieSer)
                 foreach (SeriesFormatSequence seriesFormatSequence in this.ChartFormatsSequence.SeriesFormatSequences)
                 {
                     if (seriesFormatSequence.SerToCrt != null && seriesFormatSequence.SerToCrt.id == crtSequence.ChartFormat.idx)
@@ -103,13 +107,19 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         // c:val
                         seriesFormatSequence.Convert(new ValMapping(this.WorkbookContext, this.ChartContext, Dml.Chart.ElVal));
 
-                        // c:shape
                         _writer.WriteEndElement(); // c:ser
                     }
                 }
 
-                // firstSliceAng
-                writeValueElement("firstSliceAng", pie.anStart.ToString());
+                if (!this.Is3DChart)
+                {
+                    // c:firstSliceAng
+                    writeValueElement("firstSliceAng", pie.anStart.ToString());
+                }
+                if (isDoughnutChart)
+                {
+                    // c:holeSize
+                }
             }
             _writer.WriteEndElement();
         }

@@ -94,6 +94,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         }
 
                         // c:dLbls (Data Labels)
+                        this.ChartFormatsSequence.Convert(new DataLabelMapping(this.WorkbookContext, this.ChartContext, seriesFormatSequence));
 
                         // c:trendline 
 

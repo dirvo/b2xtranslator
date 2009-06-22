@@ -39,7 +39,13 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             }
 
             // AxcExt
-            this.AxcExt = (AxcExt)BiffRecord.ReadRecord(reader);
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.AxcExt)
+            {
+                // NOTE: we parse this as an optional record because then we can use the IvAxisSequence to 
+                //    parse a SeriesDataSequence as well. SeriesDataSequence is just a simple version of IvAxisSequence.
+                //    This simplifies mapping later on.
+                this.AxcExt = (AxcExt)BiffRecord.ReadRecord(reader);
+            }
 
             // [CatLab]
             if (BiffRecord.GetNextRecordType(reader) == RecordType.CatLab)

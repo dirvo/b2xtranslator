@@ -13,7 +13,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
         public DvAxisSequence DvAxisSequence2;
 
-        public SeriesAxisSequence SeriesAxisSequence;
+        // NOTE: SeriesAxisSequence is just a simplified IvAxisSequence
+        //public SeriesAxisSequence SeriesAxisSequence;
+        public IvAxisSequence SeriesAxisSequence;
 
         public List<AttachedLabelSequence> AttachedLabelSequences;
 
@@ -51,7 +53,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                     //[SERIESAXIS]  
                     if (BiffRecord.GetNextRecordType(reader) == RecordType.Axis)
                     {
-                        this.SeriesAxisSequence = new SeriesAxisSequence(reader);
+                        this.SeriesAxisSequence = new IvAxisSequence(reader);
                     }
                 }
                 else

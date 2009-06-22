@@ -58,8 +58,34 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             // c:surfaceChart 
             _writer.WriteStartElement(Dml.Chart.Prefix, this._is3DChart ? Dml.Chart.ElSurface3DChart : Dml.Chart.ElSurfaceChart, Dml.Chart.Ns);
             {
+                // EG_SurfaceChartShared
 
-                // Axis Ids
+                // c:wireframe
+
+                // Surface Chart Series (CT_SurfaceSer)
+                foreach (SeriesFormatSequence seriesFormatSequence in this.ChartFormatsSequence.SeriesFormatSequences)
+                {
+                    if (seriesFormatSequence.SerToCrt != null && seriesFormatSequence.SerToCrt.id == crtSequence.ChartFormat.idx)
+                    {
+                        // c:ser
+                        _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElSer, Dml.Chart.Ns);
+
+                        // EG_SerShared
+                        seriesFormatSequence.Convert(new SeriesMapping(this.WorkbookContext, this.ChartContext));
+
+                        // c:cat
+                        seriesFormatSequence.Convert(new CatMapping(this.WorkbookContext, this.ChartContext, Dml.Chart.ElCat));
+
+                        // c:val
+                        seriesFormatSequence.Convert(new ValMapping(this.WorkbookContext, this.ChartContext, Dml.Chart.ElVal));
+
+                        _writer.WriteEndElement(); // c:ser
+                    }
+                }
+
+                // c:bandFmts
+
+                // c:axId
                 foreach (int axisId in crtSequence.ChartFormat.AxisIds)
                 {
                     writeValueElement(Dml.Chart.ElAxId, axisId.ToString());

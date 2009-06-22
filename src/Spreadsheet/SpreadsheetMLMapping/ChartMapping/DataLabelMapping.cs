@@ -84,7 +84,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         if (attachedLabelSequence.DataLabExtContents != null)
                         {
                             //<xsd:element name="separator" type="xsd:string" minOccurs="0" maxOccurs="1">
-                            _writer.WriteElementString(Dml.Chart.Prefix, "separator", Dml.Chart.Ns, attachedLabelSequence.DataLabExtContents.rgchSep.st.Value);
+                            _writer.WriteElementString(Dml.Chart.Prefix, "separator", Dml.Chart.Ns, attachedLabelSequence.DataLabExtContents.rgchSep.Value);
 
                             //<xsd:element name="showBubbleSize" type="CT_Boolean" minOccurs="0" maxOccurs="1">
                             if (attachedLabelSequence.DataLabExtContents.fBubSizes)
