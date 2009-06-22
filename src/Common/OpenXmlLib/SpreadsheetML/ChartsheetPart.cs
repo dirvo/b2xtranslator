@@ -36,7 +36,6 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.SpreadsheetML
 
     public class ChartsheetPart : OpenXmlPart
     {
-        private int _drawingNumber = 0;
         private DrawingsPart _drawingsPart = null;
         
         public ChartsheetPart(WorkbookPart parent, int partIndex)

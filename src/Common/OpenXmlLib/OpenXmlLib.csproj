@@ -14,6 +14,8 @@
     <OldToolsVersion>2.0</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -92,6 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagramOpenXmlLib.cd" />
+    <None Include="..\..\key.snk" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZipUtils\ZipUtils.csproj">

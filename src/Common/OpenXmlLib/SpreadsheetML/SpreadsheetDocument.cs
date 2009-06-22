@@ -59,7 +59,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.SpreadsheetML
                 //    break;
                 //case OpenXmlPackage.DocumentType.MacroEnabledTemplate:
                 //    workBookPart = new WorkbookPart(this, WordprocessingMLContentTypes.MainDocumentMacroTemplate);
-                    break;
+                //    break;
             }
             _documentType = type;
             this.AddPart(this.workBookPart);
