@@ -39,9 +39,12 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
     public class ValMapping : AbstractChartMapping,
           IMapping<SeriesFormatSequence>
     {
-        public ValMapping(ExcelContext workbookContext, ChartContext chartContext)
+        string _parentElement;
+
+        public ValMapping(ExcelContext workbookContext, ChartContext chartContext, string parentElement)
             : base(workbookContext, chartContext)
         {
+            this._parentElement = parentElement;
         }
 
         #region IMapping<SeriesFormatSequence> Members
@@ -56,7 +59,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 if (aiSequence.BRAI.braiId == BRAI.BraiId.SeriesValues)
                 {
                     // c:val
-                    _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElVal, Dml.Chart.Ns);
+                    _writer.WriteStartElement(Dml.Chart.Prefix, this._parentElement, Dml.Chart.Ns);
                     {
                         BRAI brai = aiSequence.BRAI;
                         switch (brai.rt)

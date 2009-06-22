@@ -138,10 +138,30 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                 this.AttachedLabelSequences.Add(new AttachedLabelSequence(reader));
             }
 
+            // [CrtLayout12A]
+            // NOTE: The occurence of a CrtLayout12A record at this position in the sequence 
+            //    is a deviation from the spec. However it has been encountered in certain 
+            //    test documents (even if these documents were re-saved using Excel 2003)
+            //
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.CrtLayout12A)
+            {
+                this.CrtLayout12A = (CrtLayout12)BiffRecord.ReadRecord(reader);
+            }
+
             // [CRTMLFRT]
             if (BiffRecord.GetNextRecordType(reader) == RecordType.CrtMlFrt)
             {
                 this.CrtMlfrtSequence = new CrtMlfrtSequence(reader);
+            }
+
+            // [CrtLayout12A]
+            // NOTE: The occurence of a CrtLayout12A record at this position in the sequence 
+            //    is a deviation from the spec. However it has been encountered in certain 
+            //    test documents (even if these documents were re-saved using Excel 2003)
+            //
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.CrtLayout12A)
+            {
+                this.CrtLayout12A = (CrtLayout12)BiffRecord.ReadRecord(reader);
             }
 
             // *([DataLabExt StartObject] ATTACHEDLABEL [EndObject])
@@ -152,11 +172,31 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                this.DataLabelGroups.Add(new DataLabelGroup(reader));
             }
 
+            // [CrtLayout12A]
+            // NOTE: The occurence of a CrtLayout12A record at this position in the sequence 
+            //    is a deviation from the spec. However it has been encountered in certain 
+            //    test documents (even if these documents were re-saved using Excel 2003)
+            //
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.CrtLayout12A)
+            {
+                this.CrtLayout12A = (CrtLayout12)BiffRecord.ReadRecord(reader);
+            }
+
             // [TEXTPROPS]
             if (BiffRecord.GetNextRecordType(reader) == RecordType.RichTextStream
                 || BiffRecord.GetNextRecordType(reader) == RecordType.TextPropsStream)
             {
                 this.TextPropsSequence = new TextPropsSequence(reader);
+            }
+
+            // [CrtLayout12A]
+            // NOTE: The occurence of a CrtLayout12A record at this position in the sequence 
+            //    is a deviation from the spec. However it has been encountered in certain 
+            //    test documents (even if these documents were re-saved using Excel 2003)
+            //
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.CrtLayout12A)
+            {
+                this.CrtLayout12A = (CrtLayout12)BiffRecord.ReadRecord(reader);
             }
 
             // *2CRTMLFRT

@@ -12,9 +12,12 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
     public class CatMapping : AbstractChartMapping,
           IMapping<SeriesFormatSequence>
     {
-        public CatMapping(ExcelContext workbookContext, ChartContext chartContext)
+        string _parentElement;
+
+        public CatMapping(ExcelContext workbookContext, ChartContext chartContext, string parentElement)
             : base(workbookContext, chartContext)
         {
+            this._parentElement = parentElement;
         }
 
         public void Apply(SeriesFormatSequence seriesFormatSequence)
@@ -29,8 +32,8 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                     // don't create a c:cat node for automatically generated category axis data!
                     if (brai.rt != BRAI.DataSource.Automatic)
                     {
-                        // c:cat
-                        _writer.WriteStartElement(Dml.Chart.Prefix, "cat", Dml.Chart.Ns);
+                        // c:cat (or c:xVal for scatter and bubble charts)
+                        _writer.WriteStartElement(Dml.Chart.Prefix, this._parentElement, Dml.Chart.Ns);
                         {
                             switch (brai.rt)
                             {
@@ -38,7 +41,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                                     break;
                                 case BRAI.DataSource.Reference:
                                     // c:strRef
-                                    _writer.WriteStartElement(Dml.Chart.Prefix, "strRef", Dml.Chart.Ns);
+                                    _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElStrRef, Dml.Chart.Ns);
                                     {
                                         // c:f
                                         string formula = FormulaInfixMapping.mapFormula(brai.formula.formula, this.WorkbookContext);
@@ -61,7 +64,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
         private void convertStringCache(SeriesFormatSequence seriesFormatSequence)
         {
-            _writer.WriteStartElement(Dml.Chart.Prefix, "strCache", Dml.Chart.Ns);
+            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElStrCache, Dml.Chart.Ns);
             {
                 // find series data
                 SeriesDataSequence seriesDataSequence = this.ChartContext.ChartSheetContentSequence.SeriesDataSequence;
@@ -82,7 +85,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         }
 
                         // c:ptCount
-                        writeValueElement("ptCount", ptCount.ToString());
+                        writeValueElement(Dml.Chart.ElPtCount, ptCount.ToString());
 
                         UInt32 idx = 0;
                         for (UInt32 i = 0; i < dataMatrix.GetLength(1); i++)

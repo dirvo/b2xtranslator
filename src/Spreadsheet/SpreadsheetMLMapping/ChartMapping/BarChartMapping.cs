@@ -100,10 +100,10 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         // c:errBars
 
                         // c:cat (Category Axis Data)
-                        seriesFormatSequence.Convert(new CatMapping(this.WorkbookContext, this.ChartContext));
+                        seriesFormatSequence.Convert(new CatMapping(this.WorkbookContext, this.ChartContext, Dml.Chart.ElCat));
 
                         // c:val
-                        seriesFormatSequence.Convert(new ValMapping(this.WorkbookContext, this.ChartContext));
+                        seriesFormatSequence.Convert(new ValMapping(this.WorkbookContext, this.ChartContext, Dml.Chart.ElVal));
 
                         // c:shape (we only condider the first Chart3DBarShape found)
                         SsSequence ssSeq = seriesFormatSequence.SsSequence.Find(s => s.Chart3DBarShape != null);

@@ -32,11 +32,11 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
     {
         public FrtFontList FrtFontList;
 
-        public StartObject StartObject;
+        //public StartObject StartObject;
 
         public List<FontFbiGroup> Fonts;
 
-        public EndObject EndObject;
+        //public EndObject EndObject;
 
         public FontListSequence(IStreamReader reader) : base(reader)
         {
@@ -44,11 +44,11 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             this.FrtFontList = (FrtFontList)BiffRecord.ReadRecord(reader);
 
             //StartObject 
-            this.StartObject = (StartObject)BiffRecord.ReadRecord(reader);
+            //this.StartObject = (StartObject)BiffRecord.ReadRecord(reader);
             
             //*(Font [Fbi]) 
             this.Fonts = new List<FontFbiGroup>();
-            while (BiffRecord.GetNextRecordType(reader) != RecordType.EndObject)
+            while (BiffRecord.GetNextRecordType(reader) == RecordType.Font)
             {
                 Font font = (Font)BiffRecord.ReadRecord(reader);
                 Fbi fbi = null;
@@ -60,7 +60,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             }
 
             //EndObject
-            this.EndObject = (EndObject)BiffRecord.ReadRecord(reader);
+            //this.EndObject = (EndObject)BiffRecord.ReadRecord(reader);
         }
     }
 }

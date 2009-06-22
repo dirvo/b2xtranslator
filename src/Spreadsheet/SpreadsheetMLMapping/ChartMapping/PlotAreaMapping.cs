@@ -31,6 +31,7 @@ using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib.DrawingML;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
+using System.Globalization;
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
@@ -194,7 +195,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                                 // c:axPos
                                 // TODO: find mapping
                                 writeValueElement(Dml.Chart.ElAxPos, "b");
-                                
+
                                 // c:majorGridlines
 
                                 // c:minorGridlines
@@ -223,7 +224,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
                                 // c:crossAx
                                 writeValueElement(Dml.Chart.ElCrossAx, axesSequence.DvAxisSequence.Axis.AxisId.ToString());
-                                
+
                                 // c:crosses or c:crossesAt
 
                             }
@@ -236,28 +237,16 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         {
                             // c:axId
                             writeValueElement(Dml.Chart.ElAxId, axesSequence.DvAxisSequence.Axis.AxisId.ToString());
-                            
+
                             // c:scaling
-                            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElScaling, Dml.Chart.Ns);
-                            {
-                                // c:logBase
-
-                                // c:orientation
-                                writeValueElement(Dml.Chart.ElOrientation, (axesSequence.DvAxisSequence.ValueRange == null || axesSequence.DvAxisSequence.ValueRange.fReversed) ? "maxMin" : "minMax");
-                                
-                                // c:max
-
-                                // c:min
-
-                            }
-                            _writer.WriteEndElement(); // c:scaling
+                            mapScaling(axesSequence.DvAxisSequence.ValueRange);
 
                             // c:delete
 
                             // c:axPos
                             // TODO: find mapping
                             writeValueElement(Dml.Chart.ElAxPos, "l");
-                            
+
                             // c:majorGridlines
 
                             // c:minorGridlines
@@ -281,7 +270,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             // c:tickLblPos
 
                             // c:spPr
-                            
+
                             // c:txPr
 
                             // c:crossAx
@@ -289,15 +278,93 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             {
                                 writeValueElement(Dml.Chart.ElCrossAx, axesSequence.IvAxisSequence.Axis.AxisId.ToString());
                             }
-                            
+                            else if (axesSequence.DvAxisSequence2 != null)
+                            {
+                                writeValueElement(Dml.Chart.ElCrossAx, axesSequence.DvAxisSequence2.Axis.AxisId.ToString());
+                            }
+
                             // c:crosses or c:crossesAt
+
+                            // c:crossBetween
+
+                            // c:majorUnit
+                            mapMajorUnit(axesSequence.DvAxisSequence.ValueRange);
+
+                            // c:minorUnit
+                            mapMinorUnit(axesSequence.DvAxisSequence.ValueRange);
+
+                            // c:dispUnits
 
                         }
                         _writer.WriteEndElement(); // c:valAx
+
+                        if (axesSequence.DvAxisSequence2 != null)
+                        {
+                            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElValAx, Dml.Chart.Ns);
+                            {
+                                // c:axId
+                                writeValueElement(Dml.Chart.ElAxId, axesSequence.DvAxisSequence2.Axis.AxisId.ToString());
+
+                                // c:scaling
+                                mapScaling(axesSequence.DvAxisSequence2.ValueRange);
+
+                                // c:delete
+
+                                // c:axPos
+                                // TODO: find mapping
+                                writeValueElement(Dml.Chart.ElAxPos, "b");
+
+                                // c:majorGridlines
+
+                                // c:minorGridlines
+
+                                // c:title
+                                foreach (AttachedLabelSequence attachedLabelSequence in axesSequence.AttachedLabelSequences)
+                                {
+                                    if (attachedLabelSequence.ObjectLink != null && attachedLabelSequence.ObjectLink.wLinkObj == ObjectLink.ObjectType.DVAxis)
+                                    {
+                                        attachedLabelSequence.Convert(new TitleMapping(this.WorkbookContext, this.ChartContext));
+                                        break;
+                                    }
+                                }
+
+                                // c:numFmt
+
+                                // c:majorTickMark
+
+                                // c:minorTickMark
+
+                                // c:tickLblPos
+
+                                // c:spPr
+
+                                // c:txPr
+
+                                // c:crossAx
+                                if (axesSequence.DvAxisSequence != null)
+                                {
+                                    writeValueElement(Dml.Chart.ElCrossAx, axesSequence.DvAxisSequence.Axis.AxisId.ToString());
+                                }
+
+                                // c:crosses or c:crossesAt
+
+                                // c:crossBetween
+
+                                // c:majorUnit
+                                mapMajorUnit(axesSequence.DvAxisSequence2.ValueRange);
+
+                                // c:minorUnit
+                                mapMinorUnit(axesSequence.DvAxisSequence2.ValueRange);
+
+                                // c:dispUnits
+
+                            }
+                            _writer.WriteEndElement(); // c:valAx
+                        }
                     }
                 }
                 // c:spPr
-                if (chartFormatsSequence.AxisParentSequences.Count > 0 
+                if (chartFormatsSequence.AxisParentSequences.Count > 0
                     && chartFormatsSequence.AxisParentSequences[0].AxesSequence != null
                     && chartFormatsSequence.AxisParentSequences[0].AxesSequence.PlotArea != null)
                 {
@@ -307,5 +374,49 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             _writer.WriteEndElement(); // c:plotArea
         }
         #endregion
+
+        private void mapScaling(ValueRange valueRange)
+        {
+            // c:scaling
+            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElScaling, Dml.Chart.Ns);
+            {
+                // c:logBase
+                // TODO: support for custom logarithmic base (The default base of the logarithmic scale is 10, 
+                //  unless a CrtMlFrt record follows this record, specifying the base in a XmlTkLogBaseFrt)
+
+                // c:orientation
+                writeValueElement(Dml.Chart.ElOrientation, (valueRange == null || valueRange.fReversed) ? "maxMin" : "minMax");
+
+                // c:max
+                if (valueRange != null && !valueRange.fAutoMax)
+                {
+                    writeValueElement(Dml.Chart.ElMax, valueRange.numMax.ToString(CultureInfo.InvariantCulture));
+                }
+
+                // c:min
+                if (valueRange != null && !valueRange.fAutoMin)
+                {
+                    writeValueElement(Dml.Chart.ElMin, valueRange.numMin.ToString(CultureInfo.InvariantCulture));
+                }
+            }
+            _writer.WriteEndElement(); // c:scaling
+
+        }
+
+        private void mapMajorUnit(ValueRange valueRange)
+        {
+            if (valueRange != null && !valueRange.fAutoMajor)
+            {
+                writeValueElement(Dml.Chart.ElMajorUnit, valueRange.numMajor.ToString(CultureInfo.InvariantCulture));
+            }
+        }
+
+        private void mapMinorUnit(ValueRange valueRange)
+        {
+            if (valueRange != null && !valueRange.fAutoMinor)
+            {
+                writeValueElement(Dml.Chart.ElMinorUnit, valueRange.numMinor.ToString(CultureInfo.InvariantCulture));
+            }
+        }
     }
 }

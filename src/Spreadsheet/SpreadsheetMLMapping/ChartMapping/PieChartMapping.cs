@@ -98,10 +98,10 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         this.ChartFormatsSequence.Convert(new DataLabelMapping(this.WorkbookContext, this.ChartContext, seriesFormatSequence));
 
                         // c:cat
-                        seriesFormatSequence.Convert(new CatMapping(this.WorkbookContext, this.ChartContext));
+                        seriesFormatSequence.Convert(new CatMapping(this.WorkbookContext, this.ChartContext, Dml.Chart.ElCat));
 
                         // c:val
-                        seriesFormatSequence.Convert(new ValMapping(this.WorkbookContext, this.ChartContext));
+                        seriesFormatSequence.Convert(new ValMapping(this.WorkbookContext, this.ChartContext, Dml.Chart.ElVal));
 
                         // c:shape
                         _writer.WriteEndElement(); // c:ser

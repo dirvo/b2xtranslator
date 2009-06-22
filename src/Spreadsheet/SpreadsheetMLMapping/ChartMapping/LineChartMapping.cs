@@ -96,7 +96,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         // c:cat
 
                         // c:val
-                        seriesFormatSequence.Convert(new ValMapping(this.WorkbookContext, this.ChartContext));
+                        seriesFormatSequence.Convert(new ValMapping(this.WorkbookContext, this.ChartContext, Dml.Chart.ElVal));
 
                         // c:smooth
 

@@ -124,24 +124,6 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                 reader.BaseStream.Position = position;
                 return frtWrapper.wrappedRecord.Id;
             }
-            //else if (nextRecord == RecordType.StartObject)
-            //{
-            //    UInt16 size;
-            //    do
-            //    {
-            //        // skip the body of the record
-            //        size = reader.ReadUInt16();
-            //        reader.ReadBytes(size);
-            //        // get the type of the next record
-            //        nextRecord = (RecordType)reader.ReadUInt16();
-            //    }
-            //    while (nextRecord != RecordType.EndObject);
-            //    // skip the body of the record
-            //    size = reader.ReadUInt16();
-            //    reader.ReadBytes(size);
-
-            //    return GetNextRecordType(reader);
-            //}
             else
             {
                 // seek back to the begin of the current record
@@ -178,15 +160,6 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                     return frtWrapper.wrappedRecord;
                 }
 
-
-                //else if ((RecordType)id == RecordType.StartObject)
-                //{
-                //    reader.ReadBytes(size);
-                //    FrtWrapper frtWrapper = new FrtWrapper(reader);
-                //    // returns the EndObject
-                //    return ReadRecord(reader);
-                //}
-                
                 Type cls;
                 if (TypeToRecordClassMapping.TryGetValue((UInt16)id, out cls))
                 {
