@@ -38,6 +38,12 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             switch (brai.rt)
                             {
                                 case BRAI.DataSource.Literal:
+                                    // c:strLit
+                                    _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElStrLit, Dml.Chart.Ns);
+                                    {
+                                        convertStringPoints(seriesFormatSequence);
+                                    }
+                                    _writer.WriteEndElement();
                                     break;
                                 case BRAI.DataSource.Reference:
                                     // c:strRef
@@ -48,7 +54,11 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                                         _writer.WriteElementString(Dml.Chart.Prefix, Dml.Chart.ElF, Dml.Chart.Ns, formula);
 
                                         // c:strCache
-                                        convertStringCache(seriesFormatSequence);
+                                        _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElStrCache, Dml.Chart.Ns);
+                                        {
+                                            convertStringPoints(seriesFormatSequence);
+                                        }
+                                        _writer.WriteEndElement();
                                     }
                                     _writer.WriteEndElement();
                                     break;
@@ -62,59 +72,55 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
         }
 
-        private void convertStringCache(SeriesFormatSequence seriesFormatSequence)
+        private void convertStringPoints(SeriesFormatSequence seriesFormatSequence)
         {
-            _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElStrCache, Dml.Chart.Ns);
+            // find series data
+            SeriesDataSequence seriesDataSequence = this.ChartContext.ChartSheetContentSequence.SeriesDataSequence;
+            foreach (SeriesGroup seriesGroup in seriesDataSequence.SeriesGroups)
             {
-                // find series data
-                SeriesDataSequence seriesDataSequence = this.ChartContext.ChartSheetContentSequence.SeriesDataSequence;
-                foreach (SeriesGroup seriesGroup in seriesDataSequence.SeriesGroups)
+                if (seriesGroup.SIIndex.numIndex == SIIndex.SeriesDataType.CategoryLabels)
                 {
-                    if (seriesGroup.SIIndex.numIndex == SIIndex.SeriesDataType.CategoryLabels)
+                    AbstractCellContent[,] dataMatrix = seriesDataSequence.DataMatrix[(UInt16)seriesGroup.SIIndex.numIndex - 1];
+                    // TODO: c:formatCode
+
+                    UInt32 ptCount = 0;
+                    for (UInt32 i = 0; i < dataMatrix.GetLength(1); i++)
                     {
-                        AbstractCellContent[,] dataMatrix = seriesDataSequence.DataMatrix[(UInt16)seriesGroup.SIIndex.numIndex - 1];
-                        // TODO: c:formatCode
-
-                        UInt32 ptCount = 0;
-                        for (UInt32 i = 0; i < dataMatrix.GetLength(1); i++)
+                        if (dataMatrix[seriesFormatSequence.order, i] != null)
                         {
-                            if (dataMatrix[seriesFormatSequence.order, i] != null)
-                            {
-                                ptCount++;
-                            }
+                            ptCount++;
                         }
-
-                        // c:ptCount
-                        writeValueElement(Dml.Chart.ElPtCount, ptCount.ToString());
-
-                        UInt32 idx = 0;
-                        for (UInt32 i = 0; i < dataMatrix.GetLength(1); i++)
-                        {
-                            AbstractCellContent cellContent = dataMatrix[seriesFormatSequence.order, i];
-                            if (cellContent != null)
-                            {
-                                if (cellContent is Label)
-                                {
-                                    Label lblInCell = (Label)cellContent;
-
-                                    // c:pt
-                                    _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElPt, Dml.Chart.Ns);
-                                    _writer.WriteAttributeString(Dml.Chart.AttrIdx, idx.ToString());
-
-                                    // c:v
-                                    _writer.WriteElementString(Dml.Chart.Prefix, Dml.Chart.ElV, Dml.Chart.Ns, lblInCell.st.Value);
-
-                                    _writer.WriteEndElement(); // c:pt
-                                }
-                            }
-                            idx++;
-                        }
-
-                        break;
                     }
+
+                    // c:ptCount
+                    writeValueElement(Dml.Chart.ElPtCount, ptCount.ToString());
+
+                    UInt32 idx = 0;
+                    for (UInt32 i = 0; i < dataMatrix.GetLength(1); i++)
+                    {
+                        AbstractCellContent cellContent = dataMatrix[seriesFormatSequence.order, i];
+                        if (cellContent != null)
+                        {
+                            if (cellContent is Label)
+                            {
+                                Label lblInCell = (Label)cellContent;
+
+                                // c:pt
+                                _writer.WriteStartElement(Dml.Chart.Prefix, Dml.Chart.ElPt, Dml.Chart.Ns);
+                                _writer.WriteAttributeString(Dml.Chart.AttrIdx, idx.ToString());
+
+                                // c:v
+                                _writer.WriteElementString(Dml.Chart.Prefix, Dml.Chart.ElV, Dml.Chart.Ns, lblInCell.st.Value);
+
+                                _writer.WriteEndElement(); // c:pt
+                            }
+                        }
+                        idx++;
+                    }
+
+                    break;
                 }
             }
-            _writer.WriteEndElement();
         }
     }
 }
