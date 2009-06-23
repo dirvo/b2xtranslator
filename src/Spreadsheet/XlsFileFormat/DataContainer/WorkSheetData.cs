@@ -478,8 +478,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             hld.rwFirst = hlink.rwFirst;
             hld.rwLast = hlink.rwLast;
             hld.absolute = hlink.hlstmfIsAbsolute;
-            hld.url = hlink.monikerString; 
-
+            hld.url = hlink.monikerString;
+            hld.location = hlink.location;
+            hld.display = hlink.displayName;
 
             this.HyperLinkList.Add(hld); 
         }

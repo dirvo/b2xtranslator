@@ -38,6 +38,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
 
         public string url;
 
+        // internal links
+        public string location;
+        public string display;
+
         public bool absolute; 
         public HyperlinkData()
         {

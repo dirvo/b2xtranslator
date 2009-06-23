@@ -397,29 +397,39 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                                     
                                 //    writtenParentElement = true;
                                 //}
+                        string refstring;
+
+                        if (link.colLast == link.colFirst && link.rwLast == link.rwFirst)
+                        {
+                            refstring = ExcelHelperClass.intToABCString((int)link.colLast, (link.rwLast + 1).ToString());
+                        }
+                        else
+                        {
+                            refstring = ExcelHelperClass.intToABCString((int)link.colFirst, (link.rwFirst + 1).ToString()) + ":" + ExcelHelperClass.intToABCString((int)link.colLast, (link.rwLast + 1).ToString());
+                        }
+
                         if (link.url != null)
                         {
 
                             ExternalRelationship er = this._xlsContext.SpreadDoc.WorkbookPart.GetWorksheetPart().AddExternalRelationship(OpenXmlRelationshipTypes.HyperLink, link.url.Replace(" ", ""));
 
-
-
                             _writer.WriteStartElement("hyperlink");
-                            string refstring;
-
-                            if (link.colLast == link.colFirst && link.rwLast == link.rwFirst)
-                            {
-                                refstring = ExcelHelperClass.intToABCString((int)link.colLast, (link.rwLast + 1).ToString());
-                            }
-                            else
-                            {
-                                refstring = ExcelHelperClass.intToABCString((int)link.colFirst, (link.rwFirst + 1).ToString()) + ":" + ExcelHelperClass.intToABCString((int)link.colLast, (link.rwLast + 1).ToString());
-                            }
                             _writer.WriteAttributeString("ref", refstring);
                             _writer.WriteAttributeString("r", "id", OpenXmlNamespaces.Relationships, er.Id.ToString());
 
                             _writer.WriteEndElement();
 
+                        }
+                        else if (link.location != null)
+                        {
+                            _writer.WriteStartElement("hyperlink");
+                            _writer.WriteAttributeString("ref", refstring);
+                            _writer.WriteAttributeString("location", link.location);
+                            if (link.display != null)
+                            {
+                                _writer.WriteAttributeString("display", link.display);
+                            }
+                            _writer.WriteEndElement();
                         }
                     /*           }
                      }
