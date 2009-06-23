@@ -952,6 +952,13 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 //TODO
                             }
                         }
+                        else if (p.BulletFlagsFieldPresent && (p.BulletFlags & 0x1 << 3) > 0)
+                        {
+                            _writer.WriteStartElement("a", "buSzPct", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("val", "75000");
+                            _writer.WriteEndElement(); //buSzPct
+                        }
+
                         if (p.BulletFontPresent)
                         {
                             if (!(p.BulletFlagsFieldPresent && (p.BulletFlags & 0x1 << 1) == 0))
