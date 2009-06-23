@@ -76,8 +76,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             {
                 this.Reader.BaseStream.Seek(oldStreamPosition, System.IO.SeekOrigin.Begin);
                 this.Reader.BaseStream.Seek(this.cce, System.IO.SeekOrigin.Current);
-                TraceLogger.Debug("Formula parse error in intern name");
-                TraceLogger.Error(ex.StackTrace);
+                TraceLogger.Error("Formula parse error in intern name");
+                TraceLogger.Debug(ex.StackTrace);
             }
             
             // assert that the correct number of bytes has been read from the stream

@@ -135,6 +135,7 @@
     <Compile Include="Ptg\PtgConcat.cs" />
     <Compile Include="Ptg\PtgDiv.cs" />
     <Compile Include="Ptg\PtgEq.cs" />
+    <Compile Include="Ptg\PtgErr.cs" />
     <Compile Include="Ptg\PtgExp.cs" />
     <Compile Include="Ptg\PtgFunc.cs" />
     <Compile Include="Ptg\PtgFuncVar.cs" />

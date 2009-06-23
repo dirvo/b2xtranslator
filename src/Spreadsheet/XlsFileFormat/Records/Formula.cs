@@ -153,8 +153,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
                 {
                     this.Reader.BaseStream.Seek(oldStreamPosition, System.IO.SeekOrigin.Begin);
                     this.Reader.BaseStream.Seek(this.cce, System.IO.SeekOrigin.Current);
-                    TraceLogger.Debug("Formula parse error in Row {0} Column {1}", this.rw, this.col);
-                    TraceLogger.Error(ex.StackTrace);
+                    TraceLogger.Error("Formula parse error in Row {0} Column {1}", this.rw, this.col);
+                    TraceLogger.Debug(ex.StackTrace);
+                    TraceLogger.Debug("Inner exception: {0}", ex.InnerException.StackTrace);
                 }
             }
             else

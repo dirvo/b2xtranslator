@@ -242,7 +242,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                             case PtgNumber.PtgRefErr3d: ptg = new PtgRefErr3d(reader, ptgtype); break;
                             case PtgNumber.PtgAreaErr: ptg = new PtgAreaErr(reader, ptgtype); break;
                             case PtgNumber.PtgAreaErr3d: ptg = new PtgAreaErr3d(reader, ptgtype); break;
-                            case PtgNumber.PtgMemFunc: ptg = new PtgMemFunc(reader, ptgtype); break; 
+                            case PtgNumber.PtgMemFunc: ptg = new PtgMemFunc(reader, ptgtype); break;
+                            case PtgNumber.PtgErr: ptg = new PtgErr(reader, ptgtype); break;
 
                             default: break;
                         }
@@ -251,9 +252,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                     ptgStack.Push(ptg);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new ExtractorException(ExtractorException.PARSEDFORMULAEXCEPTION);
+                throw new ExtractorException(ExtractorException.PARSEDFORMULAEXCEPTION, ex);
             }
             
             return ptgStack; 
@@ -387,6 +388,17 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
 
             return value.Remove(value.Length - 1); ;
+        }
+
+        /// <summary>
+        /// Escapes special characters in strings so that they can be safely used in formulas.
+        /// </summary>
+        /// <param name="unescapedString">The input string to be escaped.</param>
+        /// <remarks>This method currently escapes double and single quotes.</remarks>
+        public static string EscapeFormulaString(string unescapedString)
+        {
+            return unescapedString.Replace("\"", "\"\"")
+                .Replace("'", "''");
         }
     }
 }
