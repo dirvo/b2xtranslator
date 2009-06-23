@@ -910,9 +910,24 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             string s = p.BulletColor.Red.ToString("X").PadLeft(2, '0') + p.BulletColor.Green.ToString("X").PadLeft(2, '0') + p.BulletColor.Blue.ToString("X").PadLeft(2, '0');
                             switch (p.BulletColor.Index)
                             {
+                                case 7:
+                                    _writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
+                                    _writer.WriteAttributeString("val", "folHlink");
+                                    _writer.WriteEndElement();
+                                    break;
                                 case 6:
                                     _writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
                                     _writer.WriteAttributeString("val", "hlink");
+                                    _writer.WriteEndElement();
+                                    break;
+                                case 3:
+                                    _writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
+                                    _writer.WriteAttributeString("val", "tx2");
+                                    _writer.WriteEndElement();
+                                    break;
+                                case 2:
+                                    _writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
+                                    _writer.WriteAttributeString("val", "bg2");
                                     _writer.WriteEndElement();
                                     break;
                                 default:
@@ -938,19 +953,26 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             }
                         }
                         if (p.BulletFontPresent)
-                        {                           
-                            _writer.WriteStartElement("a", "buFont", OpenXmlNamespaces.DrawingML);
-                            FontCollection fonts = _ctx.Ppt.DocumentRecord.FirstChildWithType<DIaLOGIKa.b2xtranslator.PptFileFormat.Environment>().FirstChildWithType<FontCollection>();
-                            FontEntityAtom entity = fonts.entities[(int)p.BulletTypefaceIdx];
-                            if (entity.TypeFace.IndexOf('\0') > 0)
+                        {
+                            if (!(p.BulletFlagsFieldPresent && (p.BulletFlags & 0x1 << 1) == 0))
                             {
-                                _writer.WriteAttributeString("typeface", entity.TypeFace.Substring(0, entity.TypeFace.IndexOf('\0')));
+                                _writer.WriteStartElement("a", "buFont", OpenXmlNamespaces.DrawingML);
+                                FontCollection fonts = _ctx.Ppt.DocumentRecord.FirstChildWithType<DIaLOGIKa.b2xtranslator.PptFileFormat.Environment>().FirstChildWithType<FontCollection>();
+                                FontEntityAtom entity = fonts.entities[(int)p.BulletTypefaceIdx];
+                                if (entity.TypeFace.IndexOf('\0') > 0)
+                                {
+                                    _writer.WriteAttributeString("typeface", entity.TypeFace.Substring(0, entity.TypeFace.IndexOf('\0')));
+                                }
+                                else
+                                {
+                                    _writer.WriteAttributeString("typeface", entity.TypeFace);
+                                }
+                                _writer.WriteEndElement(); //buChar
                             }
                             else
                             {
-                                _writer.WriteAttributeString("typeface", entity.TypeFace);
+                                _writer.WriteElementString("a", "buFontTx", OpenXmlNamespaces.DrawingML, "");
                             }
-                            _writer.WriteEndElement(); //buChar
                         }
                         
                        

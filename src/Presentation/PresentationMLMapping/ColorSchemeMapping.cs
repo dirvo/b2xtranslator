@@ -166,7 +166,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteStartElement("a", "lt2", OpenXmlNamespaces.DrawingML);
             _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-            _writer.WriteAttributeString("val", new RGBColor(scheme.TextAndLines, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
+            _writer.WriteAttributeString("val", new RGBColor(scheme.Shadows, RGBColor.ByteOrder.RedFirst).SixDigitHexCode);
             _writer.WriteEndElement(); // srgbClr
             _writer.WriteEndElement(); // lt2
 
