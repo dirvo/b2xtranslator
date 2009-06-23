@@ -27,6 +27,7 @@
 using System;
 using System.Diagnostics;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg
 {
@@ -42,34 +43,12 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg
             this.type = PtgType.Operand;
             this.popSize = 1;
 
-            UInt16 cch = (UInt16)this.Reader.ReadByte();
-            this.Length = (uint)(1 + 1 + 1);   // length = 1 byte Ptgtype + 1byte cch + 1byte highbyte
-            // Read ShortXLUnicodeString !!! 
-            this.Data = "";
-            byte firstbyte = this.Reader.ReadByte();
-            int firstbit = firstbyte & 0x1;
-            for (int i = 0; i < cch; i++)
-            {
-                if (firstbit == 0)
-                {
-                    this.Data += (char)this.Reader.ReadByte();
-                    // read 1 byte per char 
-                }
-                else
-                {
-                    // read two byte per char 
-                    this.Data += System.BitConverter.ToChar(this.Reader.ReadBytes(2), 0);
-                }
-            }
-            if (firstbit == 0)
-            {
-                this.Length += cch;
-            }
-            else
-            {
-                this.Length += (uint)(cch * 2);
-            }
-
+            ShortXLUnicodeString st = new ShortXLUnicodeString(this.Reader);
+            // quotes need to be escaped
+            this.Data = st.Value.Replace("\"", "\"\"");
+            
+            this.Length = (uint)(3 + st.rgb.Length);   // length = 1 byte Ptgtype + 1byte cch + 1byte highbyte
+            
         }
     }
 }
