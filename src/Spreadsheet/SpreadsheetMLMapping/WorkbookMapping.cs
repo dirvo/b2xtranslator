@@ -160,25 +160,25 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 //</definedNames>
                 _writer.WriteStartElement("definedNames");
 
-                foreach (DefinedNameData item in workbookData.definedNameList)
+                foreach (Lbl item in workbookData.definedNameList)
                 {
-                    if (item.ptgStack.Count > 0)
+                    if (item.rgce.Count > 0)
                     {
                         _writer.WriteStartElement("definedName");
-                        if (item.Name.Length > 1)
+                        if (item.Name.Value.Length > 1)
                         {
-                            _writer.WriteAttributeString("name", item.Name);
+                            _writer.WriteAttributeString("name", item.Name.Value);
                         }
                         else
                         {
-                            string internName = "_xlnm." + ExcelHelperClass.getNameStringfromBuiltInFunctionID(item.Name);
+                            string internName = "_xlnm." + ExcelHelperClass.getNameStringfromBuiltInFunctionID(item.Name.Value);
                             _writer.WriteAttributeString("name", internName);
                         }
                         if (item.itab > 0)
                         {
                             _writer.WriteAttributeString("localSheetId", (item.itab - 1).ToString());
                         }
-                        _writer.WriteValue(FormulaInfixMapping.mapFormula(item.ptgStack, _xlsContext));
+                        _writer.WriteValue(FormulaInfixMapping.mapFormula(item.rgce, _xlsContext));
 
                         _writer.WriteEndElement();
                     }

@@ -60,6 +60,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures
         /// </summary>
         public byte[] rgb;
 
+        public XLUnicodeStringNoCch()
+        {
+        }
         
         public XLUnicodeStringNoCch(IStreamReader reader, UInt16 cch)
         {
@@ -81,13 +84,20 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures
         {
             get
             {
-                if (fHighByte)
+                if (this.rgb != null)
                 {
-                    return Encoding.Unicode.GetString(this.rgb);
+                    if (fHighByte)
+                    {
+                        return Encoding.Unicode.GetString(this.rgb);
+                    }
+                    else
+                    {
+                        return Encoding.GetEncoding(1252).GetString(this.rgb);
+                    }
                 }
                 else
                 {
-                    return Encoding.GetEncoding(1252).GetString(this.rgb);
+                    return string.Empty;
                 }
             }
         }

@@ -31,16 +31,16 @@ using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
 {
-    public class DefinedNameData
-    {
-        public byte chKey;
-        public UInt16 itab;
-        public string Name;
-        public Stack<AbstractPtg> ptgStack;
+    //public class DefinedNameData
+    //{
+    //    public byte chKey;
+    //    public UInt16 itab;
+    //    public string Name;
+    //    public Stack<AbstractPtg> ptgStack;
 
-        public DefinedNameData()
-        {
-            this.ptgStack = new Stack<AbstractPtg>(); 
-        }
-    }
+    //    public DefinedNameData()
+    //    {
+    //        this.ptgStack = new Stack<AbstractPtg>(); 
+    //    }
+    //}
 }

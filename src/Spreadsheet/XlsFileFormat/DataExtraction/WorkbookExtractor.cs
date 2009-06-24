@@ -260,8 +260,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                             }
                             break;
                         case RecordType.NAME:
+                        case RecordType.Lbl:
                             {
-                                NAME name = new NAME(this.StreamReader, bh.id, bh.length);
+                                Lbl name = new Lbl(this.StreamReader, bh.id, bh.length);
                                 this.workBookData.addDefinedName(name);
                             }
                             break;

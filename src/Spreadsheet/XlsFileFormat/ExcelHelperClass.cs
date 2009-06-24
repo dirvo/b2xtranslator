@@ -309,9 +309,11 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             else if (path.StartsWith("\x0001"))
             {
                 // simple-file-path = [%x0001] file-path
+                //   (\x0001 is optional, but if it is missing path is
+                //    already set to the correct value)
                 path = path.Substring(1);
             }
-
+            
 
             /// Replace 0x03 with \
             path = path.Replace((char)0x03, '\\');

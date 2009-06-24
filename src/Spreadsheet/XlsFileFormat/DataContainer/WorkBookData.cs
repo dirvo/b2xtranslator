@@ -57,7 +57,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         public List<ExternSheetData> externSheetDataList;
         public LinkedList<SupBookData> supBookDataList;
         public LinkedList<XTIData> xtiDataList;
-        public List<DefinedNameData> definedNameList; 
+        public List<Lbl> definedNameList; 
 
         public int refWorkBookNumber;
 
@@ -75,7 +75,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
             this.externSheetDataList = new List<ExternSheetData>();
             this.supBookDataList = new LinkedList<SupBookData>();
             this.xtiDataList = new LinkedList<XTIData>();
-            this.definedNameList = new List<DefinedNameData>(); 
+            this.definedNameList = new List<Lbl>(); 
             refWorkBookNumber = 0;
 
             this.styleData = new StyleData.StyleData(); 
@@ -213,14 +213,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         /// add a definedName data object
         /// </summary>
         /// <param name="name"></param>
-        public void addDefinedName(NAME name)
+        public void addDefinedName(Lbl name)
         {
-            DefinedNameData nameData = new DefinedNameData();
-            nameData.chKey = name.chKey;
-            nameData.itab = name.itab;
-            nameData.Name = name.Name;
-            nameData.ptgStack = name.ptgStack;
-            this.definedNameList.Add(nameData); 
+            this.definedNameList.Add(name); 
         }
 
         /// <summary>
@@ -230,13 +225,13 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         /// <returns></returns>
         public String getDefinedNameByRef(int id)
         {
-            if (this.definedNameList[id - 1].Name.Length > 1)
+            if (this.definedNameList[id - 1].Name.Value.Length > 1)
             {
-                return this.definedNameList[id - 1].Name; 
+                return this.definedNameList[id - 1].Name.Value; 
             }
             else
             {
-                string internName = "_xlnm." + ExcelHelperClass.getNameStringfromBuiltInFunctionID(this.definedNameList[id - 1].Name);
+                string internName = "_xlnm." + ExcelHelperClass.getNameStringfromBuiltInFunctionID(this.definedNameList[id - 1].Name.Value);
                 return internName; 
             }
            
