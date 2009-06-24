@@ -278,7 +278,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         try
                         {
                             PtgArea3d ptga3d = (PtgArea3d)ptg;
-                            String refstring = xlsContext.XlsDoc.WorkBookData.getIXTIString(ptga3d.ixti);
+                            String refstring = ExcelHelperClass.EscapeFormulaString(xlsContext.XlsDoc.WorkBookData.getIXTIString(ptga3d.ixti));
                             String buffer = "";
                             buffer = ExcelHelperClass.intToABCString((int)ptga3d.colFirst, (ptga3d.rwFirst + 1).ToString(), ptga3d.colFirstRelative, ptga3d.rwFirstRelative);
                             buffer = buffer + ":" + ExcelHelperClass.intToABCString((int)ptga3d.colLast, (ptga3d.rwLast + 1).ToString(), ptga3d.colLastRelative, ptga3d.rwLastRelative);
@@ -314,7 +314,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         {
                             PtgRefErr3d ptgreferr3d = (PtgRefErr3d)ptg;
 
-                            String refstring = xlsContext.XlsDoc.WorkBookData.getIXTIString(ptgreferr3d.ixti);
+                            String refstring = ExcelHelperClass.EscapeFormulaString(xlsContext.XlsDoc.WorkBookData.getIXTIString(ptgreferr3d.ixti));
                             resultStack.Push("'" + refstring + "'" + "!" + ptgreferr3d.getData());
                         }
                         catch (Exception)
@@ -327,7 +327,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         try
                         {
                             PtgAreaErr3d ptgareaerr3d = (PtgAreaErr3d)ptg;
-                            String refstring = xlsContext.XlsDoc.WorkBookData.getIXTIString(ptgareaerr3d.ixti);
+                            String refstring = ExcelHelperClass.EscapeFormulaString(xlsContext.XlsDoc.WorkBookData.getIXTIString(ptgareaerr3d.ixti));
                             resultStack.Push("'" + refstring + "'" + "!" + ptgareaerr3d.getData());
                         }
                         catch (Exception)
