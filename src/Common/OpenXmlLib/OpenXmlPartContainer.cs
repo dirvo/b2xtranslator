@@ -256,7 +256,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
                     }
                     else
                     {
-                        writer.WriteAttributeString("Target", rel.Target);
+                        writer.WriteAttributeString("Target", Uri.EscapeUriString(rel.Target));
                     }
 
                     writer.WriteAttributeString("TargetMode", "External");

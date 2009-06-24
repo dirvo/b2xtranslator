@@ -35,14 +35,12 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         protected string _id;
         protected string _relationshipType;
         protected string _target;
-
-
         
-        public ExternalRelationship(string id, string relationshipType, Uri target)
+        public ExternalRelationship(string id, string relationshipType, Uri targetUri)
         {
             _id = id;
             _relationshipType = relationshipType;
-            _target = target.ToString();
+            _target = targetUri.ToString();
         }
 
         public ExternalRelationship(string id, string relationshipType, string target)
@@ -72,8 +70,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
 
         public Uri TargetUri
         {
-            get { return new Uri(_target); }
-            private set { ; }
+            get { return new Uri(_target, UriKind.RelativeOrAbsolute); }
         }
     }
 }

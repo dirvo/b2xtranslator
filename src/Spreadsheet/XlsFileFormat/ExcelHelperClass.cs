@@ -90,9 +90,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// <returns>String</returns>
         public static String intToABCString(int colnumber, String rownumber)
         {
-            
+
             String value = "";
-            int remain = 0; 
+            int remain = 0;
             if (colnumber < 26)
             {
                 value += (char)(colnumber + 65);
@@ -102,20 +102,20 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                 remain = colnumber % 26;
                 colnumber = colnumber / 26;
                 value += (char)(colnumber + 64);
-                value = value + (char)(remain + 65); 
+                value = value + (char)(remain + 65);
             }
             else if (colnumber < Math.Pow(26, 3))
             {
                 remain = colnumber % (int)Math.Pow(26, 2);
                 colnumber = colnumber / (int)Math.Pow(26, 2);
                 value += (char)(colnumber + 64);
-                colnumber = remain; 
+                colnumber = remain;
                 remain = colnumber % 26;
                 colnumber = colnumber / 26;
                 value = value + (char)(colnumber + 64);
-                value = value + (char)(remain + 65); 
+                value = value + (char)(remain + 65);
             }
-            return value + rownumber; 
+            return value + rownumber;
         }
 
         /// <summary>
@@ -155,7 +155,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                 value = "$" + value;
 
             if (!rwRelative)
-                rownumber = "$" + rownumber; 
+                rownumber = "$" + rownumber;
 
             return value + rownumber;
         }
@@ -236,7 +236,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                             case PtgNumber.PtgRef3d: ptg = new PtgRef3d(reader, ptgtype); break;
                             case PtgNumber.PtgArea3d: ptg = new PtgArea3d(reader, ptgtype); break;
                             case PtgNumber.PtgNameX: ptg = new PtgNameX(reader, ptgtype); break;
-                            case PtgNumber.PtgName: ptg = new PtgName(reader, ptgtype); break; 
+                            case PtgNumber.PtgName: ptg = new PtgName(reader, ptgtype); break;
                             case PtgNumber.PtgMissArg: ptg = new PtgMissArg(reader, ptgtype); break;
                             case PtgNumber.PtgRefErr: ptg = new PtgRefErr(reader, ptgtype); break;
                             case PtgNumber.PtgRefErr3d: ptg = new PtgRefErr3d(reader, ptgtype); break;
@@ -256,59 +256,70 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             {
                 throw new ExtractorException(ExtractorException.PARSEDFORMULAEXCEPTION, ex);
             }
-            
-            return ptgStack; 
+
+            return ptgStack;
         }
 
         public static String parseVirtualPath(String path)
         {
-            char x01 = (char)0x01;
-            char x02 = (char)0x02;
-            char x03 = (char)0x03;
-            char x05 = (char)0x05;
-            char x06 = (char)0x06;
-            char x07 = (char)0x07;
-            char x08 = (char)0x08;
-
-
+            // NOTE: A virtual path must be a string in the following grammar: 
+            //
+            //    virt-path = volume / unc-volume / rel-volume / transfer-protocol / startup / alt-startup / library / simple-file-path / ole-link
             path = path.Trim();
-            if (path[0] == x01 && path[1] == x01)
+
+            if (path.StartsWith("\x0001\x0001\x0040"))
             {
-                path = path.Substring(2,1) + ":\\" + path.Substring(3);
+                // unc-volume = %x0001 %x0001 %x0040 unc-path
+                path = path.Substring(3);
             }
-            else if (path[0] == x01 && path[1] == x05)
+            else if (path.StartsWith("\x0001\x0001"))
             {
+                // volume     = %x0001 %x0001 volume-character file-path
+                // path[2] is a volumn character in the range %x0041-%x005A / %x0061-%x007A
+                path = path.Substring(2, 1) + ":\\" + path.Substring(3);
+            }
+            else if (path.StartsWith("\x0001\x0002"))
+            {
+                // rel-volume = %x0001 %x0002 file-path
                 path = path.Substring(2);
             }
-            else if (path[0] == x01 && path[1] == x02)
+            else if (path.StartsWith("\x0001\x0005"))
             {
+                // transfer-protocol = %x0001 %x0005 count transfer-path
+                // count is ignored 
+                path = path.Substring(3);
+            }
+            else if (path.StartsWith("\x0001\x0006"))
+            {
+                // startup = %x0001 %x0006 file-path
+                // TODO: map startup path
                 path = path.Substring(2);
             }
-            else if (path[0] == x01 && path[1] == x06)
+            else if (path.StartsWith("\x0001\x0007"))
             {
+                // alt-startup = %x0001 %x0007 file-path
                 path = path.Substring(2);
             }
-            else if (path[0] == x01 && path[1] == x07)
+            else if (path.StartsWith("\x0001\x0008"))
             {
-                path = path.Substring(2);
+                // library = %x0001 %x0008 file-path
+                // TODO: map library path
+                path = "file:///" + path.Substring(2);
             }
-            else if (path[0] == x01 && path[1] == x08)
+            else if (path.StartsWith("\x0001"))
             {
-                path = "file:///"  + path.Substring(2);
-            }
-            else if (path[0] == x01)
-            {
-                path = "file:///" + path.Substring(1);
+                // simple-file-path = [%x0001] file-path
+                path = path.Substring(1);
             }
 
 
             /// Replace 0x03 with \
-            path = path.Replace(x03, '\\');
+            path = path.Replace((char)0x03, '\\');
             /// replace ' ' with %20
-            path = path.Replace(" ", "%20");
-           
+            ///path = path.Replace(" ", "%20");
 
-            return path; 
+
+            return path;
         }
 
         /// <summary>
@@ -318,9 +329,9 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         /// <param name="cch"></param>
         /// <param name="grbit"></param>
         /// <returns></returns>
-        public static string getStringFromBiffRecord(IStreamReader reader,int cch, int grbit)
+        public static string getStringFromBiffRecord(IStreamReader reader, int cch, int grbit)
         {
-            string value = ""; 
+            string value = "";
             if (grbit == 0)
             {
                 for (int i = 0; i < cch; i++)
@@ -335,7 +346,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                     value += System.BitConverter.ToChar(reader.ReadBytes(2), 0);
                 }
             }
-            return value; 
+            return value;
         }
 
         /// <summary>
@@ -380,11 +391,11 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         public static string getHyperlinkStringFromBiffRecord(IStreamReader reader)
         {
             string value = "";
-            UInt32 length = reader.ReadUInt32(); 
+            UInt32 length = reader.ReadUInt32();
             for (int i = 0; i < length; i++)
-                {
-                    value += System.BitConverter.ToChar(reader.ReadBytes(2), 0);
-                }
+            {
+                value += System.BitConverter.ToChar(reader.ReadBytes(2), 0);
+            }
 
 
             return value.Remove(value.Length - 1); ;
