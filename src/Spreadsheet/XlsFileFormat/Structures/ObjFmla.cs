@@ -29,8 +29,6 @@
 
 using System;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using DIaLOGIKa.b2xtranslator.Tools;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures
 {

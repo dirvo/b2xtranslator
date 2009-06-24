@@ -91,7 +91,6 @@
     <Compile Include="DataContainer\ChartSheetData.cs" />
     <Compile Include="DataContainer\ColumnInfoData.cs" />
     <Compile Include="DataContainer\CRNData.cs" />
-    <Compile Include="DataContainer\DefinedNameData.cs" />
     <Compile Include="DataContainer\ExternSheetData.cs" />
     <Compile Include="DataContainer\FormulaCell.cs" />
     <Compile Include="DataContainer\HyperlinkData.cs" />
@@ -324,6 +323,7 @@
     <Compile Include="Records\CalcIter.cs" />
     <Compile Include="Records\Label.cs" />
     <Compile Include="Records\LabelSst.cs" />
+    <Compile Include="Records\Lbl.cs" />
     <Compile Include="Records\LeftMargin.cs" />
     <Compile Include="Records\Legend.cs" />
     <Compile Include="Records\LegendException.cs" />
@@ -356,7 +356,6 @@
     <Compile Include="Records\MTRSettings.cs" />
     <Compile Include="Records\MulBlank.cs" />
     <Compile Include="Records\MulRk.cs" />
-    <Compile Include="Records\NAME.cs" />
     <Compile Include="Records\NameCmt.cs" />
     <Compile Include="Records\NameFnGrp12.cs" />
     <Compile Include="Records\NamePublish.cs" />

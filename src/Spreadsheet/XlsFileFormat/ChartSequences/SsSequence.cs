@@ -1,7 +1,7 @@
-﻿using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
-using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {

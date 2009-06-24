@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Diagnostics;
+using System.Text;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 

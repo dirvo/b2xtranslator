@@ -29,9 +29,8 @@
 
 using System;
 using System.Diagnostics;
-using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using DIaLOGIKa.b2xtranslator.Tools;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {

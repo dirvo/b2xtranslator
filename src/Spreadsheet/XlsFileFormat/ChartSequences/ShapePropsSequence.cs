@@ -27,9 +27,9 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
  */
 
-using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 using System.Collections.Generic;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
+using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {

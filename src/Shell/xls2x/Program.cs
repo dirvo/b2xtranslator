@@ -111,7 +111,7 @@ namespace DIaLOGIKa.b2xtranslator.xls2x
                 }
                 catch (ParseException ex)
                 {
-                    TraceLogger.Error(ex.Message);
+                    TraceLogger.Error("Could not convert {0} because it was created by an unsupported application (Excel 95 or older).", InputFile);
                     TraceLogger.Debug(ex.ToString());
                 }
                 catch (DirectoryNotFoundException ex)

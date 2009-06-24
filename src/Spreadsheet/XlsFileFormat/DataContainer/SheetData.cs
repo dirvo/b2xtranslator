@@ -27,9 +27,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
  */
 
-using System;
-using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {

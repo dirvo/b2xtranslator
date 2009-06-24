@@ -28,26 +28,15 @@
  */
 
 using System;
-using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures
 {
     /// <summary>
-    /// Specifies an approximation of a real number, where the approximation has a fixed number of digits after the radix point. 
-    /// 
-    /// This type is specified in [MS-OSHARED] section 2.2.1.6.
-    /// 
-    /// Value of the real number = Integral + ( Fractional / 65536.0 ) 
-    /// 
-    /// Integral (2 bytes): A signed integer that specifies the integral part of the real number. 
-    /// Fractional (2 bytes): An unsigned integer that specifies the fractional part of the real number.
+    /// This structure specifies the anchor position of a drawing object embedded in a sheet.
     /// </summary>
     public class OfficeArtClientAnchorSheet
     {
-        private Int16 integral;
-        private UInt16 fractional;
-
         /// <summary>
         /// A bit that specifies whether the shape will be kept intact when the cells are moved.
         /// </summary>
@@ -123,8 +112,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures
         {
             this.fMove = Utils.BitmaskToBool(rawData[0], 0x01);
             this.fSize = Utils.BitmaskToBool(rawData[0], 0x02);
-
-
+            
             this.colL = System.BitConverter.ToUInt16(rawData, 2);
             this.dxL = System.BitConverter.ToUInt16(rawData, 4);
             this.rwT = System.BitConverter.ToUInt16(rawData, 6);
