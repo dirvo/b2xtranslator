@@ -453,7 +453,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                     if (pr.BulletSizePresent)
                     {
-                        if (pr.BulletSize > 0)
+                        if (pr.BulletSize > 0 && pr.BulletSize != 100)
                         {
                             _writer.WriteStartElement("a", "buSzPct", OpenXmlNamespaces.DrawingML);
                             _writer.WriteAttributeString("val", (pr.BulletSize * 1000).ToString());
@@ -523,8 +523,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         public void writeBuClr(RegularContainer slide, GrColorAtom color, ref string lastColor)
         {
-            _writer.WriteStartElement("a", "buClr", OpenXmlNamespaces.DrawingML);
-
             if (color.IsSchemeColor) //TODO: to be fully implemented
             {
                 //_writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
@@ -536,6 +534,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     //_writer.WriteAttributeString("val", "000000");
                     //_writer.WriteEndElement();
 
+                    _writer.WriteStartElement("a", "buClr", OpenXmlNamespaces.DrawingML);
                     _writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
                     switch (color.Index)
                     {
@@ -571,6 +570,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             break;
                     }
                     _writer.WriteEndElement();
+                    _writer.WriteEndElement();
 
                 }
                 else
@@ -591,60 +591,69 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         if (colorsch.Instance == 1) MasterScheme = colorsch;
                     }
 
-                    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                    switch (color.Index)
+                    if (color.Index != 0xFF)
                     {
-                        case 0x00: //background
-                            lastColor = new RGBColor(MasterScheme.Background, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
-                            _writer.WriteAttributeString("val", lastColor);
-                            break;
-                        case 0x01: //text
-                            lastColor = new RGBColor(MasterScheme.TextAndLines, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
-                            _writer.WriteAttributeString("val", lastColor);
-                            break;
-                        case 0x02: //shadow
-                            lastColor = new RGBColor(MasterScheme.Shadows, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
-                            _writer.WriteAttributeString("val", lastColor);
-                            break;
-                        case 0x03: //title
-                            lastColor = new RGBColor(MasterScheme.TitleText, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
-                            _writer.WriteAttributeString("val", lastColor);
-                            break;
-                        case 0x04: //fill
-                            lastColor = new RGBColor(MasterScheme.Fills, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
-                            _writer.WriteAttributeString("val", lastColor);
-                            break;
-                        case 0x05: //accent1
-                            lastColor = new RGBColor(MasterScheme.Accent, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
-                            _writer.WriteAttributeString("val", lastColor);
-                            break;
-                        case 0x06: //accent2
-                            lastColor = new RGBColor(MasterScheme.AccentAndHyperlink, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
-                            _writer.WriteAttributeString("val", lastColor);
-                            break;
-                        case 0x07: //accent3
-                            lastColor = new RGBColor(MasterScheme.AccentAndFollowedHyperlink, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
-                            _writer.WriteAttributeString("val", lastColor);
-                            break;
-                        case 0xFE: //sRGB
-                            lastColor = color.Red.ToString("X").PadLeft(2, '0') + color.Green.ToString("X").PadLeft(2, '0') + color.Blue.ToString("X").PadLeft(2, '0');
-                            _writer.WriteAttributeString("val", lastColor);
-                            break;
-                        case 0xFF: //undefined
-                            break;
+                        _writer.WriteStartElement("a", "buClr", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                        switch (color.Index)
+                        {
+                            case 0x00: //background
+                                lastColor = new RGBColor(MasterScheme.Background, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
+                                _writer.WriteAttributeString("val", lastColor);
+                                break;
+                            case 0x01: //text
+                                lastColor = new RGBColor(MasterScheme.TextAndLines, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
+                                _writer.WriteAttributeString("val", lastColor);
+                                break;
+                            case 0x02: //shadow
+                                lastColor = new RGBColor(MasterScheme.Shadows, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
+                                _writer.WriteAttributeString("val", lastColor);
+                                break;
+                            case 0x03: //title
+                                lastColor = new RGBColor(MasterScheme.TitleText, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
+                                _writer.WriteAttributeString("val", lastColor);
+                                break;
+                            case 0x04: //fill
+                                lastColor = new RGBColor(MasterScheme.Fills, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
+                                _writer.WriteAttributeString("val", lastColor);
+                                break;
+                            case 0x05: //accent1
+                                lastColor = new RGBColor(MasterScheme.Accent, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
+                                _writer.WriteAttributeString("val", lastColor);
+                                break;
+                            case 0x06: //accent2
+                                lastColor = new RGBColor(MasterScheme.AccentAndHyperlink, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
+                                _writer.WriteAttributeString("val", lastColor);
+                                break;
+                            case 0x07: //accent3
+                                lastColor = new RGBColor(MasterScheme.AccentAndFollowedHyperlink, RGBColor.ByteOrder.RedFirst).SixDigitHexCode;
+                                _writer.WriteAttributeString("val", lastColor);
+                                break;
+                            case 0xFE: //sRGB
+                                lastColor = color.Red.ToString("X").PadLeft(2, '0') + color.Green.ToString("X").PadLeft(2, '0') + color.Blue.ToString("X").PadLeft(2, '0');
+                                _writer.WriteAttributeString("val", lastColor);
+                                break;
+                            case 0xFF: //undefined
+                            default:
+                                break;
+
+                        }
+                        _writer.WriteEndElement();
+                        _writer.WriteEndElement();
                     }
-                    _writer.WriteEndElement();
                     //_writer.WriteEndElement();
                 }
             }
             else
             {
+                _writer.WriteStartElement("a", "buClr", OpenXmlNamespaces.DrawingML);
                 _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
                 lastColor = color.Red.ToString("X").PadLeft(2, '0') + color.Green.ToString("X").PadLeft(2, '0') + color.Blue.ToString("X").PadLeft(2, '0');
                 _writer.WriteAttributeString("val", lastColor);
                 _writer.WriteEndElement();
+                _writer.WriteEndElement();
             }
-            _writer.WriteEndElement();
+            
         }
 
     }
