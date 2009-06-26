@@ -133,20 +133,34 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             if (sc != null)
             {
                 Shape sh = sc.FirstChildWithType<Shape>();
-                ShapeOptions so = sc.FirstChildWithType<ShapeOptions>();
+                ShapeOptions so = sc.FirstChildWithType<ShapeOptions>();                
 
                 if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.FillStyleBooleanProperties))
                 {
-                    _writer.WriteStartElement("p", "bg", OpenXmlNamespaces.PresentationML);
-                    _writer.WriteStartElement("p", "bgPr", OpenXmlNamespaces.PresentationML);
-                    FillStyleBooleanProperties p = new FillStyleBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.FillStyleBooleanProperties].op);
-                    if (p.fUsefFilled & p.fFilled) //  so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillType))
+                    bool ignore = false;
+                    if (sc.AllChildrenWithType<ShapeOptions>().Count > 1)
                     {
-                        new FillMapping(_ctx, _writer, this).Apply(so);
+                        ShapeOptions so2 = sc.AllChildrenWithType<ShapeOptions>()[1];
+                        if (so2.OptionsByID.ContainsKey(ShapeOptions.PropertyId.FillStyleBooleanProperties))
+                        {
+                            FillStyleBooleanProperties p2 = new FillStyleBooleanProperties(so2.OptionsByID[ShapeOptions.PropertyId.FillStyleBooleanProperties].op);
+                            if (!p2.fUsefFilled || !p2.fFilled) ignore = true;
+                        }
                     }
-                    _writer.WriteElementString("a", "effectLst", OpenXmlNamespaces.DrawingML, "");
-                    _writer.WriteEndElement(); //p:bgPr
-                    _writer.WriteEndElement(); //p:bg
+
+                    if (!ignore)
+                    {
+                        _writer.WriteStartElement("p", "bg", OpenXmlNamespaces.PresentationML);
+                        _writer.WriteStartElement("p", "bgPr", OpenXmlNamespaces.PresentationML);
+                        FillStyleBooleanProperties p = new FillStyleBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.FillStyleBooleanProperties].op);
+                        if (p.fUsefFilled & p.fFilled) //  so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillType))
+                        {
+                            new FillMapping(_ctx, _writer, this).Apply(so);
+                        }
+                        _writer.WriteElementString("a", "effectLst", OpenXmlNamespaces.DrawingML, "");
+                        _writer.WriteEndElement(); //p:bgPr
+                        _writer.WriteEndElement(); //p:bg
+                    }
                 }                      
             }
         
