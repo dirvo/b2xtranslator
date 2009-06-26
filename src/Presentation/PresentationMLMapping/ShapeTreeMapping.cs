@@ -2134,6 +2134,29 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteStartElement("a", "blip", OpenXmlNamespaces.DrawingML);
             _writer.WriteAttributeString("embed", OpenXmlNamespaces.Relationships, rId);
 
+            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.pictureTransparent))
+            {
+                RegularContainer slide = so.FirstAncestorWithType<Slide>();
+                if (slide == null) slide = so.FirstAncestorWithType<Note>();
+                if (slide == null) slide = so.FirstAncestorWithType<Handout>();
+                string colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.pictureTransparent].op, slide, so);
+                _writer.WriteStartElement("a", "clrChange", OpenXmlNamespaces.DrawingML);
+                _writer.WriteStartElement("a", "clrFrom", OpenXmlNamespaces.DrawingML);
+                _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                _writer.WriteAttributeString("val", colorval);
+                _writer.WriteEndElement(); //srgbClr
+                _writer.WriteEndElement(); //clrFrom
+                _writer.WriteStartElement("a", "clrTo", OpenXmlNamespaces.DrawingML);
+                _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                _writer.WriteAttributeString("val", colorval);
+                _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
+                _writer.WriteAttributeString("val", "0");
+                _writer.WriteEndElement(); //alpha
+                _writer.WriteEndElement(); //srgbClr
+                _writer.WriteEndElement(); //clrTo
+                _writer.WriteEndElement(); //clrChange
+            }
+
             if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.pictureBrightness) | so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.pictureContrast))
             {
                 _writer.WriteStartElement("a", "lum", OpenXmlNamespaces.DrawingML);
