@@ -930,6 +930,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                     _writer.WriteAttributeString("val", "bg2");
                                     _writer.WriteEndElement();
                                     break;
+                                case 1:
+                                    _writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
+                                    _writer.WriteAttributeString("val", "bg1");
+                                    _writer.WriteEndElement();
+                                    break;
                                 default:
                                     _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
                                     _writer.WriteAttributeString("val", s);

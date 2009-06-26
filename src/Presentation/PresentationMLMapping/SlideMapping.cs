@@ -129,7 +129,27 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             // TODO: Write slide data of master slide
             _writer.WriteStartElement("p", "cSld", OpenXmlNamespaces.PresentationML);
 
-            //TODO: write background properties (p:bg)
+            ShapeContainer sc = slide.FirstChildWithType<PPDrawing>().FirstChildWithType<DrawingContainer>().FirstChildWithType<ShapeContainer>();
+            if (sc != null)
+            {
+                Shape sh = sc.FirstChildWithType<Shape>();
+                ShapeOptions so = sc.FirstChildWithType<ShapeOptions>();
+
+                if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.FillStyleBooleanProperties))
+                {
+                    _writer.WriteStartElement("p", "bg", OpenXmlNamespaces.PresentationML);
+                    _writer.WriteStartElement("p", "bgPr", OpenXmlNamespaces.PresentationML);
+                    FillStyleBooleanProperties p = new FillStyleBooleanProperties(so.OptionsByID[ShapeOptions.PropertyId.FillStyleBooleanProperties].op);
+                    if (p.fUsefFilled & p.fFilled) //  so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillType))
+                    {
+                        new FillMapping(_ctx, _writer, this).Apply(so);
+                    }
+                    _writer.WriteElementString("a", "effectLst", OpenXmlNamespaces.DrawingML, "");
+                    _writer.WriteEndElement(); //p:bgPr
+                    _writer.WriteEndElement(); //p:bg
+                }                      
+            }
+        
 
             _writer.WriteStartElement("p", "spTree", OpenXmlNamespaces.PresentationML);
 
