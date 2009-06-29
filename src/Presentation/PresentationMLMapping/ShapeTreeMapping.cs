@@ -1261,7 +1261,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         if (Math.Abs(result) > 45 && Math.Abs(result) < 135) swapHeightWidth = true;
                         if (Math.Abs(result) > 225 && Math.Abs(result) < 315) swapHeightWidth = true;
 
-                        if (result < 0 && sh.fFlipH == false) result = result * -1;
+                        //if (result < 0 && sh.fFlipH == false) result = result * -1;
 
                         string rotation = Math.Floor(result * 60000).ToString();
                         if (result != 0)
@@ -1360,7 +1360,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         uint fractional = BitConverter.ToUInt16(bytes, 0);
                         Decimal result = integral + ((decimal)fractional / (decimal)65536);
 
-                        if (result < 0 && sh.fFlipH == false) result = result * -1;
+                        //if (result < 0 && sh.fFlipH == false) result = result * -1;
 
                         Double w = chAnchor.Bottom - chAnchor.Top;
                         Double h = chAnchor.Right - chAnchor.Left;
@@ -1378,13 +1378,29 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     if (sh.fFlipV) _writer.WriteAttributeString("flipV", "1");
 
                     _writer.WriteStartElement("a", "off", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("x", (chAnchor.Left).ToString());
-                    _writer.WriteAttributeString("y", (chAnchor.Top).ToString());
+                    if (swapHeightWidth)
+                    {
+                        _writer.WriteAttributeString("x", (chAnchor.Left - (int)dc).ToString());
+                        _writer.WriteAttributeString("y", (chAnchor.Top + (int)dc).ToString());
+                    }
+                    else
+                    {
+                        _writer.WriteAttributeString("x", (chAnchor.Left).ToString());
+                        _writer.WriteAttributeString("y", (chAnchor.Top).ToString());
+                    }
                     _writer.WriteEndElement();
 
                     _writer.WriteStartElement("a", "ext", OpenXmlNamespaces.DrawingML);
-                    _writer.WriteAttributeString("cx", (chAnchor.Right - chAnchor.Left).ToString());
-                    _writer.WriteAttributeString("cy", (chAnchor.Bottom - chAnchor.Top).ToString());
+                    if (swapHeightWidth)
+                    {
+                        _writer.WriteAttributeString("cx", (chAnchor.Bottom - chAnchor.Top).ToString());
+                        _writer.WriteAttributeString("cy", (chAnchor.Right - chAnchor.Left).ToString());
+                    }
+                    else
+                    {
+                        _writer.WriteAttributeString("cx", (chAnchor.Right - chAnchor.Left).ToString());
+                        _writer.WriteAttributeString("cy", (chAnchor.Bottom - chAnchor.Top).ToString());
+                    }
                     _writer.WriteEndElement();
 
                     _writer.WriteEndElement();
@@ -3360,6 +3376,26 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteEndElement();
                         _writer.WriteEndElement();
                     }
+                    else if (prst == "leftArrow" & so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineEndArrowWidth) && so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineEndArrowLength))
+                    {
+                        uint w = so.OptionsByID[ShapeOptions.PropertyId.lineEndArrowWidth].op;
+                        uint l = so.OptionsByID[ShapeOptions.PropertyId.lineEndArrowLength].op;
+
+                        if (w == 2 && l == 2)
+                        {
+                            _writer.WriteStartElement("a", "avLst", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteStartElement("a", "gd", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("name", "adj1");
+                            _writer.WriteAttributeString("fmla", "val 50000");
+                            _writer.WriteEndElement();
+                            _writer.WriteStartElement("a", "gd", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("name", "adj2");
+                            _writer.WriteAttributeString("fmla", "val 210000");
+                            _writer.WriteEndElement();
+                            _writer.WriteEndElement();
+                        }
+
+                    }
                     else if (prst == "wedgeRectCallout" & so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.adjustValue))
                     {
                         //the following computations are based on experiments using Powerpoint 2003 and are not part of the spec
@@ -3378,7 +3414,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteStartElement("a", "avLst", OpenXmlNamespaces.DrawingML);
                         _writer.WriteStartElement("a", "gd", OpenXmlNamespaces.DrawingML);
                         _writer.WriteAttributeString("name", "adj1");
-                        _writer.WriteAttributeString("fmla", "val " + newVal.ToString()); 
+                        _writer.WriteAttributeString("fmla", "val " + newVal.ToString());
                         _writer.WriteEndElement();
                         if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.adjust2Value))
                         {
@@ -3395,12 +3431,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             }
                             _writer.WriteStartElement("a", "gd", OpenXmlNamespaces.DrawingML);
                             _writer.WriteAttributeString("name", "adj2");
-                            _writer.WriteAttributeString("fmla", "val " + newVal.ToString()); 
+                            _writer.WriteAttributeString("fmla", "val " + newVal.ToString());
                             _writer.WriteEndElement();
                         }
-                        _writer.WriteEndElement();                       
+                        _writer.WriteEndElement();
 
-                    } else {
+                    }
+                    else
+                    {
                         _writer.WriteElementString("a", "avLst", OpenXmlNamespaces.DrawingML, "");
                     }
                     _writer.WriteEndElement(); //prstGeom
