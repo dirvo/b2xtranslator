@@ -184,14 +184,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             if (runExists && run.TypefacePresent)
             {
-                //List<ColorSchemeAtom> colors = slide.AllChildrenWithType<ColorSchemeAtom>();
-                //ColorSchemeAtom MasterScheme = null;
-                //foreach (ColorSchemeAtom color in colors)
-                //{
-                //    if (color.Instance == 1) MasterScheme = color;
-                //}
-
-
                 _writer.WriteStartElement("a", "latin", OpenXmlNamespaces.DrawingML);
                 try
                 {
@@ -247,6 +239,34 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 }
 
                 _writer.WriteEndElement();
+            }
+
+            if (runExists && run.SymbolTypefacePresent)
+            {
+                
+                try
+                {
+                    FontCollection fonts = _ctx.Ppt.DocumentRecord.FirstChildWithType<DIaLOGIKa.b2xtranslator.PptFileFormat.Environment>().FirstChildWithType<FontCollection>();
+                    FontEntityAtom entity = fonts.entities[(int)run.SymbolTypefaceIdx];
+                    if (entity.TypeFace.IndexOf('\0') > 0)
+                    {
+                        _writer.WriteStartElement("a", "sym", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("typeface", entity.TypeFace.Substring(0, entity.TypeFace.IndexOf('\0')));
+                        _writer.WriteEndElement();
+                    }
+                    else
+                    {
+                        _writer.WriteStartElement("a", "sym", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("typeface", entity.TypeFace);
+                        _writer.WriteEndElement();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //throw;
+                }
+
+                
             }
 
             _writer.WriteEndElement();
