@@ -57,12 +57,13 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         /// <param name="style">style to use</param>
         /// <param name="forIdx">index to use</param>
         /// <returns>ParagraphRun or null in case no run was found</returns>
-        protected static ParagraphRun GetParagraphRun(TextStyleAtom style, uint forIdx)
+        protected static ParagraphRun GetParagraphRun(TextStyleAtom style, uint forIdx, ref int runCount)
         {
             if (style == null)
                 return null;
 
             uint idx = 0;
+            runCount = 0;
 
             foreach (ParagraphRun p in style.PRuns)
             {
@@ -70,6 +71,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     return p;
 
                 idx += p.Length;
+                runCount++;
             }
 
             return null;
@@ -243,9 +245,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                                 //_writer.WriteStartElement("a", "p", OpenXmlNamespaces.DrawingML);
 
-                                ParagraphRun p = GetParagraphRun(style, 0);
+                                int runCount = 0;
+                                ParagraphRun p = GetParagraphRun(style, 0, ref runCount);
                                 MasterTextPropRun tp = GetMasterTextPropRun(masterTextProp, 0);
-                                writeP(p, tp, so, ruler, defaultStyle);
+                                writeP(p, tp, so, ruler, defaultStyle,0);
 
                                 _writer.WriteStartElement("a", "fld", OpenXmlNamespaces.DrawingML);
                                 _writer.WriteAttributeString("id", "{1023E2E8-AA53-4FEA-8F5C-1FABD68F61AB}");
@@ -396,7 +399,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     //each parline forms a paragraph
                     //each runline forms a run
 
-                    ParagraphRun p = GetParagraphRun(style, idx);
+                    int runCount = 0;
+                    ParagraphRun p = GetParagraphRun(style, idx, ref runCount);
                     MasterTextPropRun tp = GetMasterTextPropRun(masterTextProp, idx);
 
                     if (p != null) lvl = p.IndentLevel;
@@ -409,7 +413,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                     }
 
-                    writeP(p, tp, so, ruler, defaultStyle);
+                    writeP(p, tp, so, ruler, defaultStyle, runCount);
 
                     uint CharacterRunStart;
                     int len;
@@ -549,7 +553,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         }
 
-        private void writeP(ParagraphRun p, MasterTextPropRun tp, ShapeOptions so, TextRulerAtom ruler, TextMasterStyleAtom defaultStyle)
+        private void writeP(ParagraphRun p, MasterTextPropRun tp, ShapeOptions so, TextRulerAtom ruler, TextMasterStyleAtom defaultStyle, int runCount)
         {
             int writtenLeftMargin = -1;
             _writer.WriteStartElement("a", "p", OpenXmlNamespaces.DrawingML);
@@ -648,7 +652,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             }
 
 
-                            if (parentShapeTreeMapping != null && parentShapeTreeMapping.ShapeStyleTextProp9Atom != null && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs.Count > p.IndentLevel && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[p.IndentLevel].fBulletHasAutoNumber == 1 && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[p.IndentLevel].bulletAutoNumberScheme == -1)
+                            if (parentShapeTreeMapping != null && parentShapeTreeMapping.ShapeStyleTextProp9Atom != null && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs.Count > runCount && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[runCount].fBulletHasAutoNumber == 1 && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[runCount].bulletAutoNumberScheme == -1)
                             {
                                 _writer.WriteStartElement("a", "buAutoNum", OpenXmlNamespaces.DrawingML);
                                 _writer.WriteAttributeString("type", "arabicPeriod");
@@ -988,10 +992,16 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         }
                         
                        
-                        if (parentShapeTreeMapping != null && parentShapeTreeMapping.ShapeStyleTextProp9Atom != null && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs.Count > p.IndentLevel && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[p.IndentLevel].fBulletHasAutoNumber == 1 && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[p.IndentLevel].bulletAutoNumberScheme == -1)
+                        if (parentShapeTreeMapping != null && parentShapeTreeMapping.ShapeStyleTextProp9Atom != null && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs.Count > runCount && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[runCount].fBulletHasAutoNumber == 1 && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[runCount].bulletAutoNumberScheme == -1)
                         {
                             _writer.WriteStartElement("a","buAutoNum",OpenXmlNamespaces.DrawingML);
                             _writer.WriteAttributeString("type","arabicPeriod");
+                            _writer.WriteEndElement();
+                        }
+                        else if (parentShapeTreeMapping != null && parentShapeTreeMapping.ShapeStyleTextProp9Atom != null && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs.Count > runCount && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[runCount].fBulletHasAutoNumber == 1 && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[runCount].bulletAutoNumberScheme == 1)
+                        {
+                            _writer.WriteStartElement("a", "buAutoNum", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("type", "alphaUcPeriod");
                             _writer.WriteEndElement();
                         }
                         else if (p.BulletCharPresent)
