@@ -148,6 +148,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         }
                     }
 
+                    SlideAtom sa = slide.FirstChildWithType<SlideAtom>();
+                    if (Tools.Utils.BitmaskToBool(sa.Flags, 0x1 << 2)) ignore = true; //this means the slide gets its background from the master
+
                     if (!ignore)
                     {
                         _writer.WriteStartElement("p", "bg", OpenXmlNamespaces.PresentationML);

@@ -43,8 +43,11 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             : base(_reader, size, typeCode, version, instance)
         {
 
+            while (Reader.BaseStream.Position < Reader.BaseStream.Length)
+            {
                 TextSIRun run = new TextSIRun(Reader);
                 Runs.Add(run);
+            }
 
         }       
     }
