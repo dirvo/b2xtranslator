@@ -110,7 +110,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
             get { return _appPropertiesPart; }
             set { _appPropertiesPart = value; }
         }
-
+               
         public AppPropertiesPart AddAppPropertiesPart()
         {
             this.AppPropertiesPart = new AppPropertiesPart(this);

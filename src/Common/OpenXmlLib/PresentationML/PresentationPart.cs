@@ -78,6 +78,11 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib.PresentationML
             return this.AddPart(new ThemePart(this, ++_themeCounter));
         }
 
+        public ViewPropertiesPart AddViewPropertiesPart()
+        {
+            return this.AddPart(new ViewPropertiesPart(this));
+        }
+
         public VbaProjectPart VbaProjectPart
         {
             get

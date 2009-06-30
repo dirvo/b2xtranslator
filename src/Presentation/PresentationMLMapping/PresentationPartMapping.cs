@@ -67,7 +67,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         
             WriteMainMasters(ppt);
             WriteSlides(ppt, documentRecord);
-            
+
+            viewPropsMapping viewProps = new viewPropsMapping(_ctx.Pptx.PresentationPart.AddViewPropertiesPart(), _ctx.WriterSettings, _ctx);
+            viewProps.Apply(null);
 
             // sldSz and notesSz
             WriteSizeInfo(ppt, documentRecord);

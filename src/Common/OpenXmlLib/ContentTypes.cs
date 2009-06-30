@@ -148,6 +148,7 @@ namespace DIaLOGIKa.b2xtranslator.OpenXmlLib
         // PresentationML namespaces
         public const string PresentationML = "http://schemas.openxmlformats.org/presentationml/2006/main";
         public const string docPropsVTypes = "http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes";
+        public const string viewProps = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/viewProps";
 
         // SpreadsheetML Namespaces
         public const string SpreadsheetML = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
