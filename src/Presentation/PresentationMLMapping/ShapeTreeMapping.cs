@@ -1700,6 +1700,12 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
                         _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
                         _writer.WriteAttributeString("val", colorval);
+                        if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineOpacity) && so.OptionsByID[ShapeOptions.PropertyId.lineOpacity].op != 65536)
+                        {
+                            _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("val", Math.Round(((decimal)so.OptionsByID[ShapeOptions.PropertyId.lineOpacity].op / 65536 * 100000)).ToString()); //we need the percentage of the opacity (65536 means 100%)
+                            _writer.WriteEndElement();
+                        }
                         _writer.WriteEndElement();
                         _writer.WriteEndElement();
                     }
