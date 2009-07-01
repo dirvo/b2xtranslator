@@ -3350,6 +3350,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             case PathSegment.SegmentType.msopathClose:
                                 _writer.WriteElementString("a", "close", OpenXmlNamespaces.DrawingML, "");
                                 break;
+                            case PathSegment.SegmentType.msopathEscape:
+                                break;
+                            case PathSegment.SegmentType.msopathEnd:
+                                _writer.WriteEndElement(); //path
+                                _writer.WriteStartElement("a", "path", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("w", (maxX - minX).ToString());
+                                _writer.WriteAttributeString("h", (maxY - minY).ToString());
+                                break;
                             default:
                                 break;
                         }

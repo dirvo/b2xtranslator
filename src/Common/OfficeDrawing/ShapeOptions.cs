@@ -431,6 +431,12 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             fDoLayout=1342,
             diagramBooleans=1343,
 
+            //miter
+            lineLeftMiterLimit=1356, 
+            lineTopMiterLimit=1420,
+            lineRightMiterLimit=1484,
+            lineBottomMiterLimit=1548,
+
             //Web Component
             webComponentWzHtml=1664,
             webComponentWzName=1665,
@@ -587,14 +593,14 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             {
                 if (this.Options[i].fComplex)
                 {
-                    if (this.Options[i].pid == PropertyId.pVertices)
-                    {
-                        this.Options[i].opComplex = this.Reader.ReadBytes((int)this.Options[i].op + 6);
-                    }
-                    else
-                    {
+                    //if (this.Options[i].pid == PropertyId.pVertices)
+                    //{
+                    //    this.Options[i].opComplex = this.Reader.ReadBytes((int)this.Options[i].op + 6);
+                    //}
+                    //else
+                    //{
                         this.Options[i].opComplex = this.Reader.ReadBytes((int)this.Options[i].op);
-                    }
+                    //}
                 }
                 if (this.OptionsByID.ContainsKey(this.Options[i].pid))
                 {

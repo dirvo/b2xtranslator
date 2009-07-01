@@ -38,13 +38,13 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             UInt16 nElemsAllocVert = System.BitConverter.ToUInt16(pVertices, 2);
             cbElemVert = System.BitConverter.ToUInt16(pVertices, 4);
             if (cbElemVert == 0xfff0) cbElemVert = 4;
-            for (int i = 6; i < pVertices.Length; i += cbElemVert)
+            for (int i = 6; i <= pVertices.Length - cbElemVert; i += cbElemVert)
             {
-                this.Values.Add(
-                    new Point(
-                        System.BitConverter.ToInt16(pVertices, i),
-                        System.BitConverter.ToInt16(pVertices, i + cbElemVert / 2)
-                ));
+                    this.Values.Add(
+                         new Point(
+                             System.BitConverter.ToInt16(pVertices, i),
+                             System.BitConverter.ToInt16(pVertices, i + cbElemVert / 2)
+                     ));           
             }
         }
     }
