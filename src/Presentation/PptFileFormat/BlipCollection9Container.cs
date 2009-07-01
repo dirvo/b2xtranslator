@@ -64,7 +64,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
                     if ((pmask & ParagraphMask.BulletScheme) != 0)
                     {
                         pr.bulletAutoNumberScheme = Reader.ReadInt16();
-                        Reader.ReadInt16(); //start value
+                        pr.startAt = Reader.ReadInt16(); //start value
                     }
                     P9Runs.Add(pr);
 

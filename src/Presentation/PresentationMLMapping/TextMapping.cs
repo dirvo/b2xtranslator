@@ -990,33 +990,113 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 _writer.WriteElementString("a", "buFontTx", OpenXmlNamespaces.DrawingML, "");
                             }
                         }
-                        
-                       
-                        if (parentShapeTreeMapping != null && parentShapeTreeMapping.ShapeStyleTextProp9Atom != null && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs.Count > runCount && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[runCount].fBulletHasAutoNumber == 1 && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[runCount].bulletAutoNumberScheme == -1)
+
+                        bool autoNumberingWritten = false;
+                        if (_ctx.Ppt.DocumentRecord.DocInfoListContainer.FirstDescendantWithType<OutlineTextProps9Container>() != null)
                         {
-                            _writer.WriteStartElement("a","buAutoNum",OpenXmlNamespaces.DrawingML);
-                            _writer.WriteAttributeString("type","arabicPeriod");
-                            _writer.WriteEndElement();
-                        }
-                        else if (parentShapeTreeMapping != null && parentShapeTreeMapping.ShapeStyleTextProp9Atom != null && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs.Count > runCount && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[runCount].fBulletHasAutoNumber == 1 && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[runCount].bulletAutoNumberScheme == 1)
-                        {
-                            _writer.WriteStartElement("a", "buAutoNum", OpenXmlNamespaces.DrawingML);
-                            _writer.WriteAttributeString("type", "alphaUcPeriod");
-                            _writer.WriteEndElement();
-                        }
-                        else if (p.BulletCharPresent)
-                        {
-                            _writer.WriteStartElement("a", "buChar", OpenXmlNamespaces.DrawingML);
-                            _writer.WriteAttributeString("char", p.BulletChar.ToString());
-                            _writer.WriteEndElement(); //buChar
-                        }
-                        else if (!p.BulletCharPresent)
-                        {
-                            _writer.WriteStartElement("a", "buChar", OpenXmlNamespaces.DrawingML);
-                            _writer.WriteAttributeString("char", "•");
-                            _writer.WriteEndElement(); //buChar
+                            OutlineTextProps9Container c = _ctx.Ppt.DocumentRecord.DocInfoListContainer.FirstDescendantWithType<OutlineTextProps9Container>();
+                            Slide slide = so.FirstAncestorWithType<Slide>();
+
+                            foreach (OutlineTextProps9Entry entry in c.OutlineTextProps9Entries)
+                            {
+                                if (slide.PersistAtom.SlideId == entry.outlineTextHeaderAtom.slideIdRef)
+                                {
+                                    if (entry.styleTextProp9Atom.P9Runs.Count > runCount && entry.styleTextProp9Atom.P9Runs[runCount].fBulletHasAutoNumber == 1)
+                                    {
+                                        switch (entry.styleTextProp9Atom.P9Runs[runCount].bulletAutoNumberScheme)
+                                        {
+                                            case -1:
+                                            case 3:
+                                                _writer.WriteStartElement("a", "buAutoNum", OpenXmlNamespaces.DrawingML);
+                                                _writer.WriteAttributeString("type", "arabicPeriod");
+                                                if (entry.styleTextProp9Atom.P9Runs[runCount].startAt != -1)
+                                                {
+                                                    _writer.WriteAttributeString("startAt", entry.styleTextProp9Atom.P9Runs[runCount].startAt.ToString());
+                                                }
+                                                _writer.WriteEndElement();
+                                                autoNumberingWritten = true;
+                                                break;
+                                            case 1:
+                                                _writer.WriteStartElement("a", "buAutoNum", OpenXmlNamespaces.DrawingML);
+                                                _writer.WriteAttributeString("type", "alphaUcPeriod");
+                                                if (entry.styleTextProp9Atom.P9Runs[runCount].startAt != -1)
+                                                {
+                                                    _writer.WriteAttributeString("startAt", entry.styleTextProp9Atom.P9Runs[runCount].startAt.ToString());
+                                                }
+                                                _writer.WriteEndElement();
+                                                autoNumberingWritten = true;
+                                                break;
+                                        }
+                                    }
+                                }
+                            }
+
+                            //OutlineTextPropsHeader9Atom a = c.FirstChildWithType<OutlineTextPropsHeader9Atom>();
+                            //Slide slide = so.FirstAncestorWithType<Slide>();
+                            //if (slide.PersistAtom.SlideId == a.slideIdRef)
+                            //{
+                            //    StyleTextProp9Atom s = c.FirstChildWithType<StyleTextProp9Atom>();
+                            //    if (s.P9Runs.Count > runCount && s.P9Runs[runCount].fBulletHasAutoNumber == 1)
+                            //    {
+                            //        switch (s.P9Runs[runCount].bulletAutoNumberScheme)
+                            //        {
+                            //            case -1:
+                            //                _writer.WriteStartElement("a", "buAutoNum", OpenXmlNamespaces.DrawingML);
+                            //                _writer.WriteAttributeString("type", "arabicPeriod");
+                            //                _writer.WriteEndElement();
+                            //                autoNumberingWritten = true;
+                            //                break;
+                            //            case 1:
+                            //                _writer.WriteStartElement("a", "buAutoNum", OpenXmlNamespaces.DrawingML);
+                            //                _writer.WriteAttributeString("type", "alphaUcPeriod");
+                            //                _writer.WriteEndElement();
+                            //                autoNumberingWritten = true;
+                            //                break;
+                            //        }
+                            //    }
+                            //}
                         }
 
+                        if (!autoNumberingWritten)
+                        {
+                            if (parentShapeTreeMapping != null && parentShapeTreeMapping.ShapeStyleTextProp9Atom != null && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs.Count > runCount && parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[runCount].fBulletHasAutoNumber == 1)
+                            {
+                                switch(parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[runCount].bulletAutoNumberScheme)
+                                {
+                                    case -1:
+                                    case 3:
+                                        _writer.WriteStartElement("a", "buAutoNum", OpenXmlNamespaces.DrawingML);
+                                        _writer.WriteAttributeString("type", "arabicPeriod");
+                                        if (parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[runCount].startAt != -1)
+                                        {
+                                            _writer.WriteAttributeString("startAt", parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[runCount].startAt.ToString());
+                                        }
+                                        _writer.WriteEndElement();
+                                        break;
+                                    case 1:
+                                        _writer.WriteStartElement("a", "buAutoNum", OpenXmlNamespaces.DrawingML);
+                                        _writer.WriteAttributeString("type", "alphaUcPeriod");
+                                        if (parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[runCount].startAt != -1)
+                                        {
+                                            _writer.WriteAttributeString("startAt", parentShapeTreeMapping.ShapeStyleTextProp9Atom.P9Runs[runCount].startAt.ToString());
+                                        }
+                                        _writer.WriteEndElement();
+                                        break;
+                                }
+                            }
+                            else if (p.BulletCharPresent)
+                            {
+                                _writer.WriteStartElement("a", "buChar", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("char", p.BulletChar.ToString());
+                                _writer.WriteEndElement(); //buChar
+                            }
+                            else if (!p.BulletCharPresent)
+                            {
+                                _writer.WriteStartElement("a", "buChar", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("char", "•");
+                                _writer.WriteEndElement(); //buChar
+                            }
+                        }
                     }
                 }
 

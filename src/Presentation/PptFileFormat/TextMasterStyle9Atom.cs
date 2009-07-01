@@ -33,7 +33,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
                 if ((pmask & ParagraphMask.BulletScheme) != 0)
                 {
                     pr.bulletAutoNumberScheme = Reader.ReadUInt16();
-                    Reader.ReadInt16(); //start value
+                    pr.startAt = Reader.ReadInt16(); //start value
                 }
                 this.pruns.Add(pr);
 
@@ -53,6 +53,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         public int bulletblipref;
         public int fBulletHasAutoNumber;
         public int bulletAutoNumberScheme = -1;
+        public Int16 startAt = -1;
 
         public bool BulletBlipReferencePresent
         {
