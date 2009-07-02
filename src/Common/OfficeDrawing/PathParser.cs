@@ -40,11 +40,23 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             if (cbElemVert == 0xfff0) cbElemVert = 4;
             for (int i = 6; i <= pVertices.Length - cbElemVert; i += cbElemVert)
             {
-                    this.Values.Add(
-                         new Point(
-                             System.BitConverter.ToInt16(pVertices, i),
-                             System.BitConverter.ToInt16(pVertices, i + cbElemVert / 2)
-                     ));           
+                switch(cbElemVert)
+                {
+                    case 4:
+                        this.Values.Add(
+                             new Point(
+                                 System.BitConverter.ToInt16(pVertices, i),
+                                 System.BitConverter.ToInt16(pVertices, i + cbElemVert / 2)
+                         ));
+                        break;
+                    case 8:
+                        this.Values.Add(
+                             new Point(
+                                 System.BitConverter.ToInt32(pVertices, i),
+                                 System.BitConverter.ToInt32(pVertices, i + cbElemVert / 2)
+                         ));
+                        break;
+                }
             }
         }
     }

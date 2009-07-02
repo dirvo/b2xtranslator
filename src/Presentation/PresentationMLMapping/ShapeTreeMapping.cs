@@ -1132,39 +1132,45 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 }
 
             ShapeOptions sndSo = null;
+            String prstGeom = "";
             if (container.AllChildrenWithType<ShapeOptions>().Count > 1)
             {
                 sndSo = ((RegularContainer)sh.ParentRecord).AllChildrenWithType<ShapeOptions>()[1];
-                //if (sndSo.OptionsByID.ContainsKey(ShapeOptions.PropertyId.metroBlob))
-                //{
-                //    ZipUtils.ZipReader reader = null;
-                //    try
-                //    {
-                //        ShapeOptions.OptionEntry metroBlob = sndSo.OptionsByID[ShapeOptions.PropertyId.metroBlob];
-                //        byte[] code = metroBlob.opComplex;
-                //        string path = System.IO.Path.GetTempFileName();
-                //        System.IO.FileStream fs = new System.IO.FileStream(path, System.IO.FileMode.Create);
-                //        fs.Write(code, 0, code.Length);
-                //        fs.Close();
+                if (sndSo.OptionsByID.ContainsKey(ShapeOptions.PropertyId.metroBlob))
+                {
+                    ZipUtils.ZipReader reader = null;
+                    try
+                    {
+                        ShapeOptions.OptionEntry metroBlob = sndSo.OptionsByID[ShapeOptions.PropertyId.metroBlob];
+                        byte[] code = metroBlob.opComplex;
+                        string path = System.IO.Path.GetTempFileName();
+                        System.IO.FileStream fs = new System.IO.FileStream(path, System.IO.FileMode.Create);
+                        fs.Write(code, 0, code.Length);
+                        fs.Close();
 
-                //        reader = ZipUtils.ZipFactory.OpenArchive(path);
-                //        System.IO.StreamReader mems = new System.IO.StreamReader(reader.GetEntry("drs/shapexml.xml"));
-                //        string xml = mems.ReadToEnd();
-                //        xml = Tools.Utils.replaceOutdatedNamespaces(xml);
-                //        xml = xml.Substring(xml.IndexOf("<p:sp")); //remove xml declaration
+                        reader = ZipUtils.ZipFactory.OpenArchive(path);
+                        System.IO.StreamReader mems = new System.IO.StreamReader(reader.GetEntry("drs/shapexml.xml"));
+                        string xml = mems.ReadToEnd();
+                        xml = Tools.Utils.replaceOutdatedNamespaces(xml);
+                        //xml = xml.Substring(xml.IndexOf("<p:sp")); //remove xml declaration
 
-                //        _writer.WriteRaw(xml);
+                        xml = xml.Substring(xml.IndexOf("<a:prstGeom"));
+                        if (xml.Length > 0)
+                        {
+                            xml = xml.Substring(0, xml.IndexOf("</a:prstGeom>") + 13);
+                            prstGeom = xml;
+                        }
 
-                //        continueShape = false;
-
-                //        reader.Close();
-                //    }
-                //    catch (Exception e)
-                //    {
-                //        continueShape = true;
-                //        if (reader != null) reader.Close();
-                //    }
-                //}
+                        //_writer.WriteRaw(xml);
+                        //continueShape = false;
+                        reader.Close();
+                    }
+                    catch (Exception e)
+                    {
+                        continueShape = true;
+                        if (reader != null) reader.Close();
+                    }
+                }
             }
 
             if (continueShape)
@@ -1406,7 +1412,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteEndElement();
                 }
 
-                if (sh.Instance != 0 & !so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.pSegmentInfo)) //this means a predefined shape
+                if (prstGeom.Length > 0) //this means a predefined shape in a blob
+                {
+                    _writer.WriteRaw(prstGeom);
+                }
+                else if (sh.Instance != 0 & !so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.pSegmentInfo)) //this means a predefined shape
                 {
                     WriteprstGeom(sh);
                 }
@@ -3305,9 +3315,56 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 case 3: //curves closed
                     break;
                 case 4: //complex
+
+                    Dictionary<Point, int> Escapes = new Dictionary<Point, int>();
+                    List<int> tempEscapes = new List<int>();
+                    int i = 0;
+                    int start = 0;
+                    int end;
+                    foreach (PathSegment seg in pp.Segments)
+                    {
+                        if (seg.Type == PathSegment.SegmentType.msopathEscape)
+                        {
+                            tempEscapes.Add(seg.EscapeCode);
+                        }
+                        if (seg.Type == PathSegment.SegmentType.msopathEnd)
+                        {
+                            end = i;
+                            foreach (int escape in tempEscapes)
+                            {
+                                Escapes.Add(new Point(start, end), escape);
+                            }
+                            start = i + 1;
+                            tempEscapes.Clear();
+                        }
+                        i++;
+                    }
+
+                    i = 0;
                     foreach (PathSegment seg in pp.Segments)
                     {
                         if (valuePointer >= pp.Values.Count) break;
+
+                        if (i == 0)
+                        {
+                            //check for escape codes
+                            foreach (Point p in Escapes.Keys)
+                            {
+                                if (p.X == 0)
+                                {
+                                    switch (Escapes[p])
+                                    {
+                                        case 0xA:
+                                            _writer.WriteAttributeString("fill", "none");
+                                            break;
+                                        case 0xB:
+                                            _writer.WriteAttributeString("stroke", "0");
+                                            break;
+                                    }
+                                }
+                            }
+                        }
+
                         switch (seg.Type)
                         {
                             case PathSegment.SegmentType.msopathLineTo:
@@ -3350,17 +3407,35 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             case PathSegment.SegmentType.msopathClose:
                                 _writer.WriteElementString("a", "close", OpenXmlNamespaces.DrawingML, "");
                                 break;
-                            case PathSegment.SegmentType.msopathEscape:
-                                break;
                             case PathSegment.SegmentType.msopathEnd:
                                 _writer.WriteEndElement(); //path
                                 _writer.WriteStartElement("a", "path", OpenXmlNamespaces.DrawingML);
                                 _writer.WriteAttributeString("w", (maxX - minX).ToString());
                                 _writer.WriteAttributeString("h", (maxY - minY).ToString());
+
+                                //check for escape codes
+                                foreach (Point p in Escapes.Keys)
+                                {
+                                    if (p.X <= i+1 && p.Y >= i+1)
+                                    {
+                                        switch (Escapes[p])
+                                        {
+                                            case 0xA:
+                                                _writer.WriteAttributeString("fill", "none");
+                                                break;
+                                            case 0xB:
+                                                _writer.WriteAttributeString("stroke", "0");
+                                                break;
+                                        }
+                                    }
+                                }
+
+
                                 break;
                             default:
                                 break;
                         }
+                        i++;
                     }
                     break;
             }

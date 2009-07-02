@@ -589,19 +589,37 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
             //parse the complex values
             //these values are stored directly at the end  
             //of the OptionEntry arry, sorted by pid
+            long tempPos;
             for (int i = 0; i < instance; i++)
             {
                 if (this.Options[i].fComplex)
                 {
-                    //if (this.Options[i].pid == PropertyId.pVertices)
-                    //{
+                    tempPos = this.Reader.BaseStream.Position;
+                    if (this.Options[i].op > 0)
+                    {
+                        this.Options[i].opComplex = this.Reader.ReadBytes((int)this.Options[i].op);
+                    }
+
+                    if (this.Options[i].pid == PropertyId.pVertices)
+                    {
+                        UInt16 nElemsVert = System.BitConverter.ToUInt16(this.Options[i].opComplex, 0);
+                        UInt16 nElemsAllocVert = System.BitConverter.ToUInt16(this.Options[i].opComplex, 2);
+                        UInt16 cbElemVert = System.BitConverter.ToUInt16(this.Options[i].opComplex, 4);
+                        if (cbElemVert == 0xfff0) cbElemVert = 4;
+                        if (nElemsVert * cbElemVert == this.Options[i].op)
+                        {
+                            this.Reader.BaseStream.Seek(tempPos, SeekOrigin.Begin);
+                            this.Options[i].opComplex = this.Reader.ReadBytes((int)this.Options[i].op + 6);
+                        }
+
                     //    this.Options[i].opComplex = this.Reader.ReadBytes((int)this.Options[i].op + 6);
-                    //}
+                    }
                     //else
                     //{
-                        this.Options[i].opComplex = this.Reader.ReadBytes((int)this.Options[i].op);
+                    //    this.Options[i].opComplex = this.Reader.ReadBytes((int)this.Options[i].op);
                     //}
                 }
+
                 if (this.OptionsByID.ContainsKey(this.Options[i].pid))
                 {
                     OptionsByID[this.Options[i].pid] = this.Options[i];
