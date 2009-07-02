@@ -129,7 +129,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteStartElement("p", "grpSp", OpenXmlNamespaces.PresentationML);
 
             _writer.WriteStartElement("p", "nvGrpSpPr", OpenXmlNamespaces.PresentationML);
-            WriteCNvPr(--groupcounter, "");
+
+            int id = group.FirstChildWithType<ShapeContainer>().FirstChildWithType<Shape>().spid;
+            WriteCNvPr(id, "");
+            //WriteCNvPr(--groupcounter, "");
             _writer.WriteElementString("p", "cNvGrpSpPr", OpenXmlNamespaces.PresentationML, "");
             _writer.WriteElementString("p", "nvPr", OpenXmlNamespaces.PresentationML, "");
             _writer.WriteEndElement(); //nvGrpSpPr
@@ -191,9 +194,18 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteEndElement(); //grpSpPr
 
+            bool first = true;
             foreach (Record record in group.Children)
             {
-                DynamicApply(record);
+                //ignore first
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    DynamicApply(record);
+                }
             }
 
             _writer.WriteEndElement(); //grpSp
