@@ -267,6 +267,27 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         }
     }
 
+    public enum TimePropertyID4TimeNode
+    {
+        Display = 0x2,
+        MasterPos = 0x5,
+        SlaveType = 0x6,
+        EffectID = 0x9,
+        EffectDir = 0xA,
+        EffectType = 0xB,
+        AfterEffect = 0xD,
+        SlideCount = 0xF,
+        TimeFilter = 0x10,
+        EventFilter = 0x11,
+        HideWhenStopped = 0x12,
+        GroupID = 0x13,
+        EffectNodeType = 0x14,
+        PlaceholderNode = 0x15,
+        MediaVolume = 0x16,
+        MediaMute = 0x17,
+        ZoomToFullScreen = 0x1A
+    }
+
     public enum TimeVariantTypeEnum
     {
         Bool = 0,
@@ -587,6 +608,37 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             fProgressPropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1 << 2);
             fRuntimeContextObsolete = Tools.Utils.BitmaskToBool(flags, 0x1 << 3);
             effectTransition = this.Reader.ReadUInt32();
+        }
+    }
+
+    [OfficeRecordAttribute(61752)]
+    public class TimeRotationBehaviorAtom : Record
+    {
+        public bool fByPropertyUsed;
+        public bool fFromPropertyUsed;
+        public bool fToPropertyUsed;
+        public bool fDirectionPropertyUsed;
+
+        public float fBy;
+        public float fFrom;
+        public float fTo;
+
+        public uint rotationDirection;
+
+        public TimeRotationBehaviorAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance)
+        {
+            int flags = this.Reader.ReadInt32();
+            fByPropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1);
+            fFromPropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1 << 1);
+            fToPropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1 << 2);
+            fDirectionPropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1 << 3);
+
+            fBy = this.Reader.ReadSingle();
+            fFrom = this.Reader.ReadSingle();
+            fTo = this.Reader.ReadSingle();            
+
+            rotationDirection = this.Reader.ReadUInt32();
         }
     }
 

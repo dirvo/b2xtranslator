@@ -252,6 +252,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         public void ApplyTable(GroupContainer group, uint TABLEFLAGS)
         {
             GroupShapeRecord gsr = group.FirstChildWithType<ShapeContainer>().FirstChildWithType<GroupShapeRecord>();
+            Shape sh = group.FirstChildWithType<ShapeContainer>().FirstChildWithType<Shape>();
             ClientAnchor anchor = group.FirstChildWithType<ShapeContainer>().FirstChildWithType<ClientAnchor>();
 
             RowHeights = new List<int>();
@@ -366,7 +367,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteStartElement("p", "graphicFrame", OpenXmlNamespaces.PresentationML);
 
             _writer.WriteStartElement("p", "nvGraphicFramePr", OpenXmlNamespaces.PresentationML);
-            WriteCNvPr(--groupcounter, "");
+
+            WriteCNvPr(sh.spid, "");
+            //WriteCNvPr(--groupcounter, "");
+            
             _writer.WriteStartElement("p", "cNvGraphicFramePr", OpenXmlNamespaces.PresentationML);
             _writer.WriteStartElement("a", "graphicFrameLocks", OpenXmlNamespaces.DrawingML);
             _writer.WriteAttributeString("noGrp", "1");
@@ -1899,7 +1903,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteStartElement("p", "graphicFrame", OpenXmlNamespaces.PresentationML);
             _writer.WriteStartElement("p", "nvGraphicFramePr", OpenXmlNamespaces.PresentationML);
-            string id = WriteCNvPr(--groupcounter, "");
+            
+            //string id = WriteCNvPr(--groupcounter, "");
+            string id = WriteCNvPr(sh.spid, "");
+            
             _writer.WriteStartElement("p", "cNvGraphicFramePr", OpenXmlNamespaces.PresentationML);
             _writer.WriteStartElement("a", "graphicFrameLocks", OpenXmlNamespaces.DrawingML);
             _writer.WriteAttributeString("noChangeAspect", "1");
@@ -2850,7 +2857,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 if (ms.Length > 0)
                 {
                     Record rec = Record.ReadRecord(ms);
-
+                    bool blnContinue = true; 
                     if (rec.TypeCode == 4116 && output)
                     {
                         AnimationInfoContainer animinfo = (AnimationInfoContainer)rec;
@@ -2860,8 +2867,13 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             rec = Record.ReadRecord(ms);
                             rec.SiblingIdx = 1;
                         }
+                        else
+                        {
+                            blnContinue = false;
+                        }
                     }
 
+                    if (blnContinue)
                     while (true)
                     {
                         switch (rec.TypeCode)
@@ -2938,6 +2950,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 }
                                 break;
                             case 4116:
+                                AnimationInfoContainer animinfo = (AnimationInfoContainer)rec;
+                                animinfos.Add(animinfo, _idCnt);
                                 break;
                             case 5000:
                                 RegularContainer con = (RegularContainer)rec;
