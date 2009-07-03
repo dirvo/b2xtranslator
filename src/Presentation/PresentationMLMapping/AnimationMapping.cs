@@ -671,6 +671,37 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                 _writer.WriteEndElement(); //stCondLst
 
+
+                if (c2.FirstChildWithType<TimeIterateDataAtom>() != null)
+                {
+                    TimeIterateDataAtom tida = c2.FirstChildWithType<TimeIterateDataAtom>();
+
+                    _writer.WriteStartElement("p", "iterate", OpenXmlNamespaces.PresentationML);
+
+                    if (tida.fIterateTypePropertyUsed)
+                    {
+                        switch (tida.iterateType)
+                        {
+                            case 0:
+                                _writer.WriteAttributeString("type", "el");
+                                break;
+                            case 1:
+                                _writer.WriteAttributeString("type", "wd");
+                                break;
+                            case 2:
+                                _writer.WriteAttributeString("type", "lt");
+                                break;
+                        }
+                    }
+                    
+                    _writer.WriteStartElement("p", "tmPct", OpenXmlNamespaces.PresentationML);
+                    
+                    _writer.WriteAttributeString("val", (tida.iterateInterval * 1000).ToString("#"));
+                    _writer.WriteEndElement(); //tmPct
+                    _writer.WriteEndElement(); //iterate
+                }
+
+
                 _writer.WriteStartElement("p", "childTnLst", OpenXmlNamespaces.PresentationML);
 
                 VisualShapeAtom vsa = getShapeID(c2);
@@ -718,6 +749,17 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteStartElement("p", "tgtEl", OpenXmlNamespaces.PresentationML);
                     _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
                     _writer.WriteAttributeString("spid", ShapeID);
+
+                    if (targetRun != -1)
+                    {
+                        _writer.WriteStartElement("p", "txEl", OpenXmlNamespaces.PresentationML);
+                        _writer.WriteStartElement("p", "pRg", OpenXmlNamespaces.PresentationML);
+                        _writer.WriteAttributeString("st", targetRun.ToString());
+                        _writer.WriteAttributeString("end", targetRun.ToString());
+                        _writer.WriteEndElement(); //pRg
+                        _writer.WriteEndElement(); //txEl
+                    }
+
                     _writer.WriteEndElement(); //spTgt
                     _writer.WriteEndElement(); //tgtEl
                     _writer.WriteEndElement(); //cBhvr
@@ -737,9 +779,102 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                 }
 
-
-
                 _writer.WriteEndElement(); //childTnLst
+
+                //slaves
+                if (c2.AllChildrenWithType<SlaveContainer>().Count > 0)
+                {
+                    if (c2.FirstDescendantWithType<TimeColorBehaviorContainer>() != null)
+                    {
+
+                        _writer.WriteStartElement("p", "subTnLst", OpenXmlNamespaces.PresentationML);
+                        foreach (SlaveContainer sc in c2.AllChildrenWithType<SlaveContainer>())
+                        {
+                            TimeColorBehaviorContainer tcbc = sc.FirstChildWithType<TimeColorBehaviorContainer>();
+                            if (tcbc != null)
+                            {
+                                TimeColorBehaviorAtom tcba = tcbc.FirstChildWithType<TimeColorBehaviorAtom>();
+                                _writer.WriteStartElement("p", "animClr", OpenXmlNamespaces.PresentationML);
+                                _writer.WriteAttributeString("clrSpc", "rgb");
+                                _writer.WriteAttributeString("dir", "cw");
+
+                                _writer.WriteStartElement("p", "cBhvr", OpenXmlNamespaces.PresentationML);
+                                _writer.WriteAttributeString("override", "childStyle");
+
+                                _writer.WriteStartElement("p", "cTn", OpenXmlNamespaces.PresentationML);
+                                _writer.WriteAttributeString("dur", "1"); //TODO
+                                _writer.WriteAttributeString("fill", "hold");
+                                _writer.WriteAttributeString("display", "0");
+                                _writer.WriteAttributeString("masterRel", "nextClick");
+                                _writer.WriteAttributeString("afterEffect", "1");
+                                _writer.WriteEndElement(); //cTn
+
+                                _writer.WriteStartElement("p", "tgtEl", OpenXmlNamespaces.PresentationML);
+
+                                _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
+
+                                _writer.WriteAttributeString("spid", ShapeID);
+
+                                if (vsa.type == TimeVisualElementEnum.TextRange)
+                                {
+                                    int i = 0;
+                                    foreach (Point p in TextAreasForAnimation)
+                                    {
+                                        if (p.X <= vsa.data1 && p.Y >= vsa.data2)
+                                        {
+                                            targetRun = i;
+                                            break;
+                                        }
+                                        i++;
+                                    }
+                                    if (targetRun == -1)
+                                    {
+                                        if (vsa.data1 > 0 && TextAreasForAnimation.Count == 0) TextAreasForAnimation.Add(new Point(0, vsa.data1));
+                                        TextAreasForAnimation.Add(new Point(vsa.data1, vsa.data2));
+                                        targetRun = TextAreasForAnimation.Count - 1;
+                                    }
+
+                                    _writer.WriteStartElement("p", "txEl", OpenXmlNamespaces.PresentationML);
+                                    _writer.WriteStartElement("p", "pRg", OpenXmlNamespaces.PresentationML);
+                                    _writer.WriteAttributeString("st", targetRun.ToString());
+                                    _writer.WriteAttributeString("end", targetRun.ToString());
+                                    _writer.WriteEndElement(); //pRg
+                                    _writer.WriteEndElement(); //txEl
+                                }
+
+
+                                _writer.WriteEndElement(); //spTgt
+
+                                _writer.WriteEndElement(); //tgtEl
+
+                                _writer.WriteStartElement("p", "attrNameLst", OpenXmlNamespaces.PresentationML);
+
+                                _writer.WriteElementString("p", "attrName", OpenXmlNamespaces.PresentationML, "ppt_c");
+
+                                _writer.WriteEndElement(); //attrNameLst
+
+                                _writer.WriteEndElement(); //cBhvr
+
+                                string val = tcba.colorTo.val1.ToString("X").PadLeft(2, '0') + tcba.colorTo.val2.ToString("X").PadLeft(2, '0') + tcba.colorTo.val3.ToString("X").PadLeft(2, '0');
+
+                                _writer.WriteStartElement("p", "to", OpenXmlNamespaces.PresentationML);
+
+                                _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+
+                                _writer.WriteAttributeString("val", val);
+
+                                _writer.WriteEndElement(); //srgbClr
+
+                                _writer.WriteEndElement(); //to
+
+                                _writer.WriteEndElement(); //animClr
+                            }
+
+                        }
+                        _writer.WriteEndElement(); //subTnLst
+                    }
+                }
+
 
                 _writer.WriteEndElement(); //cTn
 
@@ -799,6 +934,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 }
                 if (targetRun == -1)
                 {
+                    if (vsa.data1 > 0 && TextAreasForAnimation.Count == 0) TextAreasForAnimation.Add(new Point(0, vsa.data1));
                     TextAreasForAnimation.Add(new Point(vsa.data1, vsa.data2));
                     targetRun = TextAreasForAnimation.Count - 1;
                 }
@@ -870,6 +1006,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 }
                 if (targetRun == -1)
                 {
+                    if (vsa.data1 > 0 && TextAreasForAnimation.Count == 0) TextAreasForAnimation.Add(new Point(0, vsa.data1));
                     TextAreasForAnimation.Add(new Point(vsa.data1, vsa.data2));
                     targetRun = TextAreasForAnimation.Count - 1;
                 }
@@ -896,6 +1033,148 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement(); //cBhvr
 
             _writer.WriteEndElement(); //animRot
+        }
+
+        public void writeAnim(AnimationInfoAtom animinfo, string ShapeID, int targetRun)
+        {
+            _writer.WriteStartElement("p", "anim", OpenXmlNamespaces.PresentationML);
+            _writer.WriteAttributeString("calcmode", "lin");
+            _writer.WriteAttributeString("valueType", "num");
+
+            _writer.WriteStartElement("p", "cBhvr", OpenXmlNamespaces.PresentationML);
+            _writer.WriteAttributeString("additive", "base");
+
+            _writer.WriteStartElement("p", "cTn", OpenXmlNamespaces.PresentationML);
+            _writer.WriteAttributeString("id", (++lastID).ToString());
+            switch (animinfo.animEffectDirection)
+            {
+                case 0xC:
+                case 0xD:
+                case 0xE:
+                case 0xF:
+                    _writer.WriteAttributeString("dur", "5000");
+                    break;
+                default:
+                    _writer.WriteAttributeString("dur", "500");
+                    break;
+            }
+            _writer.WriteAttributeString("fill", "hold");
+            _writer.WriteEndElement(); //cTn
+
+            _writer.WriteStartElement("p", "tgtEl", OpenXmlNamespaces.PresentationML);
+            _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
+            _writer.WriteAttributeString("spid", ShapeID);
+
+
+            if (targetRun != -1)
+            {
+                _writer.WriteStartElement("p", "txEl", OpenXmlNamespaces.PresentationML);
+                _writer.WriteStartElement("p", "pRg", OpenXmlNamespaces.PresentationML);
+                _writer.WriteAttributeString("st", targetRun.ToString());
+                _writer.WriteAttributeString("end", targetRun.ToString());
+                _writer.WriteEndElement(); //pRg
+                _writer.WriteEndElement(); //txEl
+            }
+
+            _writer.WriteEndElement(); //spTgt
+            _writer.WriteEndElement(); //tgtEl
+
+            _writer.WriteStartElement("p", "attrNameLst", OpenXmlNamespaces.PresentationML);
+            switch (animinfo.animEffectDirection)
+            {
+                case 0x10:
+                case 0x11:
+                case 0x12:
+                case 0x13:
+                case 0x14:
+                case 0x15:
+                case 0x1C:
+                    _writer.WriteElementString("p", "attrName", OpenXmlNamespaces.PresentationML, "ppt_w");
+                    break;
+                default:
+                    _writer.WriteElementString("p", "attrName", OpenXmlNamespaces.PresentationML, "ppt_x");
+                    break;
+            }
+
+            _writer.WriteEndElement(); //attrNameLst
+
+            _writer.WriteEndElement(); //cBhvr
+
+            _writer.WriteStartElement("p", "tavLst", OpenXmlNamespaces.PresentationML);
+
+            _writer.WriteStartElement("p", "tav", OpenXmlNamespaces.PresentationML);
+            _writer.WriteAttributeString("tm", "0");
+            _writer.WriteStartElement("p", "val", OpenXmlNamespaces.PresentationML);
+
+            if (animinfo.animEffectDirection == 0x1c)
+            {
+                _writer.WriteStartElement("p", "fltVal", OpenXmlNamespaces.PresentationML);
+            }
+            else
+            {
+                _writer.WriteStartElement("p", "strVal", OpenXmlNamespaces.PresentationML);
+            }
+
+            switch (animinfo.animEffectDirection)
+            {
+                case 0x0:
+                case 0x4:
+                case 0x6:
+                    _writer.WriteAttributeString("val", "0-#ppt_w/2");
+                    break;
+                case 0x2:
+                case 0x5:
+                case 0x7:
+                    _writer.WriteAttributeString("val", "1+#ppt_w/2");
+                    break;
+                case 0x10:
+                case 0x11:
+                case 0x12:
+                case 0x13:
+                case 0x14:
+                case 0x15: //zoom
+                    _writer.WriteAttributeString("val", "0");
+                    break;
+                case 0x1C:
+                    _writer.WriteAttributeString("val", "0");
+                    break;
+                default:
+                    _writer.WriteAttributeString("val", "#ppt_x");
+                    break;
+            }
+
+            _writer.WriteEndElement(); //strVal
+            _writer.WriteEndElement(); //val
+            _writer.WriteEndElement(); //tav
+
+            _writer.WriteStartElement("p", "tav", OpenXmlNamespaces.PresentationML);
+            _writer.WriteAttributeString("tm", "100000");
+            _writer.WriteStartElement("p", "val", OpenXmlNamespaces.PresentationML);
+            _writer.WriteStartElement("p", "strVal", OpenXmlNamespaces.PresentationML);
+            switch (animinfo.animEffectDirection)
+            {
+                case 0x10:
+                case 0x11:
+                case 0x12:
+                case 0x13:
+                case 0x14:
+                case 0x15: //zoom
+                    _writer.WriteAttributeString("val", "#ppt_w");
+                    break;
+                case 0x1c:
+                    _writer.WriteAttributeString("val", "#ppt_w");
+                    break;
+                default:
+                    _writer.WriteAttributeString("val", "#ppt_x");
+                    break;
+            }
+            _writer.WriteEndElement(); //strVal
+            _writer.WriteEndElement(); //val
+            _writer.WriteEndElement(); //tav
+
+            _writer.WriteEndElement(); //tavLst
+
+            _writer.WriteEndElement(); //anim
         }
         
 
@@ -947,7 +1226,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteStartElement("p", "attrNameLst", OpenXmlNamespaces.PresentationML);
             switch (animinfo.animEffectDirection)
             {
-                case 0x10: case 0x11: case 0x12: case 0x13: case 0x14: case 0x15:
+                case 0x10: case 0x11: case 0x12: case 0x13: case 0x14: case 0x15: case 0x1C:
                     _writer.WriteElementString("p", "attrName", OpenXmlNamespaces.PresentationML, "ppt_w");
                     break;
                 default:
@@ -964,7 +1243,15 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteStartElement("p", "tav", OpenXmlNamespaces.PresentationML);
             _writer.WriteAttributeString("tm", "0");
             _writer.WriteStartElement("p", "val", OpenXmlNamespaces.PresentationML);
-            _writer.WriteStartElement("p", "strVal", OpenXmlNamespaces.PresentationML);
+
+            if (animinfo.animEffectDirection == 0x1c)
+            {
+                _writer.WriteStartElement("p", "fltVal", OpenXmlNamespaces.PresentationML);
+            }
+            else
+            {
+                _writer.WriteStartElement("p", "strVal", OpenXmlNamespaces.PresentationML);
+            }
 
             switch (animinfo.animEffectDirection)
             {
@@ -975,6 +1262,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteAttributeString("val", "1+#ppt_w/2");
                     break;
                 case 0x10: case 0x11: case 0x12: case 0x13: case 0x14: case 0x15: //zoom
+                    _writer.WriteAttributeString("val", "0");
+                    break;
+                case 0x1C:
                     _writer.WriteAttributeString("val", "0");
                     break;
                 default:
@@ -995,6 +1285,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 case 0x10: case 0x11: case 0x12: case 0x13: case 0x14: case 0x15: //zoom
                     _writer.WriteAttributeString("val", "#ppt_w");
                     break;
+                case 0x1c:
+                     _writer.WriteAttributeString("val", "#ppt_w");
+                     break;
                 default:
                     _writer.WriteAttributeString("val", "#ppt_x");
                     break;
@@ -1055,6 +1348,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 case 0x13:
                 case 0x14:
                 case 0x15:
+                case 0x1c:
                     _writer.WriteElementString("p", "attrName", OpenXmlNamespaces.PresentationML, "ppt_h");
                     break;
                 default:
@@ -1070,7 +1364,15 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteStartElement("p", "tav", OpenXmlNamespaces.PresentationML);
             _writer.WriteAttributeString("tm", "0");
             _writer.WriteStartElement("p", "val", OpenXmlNamespaces.PresentationML);
-            _writer.WriteStartElement("p", "strVal", OpenXmlNamespaces.PresentationML);
+
+            if (animinfo.animEffectDirection == 0x1c)
+            {
+                _writer.WriteStartElement("p", "fltVal", OpenXmlNamespaces.PresentationML);
+            }
+            else
+            {
+                _writer.WriteStartElement("p", "strVal", OpenXmlNamespaces.PresentationML);
+            }
 
             switch (animinfo.animEffectDirection)
             {
@@ -1084,6 +1386,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteAttributeString("val", "1+#ppt_h/2");
                     break;
                 case 0x10: case 0x11: case 0x12: case 0x13: case 0x14: case 0x15: //zoom
+                    _writer.WriteAttributeString("val", "0");
+                    break;
+                case 0x1c:
                     _writer.WriteAttributeString("val", "0");
                     break;
                 default:
@@ -1125,6 +1430,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 case 0x15: //zoom
                     _writer.WriteAttributeString("val", "#ppt_h");
                     break;
+                case 0x1c:
+                    _writer.WriteAttributeString("val", "#ppt_h");
+                    break;
                 default:
                     _writer.WriteAttributeString("val", "#ppt_y");
                     break;
@@ -1137,6 +1445,324 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement(); //tavLst
 
             _writer.WriteEndElement(); //anim
+
+
+
+            if (animinfo.animEffectDirection == 0x1c)
+            {
+                //X
+                _writer.WriteStartElement("p", "anim", OpenXmlNamespaces.PresentationML);
+                _writer.WriteAttributeString("calcmode", "lin");
+                _writer.WriteAttributeString("valueType", "num");
+
+                _writer.WriteStartElement("p", "cBhvr", OpenXmlNamespaces.PresentationML);
+                _writer.WriteAttributeString("additive", "base");
+
+                _writer.WriteStartElement("p", "cTn", OpenXmlNamespaces.PresentationML);
+                _writer.WriteAttributeString("id", (++lastID).ToString());
+                switch (animinfo.animEffectDirection)
+                {
+                    case 0xC:
+                    case 0xD:
+                    case 0xE:
+                    case 0xF:
+                        _writer.WriteAttributeString("dur", "5000");
+                        break;
+                    case 0x1c:
+                        _writer.WriteAttributeString("dur", "1000");
+                        break;
+                    default:
+                        _writer.WriteAttributeString("dur", "500");
+                        break;
+                }
+                _writer.WriteAttributeString("fill", "hold");
+                _writer.WriteEndElement(); //cTn
+
+                _writer.WriteStartElement("p", "tgtEl", OpenXmlNamespaces.PresentationML);
+                _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
+                _writer.WriteAttributeString("spid", ShapeID);
+
+                if (targetRun != -1)
+                {
+                    _writer.WriteStartElement("p", "txEl", OpenXmlNamespaces.PresentationML);
+                    _writer.WriteStartElement("p", "pRg", OpenXmlNamespaces.PresentationML);
+                    _writer.WriteAttributeString("st", targetRun.ToString());
+                    _writer.WriteAttributeString("end", targetRun.ToString());
+                    _writer.WriteEndElement(); //pRg
+                    _writer.WriteEndElement(); //txEl
+                }
+
+                _writer.WriteEndElement(); //spTgt
+                _writer.WriteEndElement(); //tgtEl
+
+                _writer.WriteStartElement("p", "attrNameLst", OpenXmlNamespaces.PresentationML);
+                switch (animinfo.animEffectDirection)
+                {
+                    case 0x10:
+                    case 0x11:
+                    case 0x12:
+                    case 0x13:
+                    case 0x14:
+                    case 0x15:
+                    case 0x1c:
+                        _writer.WriteElementString("p", "attrName", OpenXmlNamespaces.PresentationML, "ppt_x");
+                        break;
+                    default:
+                        _writer.WriteElementString("p", "attrName", OpenXmlNamespaces.PresentationML, "ppt_y");
+                        break;
+                }
+                _writer.WriteEndElement(); //attrNameLst
+
+                _writer.WriteEndElement(); //cBhvr
+
+                _writer.WriteStartElement("p", "tavLst", OpenXmlNamespaces.PresentationML);
+
+                _writer.WriteStartElement("p", "tav", OpenXmlNamespaces.PresentationML);
+                _writer.WriteAttributeString("tm", "0");
+                _writer.WriteAttributeString("fmla", "#ppt_x+(cos(-2*pi*(1-$))*-#ppt_x-sin(-2*pi*(1-$))*(1-#ppt_y))*(1-$)");
+
+                _writer.WriteStartElement("p", "val", OpenXmlNamespaces.PresentationML);
+                _writer.WriteStartElement("p", "fltVal", OpenXmlNamespaces.PresentationML);
+
+                switch (animinfo.animEffectDirection)
+                {
+                    case 0x1:
+                    case 0x5:
+                    case 0xd: //top
+                        _writer.WriteAttributeString("val", "0-#ppt_h/2");
+                        break;
+                    case 0x3:
+                    case 0x4:
+                    case 0x7:
+                    case 0xf: //bottom
+                        _writer.WriteAttributeString("val", "1+#ppt_h/2");
+                        break;
+                    case 0x6:
+                        _writer.WriteAttributeString("val", "1+#ppt_h/2");
+                        break;
+                    case 0x10:
+                    case 0x11:
+                    case 0x12:
+                    case 0x13:
+                    case 0x14:
+                    case 0x15: //zoom
+                        _writer.WriteAttributeString("val", "0");
+                        break;
+                    case 0x1c:
+                        _writer.WriteAttributeString("val", "0");
+                        break;
+                    default:
+                        _writer.WriteAttributeString("val", "#ppt_y");
+                        break;
+                }
+
+
+                _writer.WriteEndElement(); //strVal
+                _writer.WriteEndElement(); //val
+                _writer.WriteEndElement(); //tav
+
+                _writer.WriteStartElement("p", "tav", OpenXmlNamespaces.PresentationML);
+                _writer.WriteAttributeString("tm", "100000");
+                _writer.WriteStartElement("p", "val", OpenXmlNamespaces.PresentationML);
+                _writer.WriteStartElement("p", "fltVal", OpenXmlNamespaces.PresentationML);
+
+                switch (animinfo.animEffectDirection)
+                {
+                    case 0x1:
+                    case 0x6:
+                        _writer.WriteAttributeString("val", "#ppt_y");
+                        break;
+                    case 0x5:
+                    case 0xd: //top
+                        _writer.WriteAttributeString("val", "0-#ppt_h/2");
+                        break;
+                    case 0x3:
+                    case 0x4:
+                    case 0x7:
+                    case 0xf: //bottom
+                        _writer.WriteAttributeString("val", "1+#ppt_h/2");
+                        break;
+                    case 0x10:
+                    case 0x11:
+                    case 0x12:
+                    case 0x13:
+                    case 0x14:
+                    case 0x15: //zoom
+                        _writer.WriteAttributeString("val", "#ppt_h");
+                        break;
+                    case 0x1c:
+                        _writer.WriteAttributeString("val", "1");
+                        break;
+                    default:
+                        _writer.WriteAttributeString("val", "#ppt_y");
+                        break;
+                }
+
+                _writer.WriteEndElement(); //strVal
+                _writer.WriteEndElement(); //val
+                _writer.WriteEndElement(); //tav
+
+                _writer.WriteEndElement(); //tavLst
+
+                _writer.WriteEndElement(); //anim
+
+                //Y
+                _writer.WriteStartElement("p", "anim", OpenXmlNamespaces.PresentationML);
+                _writer.WriteAttributeString("calcmode", "lin");
+                _writer.WriteAttributeString("valueType", "num");
+
+                _writer.WriteStartElement("p", "cBhvr", OpenXmlNamespaces.PresentationML);
+                _writer.WriteAttributeString("additive", "base");
+
+                _writer.WriteStartElement("p", "cTn", OpenXmlNamespaces.PresentationML);
+                _writer.WriteAttributeString("id", (++lastID).ToString());
+                switch (animinfo.animEffectDirection)
+                {
+                    case 0xC:
+                    case 0xD:
+                    case 0xE:
+                    case 0xF:
+                        _writer.WriteAttributeString("dur", "5000");
+                        break;
+                    case 0x1c:
+                        _writer.WriteAttributeString("dur", "1000");
+                        break;
+                    default:
+                        _writer.WriteAttributeString("dur", "500");
+                        break;
+                }
+                _writer.WriteAttributeString("fill", "hold");
+                _writer.WriteEndElement(); //cTn
+
+                _writer.WriteStartElement("p", "tgtEl", OpenXmlNamespaces.PresentationML);
+                _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
+                _writer.WriteAttributeString("spid", ShapeID);
+
+                if (targetRun != -1)
+                {
+                    _writer.WriteStartElement("p", "txEl", OpenXmlNamespaces.PresentationML);
+                    _writer.WriteStartElement("p", "pRg", OpenXmlNamespaces.PresentationML);
+                    _writer.WriteAttributeString("st", targetRun.ToString());
+                    _writer.WriteAttributeString("end", targetRun.ToString());
+                    _writer.WriteEndElement(); //pRg
+                    _writer.WriteEndElement(); //txEl
+                }
+
+                _writer.WriteEndElement(); //spTgt
+                _writer.WriteEndElement(); //tgtEl
+
+                _writer.WriteStartElement("p", "attrNameLst", OpenXmlNamespaces.PresentationML);
+                switch (animinfo.animEffectDirection)
+                {
+                    case 0x10:
+                    case 0x11:
+                    case 0x12:
+                    case 0x13:
+                    case 0x14:
+                    case 0x15:
+                    case 0x1c:
+                        _writer.WriteElementString("p", "attrName", OpenXmlNamespaces.PresentationML, "ppt_y");
+                        break;
+                    default:
+                        _writer.WriteElementString("p", "attrName", OpenXmlNamespaces.PresentationML, "ppt_y");
+                        break;
+                }
+                _writer.WriteEndElement(); //attrNameLst
+
+                _writer.WriteEndElement(); //cBhvr
+
+                _writer.WriteStartElement("p", "tavLst", OpenXmlNamespaces.PresentationML);
+
+                _writer.WriteStartElement("p", "tav", OpenXmlNamespaces.PresentationML);
+                _writer.WriteAttributeString("tm", "0");
+                _writer.WriteAttributeString("fmla", "#ppt_y+(sin(-2*pi*(1-$))*-#ppt_x+cos(-2*pi*(1-$))*(1-#ppt_y))*(1-$)");
+
+
+                _writer.WriteStartElement("p", "val", OpenXmlNamespaces.PresentationML);
+                _writer.WriteStartElement("p", "fltVal", OpenXmlNamespaces.PresentationML);
+
+                switch (animinfo.animEffectDirection)
+                {
+                    case 0x1:
+                    case 0x5:
+                    case 0xd: //top
+                        _writer.WriteAttributeString("val", "0-#ppt_h/2");
+                        break;
+                    case 0x3:
+                    case 0x4:
+                    case 0x7:
+                    case 0xf: //bottom
+                        _writer.WriteAttributeString("val", "1+#ppt_h/2");
+                        break;
+                    case 0x6:
+                        _writer.WriteAttributeString("val", "1+#ppt_h/2");
+                        break;
+                    case 0x10:
+                    case 0x11:
+                    case 0x12:
+                    case 0x13:
+                    case 0x14:
+                    case 0x15: //zoom
+                        _writer.WriteAttributeString("val", "0");
+                        break;
+                    case 0x1c:
+                        _writer.WriteAttributeString("val", "1");
+                        break;
+                    default:
+                        _writer.WriteAttributeString("val", "#ppt_y");
+                        break;
+                }
+
+
+                _writer.WriteEndElement(); //strVal
+                _writer.WriteEndElement(); //val
+                _writer.WriteEndElement(); //tav
+
+                _writer.WriteStartElement("p", "tav", OpenXmlNamespaces.PresentationML);
+                _writer.WriteAttributeString("tm", "100000");
+                _writer.WriteStartElement("p", "val", OpenXmlNamespaces.PresentationML);
+                _writer.WriteStartElement("p", "fltVal", OpenXmlNamespaces.PresentationML);
+
+                switch (animinfo.animEffectDirection)
+                {
+                    case 0x1:
+                    case 0x6:
+                        _writer.WriteAttributeString("val", "#ppt_y");
+                        break;
+                    case 0x5:
+                    case 0xd: //top
+                        _writer.WriteAttributeString("val", "0-#ppt_h/2");
+                        break;
+                    case 0x3:
+                    case 0x4:
+                    case 0x7:
+                    case 0xf: //bottom
+                        _writer.WriteAttributeString("val", "1+#ppt_h/2");
+                        break;
+                    case 0x10:
+                    case 0x11:
+                    case 0x12:
+                    case 0x13:
+                    case 0x14:
+                    case 0x15: //zoom
+                        _writer.WriteAttributeString("val", "#ppt_h");
+                        break;
+                    case 0x1c:
+                        _writer.WriteAttributeString("val", "1");
+                        break;
+                    default:
+                        _writer.WriteAttributeString("val", "#ppt_y");
+                        break;
+                }
+
+                _writer.WriteEndElement(); //strVal
+                _writer.WriteEndElement(); //val
+                _writer.WriteEndElement(); //tav
+
+                _writer.WriteEndElement(); //tavLst
+
+                _writer.WriteEndElement(); //anim
+            }
         }
 
         public void writeAnimEffect(AnimationInfoAtom animinfo, string ShapeID, int targetRun)
@@ -1425,6 +2051,16 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
 
             _writer.WriteAttributeString("spid", ShapeID);
+
+            if (targetRun != -1)
+            {
+                _writer.WriteStartElement("p", "txEl", OpenXmlNamespaces.PresentationML);
+                _writer.WriteStartElement("p", "pRg", OpenXmlNamespaces.PresentationML);
+                _writer.WriteAttributeString("st", targetRun.ToString());
+                _writer.WriteAttributeString("end", targetRun.ToString());
+                _writer.WriteEndElement(); //pRg
+                _writer.WriteEndElement(); //txEl
+            }
 
             _writer.WriteEndElement(); //spTgt
 

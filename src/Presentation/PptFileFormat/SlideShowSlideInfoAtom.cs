@@ -661,4 +661,96 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         }
     }
 
+    [OfficeRecordAttribute(61765)]
+    public class SlaveContainer : RegularContainer
+    {
+        public SlaveContainer(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance) { }
+    }
+
+    [OfficeRecordAttribute(61740)]
+    public class TimeColorBehaviorContainer : RegularContainer
+    {
+        public TimeColorBehaviorContainer(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance) { }
+    }
+
+    [OfficeRecordAttribute(61749)]
+    public class TimeColorBehaviorAtom : Record
+    {
+        public bool fByPropertyUsed;
+        public bool fFromPropertyUsed;
+        public bool fToPropertyUsed;
+        public bool fColorSpacePropertyUsed;
+        public bool fDirectionPropertyUsed;
+
+        public ColorStruct colorBy;
+        public ColorStruct colorFrom;
+        public ColorStruct colorTo;  
+
+        public TimeColorBehaviorAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance)
+        {
+            int flags = this.Reader.ReadInt32();
+            fByPropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1);
+            fFromPropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1 << 1);
+            fToPropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1 << 2);
+            fColorSpacePropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1 << 3);
+            fDirectionPropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1 << 4);
+
+            colorBy = new ColorStruct(this.Reader.ReadBytes(16));
+            colorFrom = new ColorStruct(this.Reader.ReadBytes(16));
+            colorTo = new ColorStruct(this.Reader.ReadBytes(16));
+        }
+    }
+
+    [OfficeRecordAttribute(61760)]
+    public class TimeIterateDataAtom : Record
+    {
+        public float iterateInterval;
+        public uint iterateType;
+        public uint iterateDirection;
+        public uint iterateIntervalType;
+
+        public bool fIterateDirectionPropertyUsed;
+        public bool fIterateTypePropertyUsed;
+        public bool fIterateIntervalPropertyUsed;
+        public bool fIterateIntervalTypePropertyUsed;
+
+
+        public TimeIterateDataAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance)
+        {
+            
+            //this value "should" be an unsigned integer according to the spec, but it seems to be a single in reality
+            iterateInterval = this.Reader.ReadSingle();
+
+            iterateType = this.Reader.ReadUInt32();
+            iterateDirection = this.Reader.ReadUInt32();
+            iterateIntervalType = this.Reader.ReadUInt32();
+
+            int flags = this.Reader.ReadInt32();
+            fIterateDirectionPropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1);
+            fIterateTypePropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1 << 1);
+            fIterateIntervalPropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1 << 2);
+            fIterateIntervalTypePropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1 << 3);
+        }
+    }
+
+    public struct ColorStruct
+    {
+        public uint model;
+        public int val1;
+        public int val2;
+        public int val3;
+
+        public ColorStruct(byte[] data)
+        {
+            model = BitConverter.ToUInt32(data, 0);
+            val1 = BitConverter.ToInt32(data, 4);
+            val2 = BitConverter.ToInt32(data, 8);
+            val3 = BitConverter.ToInt32(data, 12);
+        }
+    }
+
 }
