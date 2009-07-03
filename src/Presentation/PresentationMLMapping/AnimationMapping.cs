@@ -34,6 +34,7 @@ using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 using DIaLOGIKa.b2xtranslator.Tools;
+using System.Drawing;
 
 namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 {
@@ -42,6 +43,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         //IMapping<Dictionary<AnimationInfoContainer,int>>
     {
         protected ConversionContext _ctx;
+        private ShapeTreeMapping _stm;
+        private List<Point> TextAreasForAnimation = new List<Point>();
 
         public AnimationMapping(ConversionContext ctx, XmlWriter writer)
             : base(writer)
@@ -59,9 +62,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
         }
 
-        public void Apply(ProgBinaryTagDataBlob blob, SlideMapping parentMapping, Dictionary<AnimationInfoContainer, int> animations)
+        public void Apply(ProgBinaryTagDataBlob blob, PresentationMapping<RegularContainer> parentMapping, Dictionary<AnimationInfoContainer, int> animations, ShapeTreeMapping stm)
         {
             _parentMapping = parentMapping;
+            _stm = stm;
             Dictionary<AnimationInfoAtom, int> animAtoms = new Dictionary<AnimationInfoAtom, int>();
             foreach (AnimationInfoContainer container in animations.Keys)
             {
@@ -91,7 +95,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
              //}
         }
 
-        private SlideMapping _parentMapping;
+        private PresentationMapping<RegularContainer> _parentMapping;
         //public void Apply(ProgBinaryTagDataBlob blob, SlideMapping parentMapping)
         //{
         //    _parentMapping = parentMapping;
@@ -99,9 +103,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         //    writeTiming(animAtoms, blob);
         //}
 
-        private uint getShapeID(ExtTimeNodeContainer c)
+        private VisualShapeAtom getShapeID(ExtTimeNodeContainer c)
         {
-            List<uint> lst = new List<uint>();
+            List<VisualShapeAtom> lst = new List<VisualShapeAtom>();
 
             foreach (ExtTimeNodeContainer c8 in c.AllChildrenWithType<ExtTimeNodeContainer>())
                 foreach (ExtTimeNodeContainer c9 in c8.AllChildrenWithType<ExtTimeNodeContainer>())
@@ -110,32 +114,32 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         foreach (TimeBehaviorContainer c10aa in c10a.AllChildrenWithType<TimeBehaviorContainer>())
                             foreach (ClientVisualElementContainer c10aaa in c10aa.AllChildrenWithType<ClientVisualElementContainer>())
                                 foreach (VisualShapeAtom c10aaaa in c10aaa.AllChildrenWithType<VisualShapeAtom>())
-                                    lst.Add(c10aaaa.shapeIdRef); //return c10aaaa.shapeIdRef;
+                                    lst.Add(c10aaaa); //.shapeIdRef); //return c10aaaa.shapeIdRef;
                     foreach (TimeSetBehaviourContainer c10b in c9.AllChildrenWithType<TimeSetBehaviourContainer>())
                         foreach (TimeBehaviorContainer c10aa in c10b.AllChildrenWithType<TimeBehaviorContainer>())
                             foreach (ClientVisualElementContainer c10aaa in c10aa.AllChildrenWithType<ClientVisualElementContainer>())
                                 foreach (VisualShapeAtom c10aaaa in c10aaa.AllChildrenWithType<VisualShapeAtom>())
-                                    lst.Add(c10aaaa.shapeIdRef); //return c10aaaa.shapeIdRef;                     
+                                    lst.Add(c10aaaa); //.shapeIdRef); //return c10aaaa.shapeIdRef;                     
                     foreach (TimeRotationBehaviorContainer r in c9.AllChildrenWithType<TimeRotationBehaviorContainer>())
                         foreach (TimeBehaviorContainer rr in r.AllChildrenWithType<TimeBehaviorContainer>())
                             foreach (ClientVisualElementContainer c10aaa in rr.AllChildrenWithType<ClientVisualElementContainer>())
                                 foreach (VisualShapeAtom c10aaaa in c10aaa.AllChildrenWithType<VisualShapeAtom>())
-                                    lst.Add(c10aaaa.shapeIdRef); //return c10aaaa.shapeIdRef;
+                                    lst.Add(c10aaaa); //.shapeIdRef); //return c10aaaa.shapeIdRef;
                     foreach (TimeCommandBehaviorContainer r in c9.AllChildrenWithType<TimeCommandBehaviorContainer>())
                         foreach (TimeBehaviorContainer rr in r.AllChildrenWithType<TimeBehaviorContainer>())
                             foreach (ClientVisualElementContainer c10aaa in rr.AllChildrenWithType<ClientVisualElementContainer>())
                                 foreach (VisualShapeAtom c10aaaa in c10aaa.AllChildrenWithType<VisualShapeAtom>())
-                                    lst.Add(c10aaaa.shapeIdRef); //return c10aaaa.shapeIdRef;
+                                    lst.Add(c10aaaa); //.shapeIdRef); //return c10aaaa.shapeIdRef;
                     foreach (TimeMotionBehaviorContainer r in c9.AllChildrenWithType<TimeMotionBehaviorContainer>())
                         foreach (TimeBehaviorContainer rr in r.AllChildrenWithType<TimeBehaviorContainer>())
                             foreach (ClientVisualElementContainer c10aaa in rr.AllChildrenWithType<ClientVisualElementContainer>())
                                 foreach (VisualShapeAtom c10aaaa in c10aaa.AllChildrenWithType<VisualShapeAtom>())
-                                    lst.Add(c10aaaa.shapeIdRef); //return c10aaaa.shapeIdRef;
+                                    lst.Add(c10aaaa); //.shapeIdRef); //return c10aaaa.shapeIdRef;
                     foreach (TimeScaleBehaviorContainer c10a in c9.AllChildrenWithType<TimeScaleBehaviorContainer>())
                         foreach (TimeBehaviorContainer c10aa in c10a.AllChildrenWithType<TimeBehaviorContainer>())
                             foreach (ClientVisualElementContainer c10aaa in c10aa.AllChildrenWithType<ClientVisualElementContainer>())
                                 foreach (VisualShapeAtom c10aaaa in c10aaa.AllChildrenWithType<VisualShapeAtom>())
-                                    lst.Add(c10aaaa.shapeIdRef); //return c10aaaa.shapeIdRef;
+                                    lst.Add(c10aaaa); //.shapeIdRef); //return c10aaaa.shapeIdRef;
                 }
 
             return lst[0];
@@ -491,11 +495,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             if (true) //TODO: when?
             {
-                writeAnimEffect(animinfo, ShapeID);
+                writeAnimEffect(animinfo, ShapeID,-1);
             }
             else
             {
-                writeFlyAnim(animinfo, ShapeID);
+                writeFlyAnim(animinfo, ShapeID,-1);
             }
 
             _writer.WriteEndElement(); //childTnLst
@@ -658,25 +662,54 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
 
-            uint c4Id = getShapeID(container);
+            VisualShapeAtom vsa = getShapeID(container);
+            uint c4Id = vsa.shapeIdRef;
             string ShapeID = "";
 
-            if (this._parentMapping.shapeTreeMapping.spidToId.ContainsKey((int)c4Id))
+            if (_stm.spidToId.ContainsKey((int)c4Id))
             {
-                ShapeID = this._parentMapping.shapeTreeMapping.spidToId[(int)c4Id].ToString();
+                ShapeID = _stm.spidToId[(int)c4Id].ToString();
             }
             else
             {
-                foreach (int sId in this._parentMapping.shapeTreeMapping.spidToId.Keys)
+                foreach (int sId in _stm.spidToId.Keys)
                 {
                     if (sId > 0)
                     {
-                        ShapeID = this._parentMapping.shapeTreeMapping.spidToId[sId].ToString();
+                        ShapeID = _stm.spidToId[sId].ToString();
                         break;
                     }
                 }
             }
             _writer.WriteAttributeString("spid", ShapeID);
+
+            int targetRun = -1;
+            if (vsa.type == TimeVisualElementEnum.TextRange)
+            {
+                int i = 0;
+                foreach (Point p in TextAreasForAnimation)
+                {
+                    if (p.X <= vsa.data1 && p.Y >= vsa.data2)
+                    {
+                        targetRun = i;
+                        break;
+                    }
+                    i++;
+                }
+                if (targetRun == -1)
+                {
+                    TextAreasForAnimation.Add(new Point(vsa.data1, vsa.data2));
+                    targetRun = TextAreasForAnimation.Count-1;
+                }
+
+                _writer.WriteStartElement("p", "txEl", OpenXmlNamespaces.PresentationML);
+                _writer.WriteStartElement("p", "pRg", OpenXmlNamespaces.PresentationML);
+                _writer.WriteAttributeString("st", targetRun.ToString());
+                _writer.WriteAttributeString("end", targetRun.ToString());
+                _writer.WriteEndElement(); //pRg
+                _writer.WriteEndElement(); //txEl
+            }
+
 
             _writer.WriteEndElement(); //spTgt
 
@@ -724,14 +757,15 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             else
             {
                 if (animinfo != null)
-                    if (animinfo.animEffect == 0x0c & animinfo.animEffectDirection > 0x3) 
-                {
-                    writeFlyAnim(animinfo, ShapeID);
-                }
-                else
-                {
-                    writeAnimEffect(animinfo, ShapeID);
-                }
+                    if (animinfo.animEffect == 0x0c && animinfo.animEffectDirection > 0x3)
+                    {
+                        writeFlyAnim(animinfo, ShapeID, targetRun);
+                    }
+                    else
+                    {
+                        writeAnimEffect(animinfo, ShapeID, targetRun);
+                    }
+                
             }
 
            
@@ -752,7 +786,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         
 
-        public void writeFlyAnim(AnimationInfoAtom animinfo, string ShapeID)
+        public void writeFlyAnim(AnimationInfoAtom animinfo, string ShapeID, int targetRun)
         {
             //X
             _writer.WriteStartElement("p", "anim", OpenXmlNamespaces.PresentationML);
@@ -782,6 +816,18 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteStartElement("p", "tgtEl", OpenXmlNamespaces.PresentationML);
             _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
             _writer.WriteAttributeString("spid", ShapeID);
+
+
+            if (targetRun != -1)
+            {
+                _writer.WriteStartElement("p", "txEl", OpenXmlNamespaces.PresentationML);
+                _writer.WriteStartElement("p", "pRg", OpenXmlNamespaces.PresentationML);
+                _writer.WriteAttributeString("st", targetRun.ToString());
+                _writer.WriteAttributeString("end", targetRun.ToString());
+                _writer.WriteEndElement(); //pRg
+                _writer.WriteEndElement(); //txEl
+            }
+
             _writer.WriteEndElement(); //spTgt
             _writer.WriteEndElement(); //tgtEl
 
@@ -834,7 +880,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             switch (animinfo.animEffectDirection)
             {
                 case 0x10: case 0x11: case 0x12: case 0x13: case 0x14: case 0x15: //zoom
-                    _writer.WriteAttributeString("val", "#ppt_h");
+                    _writer.WriteAttributeString("val", "#ppt_w");
                     break;
                 default:
                     _writer.WriteAttributeString("val", "#ppt_x");
@@ -873,6 +919,17 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteStartElement("p", "tgtEl", OpenXmlNamespaces.PresentationML);
             _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
             _writer.WriteAttributeString("spid", ShapeID);
+
+            if (targetRun != -1)
+            {
+                _writer.WriteStartElement("p", "txEl", OpenXmlNamespaces.PresentationML);
+                _writer.WriteStartElement("p", "pRg", OpenXmlNamespaces.PresentationML);
+                _writer.WriteAttributeString("st", targetRun.ToString());
+                _writer.WriteAttributeString("end", targetRun.ToString());
+                _writer.WriteEndElement(); //pRg
+                _writer.WriteEndElement(); //txEl
+            }
+
             _writer.WriteEndElement(); //spTgt
             _writer.WriteEndElement(); //tgtEl
 
@@ -911,7 +968,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteAttributeString("val", "1+#ppt_h/2");
                     break;
                 case 0x10: case 0x11: case 0x12: case 0x13: case 0x14: case 0x15: //zoom
-                    _writer.WriteAttributeString("val", "#ppt_h");
+                    _writer.WriteAttributeString("val", "0");
                     break;
                 default:
                     _writer.WriteAttributeString("val", "#ppt_y");
@@ -927,7 +984,34 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteAttributeString("tm", "100000");
             _writer.WriteStartElement("p", "val", OpenXmlNamespaces.PresentationML);
             _writer.WriteStartElement("p", "strVal", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("val", "#ppt_y");
+
+            switch (animinfo.animEffectDirection)
+            {
+                case 0x1:
+                case 0x6:
+                case 0x5:
+                case 0xd: //top
+                    _writer.WriteAttributeString("val", "0-#ppt_h/2");
+                    break;
+                case 0x3:
+                case 0x4:
+                case 0x7:
+                case 0xf: //bottom
+                    _writer.WriteAttributeString("val", "1+#ppt_h/2");
+                    break;
+                case 0x10:
+                case 0x11:
+                case 0x12:
+                case 0x13:
+                case 0x14:
+                case 0x15: //zoom
+                    _writer.WriteAttributeString("val", "#ppt_h");
+                    break;
+                default:
+                    _writer.WriteAttributeString("val", "#ppt_y");
+                    break;
+            }
+
             _writer.WriteEndElement(); //strVal
             _writer.WriteEndElement(); //val
             _writer.WriteEndElement(); //tav
@@ -937,7 +1021,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement(); //anim
         }
 
-        public void writeAnimEffect(AnimationInfoAtom animinfo, string ShapeID)
+        public void writeAnimEffect(AnimationInfoAtom animinfo, string ShapeID, int targetRun)
         {
             _writer.WriteStartElement("p", "animEffect", OpenXmlNamespaces.PresentationML);
             _writer.WriteAttributeString("transition", "in");

@@ -45,7 +45,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         private Dictionary<UInt32, NotesMasterMapping> NotesMasterIdToMapping = new Dictionary<UInt32, NotesMasterMapping>();
         private Dictionary<UInt32, HandoutMasterMapping> HandoutMasterIdToMapping = new Dictionary<UInt32, HandoutMasterMapping>();
         public Dictionary<long, string> AddedImages = new Dictionary<long, string>();
-        public int lastImageID = 0;
+        public int lastImageID = 1000;
 
         /// <summary>
         /// The source of the conversion.
