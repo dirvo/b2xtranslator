@@ -126,8 +126,9 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             type = (TimeNodeTypeEnum)this.Reader.ReadInt32();
             fill = this.Reader.ReadUInt32();
             this.Reader.ReadBytes(5); //reserved
-            duration = this.Reader.ReadInt32();
 
+            duration = this.Reader.ReadInt32();
+            
             int flags = this.Reader.ReadInt32();
             fFillProperty = Tools.Utils.BitmaskToBool(flags, 0x1);
             fRestartProperty = Tools.Utils.BitmaskToBool(flags, 0x1 << 1);

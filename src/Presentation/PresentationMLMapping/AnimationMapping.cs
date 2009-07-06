@@ -40,7 +40,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 {
     class AnimationMapping :
         AbstractOpenXmlMapping//,
-        //IMapping<Dictionary<AnimationInfoContainer,int>>
     {
         protected ConversionContext _ctx;
         private ShapeTreeMapping _stm;
@@ -74,40 +73,26 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
 
              ExtTimeNodeContainer c1 = blob.FirstChildWithType<ExtTimeNodeContainer>();
-             //if (animAtoms.Count > 0)
-             //{
-             //    writeTiming(animAtoms, blob);
-             //}
-             //else
-             //{
-                 if (c1 != null)
+             if (c1 != null)
+             {
+                 ExtTimeNodeContainer c2 = c1.FirstChildWithType<ExtTimeNodeContainer>();
+                 if (c2 != null)
                  {
-                     ExtTimeNodeContainer c2 = c1.FirstChildWithType<ExtTimeNodeContainer>();
-                     if (c2 != null)
+                     ExtTimeNodeContainer c3 = c2.FirstChildWithType<ExtTimeNodeContainer>();
+                     if (c3 != null)
                      {
-                         ExtTimeNodeContainer c3 = c2.FirstChildWithType<ExtTimeNodeContainer>();
-                         if (c3 != null)
-                         {
-                             writeTiming(animAtoms, blob);
-                         }
+                         writeTiming(animAtoms, blob);
                      }
                  }
-             //}
+             }
         }
 
         private PresentationMapping<RegularContainer> _parentMapping;
-        //public void Apply(ProgBinaryTagDataBlob blob, SlideMapping parentMapping)
-        //{
-        //    _parentMapping = parentMapping;
-        //    Dictionary<AnimationInfoAtom, int> animAtoms = new Dictionary<AnimationInfoAtom, int>();
-        //    writeTiming(animAtoms, blob);
-        //}
 
         private VisualShapeAtom getShapeID(ExtTimeNodeContainer c)
         {
             List<VisualShapeAtom> lst = new List<VisualShapeAtom>();
 
-            //foreach (ExtTimeNodeContainer c8 in c.AllChildrenWithType<ExtTimeNodeContainer>())
                 foreach (ExtTimeNodeContainer c9 in c.AllChildrenWithType<ExtTimeNodeContainer>())
                 {
                     foreach (TimeEffectBehaviorContainer c10a in c9.AllChildrenWithType<TimeEffectBehaviorContainer>())
@@ -143,20 +128,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 }
 
             return lst[0];
-            //return 0;
         }
 
-        //public void Apply(Dictionary<AnimationInfoContainer, int> animations)
-        //{
-        //    Dictionary<AnimationInfoAtom, int> animAtoms = new Dictionary<AnimationInfoAtom, int>();
-        //    foreach (AnimationInfoContainer container in animations.Keys)
-        //    {
-        //        AnimationInfoAtom anim = container.FirstChildWithType<AnimationInfoAtom>();
-        //        animAtoms.Add(anim, animations[container]);                
-        //    }         
-           
-        //    writeTiming(animAtoms, null);
-        //}
 
         private int lastID = 0;
         private void writeTiming(Dictionary<AnimationInfoAtom, int> blindAtoms, ProgBinaryTagDataBlob blob)
@@ -188,10 +161,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteStartElement("p", "childTnLst", OpenXmlNamespaces.PresentationML);
 
-            //foreach (AnimationInfoAtom animinfo in blindAtoms.Keys)
-            //{
-            //    writePar(animinfo, blindAtoms[animinfo].ToString());
-            //}
             if (blob != null)
             {
 
@@ -202,7 +171,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     if (c2 != null)
                     {
 
-                        //ExtTimeNodeContainer c3 = c2.FirstChildWithType<ExtTimeNodeContainer>();
                         foreach (ExtTimeNodeContainer c3 in c2.AllChildrenWithType<ExtTimeNodeContainer>())
                         if (c3 != null)
                         {
@@ -301,7 +269,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     }
                 }
             }
-            //writePar(ShapeID);
 
             _writer.WriteEndElement(); //childTnLst
 
@@ -499,7 +466,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
             else
             {
-                writeFlyAnim(animinfo, ShapeID,-1);
+                //writeFlyAnim(animinfo, ShapeID,-1);
             }
 
             _writer.WriteEndElement(); //childTnLst
@@ -564,22 +531,20 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 _writer.WriteAttributeString("id", (++lastID).ToString());
 
                 string filter = "";
-                //foreach (ExtTimeNodeContainer c2b in container.AllChildrenWithType<ExtTimeNodeContainer>())
-                //{
-                    foreach (ExtTimeNodeContainer c3 in c2.AllChildrenWithType<ExtTimeNodeContainer>())
+                foreach (ExtTimeNodeContainer c3 in c2.AllChildrenWithType<ExtTimeNodeContainer>())
+                {
+                    foreach (TimeEffectBehaviorContainer c4 in c3.AllChildrenWithType<TimeEffectBehaviorContainer>())
                     {
-                        foreach (TimeEffectBehaviorContainer c4 in c3.AllChildrenWithType<TimeEffectBehaviorContainer>())
+                        foreach (TimeVariantValue v in c4.AllChildrenWithType<TimeVariantValue>())
                         {
-                            foreach (TimeVariantValue v in c4.AllChildrenWithType<TimeVariantValue>())
+                            if (v.type == TimeVariantTypeEnum.String)
                             {
-                                if (v.type == TimeVariantTypeEnum.String)
-                                {
-                                    filter = v.stringValue;
-                                }
+                                filter = v.stringValue;
                             }
                         }
                     }
-                //}
+                }
+
 
                 if (Attributes[TimePropertyID4TimeNode.EffectID] != null)
                 {
@@ -628,7 +593,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 bool nodeTypeWritten = false;
                 if (container.FirstChildWithType<ExtTimeNodeContainer>() != null)
                 {
-                    //ExtTimeNodeContainer c2 = container.FirstChildWithType<ExtTimeNodeContainer>();
                     if (c2.FirstChildWithType<TimePropertyList4TimeNodeContainer>() != null)
                     {
                                                                       
@@ -767,16 +731,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 }
                 else
                 {
-                    if (animinfo != null)
-                        if (animinfo.animEffect == 0x0c && animinfo.animEffectDirection > 0x3)
-                        {
-                            writeFlyAnim(animinfo, ShapeID, targetRun);
-                        }
-                        else
-                        {
-                            writeAnimEffect(animinfo, ShapeID, targetRun);
-                        }
-
+                    if (animinfo != null && (!(animinfo.animEffect == 0x0c && animinfo.animEffectDirection > 0x3)))
+                    {
+                        writeAnimEffect(animinfo, ShapeID, targetRun);
+                    }
+                    else
+                    {
+                        writeFlyAnim(c2, ShapeID, targetRun);
+                    }
                 }
 
                 _writer.WriteEndElement(); //childTnLst
@@ -1035,174 +997,109 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement(); //animRot
         }
 
-        public void writeAnim(AnimationInfoAtom animinfo, string ShapeID, int targetRun)
+        public void writeAnim(ExtTimeNodeContainer c, string ShapeID, int targetRun)
         {
+            TimeNodeAtom tna = c.FirstChildWithType<TimeNodeAtom>();
+            TimeAnimateBehaviourContainer bc = c.FirstChildWithType<TimeAnimateBehaviourContainer>();
+
+            TimeBehaviorContainer tbc = bc.FirstChildWithType<TimeBehaviorContainer>();
+            TimeBehaviorAtom tba = tbc.FirstChildWithType<TimeBehaviorAtom>();
+            TimeAnimateBehaviorAtom taba = bc.FirstChildWithType<TimeAnimateBehaviorAtom>();
+            TimeVariantValue attrName = tbc.FirstChildWithType<TimeStringListContainer>().FirstChildWithType<TimeVariantValue>();
+
+            List<Record> lst = bc.FirstChildWithType<TimeAnimationValueListContainer>().Children;
+          
+         
             _writer.WriteStartElement("p", "anim", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("calcmode", "lin");
-            _writer.WriteAttributeString("valueType", "num");
 
-            _writer.WriteStartElement("p", "cBhvr", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("additive", "base");
-
-            _writer.WriteStartElement("p", "cTn", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("id", (++lastID).ToString());
-            switch (animinfo.animEffectDirection)
+            if (taba.fCalcModePropertyUsed)
             {
-                case 0xC:
-                case 0xD:
-                case 0xE:
-                case 0xF:
-                    _writer.WriteAttributeString("dur", "5000");
-                    break;
-                default:
-                    _writer.WriteAttributeString("dur", "500");
-                    break;
-            }
-            _writer.WriteAttributeString("fill", "hold");
-            _writer.WriteEndElement(); //cTn
-
-            _writer.WriteStartElement("p", "tgtEl", OpenXmlNamespaces.PresentationML);
-            _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("spid", ShapeID);
-
-
-            if (targetRun != -1)
-            {
-                _writer.WriteStartElement("p", "txEl", OpenXmlNamespaces.PresentationML);
-                _writer.WriteStartElement("p", "pRg", OpenXmlNamespaces.PresentationML);
-                _writer.WriteAttributeString("st", targetRun.ToString());
-                _writer.WriteAttributeString("end", targetRun.ToString());
-                _writer.WriteEndElement(); //pRg
-                _writer.WriteEndElement(); //txEl
-            }
-
-            _writer.WriteEndElement(); //spTgt
-            _writer.WriteEndElement(); //tgtEl
-
-            _writer.WriteStartElement("p", "attrNameLst", OpenXmlNamespaces.PresentationML);
-            switch (animinfo.animEffectDirection)
-            {
-                case 0x10:
-                case 0x11:
-                case 0x12:
-                case 0x13:
-                case 0x14:
-                case 0x15:
-                case 0x1C:
-                    _writer.WriteElementString("p", "attrName", OpenXmlNamespaces.PresentationML, "ppt_w");
-                    break;
-                default:
-                    _writer.WriteElementString("p", "attrName", OpenXmlNamespaces.PresentationML, "ppt_x");
-                    break;
-            }
-
-            _writer.WriteEndElement(); //attrNameLst
-
-            _writer.WriteEndElement(); //cBhvr
-
-            _writer.WriteStartElement("p", "tavLst", OpenXmlNamespaces.PresentationML);
-
-            _writer.WriteStartElement("p", "tav", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("tm", "0");
-            _writer.WriteStartElement("p", "val", OpenXmlNamespaces.PresentationML);
-
-            if (animinfo.animEffectDirection == 0x1c)
-            {
-                _writer.WriteStartElement("p", "fltVal", OpenXmlNamespaces.PresentationML);
+                switch (taba.calcMode)
+                {
+                    case 0: //discrete
+                        _writer.WriteAttributeString("calcmode", "discrete");
+                        break;
+                    case 1: //linear
+                        _writer.WriteAttributeString("calcmode", "lin");
+                        break;
+                    case 2: //formula
+                        _writer.WriteAttributeString("calcmode", "fmla");
+                        break;
+                }
             }
             else
             {
-                _writer.WriteStartElement("p", "strVal", OpenXmlNamespaces.PresentationML);
+                //default
+                _writer.WriteAttributeString("calcmode", "lin");
             }
 
-            switch (animinfo.animEffectDirection)
+            if (taba.fValueTypePropertyUsed)
             {
-                case 0x0:
-                case 0x4:
-                case 0x6:
-                    _writer.WriteAttributeString("val", "0-#ppt_w/2");
-                    break;
-                case 0x2:
-                case 0x5:
-                case 0x7:
-                    _writer.WriteAttributeString("val", "1+#ppt_w/2");
-                    break;
-                case 0x10:
-                case 0x11:
-                case 0x12:
-                case 0x13:
-                case 0x14:
-                case 0x15: //zoom
-                    _writer.WriteAttributeString("val", "0");
-                    break;
-                case 0x1C:
-                    _writer.WriteAttributeString("val", "0");
-                    break;
-                default:
-                    _writer.WriteAttributeString("val", "#ppt_x");
-                    break;
+                switch (taba.valueType)
+                {
+                    case TimeAnimateBehaviorValueTypeEnum.Color:
+                        _writer.WriteAttributeString("valueType", "clr");
+                        break;
+                    case TimeAnimateBehaviorValueTypeEnum.Number:
+                        _writer.WriteAttributeString("valueType", "num");
+                        break;
+                    case TimeAnimateBehaviorValueTypeEnum.String:
+                        _writer.WriteAttributeString("valueType", "str");
+                        break;
+                }
             }
-
-            _writer.WriteEndElement(); //strVal
-            _writer.WriteEndElement(); //val
-            _writer.WriteEndElement(); //tav
-
-            _writer.WriteStartElement("p", "tav", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("tm", "100000");
-            _writer.WriteStartElement("p", "val", OpenXmlNamespaces.PresentationML);
-            _writer.WriteStartElement("p", "strVal", OpenXmlNamespaces.PresentationML);
-            switch (animinfo.animEffectDirection)
+            else
             {
-                case 0x10:
-                case 0x11:
-                case 0x12:
-                case 0x13:
-                case 0x14:
-                case 0x15: //zoom
-                    _writer.WriteAttributeString("val", "#ppt_w");
-                    break;
-                case 0x1c:
-                    _writer.WriteAttributeString("val", "#ppt_w");
-                    break;
-                default:
-                    _writer.WriteAttributeString("val", "#ppt_x");
-                    break;
+                _writer.WriteAttributeString("valueType", "num");
             }
-            _writer.WriteEndElement(); //strVal
-            _writer.WriteEndElement(); //val
-            _writer.WriteEndElement(); //tav
-
-            _writer.WriteEndElement(); //tavLst
-
-            _writer.WriteEndElement(); //anim
-        }
-        
-
-        public void writeFlyAnim(AnimationInfoAtom animinfo, string ShapeID, int targetRun)
-        {
-            //X
-            _writer.WriteStartElement("p", "anim", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("calcmode", "lin");
-            _writer.WriteAttributeString("valueType", "num");
 
             _writer.WriteStartElement("p", "cBhvr", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("additive", "base");
+
+            if (tba.fAdditivePropertyUsed)
+            {
+                switch (tba.behaviorAdditive)
+                {
+                    case 0: //override
+                        _writer.WriteAttributeString("additive", "base");
+                        break;
+                    case 1: //add
+                        _writer.WriteAttributeString("additive", "sum");
+                        break;
+                }
+            }
 
             _writer.WriteStartElement("p", "cTn", OpenXmlNamespaces.PresentationML);
             _writer.WriteAttributeString("id", (++lastID).ToString());
-            switch(animinfo.animEffectDirection)
+
+            if (tna.fDurationProperty)
             {
-                case 0xC:
-                case 0xD:
-                case 0xE:
-                case 0xF:
-                    _writer.WriteAttributeString("dur", "5000");
-                    break;
-                default:
-                    _writer.WriteAttributeString("dur", "500");
-                    break;
+                //_writer.WriteAttributeString("dur", tna.duration.ToString("#"));
+                //the value is supposed to be a signed integer containing the number of milliseconds
+                //but in reality the value does not fit
+                _writer.WriteAttributeString("dur", "500");
             }
-            _writer.WriteAttributeString("fill", "hold");
+            else
+            {
+                _writer.WriteAttributeString("dur", "500");
+            }
+
+            if (tna.fFillProperty)
+            {
+                switch (tna.fill)
+                {
+                    case 0: case 3:
+                        _writer.WriteAttributeString("fill", "hold");
+                        break;
+                    case 1: case 4:
+                        _writer.WriteAttributeString("fill", "reset");
+                        break;
+                    case 2:
+                        _writer.WriteAttributeString("fill", "freeze"); //TODO:verify
+                        break;
+                }
+            }
+
+            
             _writer.WriteEndElement(); //cTn
 
             _writer.WriteStartElement("p", "tgtEl", OpenXmlNamespaces.PresentationML);
@@ -1224,15 +1121,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement(); //tgtEl
 
             _writer.WriteStartElement("p", "attrNameLst", OpenXmlNamespaces.PresentationML);
-            switch (animinfo.animEffectDirection)
-            {
-                case 0x10: case 0x11: case 0x12: case 0x13: case 0x14: case 0x15: case 0x1C:
-                    _writer.WriteElementString("p", "attrName", OpenXmlNamespaces.PresentationML, "ppt_w");
-                    break;
-                default:
-                    _writer.WriteElementString("p", "attrName", OpenXmlNamespaces.PresentationML, "ppt_x");
-                    break;
-            }
+            _writer.WriteElementString("p", "attrName", OpenXmlNamespaces.PresentationML, attrName.stringValue);
             
             _writer.WriteEndElement(); //attrNameLst
 
@@ -1240,528 +1129,67 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteStartElement("p", "tavLst", OpenXmlNamespaces.PresentationML);
 
-            _writer.WriteStartElement("p", "tav", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("tm", "0");
-            _writer.WriteStartElement("p", "val", OpenXmlNamespaces.PresentationML);
-
-            if (animinfo.animEffectDirection == 0x1c)
+            TimeAnimationValueAtom tava;
+            TimeVariantValue tvv;
+            TimeVariantValue tvv2;
+            while (lst.Count > 0)
             {
-                _writer.WriteStartElement("p", "fltVal", OpenXmlNamespaces.PresentationML);
-            }
-            else
-            {
-                _writer.WriteStartElement("p", "strVal", OpenXmlNamespaces.PresentationML);
-            }
+                tava = (TimeAnimationValueAtom)lst[0];
+                tvv = (TimeVariantValue)lst[1];
+                tvv2 = (TimeVariantValue)lst[2];
+                lst.RemoveAt(0);
+                lst.RemoveAt(0);
+                lst.RemoveAt(0);
 
-            switch (animinfo.animEffectDirection)
-            {
-                case 0x0: case 0x4: case 0x6:
-                    _writer.WriteAttributeString("val", "0-#ppt_w/2");
-                    break;
-                case 0x2: case 0x5: case 0x7:
-                    _writer.WriteAttributeString("val", "1+#ppt_w/2");
-                    break;
-                case 0x10: case 0x11: case 0x12: case 0x13: case 0x14: case 0x15: //zoom
-                    _writer.WriteAttributeString("val", "0");
-                    break;
-                case 0x1C:
-                    _writer.WriteAttributeString("val", "0");
-                    break;
-                default:
-                    _writer.WriteAttributeString("val", "#ppt_x");
-                    break;
+                _writer.WriteStartElement("p", "tav", OpenXmlNamespaces.PresentationML);
+                _writer.WriteAttributeString("tm", (tava.time * 100).ToString());
+
+                if (tvv2.type == TimeVariantTypeEnum.String && tvv2.stringValue.Length > 0)
+                {
+                    _writer.WriteAttributeString("fmla", tvv2.stringValue);
+                }                
+
+                _writer.WriteStartElement("p", "val", OpenXmlNamespaces.PresentationML);
+
+                switch (tvv.type)
+                {
+                    case TimeVariantTypeEnum.Bool:
+                        _writer.WriteStartElement("p", "boolVal", OpenXmlNamespaces.PresentationML);
+                        _writer.WriteAttributeString("val",tvv.boolValue.ToString());
+                        break;
+                    case TimeVariantTypeEnum.Float:
+                        _writer.WriteStartElement("p", "fltVal", OpenXmlNamespaces.PresentationML);
+                        _writer.WriteAttributeString("val", tvv.floatValue.ToString());
+                        break;
+                    case TimeVariantTypeEnum.Int:
+                        _writer.WriteStartElement("p", "intVal", OpenXmlNamespaces.PresentationML);
+                        _writer.WriteAttributeString("val", tvv.intValue.ToString());
+                        break;
+                    case TimeVariantTypeEnum.String:
+                        _writer.WriteStartElement("p", "strVal", OpenXmlNamespaces.PresentationML);
+                        _writer.WriteAttributeString("val", tvv.stringValue);
+                        break;
+                }
+
+                _writer.WriteEndElement(); //strVal
+                _writer.WriteEndElement(); //val
+                _writer.WriteEndElement(); //tav
             }
-
-            _writer.WriteEndElement(); //strVal
-            _writer.WriteEndElement(); //val
-            _writer.WriteEndElement(); //tav
-
-            _writer.WriteStartElement("p", "tav", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("tm", "100000");
-            _writer.WriteStartElement("p", "val", OpenXmlNamespaces.PresentationML);
-            _writer.WriteStartElement("p", "strVal", OpenXmlNamespaces.PresentationML);
-            switch (animinfo.animEffectDirection)
-            {
-                case 0x10: case 0x11: case 0x12: case 0x13: case 0x14: case 0x15: //zoom
-                    _writer.WriteAttributeString("val", "#ppt_w");
-                    break;
-                case 0x1c:
-                     _writer.WriteAttributeString("val", "#ppt_w");
-                     break;
-                default:
-                    _writer.WriteAttributeString("val", "#ppt_x");
-                    break;
-            }
-            _writer.WriteEndElement(); //strVal
-            _writer.WriteEndElement(); //val
-            _writer.WriteEndElement(); //tav
-
+            
             _writer.WriteEndElement(); //tavLst
 
             _writer.WriteEndElement(); //anim
+        }
+        
 
-            //Y
-            _writer.WriteStartElement("p", "anim", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("calcmode", "lin");
-            _writer.WriteAttributeString("valueType", "num");
-
-            _writer.WriteStartElement("p", "cBhvr", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("additive", "base");
-
-            _writer.WriteStartElement("p", "cTn", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("id", (++lastID).ToString());
-            switch (animinfo.animEffectDirection)
+        public void writeFlyAnim(ExtTimeNodeContainer c, string ShapeID, int targetRun)
+        {
+            foreach (ExtTimeNodeContainer c2 in c.AllChildrenWithType<ExtTimeNodeContainer>())
             {
-                case 0xC: case 0xD: case 0xE: case 0xF:
-                    _writer.WriteAttributeString("dur", "5000");
-                    break;
-                default:
-                    _writer.WriteAttributeString("dur", "500");
-                    break;
-            }
-            _writer.WriteAttributeString("fill", "hold");
-            _writer.WriteEndElement(); //cTn
-
-            _writer.WriteStartElement("p", "tgtEl", OpenXmlNamespaces.PresentationML);
-            _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("spid", ShapeID);
-
-            if (targetRun != -1)
-            {
-                _writer.WriteStartElement("p", "txEl", OpenXmlNamespaces.PresentationML);
-                _writer.WriteStartElement("p", "pRg", OpenXmlNamespaces.PresentationML);
-                _writer.WriteAttributeString("st", targetRun.ToString());
-                _writer.WriteAttributeString("end", targetRun.ToString());
-                _writer.WriteEndElement(); //pRg
-                _writer.WriteEndElement(); //txEl
-            }
-
-            _writer.WriteEndElement(); //spTgt
-            _writer.WriteEndElement(); //tgtEl
-
-            _writer.WriteStartElement("p", "attrNameLst", OpenXmlNamespaces.PresentationML);
-            switch (animinfo.animEffectDirection)
-            {
-                case 0x10:
-                case 0x11:
-                case 0x12:
-                case 0x13:
-                case 0x14:
-                case 0x15:
-                case 0x1c:
-                    _writer.WriteElementString("p", "attrName", OpenXmlNamespaces.PresentationML, "ppt_h");
-                    break;
-                default:
-                    _writer.WriteElementString("p", "attrName", OpenXmlNamespaces.PresentationML, "ppt_y");
-                    break;
-            }
-            _writer.WriteEndElement(); //attrNameLst
-
-            _writer.WriteEndElement(); //cBhvr
-
-            _writer.WriteStartElement("p", "tavLst", OpenXmlNamespaces.PresentationML);
-
-            _writer.WriteStartElement("p", "tav", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("tm", "0");
-            _writer.WriteStartElement("p", "val", OpenXmlNamespaces.PresentationML);
-
-            if (animinfo.animEffectDirection == 0x1c)
-            {
-                _writer.WriteStartElement("p", "fltVal", OpenXmlNamespaces.PresentationML);
-            }
-            else
-            {
-                _writer.WriteStartElement("p", "strVal", OpenXmlNamespaces.PresentationML);
-            }
-
-            switch (animinfo.animEffectDirection)
-            {
-                case 0x1: case 0x5: case 0xd: //top
-                    _writer.WriteAttributeString("val", "0-#ppt_h/2");
-                    break;
-                case 0x3: case 0x4: case 0x7: case 0xf: //bottom
-                    _writer.WriteAttributeString("val", "1+#ppt_h/2");
-                    break;
-                case 0x6:
-                    _writer.WriteAttributeString("val", "1+#ppt_h/2");
-                    break;
-                case 0x10: case 0x11: case 0x12: case 0x13: case 0x14: case 0x15: //zoom
-                    _writer.WriteAttributeString("val", "0");
-                    break;
-                case 0x1c:
-                    _writer.WriteAttributeString("val", "0");
-                    break;
-                default:
-                    _writer.WriteAttributeString("val", "#ppt_y");
-                    break;
-            }
-
-
-            _writer.WriteEndElement(); //strVal
-            _writer.WriteEndElement(); //val
-            _writer.WriteEndElement(); //tav
-
-            _writer.WriteStartElement("p", "tav", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("tm", "100000");
-            _writer.WriteStartElement("p", "val", OpenXmlNamespaces.PresentationML);
-            _writer.WriteStartElement("p", "strVal", OpenXmlNamespaces.PresentationML);
-
-            switch (animinfo.animEffectDirection)
-            {
-                case 0x1:
-                case 0x6:
-                    _writer.WriteAttributeString("val", "#ppt_y");
-                    break;
-                case 0x5:
-                case 0xd: //top
-                    _writer.WriteAttributeString("val", "0-#ppt_h/2");
-                    break;
-                case 0x3:
-                case 0x4:
-                case 0x7:
-                case 0xf: //bottom
-                    _writer.WriteAttributeString("val", "1+#ppt_h/2");
-                    break;
-                case 0x10:
-                case 0x11:
-                case 0x12:
-                case 0x13:
-                case 0x14:
-                case 0x15: //zoom
-                    _writer.WriteAttributeString("val", "#ppt_h");
-                    break;
-                case 0x1c:
-                    _writer.WriteAttributeString("val", "#ppt_h");
-                    break;
-                default:
-                    _writer.WriteAttributeString("val", "#ppt_y");
-                    break;
-            }
-
-            _writer.WriteEndElement(); //strVal
-            _writer.WriteEndElement(); //val
-            _writer.WriteEndElement(); //tav
-
-            _writer.WriteEndElement(); //tavLst
-
-            _writer.WriteEndElement(); //anim
-
-
-
-            if (animinfo.animEffectDirection == 0x1c)
-            {
-                //X
-                _writer.WriteStartElement("p", "anim", OpenXmlNamespaces.PresentationML);
-                _writer.WriteAttributeString("calcmode", "lin");
-                _writer.WriteAttributeString("valueType", "num");
-
-                _writer.WriteStartElement("p", "cBhvr", OpenXmlNamespaces.PresentationML);
-                _writer.WriteAttributeString("additive", "base");
-
-                _writer.WriteStartElement("p", "cTn", OpenXmlNamespaces.PresentationML);
-                _writer.WriteAttributeString("id", (++lastID).ToString());
-                switch (animinfo.animEffectDirection)
+                if (c2.FirstChildWithType<TimeAnimateBehaviourContainer>() != null)
                 {
-                    case 0xC:
-                    case 0xD:
-                    case 0xE:
-                    case 0xF:
-                        _writer.WriteAttributeString("dur", "5000");
-                        break;
-                    case 0x1c:
-                        _writer.WriteAttributeString("dur", "1000");
-                        break;
-                    default:
-                        _writer.WriteAttributeString("dur", "500");
-                        break;
+                    writeAnim(c2, ShapeID, targetRun);
                 }
-                _writer.WriteAttributeString("fill", "hold");
-                _writer.WriteEndElement(); //cTn
-
-                _writer.WriteStartElement("p", "tgtEl", OpenXmlNamespaces.PresentationML);
-                _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
-                _writer.WriteAttributeString("spid", ShapeID);
-
-                if (targetRun != -1)
-                {
-                    _writer.WriteStartElement("p", "txEl", OpenXmlNamespaces.PresentationML);
-                    _writer.WriteStartElement("p", "pRg", OpenXmlNamespaces.PresentationML);
-                    _writer.WriteAttributeString("st", targetRun.ToString());
-                    _writer.WriteAttributeString("end", targetRun.ToString());
-                    _writer.WriteEndElement(); //pRg
-                    _writer.WriteEndElement(); //txEl
-                }
-
-                _writer.WriteEndElement(); //spTgt
-                _writer.WriteEndElement(); //tgtEl
-
-                _writer.WriteStartElement("p", "attrNameLst", OpenXmlNamespaces.PresentationML);
-                switch (animinfo.animEffectDirection)
-                {
-                    case 0x10:
-                    case 0x11:
-                    case 0x12:
-                    case 0x13:
-                    case 0x14:
-                    case 0x15:
-                    case 0x1c:
-                        _writer.WriteElementString("p", "attrName", OpenXmlNamespaces.PresentationML, "ppt_x");
-                        break;
-                    default:
-                        _writer.WriteElementString("p", "attrName", OpenXmlNamespaces.PresentationML, "ppt_y");
-                        break;
-                }
-                _writer.WriteEndElement(); //attrNameLst
-
-                _writer.WriteEndElement(); //cBhvr
-
-                _writer.WriteStartElement("p", "tavLst", OpenXmlNamespaces.PresentationML);
-
-                _writer.WriteStartElement("p", "tav", OpenXmlNamespaces.PresentationML);
-                _writer.WriteAttributeString("tm", "0");
-                _writer.WriteAttributeString("fmla", "#ppt_x+(cos(-2*pi*(1-$))*-#ppt_x-sin(-2*pi*(1-$))*(1-#ppt_y))*(1-$)");
-
-                _writer.WriteStartElement("p", "val", OpenXmlNamespaces.PresentationML);
-                _writer.WriteStartElement("p", "fltVal", OpenXmlNamespaces.PresentationML);
-
-                switch (animinfo.animEffectDirection)
-                {
-                    case 0x1:
-                    case 0x5:
-                    case 0xd: //top
-                        _writer.WriteAttributeString("val", "0-#ppt_h/2");
-                        break;
-                    case 0x3:
-                    case 0x4:
-                    case 0x7:
-                    case 0xf: //bottom
-                        _writer.WriteAttributeString("val", "1+#ppt_h/2");
-                        break;
-                    case 0x6:
-                        _writer.WriteAttributeString("val", "1+#ppt_h/2");
-                        break;
-                    case 0x10:
-                    case 0x11:
-                    case 0x12:
-                    case 0x13:
-                    case 0x14:
-                    case 0x15: //zoom
-                        _writer.WriteAttributeString("val", "0");
-                        break;
-                    case 0x1c:
-                        _writer.WriteAttributeString("val", "0");
-                        break;
-                    default:
-                        _writer.WriteAttributeString("val", "#ppt_y");
-                        break;
-                }
-
-
-                _writer.WriteEndElement(); //strVal
-                _writer.WriteEndElement(); //val
-                _writer.WriteEndElement(); //tav
-
-                _writer.WriteStartElement("p", "tav", OpenXmlNamespaces.PresentationML);
-                _writer.WriteAttributeString("tm", "100000");
-                _writer.WriteStartElement("p", "val", OpenXmlNamespaces.PresentationML);
-                _writer.WriteStartElement("p", "fltVal", OpenXmlNamespaces.PresentationML);
-
-                switch (animinfo.animEffectDirection)
-                {
-                    case 0x1:
-                    case 0x6:
-                        _writer.WriteAttributeString("val", "#ppt_y");
-                        break;
-                    case 0x5:
-                    case 0xd: //top
-                        _writer.WriteAttributeString("val", "0-#ppt_h/2");
-                        break;
-                    case 0x3:
-                    case 0x4:
-                    case 0x7:
-                    case 0xf: //bottom
-                        _writer.WriteAttributeString("val", "1+#ppt_h/2");
-                        break;
-                    case 0x10:
-                    case 0x11:
-                    case 0x12:
-                    case 0x13:
-                    case 0x14:
-                    case 0x15: //zoom
-                        _writer.WriteAttributeString("val", "#ppt_h");
-                        break;
-                    case 0x1c:
-                        _writer.WriteAttributeString("val", "1");
-                        break;
-                    default:
-                        _writer.WriteAttributeString("val", "#ppt_y");
-                        break;
-                }
-
-                _writer.WriteEndElement(); //strVal
-                _writer.WriteEndElement(); //val
-                _writer.WriteEndElement(); //tav
-
-                _writer.WriteEndElement(); //tavLst
-
-                _writer.WriteEndElement(); //anim
-
-                //Y
-                _writer.WriteStartElement("p", "anim", OpenXmlNamespaces.PresentationML);
-                _writer.WriteAttributeString("calcmode", "lin");
-                _writer.WriteAttributeString("valueType", "num");
-
-                _writer.WriteStartElement("p", "cBhvr", OpenXmlNamespaces.PresentationML);
-                _writer.WriteAttributeString("additive", "base");
-
-                _writer.WriteStartElement("p", "cTn", OpenXmlNamespaces.PresentationML);
-                _writer.WriteAttributeString("id", (++lastID).ToString());
-                switch (animinfo.animEffectDirection)
-                {
-                    case 0xC:
-                    case 0xD:
-                    case 0xE:
-                    case 0xF:
-                        _writer.WriteAttributeString("dur", "5000");
-                        break;
-                    case 0x1c:
-                        _writer.WriteAttributeString("dur", "1000");
-                        break;
-                    default:
-                        _writer.WriteAttributeString("dur", "500");
-                        break;
-                }
-                _writer.WriteAttributeString("fill", "hold");
-                _writer.WriteEndElement(); //cTn
-
-                _writer.WriteStartElement("p", "tgtEl", OpenXmlNamespaces.PresentationML);
-                _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
-                _writer.WriteAttributeString("spid", ShapeID);
-
-                if (targetRun != -1)
-                {
-                    _writer.WriteStartElement("p", "txEl", OpenXmlNamespaces.PresentationML);
-                    _writer.WriteStartElement("p", "pRg", OpenXmlNamespaces.PresentationML);
-                    _writer.WriteAttributeString("st", targetRun.ToString());
-                    _writer.WriteAttributeString("end", targetRun.ToString());
-                    _writer.WriteEndElement(); //pRg
-                    _writer.WriteEndElement(); //txEl
-                }
-
-                _writer.WriteEndElement(); //spTgt
-                _writer.WriteEndElement(); //tgtEl
-
-                _writer.WriteStartElement("p", "attrNameLst", OpenXmlNamespaces.PresentationML);
-                switch (animinfo.animEffectDirection)
-                {
-                    case 0x10:
-                    case 0x11:
-                    case 0x12:
-                    case 0x13:
-                    case 0x14:
-                    case 0x15:
-                    case 0x1c:
-                        _writer.WriteElementString("p", "attrName", OpenXmlNamespaces.PresentationML, "ppt_y");
-                        break;
-                    default:
-                        _writer.WriteElementString("p", "attrName", OpenXmlNamespaces.PresentationML, "ppt_y");
-                        break;
-                }
-                _writer.WriteEndElement(); //attrNameLst
-
-                _writer.WriteEndElement(); //cBhvr
-
-                _writer.WriteStartElement("p", "tavLst", OpenXmlNamespaces.PresentationML);
-
-                _writer.WriteStartElement("p", "tav", OpenXmlNamespaces.PresentationML);
-                _writer.WriteAttributeString("tm", "0");
-                _writer.WriteAttributeString("fmla", "#ppt_y+(sin(-2*pi*(1-$))*-#ppt_x+cos(-2*pi*(1-$))*(1-#ppt_y))*(1-$)");
-
-
-                _writer.WriteStartElement("p", "val", OpenXmlNamespaces.PresentationML);
-                _writer.WriteStartElement("p", "fltVal", OpenXmlNamespaces.PresentationML);
-
-                switch (animinfo.animEffectDirection)
-                {
-                    case 0x1:
-                    case 0x5:
-                    case 0xd: //top
-                        _writer.WriteAttributeString("val", "0-#ppt_h/2");
-                        break;
-                    case 0x3:
-                    case 0x4:
-                    case 0x7:
-                    case 0xf: //bottom
-                        _writer.WriteAttributeString("val", "1+#ppt_h/2");
-                        break;
-                    case 0x6:
-                        _writer.WriteAttributeString("val", "1+#ppt_h/2");
-                        break;
-                    case 0x10:
-                    case 0x11:
-                    case 0x12:
-                    case 0x13:
-                    case 0x14:
-                    case 0x15: //zoom
-                        _writer.WriteAttributeString("val", "0");
-                        break;
-                    case 0x1c:
-                        _writer.WriteAttributeString("val", "1");
-                        break;
-                    default:
-                        _writer.WriteAttributeString("val", "#ppt_y");
-                        break;
-                }
-
-
-                _writer.WriteEndElement(); //strVal
-                _writer.WriteEndElement(); //val
-                _writer.WriteEndElement(); //tav
-
-                _writer.WriteStartElement("p", "tav", OpenXmlNamespaces.PresentationML);
-                _writer.WriteAttributeString("tm", "100000");
-                _writer.WriteStartElement("p", "val", OpenXmlNamespaces.PresentationML);
-                _writer.WriteStartElement("p", "fltVal", OpenXmlNamespaces.PresentationML);
-
-                switch (animinfo.animEffectDirection)
-                {
-                    case 0x1:
-                    case 0x6:
-                        _writer.WriteAttributeString("val", "#ppt_y");
-                        break;
-                    case 0x5:
-                    case 0xd: //top
-                        _writer.WriteAttributeString("val", "0-#ppt_h/2");
-                        break;
-                    case 0x3:
-                    case 0x4:
-                    case 0x7:
-                    case 0xf: //bottom
-                        _writer.WriteAttributeString("val", "1+#ppt_h/2");
-                        break;
-                    case 0x10:
-                    case 0x11:
-                    case 0x12:
-                    case 0x13:
-                    case 0x14:
-                    case 0x15: //zoom
-                        _writer.WriteAttributeString("val", "#ppt_h");
-                        break;
-                    case 0x1c:
-                        _writer.WriteAttributeString("val", "1");
-                        break;
-                    default:
-                        _writer.WriteAttributeString("val", "#ppt_y");
-                        break;
-                }
-
-                _writer.WriteEndElement(); //strVal
-                _writer.WriteEndElement(); //val
-                _writer.WriteEndElement(); //tav
-
-                _writer.WriteEndElement(); //tavLst
-
-                _writer.WriteEndElement(); //anim
             }
         }
 
