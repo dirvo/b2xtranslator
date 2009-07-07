@@ -1112,7 +1112,25 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
 
             _writer.WriteAttributeString("pathEditMode", "relative"); //TODO
-            _writer.WriteAttributeString("ptsTypes", ""); //TODO
+
+            if (tmba.fPointsTypesPropertyUsed)
+            {
+                if (tbc.FirstChildWithType<TimePropertyList4TimeNodeContainer>() != null)
+                {
+                    foreach (TimeVariantValue v in tbc.FirstChildWithType<TimePropertyList4TimeNodeContainer>().AllChildrenWithType<TimeVariantValue>())
+                    {
+                        if (v.type == TimeVariantTypeEnum.String)
+                        {
+                            _writer.WriteAttributeString("ptsTypes", v.stringValue);
+                        }
+                        break;
+                    }        
+                }
+                else
+                {
+                    _writer.WriteAttributeString("ptsTypes", "");
+                }
+            }
 
             _writer.WriteStartElement("p", "cBhvr", OpenXmlNamespaces.PresentationML);
 
