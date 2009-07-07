@@ -191,6 +191,18 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteEndElement();
 
+            if (this.Master.FirstChildWithType<SlideShowSlideInfoAtom>() != null)
+            {
+                new AnimationMapping(_ctx, _writer).Apply(this.Master.FirstChildWithType<SlideShowSlideInfoAtom>());
+            }
+
+            if (this.Master.FirstChildWithType<ProgTags>() != null)
+                if (this.Master.FirstChildWithType<ProgTags>().FirstChildWithType<ProgBinaryTag>() != null)
+                    if (this.Master.FirstChildWithType<ProgTags>().FirstChildWithType<ProgBinaryTag>().FirstChildWithType<ProgBinaryTagDataBlob>() != null)
+                    {
+                        new AnimationMapping(_ctx, _writer).Apply(this.Master.FirstChildWithType<ProgTags>().FirstChildWithType<ProgBinaryTag>().FirstChildWithType<ProgBinaryTagDataBlob>(), this, stm.animinfos, stm);
+                    }
+
             // Write txStyles
             RoundTripOArtTextStyles12 roundTripTxStyles = this.Master.FirstChildWithType<RoundTripOArtTextStyles12>();
             if (false & roundTripTxStyles != null)
@@ -245,17 +257,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             this.MasterPart.ReferencePart(themePart);
 
-            if (this.Master.FirstChildWithType<SlideShowSlideInfoAtom>() != null)
-            {
-                new AnimationMapping(_ctx, _writer).Apply(this.Master.FirstChildWithType<SlideShowSlideInfoAtom>());
-            }
-
-            if (this.Master.FirstChildWithType<ProgTags>() != null)
-                if (this.Master.FirstChildWithType<ProgTags>().FirstChildWithType<ProgBinaryTag>() != null)
-                    if (this.Master.FirstChildWithType<ProgTags>().FirstChildWithType<ProgBinaryTag>().FirstChildWithType<ProgBinaryTagDataBlob>() != null)
-                    {
-                        new AnimationMapping(_ctx, _writer).Apply(this.Master.FirstChildWithType<ProgTags>().FirstChildWithType<ProgBinaryTag>().FirstChildWithType<ProgBinaryTagDataBlob>(), this, stm.animinfos,stm);
-                    }
+        
         
             // End the document
             _writer.WriteEndElement();

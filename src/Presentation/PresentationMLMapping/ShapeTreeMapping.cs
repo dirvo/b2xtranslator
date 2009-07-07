@@ -3358,6 +3358,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             end = i;
                             foreach (int escape in tempEscapes)
                             {
+                                if (!Escapes.ContainsKey(new Point(start, end)))
                                 Escapes.Add(new Point(start, end), escape);
                             }
                             start = i + 1;

@@ -214,7 +214,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             {
                                 a = null;
                                 if (atoms.Count > counter) a = atoms[counter];
-                                writePar2(c4, a);
+                                writePar(c4, a);
                                 counter++;
                             }
 
@@ -299,156 +299,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         }
 
 
-        private void writePar(AnimationInfoAtom animinfo, ExtTimeNodeContainer c, string ShapeID)
-        {
-            _writer.WriteStartElement("p", "par", OpenXmlNamespaces.PresentationML);
-
-            _writer.WriteStartElement("p", "cTn", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("id", (++lastID).ToString());
-            _writer.WriteAttributeString("fill", "hold");
-
-            _writer.WriteStartElement("p", "stCondLst", OpenXmlNamespaces.PresentationML);
-
-            _writer.WriteStartElement("p", "cond", OpenXmlNamespaces.PresentationML);
-
-            if (animinfo.fAutomatic)
-            {
-                _writer.WriteAttributeString("delay", "0");
-            }
-            else
-            {
-                _writer.WriteAttributeString("delay", "indefinite");
-            }
-
-            _writer.WriteEndElement(); //cond
-
-            _writer.WriteEndElement(); //stCondLst
-
-            _writer.WriteStartElement("p", "childTnLst", OpenXmlNamespaces.PresentationML);
-
-            _writer.WriteStartElement("p", "par", OpenXmlNamespaces.PresentationML);
-
-            _writer.WriteStartElement("p", "cTn", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("id", (++lastID).ToString());
-            _writer.WriteAttributeString("fill", "hold");
-
-            _writer.WriteStartElement("p", "stCondLst", OpenXmlNamespaces.PresentationML);
-
-            _writer.WriteStartElement("p", "cond", OpenXmlNamespaces.PresentationML);
-
-            _writer.WriteAttributeString("delay", "0");
-
-            _writer.WriteEndElement(); //cond
-
-            _writer.WriteEndElement(); //stCondLst
-
-            _writer.WriteStartElement("p", "childTnLst", OpenXmlNamespaces.PresentationML);
-
-            _writer.WriteStartElement("p", "par", OpenXmlNamespaces.PresentationML);
-
-            _writer.WriteStartElement("p", "cTn", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("id", (++lastID).ToString());
-            _writer.WriteAttributeString("presetID", (animinfo.animEffect +1).ToString()); //3
-            _writer.WriteAttributeString("presetClass", "entr");
-            _writer.WriteAttributeString("presetSubtype", "10");
-            _writer.WriteAttributeString("fill", "hold");
-            _writer.WriteAttributeString("grpId", "0");
-            _writer.WriteAttributeString("nodeType", "clickEffect");
-
-            _writer.WriteStartElement("p", "stCondLst", OpenXmlNamespaces.PresentationML);
-
-            _writer.WriteStartElement("p", "cond", OpenXmlNamespaces.PresentationML);
-
-            _writer.WriteAttributeString("delay", "0");
-
-            _writer.WriteEndElement(); //cond
-
-            _writer.WriteEndElement(); //stCondLst
-
-            _writer.WriteStartElement("p", "childTnLst", OpenXmlNamespaces.PresentationML);
-
-            _writer.WriteStartElement("p", "set", OpenXmlNamespaces.PresentationML);
-
-            _writer.WriteStartElement("p", "cBhvr", OpenXmlNamespaces.PresentationML);
-
-            _writer.WriteStartElement("p", "cTn", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("id", (++lastID).ToString());
-            _writer.WriteAttributeString("dur", "1");
-            _writer.WriteAttributeString("fill", "hold");
-
-            _writer.WriteStartElement("p", "stCondLst", OpenXmlNamespaces.PresentationML);
-
-            _writer.WriteStartElement("p", "cond", OpenXmlNamespaces.PresentationML);
-
-            _writer.WriteAttributeString("delay", "0");
-
-            _writer.WriteEndElement(); //cond
-
-            _writer.WriteEndElement(); //stCondLst
-
-            _writer.WriteEndElement(); //cTn
-
-            _writer.WriteStartElement("p", "tgtEl", OpenXmlNamespaces.PresentationML);
-
-            _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
-
-            _writer.WriteAttributeString("spid", ShapeID);
-
-            _writer.WriteEndElement(); //spTgt
-
-            _writer.WriteEndElement(); //tgtEl
-
-            _writer.WriteStartElement("p", "attrNameLst", OpenXmlNamespaces.PresentationML);
-
-            _writer.WriteElementString("p", "attrName", OpenXmlNamespaces.PresentationML, "style.visibility");
-
-            _writer.WriteEndElement(); //attrNameLst
-
-            _writer.WriteEndElement(); //cBhvr
-
-            _writer.WriteStartElement("p", "to", OpenXmlNamespaces.PresentationML);
-
-            _writer.WriteStartElement("p", "strVal", OpenXmlNamespaces.PresentationML);
-
-            _writer.WriteAttributeString("val", "visible");
-
-            _writer.WriteEndElement(); //str
-
-            _writer.WriteEndElement(); //to
-
-            _writer.WriteEndElement(); //set
-
-            if (true) //TODO: when?
-            {
-                writeAnimEffect(animinfo, c, -1);
-            }
-            else
-            {
-                //writeFlyAnim(animinfo, ShapeID,-1);
-            }
-
-            _writer.WriteEndElement(); //childTnLst
-
-            _writer.WriteEndElement(); //cTn
-
-            _writer.WriteEndElement(); //par
-
-            _writer.WriteEndElement(); //childTnLst
-
-            _writer.WriteEndElement(); //cTn
-
-            _writer.WriteEndElement(); //par
-
-            _writer.WriteEndElement(); //childTnLst
-
-            _writer.WriteEndElement(); //cTn
-
-            _writer.WriteEndElement(); //par
-        }
-
-        private void writePar2(ExtTimeNodeContainer container, AnimationInfoAtom animinfo)
-        {
-          
+        private void writePar(ExtTimeNodeContainer container, AnimationInfoAtom animinfo)
+        {         
 
             _writer.WriteStartElement("p", "par", OpenXmlNamespaces.PresentationML);
 
@@ -535,7 +387,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         break;
                 }
 
-                if (Attributes[TimePropertyID4TimeNode.EffectDir] != null)
+                if (Attributes.ContainsKey(TimePropertyID4TimeNode.EffectDir) && Attributes[TimePropertyID4TimeNode.EffectDir] != null)
                 {
                     _writer.WriteAttributeString("presetSubtype", (Attributes[TimePropertyID4TimeNode.EffectDir].intValue).ToString()); 
                 }
@@ -645,59 +497,12 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                         _writer.WriteStartElement("p", "subTnLst", OpenXmlNamespaces.PresentationML);
                         foreach (SlaveContainer sc in c2.AllChildrenWithType<SlaveContainer>())
-                        {
+                        {                           
+
                             TimeColorBehaviorContainer tcbc = sc.FirstChildWithType<TimeColorBehaviorContainer>();
                             if (tcbc != null)
                             {
-                                TimeColorBehaviorAtom tcba = tcbc.FirstChildWithType<TimeColorBehaviorAtom>();
-                                _writer.WriteStartElement("p", "animClr", OpenXmlNamespaces.PresentationML);
-                                _writer.WriteAttributeString("clrSpc", "rgb");
-                                _writer.WriteAttributeString("dir", "cw");
-
-                                _writer.WriteStartElement("p", "cBhvr", OpenXmlNamespaces.PresentationML);
-                                _writer.WriteAttributeString("override", "childStyle");
-
-                                _writer.WriteStartElement("p", "cTn", OpenXmlNamespaces.PresentationML);
-                                _writer.WriteAttributeString("dur", "1"); //TODO
-                                _writer.WriteAttributeString("fill", "hold");
-                                _writer.WriteAttributeString("display", "0");
-                                _writer.WriteAttributeString("masterRel", "nextClick");
-                                _writer.WriteAttributeString("afterEffect", "1");
-                                _writer.WriteEndElement(); //cTn
-
-                                _writer.WriteStartElement("p", "tgtEl", OpenXmlNamespaces.PresentationML);
-
-                                _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
-
-                                _writer.WriteAttributeString("spid", getShapeId(container.FirstDescendantWithType<VisualShapeAtom>().shapeIdRef));
-
-                                CheckAndWriteStartEndRuns(container, ref targetRun);
-
-                                _writer.WriteEndElement(); //spTgt
-
-                                _writer.WriteEndElement(); //tgtEl
-
-                                _writer.WriteStartElement("p", "attrNameLst", OpenXmlNamespaces.PresentationML);
-
-                                _writer.WriteElementString("p", "attrName", OpenXmlNamespaces.PresentationML, "ppt_c");
-
-                                _writer.WriteEndElement(); //attrNameLst
-
-                                _writer.WriteEndElement(); //cBhvr
-
-                                string val = tcba.colorTo.val1.ToString("X").PadLeft(2, '0') + tcba.colorTo.val2.ToString("X").PadLeft(2, '0') + tcba.colorTo.val3.ToString("X").PadLeft(2, '0');
-
-                                _writer.WriteStartElement("p", "to", OpenXmlNamespaces.PresentationML);
-
-                                _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-
-                                _writer.WriteAttributeString("val", val);
-
-                                _writer.WriteEndElement(); //srgbClr
-
-                                _writer.WriteEndElement(); //to
-
-                                _writer.WriteEndElement(); //animClr
+                                writeColor(sc, targetRun);                                                                
                             }
 
                         }
@@ -813,7 +618,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             if (tca == null)
             {
-                _writer.WriteAttributeString("delay", "0"); //TODO
+                _writer.WriteAttributeString("delay", "0"); 
             }
             else
             {
@@ -861,14 +666,25 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         private void writeAnimRot(ExtTimeNodeContainer c, ref int targetRun, TimeRotationBehaviorAtom trba)
         {
+            TimeNodeAtom tna = c.FirstChildWithType<TimeNodeAtom>();
+
             _writer.WriteStartElement("p", "animRot", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("by", (trba.fBy * 60000).ToString("#")); //TODO
+            _writer.WriteAttributeString("by", (trba.fBy * 60000).ToString("#")); 
 
             _writer.WriteStartElement("p", "cBhvr", OpenXmlNamespaces.PresentationML);
 
             _writer.WriteStartElement("p", "cTn", OpenXmlNamespaces.PresentationML);
             _writer.WriteAttributeString("id", (++lastID).ToString());
-            _writer.WriteAttributeString("dur", "2000"); //TODO
+            
+            if (tna.fDurationProperty)
+            {
+                _writer.WriteAttributeString("dur", tna.duration.ToString());
+            }
+            else
+            {
+                _writer.WriteAttributeString("dur", "500");
+            }
+
             _writer.WriteAttributeString("fill", "hold");
             _writer.WriteEndElement(); //cTn
 
@@ -905,10 +721,24 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             TimeAnimateBehaviorAtom taba = bc.FirstChildWithType<TimeAnimateBehaviorAtom>();
             TimeVariantValue attrName = tbc.FirstChildWithType<TimeStringListContainer>().FirstChildWithType<TimeVariantValue>();
 
-            List<Record> lst = bc.FirstChildWithType<TimeAnimationValueListContainer>().Children;
-          
+
+            List<Record> lst = new List<Record>();
+            string fieldName = "";
+            if (bc.FirstChildWithType<TimeAnimationValueListContainer>() != null)
+            {
+                lst = bc.FirstChildWithType<TimeAnimationValueListContainer>().Children;
+            }
+            else
+            {
+                fieldName = tbc.FirstChildWithType<TimeStringListContainer>().FirstChildWithType<TimeVariantValue>().stringValue;
+            }          
          
             _writer.WriteStartElement("p", "anim", OpenXmlNamespaces.PresentationML);
+
+            if (taba.fToPropertyUsed)
+            {
+                _writer.WriteAttributeString("to", bc.FirstChildWithType<TimeVariantValue>().stringValue);
+            }
 
             if (taba.fCalcModePropertyUsed)
             {
@@ -982,16 +812,22 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             {
                 switch (tna.fill)
                 {
-                    case 0: case 3:
+                    case 0:
+                    case 3:
                         _writer.WriteAttributeString("fill", "hold");
                         break;
-                    case 1: case 4:
+                    case 1:
+                    case 4:
                         _writer.WriteAttributeString("fill", "reset");
                         break;
                     case 2:
                         _writer.WriteAttributeString("fill", "freeze"); //TODO:verify
                         break;
                 }
+            }
+            else
+            {
+                _writer.WriteAttributeString("fill", "hold");
             }
 
             
@@ -1013,56 +849,64 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteEndElement(); //cBhvr
 
-            _writer.WriteStartElement("p", "tavLst", OpenXmlNamespaces.PresentationML);
-
-            TimeAnimationValueAtom tava;
-            TimeVariantValue tvv;
-            TimeVariantValue tvv2;
-            while (lst.Count > 0)
+            if (lst.Count > 0)
             {
-                tava = (TimeAnimationValueAtom)lst[0];
-                tvv = (TimeVariantValue)lst[1];
-                tvv2 = (TimeVariantValue)lst[2];
-                lst.RemoveAt(0);
-                lst.RemoveAt(0);
-                lst.RemoveAt(0);
+                _writer.WriteStartElement("p", "tavLst", OpenXmlNamespaces.PresentationML);
 
-                _writer.WriteStartElement("p", "tav", OpenXmlNamespaces.PresentationML);
-                _writer.WriteAttributeString("tm", (tava.time * 100).ToString());
-
-                if (tvv2.type == TimeVariantTypeEnum.String && tvv2.stringValue.Length > 0)
+                TimeAnimationValueAtom tava;
+                TimeVariantValue tvv;
+                TimeVariantValue tvv2 = null;
+                while (lst.Count > 0)
                 {
-                    _writer.WriteAttributeString("fmla", tvv2.stringValue);
-                }                
+                    tava = (TimeAnimationValueAtom)lst[0];
+                    tvv = (TimeVariantValue)lst[1];
+                    if (lst.Count > 2 && lst[2] is TimeVariantValue)
+                    {
+                        tvv2 = (TimeVariantValue)lst[2];
+                        lst.RemoveAt(0);
+                    } else {
+                        tvv2 = null;
+                    }
+                    lst.RemoveAt(0);
+                    lst.RemoveAt(0);
 
-                _writer.WriteStartElement("p", "val", OpenXmlNamespaces.PresentationML);
+                    _writer.WriteStartElement("p", "tav", OpenXmlNamespaces.PresentationML);
+                    _writer.WriteAttributeString("tm", (tava.time * 100).ToString());
 
-                switch (tvv.type)
-                {
-                    case TimeVariantTypeEnum.Bool:
-                        _writer.WriteStartElement("p", "boolVal", OpenXmlNamespaces.PresentationML);
-                        _writer.WriteAttributeString("val",tvv.boolValue.ToString());
-                        break;
-                    case TimeVariantTypeEnum.Float:
-                        _writer.WriteStartElement("p", "fltVal", OpenXmlNamespaces.PresentationML);
-                        _writer.WriteAttributeString("val", tvv.floatValue.ToString());
-                        break;
-                    case TimeVariantTypeEnum.Int:
-                        _writer.WriteStartElement("p", "intVal", OpenXmlNamespaces.PresentationML);
-                        _writer.WriteAttributeString("val", tvv.intValue.ToString());
-                        break;
-                    case TimeVariantTypeEnum.String:
-                        _writer.WriteStartElement("p", "strVal", OpenXmlNamespaces.PresentationML);
-                        _writer.WriteAttributeString("val", tvv.stringValue);
-                        break;
+                    if (tvv2 != null && tvv2.type == TimeVariantTypeEnum.String && tvv2.stringValue.Length > 0)
+                    {
+                        _writer.WriteAttributeString("fmla", tvv2.stringValue);
+                    }
+
+                    _writer.WriteStartElement("p", "val", OpenXmlNamespaces.PresentationML);
+
+                    switch (tvv.type)
+                    {
+                        case TimeVariantTypeEnum.Bool:
+                            _writer.WriteStartElement("p", "boolVal", OpenXmlNamespaces.PresentationML);
+                            _writer.WriteAttributeString("val", tvv.boolValue.ToString());
+                            break;
+                        case TimeVariantTypeEnum.Float:
+                            _writer.WriteStartElement("p", "fltVal", OpenXmlNamespaces.PresentationML);
+                            _writer.WriteAttributeString("val", tvv.floatValue.ToString());
+                            break;
+                        case TimeVariantTypeEnum.Int:
+                            _writer.WriteStartElement("p", "intVal", OpenXmlNamespaces.PresentationML);
+                            _writer.WriteAttributeString("val", tvv.intValue.ToString());
+                            break;
+                        case TimeVariantTypeEnum.String:
+                            _writer.WriteStartElement("p", "strVal", OpenXmlNamespaces.PresentationML);
+                            _writer.WriteAttributeString("val", tvv.stringValue);
+                            break;
+                    }
+
+                    _writer.WriteEndElement(); //strVal
+                    _writer.WriteEndElement(); //val
+                    _writer.WriteEndElement(); //tav
                 }
 
-                _writer.WriteEndElement(); //strVal
-                _writer.WriteEndElement(); //val
-                _writer.WriteEndElement(); //tav
+                _writer.WriteEndElement(); //tavLst
             }
-            
-            _writer.WriteEndElement(); //tavLst
 
             _writer.WriteEndElement(); //anim
         }
@@ -1198,6 +1042,142 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteEndElement(); //anim
         }
+
+        public void writeColor(RegularContainer c, int targetRun)
+        {
+            TimeNodeAtom tna = c.FirstChildWithType<TimeNodeAtom>();
+            TimeColorBehaviorContainer bc = c.FirstChildWithType<TimeColorBehaviorContainer>();
+
+            TimeBehaviorContainer tbc = bc.FirstChildWithType<TimeBehaviorContainer>();
+            TimeBehaviorAtom tba = tbc.FirstChildWithType<TimeBehaviorAtom>();
+            TimeColorBehaviorAtom tcba = bc.FirstChildWithType<TimeColorBehaviorAtom>();
+
+            List<String> attrNames = new List<String>();
+            foreach (TimeVariantValue attrName in tbc.FirstChildWithType<TimeStringListContainer>().AllChildrenWithType<TimeVariantValue>())
+            {
+                attrNames.Add(attrName.stringValue);
+            }
+
+            _writer.WriteStartElement("p", "animClr", OpenXmlNamespaces.PresentationML);
+
+            _writer.WriteAttributeString("clrSpc", "rgb");
+            _writer.WriteAttributeString("dir", "cw");
+
+            _writer.WriteStartElement("p", "cBhvr", OpenXmlNamespaces.PresentationML);
+            _writer.WriteAttributeString("override", "childStyle");
+
+            _writer.WriteStartElement("p", "cTn", OpenXmlNamespaces.PresentationML);
+
+            if (tna.fDurationProperty)
+            {
+                _writer.WriteAttributeString("dur", tna.duration.ToString());
+            }
+            else
+            {
+                _writer.WriteAttributeString("dur", "2000");
+            }
+
+            if (tna.fFillProperty)
+            {
+                switch (tna.fill)
+                {
+                    case 0:
+                    case 3:
+                        _writer.WriteAttributeString("fill", "hold");
+                        break;
+                    case 1:
+                    case 4:
+                        _writer.WriteAttributeString("fill", "reset");
+                        break;
+                    case 2:
+                        _writer.WriteAttributeString("fill", "freeze"); //TODO:verify
+                        break;
+                }
+            }
+            else
+            {
+                _writer.WriteAttributeString("fill", "hold");
+            }
+
+            _writer.WriteAttributeString("display", "0");
+            _writer.WriteAttributeString("masterRel", "nextClick");
+            _writer.WriteAttributeString("afterEffect", "1");
+            _writer.WriteEndElement(); //cTn
+
+            _writer.WriteStartElement("p", "tgtEl", OpenXmlNamespaces.PresentationML);
+
+            _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
+
+            _writer.WriteAttributeString("spid", getShapeId(c.FirstDescendantWithType<VisualShapeAtom>().shapeIdRef));
+
+            CheckAndWriteStartEndRuns(c, ref targetRun);
+
+            _writer.WriteEndElement(); //spTgt
+
+            _writer.WriteEndElement(); //tgtEl
+
+            _writer.WriteStartElement("p", "attrNameLst", OpenXmlNamespaces.PresentationML);
+
+            _writer.WriteElementString("p", "attrName", OpenXmlNamespaces.PresentationML, attrNames[0]);
+
+            _writer.WriteEndElement(); //attrNameLst
+
+            _writer.WriteEndElement(); //cBhvr
+
+            
+            _writer.WriteStartElement("p", "to", OpenXmlNamespaces.PresentationML);
+
+            switch (tcba.colorTo.model)
+            {
+                case 0: //RGB
+                    _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                    string val = tcba.colorTo.val1.ToString("X").PadLeft(2, '0') + tcba.colorTo.val2.ToString("X").PadLeft(2, '0') + tcba.colorTo.val3.ToString("X").PadLeft(2, '0');
+                    _writer.WriteAttributeString("val", val);
+                    _writer.WriteEndElement(); //srgbClr
+                    break;
+                case 1: //HSL
+                    break;
+                case 2: //scheme
+                    _writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
+                    switch (tcba.colorTo.val1)
+                    {
+                        case 0x00:
+                            _writer.WriteAttributeString("val", "bg1"); //background
+                            break;
+                        case 0x01:
+                            _writer.WriteAttributeString("val", "tx1"); //text
+                            break;
+                        case 0x02:
+                            _writer.WriteAttributeString("val", "dk1"); //shadow
+                            break;
+                        case 0x03:
+                            _writer.WriteAttributeString("val", "tx1"); //title text
+                            break;
+                        case 0x04:
+                            _writer.WriteAttributeString("val", "bg2"); //fill
+                            break;
+                        case 0x05:
+                            _writer.WriteAttributeString("val", "accent1"); //accent1
+                            break;
+                        case 0x06:
+                            _writer.WriteAttributeString("val", "accent2"); //accent2
+                            break;
+                        case 0x07:
+                            _writer.WriteAttributeString("val", "accent3"); //accent3
+                            break;
+                    }
+                    
+                    _writer.WriteEndElement(); //srgbClr
+                    break;
+
+            }
+
+           
+
+            _writer.WriteEndElement(); //to
+
+            _writer.WriteEndElement(); //animClr
+        }
         
 
         public void writeAnimations(ExtTimeNodeContainer c, int targetRun)
@@ -1220,6 +1200,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 {
                     writeMotion(c2, targetRun);
                 }
+                else
+                    if (c2.FirstChildWithType<TimeColorBehaviorContainer>() != null)
+                    {
+                        writeColor(c2, targetRun);
+                    }
             }
         }
 
@@ -1269,7 +1254,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement(); //animEffect
         }
 
-        private void CheckAndWriteStartEndRuns(ExtTimeNodeContainer c, ref int targetRun)
+        private void CheckAndWriteStartEndRuns(RegularContainer c, ref int targetRun)
         {
             VisualShapeAtom vsa = c.FirstDescendantWithType<VisualShapeAtom>(); // = getShapeID(c);
             if (vsa.type == TimeVisualElementEnum.TextRange)
