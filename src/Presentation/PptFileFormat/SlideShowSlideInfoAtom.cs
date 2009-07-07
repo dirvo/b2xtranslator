@@ -127,13 +127,20 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             fill = this.Reader.ReadUInt32();
             this.Reader.ReadBytes(5); //reserved
 
+            //the value is supposed to be a signed integer containing the number of milliseconds
+            //but in reality the value does not fit
             duration = this.Reader.ReadInt32();
+            duration = (int)Math.Floor((decimal)duration / -402653184 * 1000);
+            if (duration < 0) duration = 1;
             
             int flags = this.Reader.ReadInt32();
-            fFillProperty = Tools.Utils.BitmaskToBool(flags, 0x1);
-            fRestartProperty = Tools.Utils.BitmaskToBool(flags, 0x1 << 1);
-            fGroupingTypeProperty = Tools.Utils.BitmaskToBool(flags, 0x1 << 3);
-            fDurationProperty = Tools.Utils.BitmaskToBool(flags, 0x1 << 4);
+            fFillProperty = Tools.Utils.BitmaskToBool(flags, 0x1 << 31);
+            fRestartProperty = Tools.Utils.BitmaskToBool(flags, 0x1 << 30);
+
+            bool dummy = Tools.Utils.BitmaskToBool(flags, 0x1 << 29); 
+
+            fGroupingTypeProperty = Tools.Utils.BitmaskToBool(flags, 0x1 << 28);
+            fDurationProperty = Tools.Utils.BitmaskToBool(flags, 0x1 << 27);
 
             this.Reader.BaseStream.Position = this.Reader.BaseStream.Length;
         }

@@ -777,8 +777,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             if (tna.fDurationProperty)
             {
-                //TODO
-                _writer.WriteAttributeString("dur", "1000");
+                _writer.WriteAttributeString("dur", tna.duration.ToString());
             }
             else
             {
@@ -972,10 +971,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             if (tna.fDurationProperty)
             {
-                //_writer.WriteAttributeString("dur", tna.duration.ToString("#"));
-                //the value is supposed to be a signed integer containing the number of milliseconds
-                //but in reality the value does not fit
-                _writer.WriteAttributeString("dur", "500");
+                _writer.WriteAttributeString("dur", tna.duration.ToString());
             }
             else
             {
@@ -1152,10 +1148,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             if (tna.fDurationProperty)
             {
-                //_writer.WriteAttributeString("dur", tna.duration.ToString("#"));
-                //the value is supposed to be a signed integer containing the number of milliseconds
-                //but in reality the value does not fit
-                _writer.WriteAttributeString("dur", "2000");
+                _writer.WriteAttributeString("dur", tna.duration.ToString());
             }
             else
             {
