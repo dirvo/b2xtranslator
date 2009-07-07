@@ -89,48 +89,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         private PresentationMapping<RegularContainer> _parentMapping;
 
-        private VisualShapeAtom getShapeID(ExtTimeNodeContainer c)
-        {
-            List<VisualShapeAtom> lst = new List<VisualShapeAtom>();
-
-                foreach (ExtTimeNodeContainer c9 in c.AllChildrenWithType<ExtTimeNodeContainer>())
-                {
-                    foreach (TimeEffectBehaviorContainer c10a in c9.AllChildrenWithType<TimeEffectBehaviorContainer>())
-                        foreach (TimeBehaviorContainer c10aa in c10a.AllChildrenWithType<TimeBehaviorContainer>())
-                            foreach (ClientVisualElementContainer c10aaa in c10aa.AllChildrenWithType<ClientVisualElementContainer>())
-                                foreach (VisualShapeAtom c10aaaa in c10aaa.AllChildrenWithType<VisualShapeAtom>())
-                                    lst.Add(c10aaaa); //.shapeIdRef); //return c10aaaa.shapeIdRef;
-                    foreach (TimeSetBehaviourContainer c10b in c9.AllChildrenWithType<TimeSetBehaviourContainer>())
-                        foreach (TimeBehaviorContainer c10aa in c10b.AllChildrenWithType<TimeBehaviorContainer>())
-                            foreach (ClientVisualElementContainer c10aaa in c10aa.AllChildrenWithType<ClientVisualElementContainer>())
-                                foreach (VisualShapeAtom c10aaaa in c10aaa.AllChildrenWithType<VisualShapeAtom>())
-                                    lst.Add(c10aaaa); //.shapeIdRef); //return c10aaaa.shapeIdRef;                     
-                    foreach (TimeRotationBehaviorContainer r in c9.AllChildrenWithType<TimeRotationBehaviorContainer>())
-                        foreach (TimeBehaviorContainer rr in r.AllChildrenWithType<TimeBehaviorContainer>())
-                            foreach (ClientVisualElementContainer c10aaa in rr.AllChildrenWithType<ClientVisualElementContainer>())
-                                foreach (VisualShapeAtom c10aaaa in c10aaa.AllChildrenWithType<VisualShapeAtom>())
-                                    lst.Add(c10aaaa); //.shapeIdRef); //return c10aaaa.shapeIdRef;
-                    foreach (TimeCommandBehaviorContainer r in c9.AllChildrenWithType<TimeCommandBehaviorContainer>())
-                        foreach (TimeBehaviorContainer rr in r.AllChildrenWithType<TimeBehaviorContainer>())
-                            foreach (ClientVisualElementContainer c10aaa in rr.AllChildrenWithType<ClientVisualElementContainer>())
-                                foreach (VisualShapeAtom c10aaaa in c10aaa.AllChildrenWithType<VisualShapeAtom>())
-                                    lst.Add(c10aaaa); //.shapeIdRef); //return c10aaaa.shapeIdRef;
-                    foreach (TimeMotionBehaviorContainer r in c9.AllChildrenWithType<TimeMotionBehaviorContainer>())
-                        foreach (TimeBehaviorContainer rr in r.AllChildrenWithType<TimeBehaviorContainer>())
-                            foreach (ClientVisualElementContainer c10aaa in rr.AllChildrenWithType<ClientVisualElementContainer>())
-                                foreach (VisualShapeAtom c10aaaa in c10aaa.AllChildrenWithType<VisualShapeAtom>())
-                                    lst.Add(c10aaaa); //.shapeIdRef); //return c10aaaa.shapeIdRef;
-                    foreach (TimeScaleBehaviorContainer c10a in c9.AllChildrenWithType<TimeScaleBehaviorContainer>())
-                        foreach (TimeBehaviorContainer c10aa in c10a.AllChildrenWithType<TimeBehaviorContainer>())
-                            foreach (ClientVisualElementContainer c10aaa in c10aa.AllChildrenWithType<ClientVisualElementContainer>())
-                                foreach (VisualShapeAtom c10aaaa in c10aaa.AllChildrenWithType<VisualShapeAtom>())
-                                    lst.Add(c10aaaa); //.shapeIdRef); //return c10aaaa.shapeIdRef;
-                }
-
-            return lst[0];
-        }
-
-
         private int lastID = 0;
         private void writeTiming(Dictionary<AnimationInfoAtom, int> blindAtoms, ProgBinaryTagDataBlob blob)
         {
@@ -341,7 +299,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         }
 
 
-        private void writePar(AnimationInfoAtom animinfo, string ShapeID)
+        private void writePar(AnimationInfoAtom animinfo, ExtTimeNodeContainer c, string ShapeID)
         {
             _writer.WriteStartElement("p", "par", OpenXmlNamespaces.PresentationML);
 
@@ -462,7 +420,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             if (true) //TODO: when?
             {
-                writeAnimEffect(animinfo, ShapeID,-1);
+                writeAnimEffect(animinfo, c, -1);
             }
             else
             {
@@ -668,88 +626,15 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                 _writer.WriteStartElement("p", "childTnLst", OpenXmlNamespaces.PresentationML);
 
-                VisualShapeAtom vsa = getShapeID(c2);
-                uint c4Id = vsa.shapeIdRef;
-                string ShapeID = "";
-
-                if (_stm.spidToId.ContainsKey((int)c4Id))
-                {
-                    ShapeID = _stm.spidToId[(int)c4Id].ToString();
-                }
-                else
-                {
-                    foreach (int sId in _stm.spidToId.Keys)
-                    {
-                        if (sId > 0)
-                        {
-                            ShapeID = _stm.spidToId[sId].ToString();
-                            break;
-                        }
-                    }
-                }
-
                 int targetRun = -1;
 
                 if (c2.FirstChildWithType<ExtTimeNodeContainer>().FirstChildWithType<TimeRotationBehaviorContainer>() != null)
                 {
-                    writeAnimRot(ShapeID, c2, ref targetRun, c2.FirstChildWithType<ExtTimeNodeContainer>().FirstChildWithType<TimeRotationBehaviorContainer>().FirstChildWithType<TimeRotationBehaviorAtom>());
+                    writeAnimRot(c2, ref targetRun, c2.FirstChildWithType<ExtTimeNodeContainer>().FirstChildWithType<TimeRotationBehaviorContainer>().FirstChildWithType<TimeRotationBehaviorAtom>());
                 }
-                else
-                {
-                    //writeSet(ShapeID, vsa, ref targetRun);
-                }
-
-                if (false && filter.Length > 0)
-                {
-                    _writer.WriteStartElement("p", "animEffect", OpenXmlNamespaces.PresentationML);
-
-                    if (Attributes[TimePropertyID4TimeNode.EffectType].intValue == 2)
-                    {
-                        _writer.WriteAttributeString("transition", "out");
-                    }
-                    else
-                    {
-                        _writer.WriteAttributeString("transition", "in");
-                    }
-
-                    _writer.WriteAttributeString("filter", filter);
-                    _writer.WriteStartElement("p", "cBhvr", OpenXmlNamespaces.PresentationML);
-                    _writer.WriteAttributeString("additive", "repl");
-                    _writer.WriteStartElement("p", "cTn", OpenXmlNamespaces.PresentationML);
-                    _writer.WriteAttributeString("id", (++lastID).ToString());
-                    _writer.WriteAttributeString("dur", "500");
-                    _writer.WriteEndElement(); //cTn
-                    _writer.WriteStartElement("p", "tgtEl", OpenXmlNamespaces.PresentationML);
-                    _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
-                    _writer.WriteAttributeString("spid", ShapeID);
-
-                    if (targetRun != -1)
-                    {
-                        _writer.WriteStartElement("p", "txEl", OpenXmlNamespaces.PresentationML);
-                        _writer.WriteStartElement("p", "pRg", OpenXmlNamespaces.PresentationML);
-                        _writer.WriteAttributeString("st", targetRun.ToString());
-                        _writer.WriteAttributeString("end", targetRun.ToString());
-                        _writer.WriteEndElement(); //pRg
-                        _writer.WriteEndElement(); //txEl
-                    }
-
-                    _writer.WriteEndElement(); //spTgt
-                    _writer.WriteEndElement(); //tgtEl
-                    _writer.WriteEndElement(); //cBhvr
-                    _writer.WriteEndElement(); //animEffect
-                }
-                else
-                {
-                    if (animinfo != null && (!(animinfo.animEffect == 0x0c && animinfo.animEffectDirection > 0x3)))
-                    {
-                        writeAnimEffect(animinfo, ShapeID, targetRun);
-                    }
-                    else
-                    {
-                        writeFlyAnim(c2, ShapeID, targetRun);
-                    }
-                }
-
+               
+                writeAnimations(c2, targetRun);
+               
                 _writer.WriteEndElement(); //childTnLst
 
                 //slaves
@@ -784,36 +669,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                                 _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
 
-                                _writer.WriteAttributeString("spid", ShapeID);
+                                _writer.WriteAttributeString("spid", getShapeId(container.FirstDescendantWithType<VisualShapeAtom>().shapeIdRef));
 
                                 CheckAndWriteStartEndRuns(container, ref targetRun);
-                                //if (vsa.type == TimeVisualElementEnum.TextRange)
-                                //{
-                                //    int i = 0;
-                                //    foreach (Point p in TextAreasForAnimation)
-                                //    {
-                                //        if (p.X <= vsa.data1 && p.Y >= vsa.data2)
-                                //        {
-                                //            targetRun = i;
-                                //            break;
-                                //        }
-                                //        i++;
-                                //    }
-                                //    if (targetRun == -1)
-                                //    {
-                                //        if (vsa.data1 > 0 && TextAreasForAnimation.Count == 0) TextAreasForAnimation.Add(new Point(0, vsa.data1));
-                                //        TextAreasForAnimation.Add(new Point(vsa.data1, vsa.data2));
-                                //        targetRun = TextAreasForAnimation.Count - 1;
-                                //    }
-
-                                //    _writer.WriteStartElement("p", "txEl", OpenXmlNamespaces.PresentationML);
-                                //    _writer.WriteStartElement("p", "pRg", OpenXmlNamespaces.PresentationML);
-                                //    _writer.WriteAttributeString("st", targetRun.ToString());
-                                //    _writer.WriteAttributeString("end", targetRun.ToString());
-                                //    _writer.WriteEndElement(); //pRg
-                                //    _writer.WriteEndElement(); //txEl
-                                //}
-
 
                                 _writer.WriteEndElement(); //spTgt
 
@@ -862,8 +720,28 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
        }
 
-        private void writeSet(ExtTimeNodeContainer c, string ShapeID, ref int targetRun)
+        private String getShapeId(uint c4Id)
         {
+            if (_stm.spidToId.ContainsKey((int)c4Id))
+            {
+                return _stm.spidToId[(int)c4Id].ToString();
+            }
+            else
+            {
+                foreach (int sId in _stm.spidToId.Keys)
+                {
+                    if (sId > 0)
+                    {
+                        return _stm.spidToId[sId].ToString();
+                    }
+                }
+            }
+            return "";
+        }
+
+        private void writeSet(ExtTimeNodeContainer c, ref int targetRun)
+        {           
+
             TimeNodeAtom tna = c.FirstChildWithType<TimeNodeAtom>();
 
             TimeSetBehaviourContainer tsbc = c.FirstChildWithType<TimeSetBehaviourContainer>();
@@ -872,8 +750,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             TimeBehaviorAtom tba = tbc.FirstChildWithType<TimeBehaviorAtom>();
             TimeVariantValue attrName = tbc.FirstChildWithType<TimeStringListContainer>().FirstChildWithType<TimeVariantValue>();
             VisualShapeAtom vsa = tbc.FirstChildWithType<ClientVisualElementContainer>().FirstChildWithType<VisualShapeAtom>();
-            TimeConditionAtom tca = c.FirstChildWithType<TimeConditionContainer>().FirstChildWithType<TimeConditionAtom>();
 
+            TimeConditionAtom tca = null;
+            if (c.FirstChildWithType<TimeConditionContainer>() != null)
+            tca = c.FirstChildWithType<TimeConditionContainer>().FirstChildWithType<TimeConditionAtom>();
+            
             _writer.WriteStartElement("p", "set", OpenXmlNamespaces.PresentationML);
 
             _writer.WriteStartElement("p", "cBhvr", OpenXmlNamespaces.PresentationML);
@@ -931,7 +812,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteStartElement("p", "cond", OpenXmlNamespaces.PresentationML);
 
-            _writer.WriteAttributeString("delay", tca.delay.ToString());
+            if (tca == null)
+            {
+                _writer.WriteAttributeString("delay", "0"); //TODO
+            }
+            else
+            {
+                _writer.WriteAttributeString("delay", tca.delay.ToString());
+            }
 
             _writer.WriteEndElement(); //cond
 
@@ -943,36 +831,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
 
-            _writer.WriteAttributeString("spid", ShapeID);
+            _writer.WriteAttributeString("spid", getShapeId(c.FirstDescendantWithType<VisualShapeAtom>().shapeIdRef));
 
-            CheckAndWriteStartEndRuns((ExtTimeNodeContainer)c.ParentRecord, ref targetRun);
-            //if (vsa.type == TimeVisualElementEnum.TextRange)
-            //{
-            //    int i = 0;
-            //    foreach (Point p in TextAreasForAnimation)
-            //    {
-            //        if (p.X <= vsa.data1 && p.Y >= vsa.data2)
-            //        {
-            //            targetRun = i;
-            //            break;
-            //        }
-            //        i++;
-            //    }
-            //    if (targetRun == -1)
-            //    {
-            //        if (vsa.data1 > 0 && TextAreasForAnimation.Count == 0) TextAreasForAnimation.Add(new Point(0, vsa.data1));
-            //        TextAreasForAnimation.Add(new Point(vsa.data1, vsa.data2));
-            //        targetRun = TextAreasForAnimation.Count - 1;
-            //    }
-
-            //    _writer.WriteStartElement("p", "txEl", OpenXmlNamespaces.PresentationML);
-            //    _writer.WriteStartElement("p", "pRg", OpenXmlNamespaces.PresentationML);
-            //    _writer.WriteAttributeString("st", targetRun.ToString());
-            //    _writer.WriteAttributeString("end", targetRun.ToString());
-            //    _writer.WriteEndElement(); //pRg
-            //    _writer.WriteEndElement(); //txEl
-            //}
-
+            CheckAndWriteStartEndRuns(c, ref targetRun);
 
             _writer.WriteEndElement(); //spTgt
 
@@ -999,7 +860,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement(); //set
         }
 
-        private void writeAnimRot(string ShapeID, ExtTimeNodeContainer c, ref int targetRun, TimeRotationBehaviorAtom trba)
+        private void writeAnimRot(ExtTimeNodeContainer c, ref int targetRun, TimeRotationBehaviorAtom trba)
         {
             _writer.WriteStartElement("p", "animRot", OpenXmlNamespaces.PresentationML);
             _writer.WriteAttributeString("by", (trba.fBy * 60000).ToString("#")); //TODO
@@ -1016,36 +877,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
 
-            _writer.WriteAttributeString("spid", ShapeID);
+            _writer.WriteAttributeString("spid", getShapeId(c.FirstDescendantWithType<VisualShapeAtom>().shapeIdRef));
 
             CheckAndWriteStartEndRuns(c, ref targetRun);
-            //if (vsa.type == TimeVisualElementEnum.TextRange)
-            //{
-            //    int i = 0;
-            //    foreach (Point p in TextAreasForAnimation)
-            //    {
-            //        if (p.X <= vsa.data1 && p.Y >= vsa.data2)
-            //        {
-            //            targetRun = i;
-            //            break;
-            //        }
-            //        i++;
-            //    }
-            //    if (targetRun == -1)
-            //    {
-            //        if (vsa.data1 > 0 && TextAreasForAnimation.Count == 0) TextAreasForAnimation.Add(new Point(0, vsa.data1));
-            //        TextAreasForAnimation.Add(new Point(vsa.data1, vsa.data2));
-            //        targetRun = TextAreasForAnimation.Count - 1;
-            //    }
-
-            //    _writer.WriteStartElement("p", "txEl", OpenXmlNamespaces.PresentationML);
-            //    _writer.WriteStartElement("p", "pRg", OpenXmlNamespaces.PresentationML);
-            //    _writer.WriteAttributeString("st", targetRun.ToString());
-            //    _writer.WriteAttributeString("end", targetRun.ToString());
-            //    _writer.WriteEndElement(); //pRg
-            //    _writer.WriteEndElement(); //txEl
-            //}
-
 
             _writer.WriteEndElement(); //spTgt
 
@@ -1062,7 +896,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement(); //animRot
         }
 
-        public void writeAnim(ExtTimeNodeContainer c, string ShapeID, int targetRun)
+        public void writeAnim(ExtTimeNodeContainer c, int targetRun)
         {
             TimeNodeAtom tna = c.FirstChildWithType<TimeNodeAtom>();
             TimeAnimateBehaviourContainer bc = c.FirstChildWithType<TimeAnimateBehaviourContainer>();
@@ -1169,18 +1003,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteStartElement("p", "tgtEl", OpenXmlNamespaces.PresentationML);
             _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("spid", ShapeID);
-
-
-            if (targetRun != -1)
-            {
-                _writer.WriteStartElement("p", "txEl", OpenXmlNamespaces.PresentationML);
-                _writer.WriteStartElement("p", "pRg", OpenXmlNamespaces.PresentationML);
-                _writer.WriteAttributeString("st", targetRun.ToString());
-                _writer.WriteAttributeString("end", targetRun.ToString());
-                _writer.WriteEndElement(); //pRg
-                _writer.WriteEndElement(); //txEl
-            }
+                       
+            _writer.WriteAttributeString("spid", getShapeId(c.FirstDescendantWithType<VisualShapeAtom>().shapeIdRef));
+            CheckAndWriteStartEndRuns(c, ref targetRun);
 
             _writer.WriteEndElement(); //spTgt
             _writer.WriteEndElement(); //tgtEl
@@ -1245,33 +1070,154 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteEndElement(); //anim
         }
+
+        public void writeMotion(ExtTimeNodeContainer c, int targetRun)
+        {
+            TimeNodeAtom tna = c.FirstChildWithType<TimeNodeAtom>();
+            TimeMotionBehaviorContainer bc = c.FirstChildWithType<TimeMotionBehaviorContainer>();
+
+            TimeBehaviorContainer tbc = bc.FirstChildWithType<TimeBehaviorContainer>();
+            TimeBehaviorAtom tba = tbc.FirstChildWithType<TimeBehaviorAtom>();
+            TimeMotionBehaviorAtom tmba = bc.FirstChildWithType<TimeMotionBehaviorAtom>();
+
+            List<String> attrNames = new List<String>();
+            foreach (TimeVariantValue attrName in tbc.FirstChildWithType<TimeStringListContainer>().AllChildrenWithType<TimeVariantValue>())
+            {
+                attrNames.Add(attrName.stringValue);   
+            }
+
+            _writer.WriteStartElement("p", "animMotion", OpenXmlNamespaces.PresentationML);
+
+            if (tmba.fOriginPropertyUsed)
+            {
+                switch (tmba.behaviorOrigin)
+                {
+                    case 0: case 1:
+                        _writer.WriteAttributeString("origin", "parent");
+                        break;
+                    case 2:
+                        _writer.WriteAttributeString("origin", "layout");
+                        break;
+                }
+            }
+            else
+            {
+                //default
+                _writer.WriteAttributeString("origin", "layout");
+            }
+
+            if (tmba.fPathPropertyUsed)
+            {
+                _writer.WriteAttributeString("path", bc.FirstChildWithType<TimeVariantValue>().stringValue);
+            }
+
+            _writer.WriteAttributeString("pathEditMode", "relative"); //TODO
+            _writer.WriteAttributeString("ptsTypes", ""); //TODO
+
+            _writer.WriteStartElement("p", "cBhvr", OpenXmlNamespaces.PresentationML);
+
+            if (tba.fAdditivePropertyUsed)
+            {
+                switch (tba.behaviorAdditive)
+                {
+                    case 0: //override
+                        _writer.WriteAttributeString("additive", "base");
+                        break;
+                    case 1: //add
+                        _writer.WriteAttributeString("additive", "sum");
+                        break;
+                }
+            }
+
+            _writer.WriteStartElement("p", "cTn", OpenXmlNamespaces.PresentationML);
+            _writer.WriteAttributeString("id", (++lastID).ToString());
+
+            if (tna.fDurationProperty)
+            {
+                //_writer.WriteAttributeString("dur", tna.duration.ToString("#"));
+                //the value is supposed to be a signed integer containing the number of milliseconds
+                //but in reality the value does not fit
+                _writer.WriteAttributeString("dur", "2000");
+            }
+            else
+            {
+                _writer.WriteAttributeString("dur", "2000");
+            }
+
+            if (tna.fFillProperty)
+            {
+                switch (tna.fill)
+                {
+                    case 0:
+                    case 3:
+                        _writer.WriteAttributeString("fill", "hold");
+                        break;
+                    case 1:
+                    case 4:
+                        _writer.WriteAttributeString("fill", "reset");
+                        break;
+                    case 2:
+                        _writer.WriteAttributeString("fill", "freeze"); //TODO:verify
+                        break;
+                }
+            }
+
+
+            _writer.WriteEndElement(); //cTn
+
+            _writer.WriteStartElement("p", "tgtEl", OpenXmlNamespaces.PresentationML);
+            _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
+
+            _writer.WriteAttributeString("spid", getShapeId(c.FirstDescendantWithType<VisualShapeAtom>().shapeIdRef));
+            CheckAndWriteStartEndRuns(c, ref targetRun);
+
+            _writer.WriteEndElement(); //spTgt
+            _writer.WriteEndElement(); //tgtEl
+
+            _writer.WriteStartElement("p", "attrNameLst", OpenXmlNamespaces.PresentationML);
+
+            foreach (string attrName in attrNames)
+            {
+                _writer.WriteElementString("p", "attrName", OpenXmlNamespaces.PresentationML, attrName);
+            }            
+
+            _writer.WriteEndElement(); //attrNameLst
+
+            _writer.WriteEndElement(); //cBhvr
+
+            _writer.WriteEndElement(); //anim
+        }
         
 
-        public void writeFlyAnim(ExtTimeNodeContainer c, string ShapeID, int targetRun)
+        public void writeAnimations(ExtTimeNodeContainer c, int targetRun)
         {
             foreach (ExtTimeNodeContainer c2 in c.AllChildrenWithType<ExtTimeNodeContainer>())
             {
                 if (c2.FirstChildWithType<TimeAnimateBehaviourContainer>() != null)
                 {
-                    writeAnim(c2, ShapeID, targetRun);
+                    writeAnim(c2, targetRun);
                 }
                 else if (c2.FirstChildWithType<TimeSetBehaviourContainer>() != null)
                 {
-                    writeSet(c2, ShapeID, ref targetRun);
+                    writeSet(c2, ref targetRun);
                 }
                 else if (c2.FirstChildWithType<TimeEffectBehaviorContainer>() != null)
                 {
-                    writeAnimEffect(c2, ShapeID, targetRun);
+                    writeAnimEffect(c2, targetRun);
+                }
+                else if (c2.FirstChildWithType<TimeMotionBehaviorContainer>() != null)
+                {
+                    writeMotion(c2, targetRun);
                 }
             }
         }
 
-        public void writeAnimEffect(ExtTimeNodeContainer c, string ShapeID, int targetRun)
+        public void writeAnimEffect(ExtTimeNodeContainer c, int targetRun)
         {
             TimeEffectBehaviorContainer tebc = c.FirstChildWithType<TimeEffectBehaviorContainer>();
             TimeEffectBehaviorAtom teba = tebc.FirstChildWithType<TimeEffectBehaviorAtom>();
-
             Dictionary<TimePropertyID4TimeNode, TimeVariantValue> Attributes = new Dictionary<TimePropertyID4TimeNode, TimeVariantValue>();
+            
             foreach (TimeVariantValue tv in ((RegularContainer)c.ParentRecord).FirstChildWithType<TimePropertyList4TimeNodeContainer>().AllChildrenWithType<TimeVariantValue>())
             {
                 Attributes.Add((TimePropertyID4TimeNode)tv.Instance, tv);
@@ -1301,36 +1247,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement(); //cTn
             _writer.WriteStartElement("p", "tgtEl", OpenXmlNamespaces.PresentationML);
             _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
-            _writer.WriteAttributeString("spid", ShapeID);
-
+  
+            _writer.WriteAttributeString("spid", getShapeId(c.FirstDescendantWithType<VisualShapeAtom>().shapeIdRef));
+            
             CheckAndWriteStartEndRuns((ExtTimeNodeContainer)c.ParentRecord, ref targetRun);
-            //VisualShapeAtom vsa = getShapeID((ExtTimeNodeContainer)c.ParentRecord);
-            //if (vsa.type == TimeVisualElementEnum.TextRange)
-            //{
-            //    int i = 0;
-            //    foreach (Point p in TextAreasForAnimation)
-            //    {
-            //        if (p.X <= vsa.data1 && p.Y >= vsa.data2)
-            //        {
-            //            targetRun = i;
-            //            break;
-            //        }
-            //        i++;
-            //    }
-            //    if (targetRun == -1)
-            //    {
-            //        if (vsa.data1 > 0 && TextAreasForAnimation.Count == 0) TextAreasForAnimation.Add(new Point(0, vsa.data1));
-            //        TextAreasForAnimation.Add(new Point(vsa.data1, vsa.data2));
-            //        targetRun = TextAreasForAnimation.Count - 1;
-            //    }
-
-            //    _writer.WriteStartElement("p", "txEl", OpenXmlNamespaces.PresentationML);
-            //    _writer.WriteStartElement("p", "pRg", OpenXmlNamespaces.PresentationML);
-            //    _writer.WriteAttributeString("st", targetRun.ToString());
-            //    _writer.WriteAttributeString("end", targetRun.ToString());
-            //    _writer.WriteEndElement(); //pRg
-            //    _writer.WriteEndElement(); //txEl
-            //}
 
             _writer.WriteEndElement(); //spTgt
             _writer.WriteEndElement(); //tgtEl
@@ -1340,7 +1260,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         private void CheckAndWriteStartEndRuns(ExtTimeNodeContainer c, ref int targetRun)
         {
-            VisualShapeAtom vsa = getShapeID(c);
+            VisualShapeAtom vsa = c.FirstDescendantWithType<VisualShapeAtom>(); // = getShapeID(c);
             if (vsa.type == TimeVisualElementEnum.TextRange)
             {
                 int i = 0;
@@ -1369,7 +1289,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
         }
 
-        public void writeAnimEffect(AnimationInfoAtom animinfo, string ShapeID, int targetRun)
+        public void writeAnimEffect(AnimationInfoAtom animinfo, ExtTimeNodeContainer c, int targetRun)
         {
             _writer.WriteStartElement("p", "animEffect", OpenXmlNamespaces.PresentationML);
 
@@ -1655,17 +1575,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
 
-            _writer.WriteAttributeString("spid", ShapeID);
+            _writer.WriteAttributeString("spid", getShapeId(c.FirstDescendantWithType<VisualShapeAtom>().shapeIdRef));
 
-            if (targetRun != -1)
-            {
-                _writer.WriteStartElement("p", "txEl", OpenXmlNamespaces.PresentationML);
-                _writer.WriteStartElement("p", "pRg", OpenXmlNamespaces.PresentationML);
-                _writer.WriteAttributeString("st", targetRun.ToString());
-                _writer.WriteAttributeString("end", targetRun.ToString());
-                _writer.WriteEndElement(); //pRg
-                _writer.WriteEndElement(); //txEl
-            }
+            CheckAndWriteStartEndRuns(c, ref targetRun);
 
             _writer.WriteEndElement(); //spTgt
 
