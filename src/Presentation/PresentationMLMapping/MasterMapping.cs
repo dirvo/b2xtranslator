@@ -193,7 +193,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             if (this.Master.FirstChildWithType<SlideShowSlideInfoAtom>() != null)
             {
-                new AnimationMapping(_ctx, _writer).Apply(this.Master.FirstChildWithType<SlideShowSlideInfoAtom>());
+                new SlideTransitionMapping(_ctx, _writer).Apply(this.Master.FirstChildWithType<SlideShowSlideInfoAtom>());
             }
 
             if (this.Master.FirstChildWithType<ProgTags>() != null)
