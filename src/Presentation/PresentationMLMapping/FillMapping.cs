@@ -129,26 +129,89 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 case 0x2: //texture
                 case 0x3: //picture
                     uint blipIndex = 0;
+                    string strUrl = "";
+
                     if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillBlip))
                     {
                         blipIndex = so.OptionsByID[ShapeOptions.PropertyId.fillBlip].op;
-                    } else 
-                    {  
+                    }
+                    else if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.Pib))
+                    {
                         blipIndex = so.OptionsByID[ShapeOptions.PropertyId.Pib].op;
+                    }
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillBlipFlags) && so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillBlipName))
+                    {
+                        uint flags = so.OptionsByID[ShapeOptions.PropertyId.fillBlipFlags].op;
+                        bool comment = !Tools.Utils.BitmaskToBool(flags, 0x1);
+                        bool file = Tools.Utils.BitmaskToBool(flags, 0x1);
+                        bool url = Tools.Utils.BitmaskToBool(flags, 0x1 << 1);
+                        bool DoNotSave = Tools.Utils.BitmaskToBool(flags, 0x1 << 2);
+                        bool LinkToFile = Tools.Utils.BitmaskToBool(flags, 0x1 << 3);
+
+                        if (url)
+                        {
+                            strUrl = ASCIIEncoding.ASCII.GetString(so.OptionsByID[ShapeOptions.PropertyId.fillBlipName].opComplex);
+                            strUrl = strUrl.Replace("\0", "");
+                        }
+                    }
+                    else
+                    {
+                        break;
                     }
 
                     //string blipName = Encoding.UTF8.GetString(so.OptionsByID[ShapeOptions.PropertyId.fillBlipName].opComplex);
                     string rId = "";
                     DrawingGroup gr = (DrawingGroup)this._ctx.Ppt.DocumentRecord.FirstChildWithType<PPDrawingGroup>().Children[0];
+                    ImagePart imgPart = null;
 
-                    if (blipIndex <= gr.FirstChildWithType<BlipStoreContainer>().Children.Count)
+
+                    if (strUrl.Length > 0)
+                    {
+                        ExternalRelationship er = _parentSlideMapping.targetPart.AddExternalRelationship(OpenXmlRelationshipTypes.Image, strUrl);
+
+                        rId = er.Id;
+
+                        _writer.WriteStartElement("a", "blipFill", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("dpi", "0");
+                        _writer.WriteAttributeString("rotWithShape", "1");
+
+                        _writer.WriteStartElement("a", "blip", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("r", "link", OpenXmlNamespaces.Relationships, rId);
+
+
+
+                        _writer.WriteEndElement();
+
+                        _writer.WriteElementString("a", "srcRect", OpenXmlNamespaces.DrawingML, "");
+
+                        if (fillType == 0x3)
+                        {
+                            _writer.WriteStartElement("a", "stretch", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteElementString("a", "fillRect", OpenXmlNamespaces.DrawingML, "");
+                            _writer.WriteEndElement();
+                        }
+                        else
+                        {
+                            _writer.WriteStartElement("a", "tile", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("tx", "0");
+                            _writer.WriteAttributeString("ty", "0");
+                            _writer.WriteAttributeString("sx", "100000");
+                            _writer.WriteAttributeString("sy", "100000");
+                            _writer.WriteAttributeString("flip", "none");
+                            _writer.WriteAttributeString("algn", "tl");
+                            _writer.WriteEndElement();
+                        }
+
+                        _writer.WriteEndElement();
+
+                    } else if (blipIndex <= gr.FirstChildWithType<BlipStoreContainer>().Children.Count)
                     {
                         BlipStoreEntry bse = (BlipStoreEntry)gr.FirstChildWithType<BlipStoreContainer>().Children[(int)blipIndex - 1];
 
                         if (_ctx.Ppt.PicturesContainer._pictures.ContainsKey(bse.foDelay))
                         {
                             Record rec = _ctx.Ppt.PicturesContainer._pictures[bse.foDelay];
-                            ImagePart imgPart = null;
+                           
                             if (rec is BitmapBlip)
                             {
                                 BitmapBlip b = (BitmapBlip)_ctx.Ppt.PicturesContainer._pictures[bse.foDelay];                                
@@ -217,7 +280,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                         byte[] colors = so.OptionsByID[ShapeOptions.PropertyId.fillShadeColors].opComplex;
 
-                        if (colors.Length > 0)
+                        if (colors != null && colors.Length > 0)
                         {
 
                             useFillAndBack = false;

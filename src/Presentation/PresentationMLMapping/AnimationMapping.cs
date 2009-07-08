@@ -460,7 +460,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     
                     _writer.WriteStartElement("p", "tmPct", OpenXmlNamespaces.PresentationML);
                     
-                    _writer.WriteAttributeString("val", (tida.iterateInterval * 1000).ToString("#"));
+                    _writer.WriteAttributeString("val", (tida.iterateInterval * 1000).ToString());
                     _writer.WriteEndElement(); //tmPct
                     _writer.WriteEndElement(); //iterate
                 }
@@ -473,6 +473,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 if (c2.FirstChildWithType<ExtTimeNodeContainer>().FirstChildWithType<TimeRotationBehaviorContainer>() != null)
                 {
                     writeAnimRot(c2, ref targetRun, c2.FirstChildWithType<ExtTimeNodeContainer>().FirstChildWithType<TimeRotationBehaviorContainer>().FirstChildWithType<TimeRotationBehaviorAtom>());
+                }
+
+                if (c2.FirstChildWithType<ExtTimeNodeContainer>().FirstChildWithType<TimeCommandBehaviorContainer>() != null)
+                {
+                    writeAnimCmd(c2, ref targetRun, c2.FirstChildWithType<ExtTimeNodeContainer>().FirstChildWithType<TimeCommandBehaviorContainer>().FirstChildWithType<TimeCommandBehaviorAtom>());
                 }
                
                 writeAnimations(c2, targetRun);
@@ -695,6 +700,68 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteElementString("p", "attrName", OpenXmlNamespaces.PresentationML, "r");
 
             _writer.WriteEndElement(); //attrNameLst
+
+            _writer.WriteEndElement(); //cBhvr
+
+            _writer.WriteEndElement(); //animRot
+        }
+
+        private void writeAnimCmd(ExtTimeNodeContainer c, ref int targetRun, TimeCommandBehaviorAtom tcba)
+        {
+            TimeNodeAtom tna = c.FirstChildWithType<TimeNodeAtom>();
+
+            _writer.WriteStartElement("p", "cmd", OpenXmlNamespaces.PresentationML);
+
+            if (tcba.fCommandPropertyUsed)
+            {
+                switch (tcba.commandBehaviorType)
+                {
+                    case 0:
+                        _writer.WriteAttributeString("type", "evt");
+                        break;
+                    case 1:
+                        _writer.WriteAttributeString("type", "call");
+                        break;
+                    case 2:
+                        _writer.WriteAttributeString("type", "verb");
+                        break;
+                }
+            }
+            
+
+            if (tcba.fCommandPropertyUsed)
+            {
+                _writer.WriteAttributeString("cmd", tcba.FirstAncestorWithType<TimeCommandBehaviorContainer>().FirstChildWithType<TimeVariantValue>().stringValue);
+            }
+
+            _writer.WriteStartElement("p", "cBhvr", OpenXmlNamespaces.PresentationML);
+
+            _writer.WriteStartElement("p", "cTn", OpenXmlNamespaces.PresentationML);
+            _writer.WriteAttributeString("id", (++lastID).ToString());
+
+            if (tna.fDurationProperty)
+            {
+                _writer.WriteAttributeString("dur", tna.duration.ToString());
+            }
+            else
+            {
+                _writer.WriteAttributeString("dur", "1");
+            }
+
+            _writer.WriteAttributeString("fill", "hold");
+            _writer.WriteEndElement(); //cTn
+
+            _writer.WriteStartElement("p", "tgtEl", OpenXmlNamespaces.PresentationML);
+
+            _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
+
+            _writer.WriteAttributeString("spid", getShapeId(c.FirstDescendantWithType<VisualShapeAtom>().shapeIdRef));
+
+            CheckAndWriteStartEndRuns(c, ref targetRun);
+
+            _writer.WriteEndElement(); //spTgt
+
+            _writer.WriteEndElement(); //tgtEl
 
             _writer.WriteEndElement(); //cBhvr
 

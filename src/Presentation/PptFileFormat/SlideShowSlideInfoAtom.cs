@@ -747,6 +747,25 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         }
     }
 
+    [OfficeRecordAttribute(61755)]
+    public class TimeCommandBehaviorAtom : Record
+    {
+        public bool fTypePropertyUsed;
+        public bool fCommandPropertyUsed;
+
+        public UInt32 commandBehaviorType;
+
+        public TimeCommandBehaviorAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance)
+        {
+            int flags = this.Reader.ReadInt32();
+            fTypePropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1);
+            fCommandPropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1 << 1);
+
+            commandBehaviorType = this.Reader.ReadUInt32();
+        }
+    }
+
     [OfficeRecordAttribute(61760)]
     public class TimeIterateDataAtom : Record
     {

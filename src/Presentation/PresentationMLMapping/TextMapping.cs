@@ -998,6 +998,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             OutlineTextProps9Container c = _ctx.Ppt.DocumentRecord.DocInfoListContainer.FirstDescendantWithType<OutlineTextProps9Container>();
                             Slide slide = so.FirstAncestorWithType<Slide>();
 
+                            if (slide != null)
                             foreach (OutlineTextProps9Entry entry in c.OutlineTextProps9Entries)
                             {
                                 if (slide.PersistAtom.SlideId == entry.outlineTextHeaderAtom.slideIdRef)

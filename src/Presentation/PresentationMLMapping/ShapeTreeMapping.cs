@@ -3278,8 +3278,25 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 ShapeOptions.OptionEntry ShapePath = so.OptionsByID[ShapeOptions.PropertyId.shapePath];
                 shapepath = ShapePath.op;
             }
+            else
+            {
+                //shapepath = 4; //complex
+            }
             ShapeOptions.OptionEntry SegementInfo = so.OptionsByID[ShapeOptions.PropertyId.pSegmentInfo];
-            PathParser pp = new PathParser(SegementInfo.opComplex, pVertices.opComplex);
+
+
+            PathParser pp;
+            if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.pGuides))
+            {
+                ShapeOptions.OptionEntry pGuides = so.OptionsByID[ShapeOptions.PropertyId.pGuides];
+                pp = new PathParser(SegementInfo.opComplex, pVertices.opComplex, pGuides.opComplex);
+            } else 
+            {
+                pp = new PathParser(SegementInfo.opComplex, pVertices.opComplex);
+            }
+        
+
+            
 
             foreach (Point point in pp.Values)
             {
@@ -3309,13 +3326,26 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             int maxY = -1000;
             foreach (Point p in pp.Values)
             {
-                if ((p.X) < minX) minX = p.X;
-                if ((p.X) > maxX) maxX = p.X;
-                if ((p.Y) < minY) minY = p.Y;
-                if ((p.Y) > maxY) maxY = p.Y;
+                if (p.X > 0)
+                {
+                    if ((p.X) < minX) minX = p.X;
+                    if ((p.X) > maxX) maxX = p.X;
+                }
+                if (p.Y > 0)
+                {
+                    if ((p.Y) < minY) minY = p.Y;
+                    if ((p.Y) > maxY) maxY = p.Y;
+                }
             }
-            _writer.WriteAttributeString("w", (maxX - minX).ToString());
-            _writer.WriteAttributeString("h", (maxY - minY).ToString());
+
+            int w = maxX - minX;
+            if (w < 0) w = 0;
+
+            int h = maxY - minY;
+            if (h < 0) h = 0;
+
+            _writer.WriteAttributeString("w", w.ToString());
+            _writer.WriteAttributeString("h", h.ToString());
 
             int valuePointer = 0;
 
