@@ -711,7 +711,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             TimeAnimateBehaviorAtom taba = bc.FirstChildWithType<TimeAnimateBehaviorAtom>();
             TimeVariantValue attrName = tbc.FirstChildWithType<TimeStringListContainer>().FirstChildWithType<TimeVariantValue>();
 
-
+            string filter = "";
+            if (c.FirstChildWithType<TimePropertyList4TimeNodeContainer>() != null && c.FirstChildWithType<TimePropertyList4TimeNodeContainer>().FirstChildWithType<TimeVariantValue>() != null)
+            {
+                filter = c.FirstChildWithType<TimePropertyList4TimeNodeContainer>().FirstChildWithType<TimeVariantValue>().stringValue;
+            }
             List<Record> lst = new List<Record>();
             string fieldName = "";
             if (bc.FirstChildWithType<TimeAnimationValueListContainer>() != null)
@@ -796,6 +800,11 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             else
             {
                 _writer.WriteAttributeString("dur", "500");
+            }
+
+            if (filter.Length > 0)
+            {
+                _writer.WriteAttributeString("tmFilter", filter);
             }
 
             if (tna.fFillProperty)
@@ -1033,6 +1042,95 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _writer.WriteEndElement(); //anim
         }
 
+        public void writeScale(ExtTimeNodeContainer c, int targetRun)
+        {
+            TimeNodeAtom tna = c.FirstChildWithType<TimeNodeAtom>();
+            TimeScaleBehaviorContainer bc = c.FirstChildWithType<TimeScaleBehaviorContainer>();
+
+            TimeBehaviorContainer tbc = bc.FirstChildWithType<TimeBehaviorContainer>();
+            TimeBehaviorAtom tba = tbc.FirstChildWithType<TimeBehaviorAtom>();
+            TimeScaleBehaviorAtom tsba = bc.FirstChildWithType<TimeScaleBehaviorAtom>();
+
+             _writer.WriteStartElement("p", "animScale", OpenXmlNamespaces.PresentationML);
+          
+            _writer.WriteStartElement("p", "cBhvr", OpenXmlNamespaces.PresentationML);
+
+            if (tba.fAdditivePropertyUsed)
+            {
+                switch (tba.behaviorAdditive)
+                {
+                    case 0: //override
+                        _writer.WriteAttributeString("additive", "base");
+                        break;
+                    case 1: //add
+                        _writer.WriteAttributeString("additive", "sum");
+                        break;
+                }
+            }
+
+            _writer.WriteStartElement("p", "cTn", OpenXmlNamespaces.PresentationML);
+            _writer.WriteAttributeString("id", (++lastID).ToString());
+
+            if (tna.fDurationProperty)
+            {
+                _writer.WriteAttributeString("dur", tna.duration.ToString());
+            }
+            else
+            {
+                _writer.WriteAttributeString("dur", "2000");
+            }
+
+            if (tna.fFillProperty)
+            {
+                switch (tna.fill)
+                {
+                    case 0:
+                    case 3:
+                        _writer.WriteAttributeString("fill", "hold");
+                        break;
+                    case 1:
+                    case 4:
+                        _writer.WriteAttributeString("fill", "reset");
+                        break;
+                    case 2:
+                        _writer.WriteAttributeString("fill", "freeze"); //TODO:verify
+                        break;
+                }
+            }
+
+            _writer.WriteStartElement("p", "stCondLst", OpenXmlNamespaces.PresentationML);
+            _writer.WriteStartElement("p", "cond", OpenXmlNamespaces.PresentationML);
+            _writer.WriteAttributeString("delay", "650");
+            _writer.WriteEndElement(); //stCondLst
+            _writer.WriteEndElement(); //stCondLst
+
+            _writer.WriteEndElement(); //cTn
+
+            _writer.WriteStartElement("p", "tgtEl", OpenXmlNamespaces.PresentationML);
+            _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
+
+            _writer.WriteAttributeString("spid", getShapeId(c.FirstDescendantWithType<VisualShapeAtom>().shapeIdRef));
+            CheckAndWriteStartEndRuns(c, ref targetRun);
+
+            _writer.WriteEndElement(); //spTgt
+            _writer.WriteEndElement(); //tgtEl
+
+            _writer.WriteEndElement(); //cBhvr
+
+            if (tsba.fToPropertyUsed)
+            {
+                _writer.WriteStartElement("p", "to", OpenXmlNamespaces.PresentationML);
+
+                _writer.WriteAttributeString("x", (tsba.fXTo * 1000).ToString());
+
+                _writer.WriteAttributeString("y", (tsba.fYTo * 1000).ToString());
+
+                _writer.WriteEndElement(); //to
+            }
+
+            _writer.WriteEndElement(); //animScale
+        }
+
         public void writeColor(RegularContainer c, int targetRun)
         {
             TimeNodeAtom tna = c.FirstChildWithType<TimeNodeAtom>();
@@ -1190,11 +1288,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 {
                     writeMotion(c2, targetRun);
                 }
-                else
-                    if (c2.FirstChildWithType<TimeColorBehaviorContainer>() != null)
-                    {
-                        writeColor(c2, targetRun);
-                    }
+                else if (c2.FirstChildWithType<TimeColorBehaviorContainer>() != null)
+                {
+                    writeColor(c2, targetRun);
+                }
+                else if (c2.FirstChildWithType<TimeScaleBehaviorContainer>() != null)
+                {
+                    writeScale(c2, targetRun);
+                }
             }
         }
 

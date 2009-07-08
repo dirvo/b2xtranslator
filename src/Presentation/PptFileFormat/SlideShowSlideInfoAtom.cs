@@ -125,22 +125,21 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             restart = this.Reader.ReadUInt32();
             type = (TimeNodeTypeEnum)this.Reader.ReadInt32();
             fill = this.Reader.ReadUInt32();
-            this.Reader.ReadBytes(5); //reserved
 
-            //the value is supposed to be a signed integer containing the number of milliseconds
-            //but in reality the value does not fit
+            //according to the spec there would be 5 unused bytes
+            //but in reality it is 8
+            this.Reader.ReadBytes(8); //reserved
+
             duration = this.Reader.ReadInt32();
-            duration = (int)Math.Floor((decimal)duration / -402653184 * 1000);
-            if (duration < 0) duration = 1;
-            
+                      
             int flags = this.Reader.ReadInt32();
-            fFillProperty = Tools.Utils.BitmaskToBool(flags, 0x1 << 31);
-            fRestartProperty = Tools.Utils.BitmaskToBool(flags, 0x1 << 30);
+            fFillProperty = Tools.Utils.BitmaskToBool(flags, 0x1 << 0);
+            fRestartProperty = Tools.Utils.BitmaskToBool(flags, 0x1 << 1);
 
-            bool dummy = Tools.Utils.BitmaskToBool(flags, 0x1 << 29); 
+            bool dummy = Tools.Utils.BitmaskToBool(flags, 0x1 << 2); 
 
-            fGroupingTypeProperty = Tools.Utils.BitmaskToBool(flags, 0x1 << 28);
-            fDurationProperty = Tools.Utils.BitmaskToBool(flags, 0x1 << 27);
+            fGroupingTypeProperty = Tools.Utils.BitmaskToBool(flags, 0x1 << 3);
+            fDurationProperty = Tools.Utils.BitmaskToBool(flags, 0x1 << 4);
 
             this.Reader.BaseStream.Position = this.Reader.BaseStream.Length;
         }
@@ -647,6 +646,42 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
             fTo = this.Reader.ReadSingle();            
 
             rotationDirection = this.Reader.ReadUInt32();
+        }
+    }
+
+    [OfficeRecordAttribute(61753)]
+    public class TimeScaleBehaviorAtom : Record
+    {
+        public bool fByPropertyUsed;
+        public bool fFromPropertyUsed;
+        public bool fToPropertyUsed;
+        public bool fZoomPropertyUsed;
+
+        public float fXBy;
+        public float fYBy;
+        public float fXFrom;
+        public float fYFrom;
+        public float fXTo;
+        public float fYTo;
+        public byte fZoomContents;
+
+       public TimeScaleBehaviorAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance)
+        {
+            int flags = this.Reader.ReadInt32();
+            fByPropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1);
+            fFromPropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1 << 1);
+            fToPropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1 << 2);
+            fZoomPropertyUsed = Tools.Utils.BitmaskToBool(flags, 0x1 << 3);
+
+            fXBy = this.Reader.ReadSingle();
+            fYBy = this.Reader.ReadSingle();
+            fXFrom = this.Reader.ReadSingle();
+            fYFrom = this.Reader.ReadSingle();
+            fXTo = this.Reader.ReadSingle();
+            fYTo = this.Reader.ReadSingle();
+
+            fZoomContents = this.Reader.ReadByte();
         }
     }
 
