@@ -907,6 +907,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     }
                     else
                     {
+                                                
                         if (p.BulletColorPresent)
                         {
                             _writer.WriteStartElement("a", "buClr", OpenXmlNamespaces.DrawingML);
@@ -1089,6 +1090,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 _writer.WriteStartElement("a", "buChar", OpenXmlNamespaces.DrawingML);
                                 _writer.WriteAttributeString("char", p.BulletChar.ToString());
                                 _writer.WriteEndElement(); //buChar
+
+                                Slide s = so.FirstAncestorWithType<Slide>();
                             }
                             else if (!p.BulletCharPresent)
                             {
@@ -1103,5 +1106,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
             _writer.WriteEndElement(); //pPr
         }
+                
     }
 }

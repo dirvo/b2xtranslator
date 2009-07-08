@@ -404,7 +404,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                     Dictionary<int, string> shadeColorsDic = new Dictionary<int, string>();
                     List<string> shadeColors = new List<string>();
-                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillShadeColors) && so.OptionsByID[ShapeOptions.PropertyId.fillShadeColors].opComplex.Length > 0)
+                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillShadeColors) && so.OptionsByID[ShapeOptions.PropertyId.fillShadeColors].opComplex != null && so.OptionsByID[ShapeOptions.PropertyId.fillShadeColors].opComplex.Length > 0)
                     {
                         uint length = so.OptionsByID[ShapeOptions.PropertyId.fillShadeColors].op;
 

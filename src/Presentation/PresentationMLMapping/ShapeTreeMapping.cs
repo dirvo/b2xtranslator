@@ -1721,11 +1721,22 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     if (lineStyle.fLine)
                     {
                         string colorval = "000000";
+                        string schemeType = "";
                         if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineColor))
-                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.lineColor].op, slide, so);
+                        colorval = Utils.getRGBColorFromOfficeArtCOLORREF(so.OptionsByID[ShapeOptions.PropertyId.lineColor].op, slide, so, ref schemeType);
                         _writer.WriteStartElement("a", "solidFill", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
-                        _writer.WriteAttributeString("val", colorval);
+
+                        if (schemeType.Length == 0)
+                        {
+                            _writer.WriteStartElement("a", "srgbClr", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("val", colorval);
+                        }
+                        else
+                        {
+                            _writer.WriteStartElement("a", "schemeClr", OpenXmlNamespaces.DrawingML);
+                            _writer.WriteAttributeString("val", schemeType);
+                        }
+                                             
                         if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.lineOpacity) && so.OptionsByID[ShapeOptions.PropertyId.lineOpacity].op != 65536)
                         {
                             _writer.WriteStartElement("a", "alpha", OpenXmlNamespaces.DrawingML);
