@@ -829,6 +829,23 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 _writer.WriteAttributeString("fill", "hold");
             }
 
+            _writer.WriteStartElement("p", "stCondLst", OpenXmlNamespaces.PresentationML);
+
+            _writer.WriteStartElement("p", "cond", OpenXmlNamespaces.PresentationML);
+
+            if (c.FirstChildWithType<TimeConditionContainer>() != null)
+            {
+                _writer.WriteAttributeString("delay", c.FirstChildWithType<TimeConditionContainer>().FirstChildWithType<TimeConditionAtom>().delay.ToString());
+            }
+            else
+            {
+                _writer.WriteAttributeString("delay", "0");
+            }
+
+            _writer.WriteEndElement(); //cond
+
+            _writer.WriteEndElement(); //stCondLst
+
             
             _writer.WriteEndElement(); //cTn
 
@@ -1301,6 +1318,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         public void writeAnimEffect(ExtTimeNodeContainer c, int targetRun)
         {
+            TimeNodeAtom tna = c.FirstChildWithType<TimeNodeAtom>();
             TimeEffectBehaviorContainer tebc = c.FirstChildWithType<TimeEffectBehaviorContainer>();
             TimeEffectBehaviorAtom teba = tebc.FirstChildWithType<TimeEffectBehaviorAtom>();
             Dictionary<TimePropertyID4TimeNode, TimeVariantValue> Attributes = new Dictionary<TimePropertyID4TimeNode, TimeVariantValue>();
@@ -1330,7 +1348,33 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteStartElement("p", "cTn", OpenXmlNamespaces.PresentationML);
             _writer.WriteAttributeString("id", (++lastID).ToString());
-            _writer.WriteAttributeString("dur", "500");
+
+            if (tna.fDurationProperty)
+            {
+                _writer.WriteAttributeString("dur", tna.duration.ToString());
+            }
+            else
+            {
+                _writer.WriteAttributeString("dur", "500");
+            }
+
+            _writer.WriteStartElement("p", "stCondLst", OpenXmlNamespaces.PresentationML);
+
+            _writer.WriteStartElement("p", "cond", OpenXmlNamespaces.PresentationML);
+
+            if (c.FirstChildWithType<TimeConditionContainer>() != null)
+            {
+                _writer.WriteAttributeString("delay", c.FirstChildWithType<TimeConditionContainer>().FirstChildWithType<TimeConditionAtom>().delay.ToString());
+            }
+            else
+            {
+                _writer.WriteAttributeString("delay", "0");
+            }
+
+            _writer.WriteEndElement(); //cond
+
+            _writer.WriteEndElement(); //stCondLst
+
             _writer.WriteEndElement(); //cTn
             _writer.WriteStartElement("p", "tgtEl", OpenXmlNamespaces.PresentationML);
             _writer.WriteStartElement("p", "spTgt", OpenXmlNamespaces.PresentationML);
