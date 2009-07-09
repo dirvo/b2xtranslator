@@ -139,7 +139,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     {
                         blipIndex = so.OptionsByID[ShapeOptions.PropertyId.Pib].op;
                     }
-                    if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillBlipFlags) && so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillBlipName))
+                    else if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillBlipFlags) && so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.fillBlipName))
                     {
                         uint flags = so.OptionsByID[ShapeOptions.PropertyId.fillBlipFlags].op;
                         bool comment = !Tools.Utils.BitmaskToBool(flags, 0x1);

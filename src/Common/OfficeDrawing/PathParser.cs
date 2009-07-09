@@ -63,7 +63,7 @@ namespace DIaLOGIKa.b2xtranslator.OfficeDrawing
 
             // parse the segments
             this.Segments = new List<PathSegment>();
-            if (pSegmentInfo.Length > 0)
+            if (pSegmentInfo != null && pSegmentInfo.Length > 0)
             {
                 UInt16 nElemsSeg = System.BitConverter.ToUInt16(pSegmentInfo, 0);
                 UInt16 nElemsAllocSeg = System.BitConverter.ToUInt16(pSegmentInfo, 2);

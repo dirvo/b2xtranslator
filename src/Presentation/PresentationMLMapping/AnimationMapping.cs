@@ -1458,7 +1458,14 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         private void CheckAndWriteStartEndRuns(RegularContainer c, ref int targetRun)
         {
-            VisualShapeAtom vsa = c.FirstDescendantWithType<VisualShapeAtom>(); // = getShapeID(c);
+            VisualShapeAtom vsa = c.FirstDescendantWithType<VisualShapeAtom>(); 
+
+            if (!_stm.spidToId.ContainsKey((int)vsa.shapeIdRef))
+            {
+                return;
+            }
+
+            
             if (vsa.type == TimeVisualElementEnum.TextRange)
             {
                 int i = 0;
