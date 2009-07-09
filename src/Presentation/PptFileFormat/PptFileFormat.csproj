@@ -66,6 +66,8 @@
     <Compile Include="ColorSchemeAtom.cs" />
     <Compile Include="BlipCollection9Container.cs" />
     <Compile Include="AnimationInfoContainer.cs" />
+    <Compile Include="MouseClickInteractiveInfoContainer.cs" />
+    <Compile Include="ExHyperlinkContainer.cs" />
     <Compile Include="OutlineTextProps9Container.cs" />
     <Compile Include="NormalViewSetInfoContainer.cs" />
     <Compile Include="ExObjListContainer.cs" />

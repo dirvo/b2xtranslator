@@ -157,6 +157,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             TextStyleAtom style = null;
             FooterMCAtom mca = null;
             TextRulerAtom ruler = null;
+            List<MouseClickInteractiveInfoContainer> mciics = new List<MouseClickInteractiveInfoContainer>();
             MasterTextPropAtom masterTextProp = null;
             string text = "";
             string origText = "";
@@ -239,6 +240,12 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 text = text.Replace(origText.Substring(snmca.Position, 1), "");
 
                                 break;
+                            case 0xff2: //MouseClickInteractiveInfoContainer
+                                mciics.Add((MouseClickInteractiveInfoContainer)rec);
+                                break;
+                            case 0xfdf: //MouseClickTextInteractiveInfoAtom
+                                mciics[mciics.Count-1].Range = (MouseClickTextInteractiveInfoAtom)rec;
+                                break;
                             case 0xff7: //DateTimeMCAtom
                                 DateTimeMCAtom d = (DateTimeMCAtom)rec;
                                 String date = System.DateTime.Now.ToString();
@@ -263,7 +270,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                     RegularContainer slide = textbox.FirstAncestorWithType<Slide>();
                                     if (slide == null) slide = textbox.FirstAncestorWithType<Note>();
                                     if (slide == null) slide = textbox.FirstAncestorWithType<Handout>();
-                                    new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", slide, ref dummy, ref dummy2, ref dummy3, lang, defaultStyle,lvl);
+                                    new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", slide, ref dummy, ref dummy2, ref dummy3, lang, defaultStyle,lvl,mciics,pparentShapeTreeMapping,0);
                                 }
 
                                 _writer.WriteElementString("a", "t", OpenXmlNamespaces.DrawingML, date);
@@ -436,7 +443,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 RegularContainer slide = textbox.FirstAncestorWithType<Slide>();
                                 if (slide == null) slide = textbox.FirstAncestorWithType<Note>();
                                 if (slide == null) slide = textbox.FirstAncestorWithType<Handout>();
-                                new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", slide, ref dummy, ref dummy2, ref dummy3, lang, defaultStyle,lvl);
+                                new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", slide, ref dummy, ref dummy2, ref dummy3, lang, defaultStyle,lvl,mciics,pparentShapeTreeMapping,idx);
                             }
 
                             _writer.WriteEndElement();
@@ -497,7 +504,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                             if (r != null || defaultStyle != null)
                             {
-                                new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", slide,ref dummy, ref dummy2, ref dummy3, lang, defaultStyle,lvl);
+                                new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", slide,ref dummy, ref dummy2, ref dummy3, lang, defaultStyle,lvl, mciics, pparentShapeTreeMapping, idx);
                             }
                             else
                             {                              
@@ -534,7 +541,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             RegularContainer slide = textbox.FirstAncestorWithType<Slide>();
                             if (slide == null) slide = textbox.FirstAncestorWithType<Note>();
                             if (slide == null) slide = textbox.FirstAncestorWithType<Handout>();
-                            new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "endParaRPr", slide, ref dummy, ref dummy2, ref dummy3, lang, defaultStyle,lvl);
+                            new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "endParaRPr", slide, ref dummy, ref dummy2, ref dummy3, lang, defaultStyle,lvl,mciics,pparentShapeTreeMapping,idx);
                         }
 
                     }
@@ -1103,8 +1110,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         }
                     }
                 }
-
             }
+            
             _writer.WriteEndElement(); //pPr
         }
                 

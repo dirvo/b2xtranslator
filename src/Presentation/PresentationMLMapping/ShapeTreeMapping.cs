@@ -3177,7 +3177,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             if (slide == null) slide = textbox.FirstAncestorWithType<Note>();
                             if (slide == null) slide = textbox.FirstAncestorWithType<Handout>();
 
-                            new CharacterRunPropsMapping(_ctx, _writer).Apply(style.CRuns[0], "defRPr", slide, ref lastColor, ref lastSize, ref lastTypeface, lang, null,r.IndentLevel); 
+                            new CharacterRunPropsMapping(_ctx, _writer).Apply(style.CRuns[0], "defRPr", slide, ref lastColor, ref lastSize, ref lastTypeface, lang, null,r.IndentLevel,null,null,0); 
                             _writer.WriteEndElement();
                             lvlRprWritten = true;
                         }

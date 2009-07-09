@@ -48,7 +48,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _ctx = ctx;
         }
 
-        public void Apply(CharacterRun run, string startElement, RegularContainer slide, ref string lastColor, ref string lastSize, ref string lastTypeface, string lang, TextMasterStyleAtom defaultStyle, int lvl)
+        public void Apply(CharacterRun run, string startElement, RegularContainer slide, ref string lastColor, ref string lastSize, ref string lastTypeface, string lang, TextMasterStyleAtom defaultStyle, int lvl, List<MouseClickInteractiveInfoContainer> mciics, ShapeTreeMapping parentShapeTreeMapping, uint position)
         {
 
             _writer.WriteStartElement("a", startElement, OpenXmlNamespaces.DrawingML);
@@ -267,6 +267,38 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 }
 
                 
+            }
+
+            if (mciics != null && mciics.Count > 0)
+            {
+                foreach (MouseClickInteractiveInfoContainer mciic in mciics)
+                {
+
+                    InteractiveInfoAtom iia = mciic.FirstChildWithType<InteractiveInfoAtom>();
+                    MouseClickTextInteractiveInfoAtom tiia = mciic.Range;
+
+                    if (tiia.begin <= position && tiia.end >= position)
+                        if (iia != null)
+                        {
+                            if (iia.action == InteractiveInfoActionEnum.Hyperlink)
+                            {
+                                foreach (ExHyperlinkContainer c in _ctx.Ppt.DocumentRecord.FirstDescendantWithType<ExObjListContainer>().AllChildrenWithType<ExHyperlinkContainer>())
+                                {
+                                    ExHyperlinkAtom a = c.FirstChildWithType<ExHyperlinkAtom>();
+                                    if (a.exHyperlinkId == iia.exHyperlinkIdRef)
+                                    {
+                                        CStringAtom s = c.FirstChildWithType<CStringAtom>();
+                                        ExternalRelationship er = parentShapeTreeMapping.parentSlideMapping.targetPart.AddExternalRelationship(OpenXmlRelationshipTypes.HyperLink, s.Text);
+
+                                        _writer.WriteStartElement("a", "hlinkClick", OpenXmlNamespaces.DrawingML);
+                                        _writer.WriteAttributeString("r", "id", OpenXmlNamespaces.Relationships, er.Id.ToString());
+                                        _writer.WriteEndElement();
+                                    }
+                                }
+
+                            }
+                        }
+                }
             }
 
             _writer.WriteEndElement();
