@@ -617,7 +617,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     _writer.WriteStartElement("a", "lin", OpenXmlNamespaces.DrawingML);
 
                     angle *= 60000;
-                    if (angle > 5400000) angle = 5400000;
+                    //if (angle > 5400000) angle = 5400000;
 
                     _writer.WriteAttributeString("ang", angle.ToString());
                     _writer.WriteAttributeString("scaled", "1");
