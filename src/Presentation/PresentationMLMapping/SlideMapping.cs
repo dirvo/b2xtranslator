@@ -235,7 +235,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             }
         }
 
-        private string readFooterFromClientTextBox(ClientTextbox textbox)
+        public string readFooterFromClientTextBox(ClientTextbox textbox)
         {
             System.IO.MemoryStream ms = new System.IO.MemoryStream(textbox.Bytes);
             TextHeaderAtom thAtom = null;
