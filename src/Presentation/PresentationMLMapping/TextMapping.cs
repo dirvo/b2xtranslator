@@ -1007,6 +1007,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         }
 
                         bool autoNumberingWritten = false;
+                        bool bulletWritten = false;
                         if (_ctx.Ppt.DocumentRecord.DocInfoListContainer.FirstDescendantWithType<OutlineTextProps9Container>() != null)
                         {
                             OutlineTextProps9Container c = _ctx.Ppt.DocumentRecord.DocInfoListContainer.FirstDescendantWithType<OutlineTextProps9Container>();
@@ -1042,6 +1043,40 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                                 _writer.WriteEndElement();
                                                 autoNumberingWritten = true;
                                                 break;
+                                        }
+                                    }
+                                    else if (entry.styleTextProp9Atom.P9Runs.Count > runCount && entry.styleTextProp9Atom.P9Runs[runCount].BulletBlipReferencePresent)
+                                    {
+                                       BlipCollection9Container blips = ((RegularContainer)c.ParentRecord).FirstChildWithType<BlipCollection9Container>();
+                                        if (blips.Children.Count > 0)
+                                        {
+                                            ImagePart imgPart = null;
+
+                                            BitmapBlip b = ((BlipEntityAtom)blips.Children[entry.styleTextProp9Atom.P9Runs[runCount].bulletblipref]).blip;
+
+                                            if (b == null)
+                                            {
+                                                MetafilePictBlip mb = ((BlipEntityAtom)blips.Children[0]).mblip;
+                                                imgPart = this.parentShapeTreeMapping.parentSlideMapping.targetPart.AddImagePart(ShapeTreeMapping.getImageType(mb.TypeCode));
+                                                imgPart.TargetDirectory = "..\\media";
+                                                System.IO.Stream outStream = imgPart.GetStream();
+                                                byte[] decompressed = mb.Decrompress();
+                                                outStream.Write(decompressed, 0, decompressed.Length);
+                                            }
+                                            else
+                                            {
+                                                imgPart = this.parentShapeTreeMapping.parentSlideMapping.targetPart.AddImagePart(ShapeTreeMapping.getImageType(b.TypeCode));
+                                                imgPart.TargetDirectory = "..\\media";
+                                                System.IO.Stream outStream = imgPart.GetStream();
+                                                outStream.Write(b.m_pvBits, 0, b.m_pvBits.Length);
+                                            }
+
+                                            _writer.WriteStartElement("a", "buBlip", OpenXmlNamespaces.DrawingML);
+                                            _writer.WriteStartElement("a", "blip", OpenXmlNamespaces.DrawingML);
+                                            _writer.WriteAttributeString("r", "embed", OpenXmlNamespaces.Relationships, imgPart.RelIdToString);
+                                            _writer.WriteEndElement(); //blip
+                                            _writer.WriteEndElement(); //buBlip
+                                            bulletWritten = true;
                                         }
                                     }
                                 }
@@ -1100,7 +1135,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                         break;
                                 }
                             }
-                            else if (p.BulletCharPresent)
+                            else if (!bulletWritten && p.BulletCharPresent)
                             {
                                 _writer.WriteStartElement("a", "buChar", OpenXmlNamespaces.DrawingML);
                                 _writer.WriteAttributeString("char", p.BulletChar.ToString());
@@ -1108,7 +1143,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                                 Slide s = so.FirstAncestorWithType<Slide>();
                             }
-                            else if (!p.BulletCharPresent)
+                            else if (!bulletWritten && !p.BulletCharPresent)
                             {
                                 _writer.WriteStartElement("a", "buChar", OpenXmlNamespaces.DrawingML);
                                 _writer.WriteAttributeString("char", "•");
