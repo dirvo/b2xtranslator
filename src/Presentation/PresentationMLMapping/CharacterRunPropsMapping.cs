@@ -277,7 +277,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     InteractiveInfoAtom iia = mciic.FirstChildWithType<InteractiveInfoAtom>();
                     MouseClickTextInteractiveInfoAtom tiia = mciic.Range;
 
-                    if (tiia.begin <= position && tiia.end >= position)
+                    if (tiia.begin <= position && tiia.end > position)
                         if (iia != null)
                         {
                             if (iia.action == InteractiveInfoActionEnum.Hyperlink)

@@ -405,7 +405,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                     //each parline forms a paragraph
                     //each runline forms a run
-
+                    
                     int runCount = 0;
                     ParagraphRun p = GetParagraphRun(style, idx, ref runCount);
                     MasterTextPropRun tp = GetMasterTextPropRun(masterTextProp, idx);
@@ -413,12 +413,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     if (p != null) lvl = p.IndentLevel;
 
                     String runText;
-
-                    if (runlines.Length > 0)
-                    if (runlines[0].StartsWith("\t"))
-                    {
-
-                    }
 
                     writeP(p, tp, so, ruler, defaultStyle, runCount);
 
@@ -474,9 +468,9 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 r = GetCharacterRun(style, idx + (uint)internalOffset);
                                 CharacterRunStart = GetCharacterRunStart(style, idx + (uint)internalOffset);
                             }
+
                             if (r != null)
-                            {
-                                
+                            {                                
                                 len = (int)(CharacterRunStart + r.Length - idx - internalOffset);
                                 if (len > line.Length - idx + offset) len = (int)(line.Length - idx + offset);
                                 if (len < 0) len = (int)(line.Length - idx + offset);
@@ -485,13 +479,26 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             else
                             {
                                 runText = line.Substring((int)(idx - offset));
-                            }                            
-
-                            //if (r != null)
-                            //if ((idx - offset) + r.Length < line.Length)
-                            //{
-                            //    runText = line.Substring((int)(idx - offset), (int)r.Length);
-                            //}                            
+                                len = runText.Length;
+                            }           
+                            
+                             //split runlines that partly contain a link
+                            foreach (MouseClickInteractiveInfoContainer mccic in mciics)
+                            {
+                                if (mccic.Range.begin <= idx + internalOffset && mccic.Range.end > idx + internalOffset)
+                                {
+                                    //link end before text ends
+                                    if (mccic.Range.end < idx + internalOffset + len)
+                                    {
+                                        runText = line.Substring((int)(idx - offset),(int)(mccic.Range.end - mccic.Range.begin));
+                                    }
+                                }
+                                else if (mccic.Range.begin >= idx + internalOffset && mccic.Range.end <= idx + internalOffset + len)
+                                {
+                                    //link starts inside the text
+                                    runText = line.Substring((int)(idx - offset), (int)(mccic.Range.begin - (idx)));
+                                }
+                            }
 
                             _writer.WriteStartElement("a", "r", OpenXmlNamespaces.DrawingML);
 
