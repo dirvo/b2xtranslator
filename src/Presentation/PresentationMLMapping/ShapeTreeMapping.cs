@@ -3553,7 +3553,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         }
 
                     }
-                    else if (prst == "wedgeRectCallout" & so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.adjustValue))
+                    else if ((prst == "wedgeRectCallout" || prst == "cloudCallout" || prst == "wedgeEllipseCallout") && so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.adjustValue))
                     {
                         //the following computations are based on experiments using Powerpoint 2003 and are not part of the spec
                         Decimal val = (Decimal)(int)so.OptionsByID[ShapeOptions.PropertyId.adjustValue].op;
