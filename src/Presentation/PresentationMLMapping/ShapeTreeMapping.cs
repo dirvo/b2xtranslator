@@ -294,6 +294,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             foreach (ShapeContainer scontainer in group.AllChildrenWithType<ShapeContainer>())
             {
                 ChildAnchor anch = scontainer.FirstChildWithType<ChildAnchor>();
+                ClientData cd = scontainer.FirstChildWithType<ClientData>();
+
                 foreach (Shape shape in scontainer.AllChildrenWithType<Shape>())
                 {
                     if (Utils.getPrstForShape(shape.Instance) == "rect")
@@ -3055,7 +3057,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             TextHeaderAtom thAtom = null;
             TextStyleAtom style = null;
             List<int> lst = new List<int>();
-            string lang = "en-US";
+            string lang = "";
+            string altLang = "";
             while (ms.Position < ms.Length)
             {
                 Record rec = Record.ReadRecord(ms);
@@ -3133,6 +3136,28 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                         break;
                                 }                               
                             }
+                            if (sia.Runs[0].si.altLang)
+                            {
+                                switch (sia.Runs[0].si.altLid)
+                                {
+                                    case 0x0: // no language
+                                        break;
+                                    case 0x13: //Any Dutch language is preferred over non-Dutch languages when proofing the text
+                                        break;
+                                    case 0x400: //no proofing
+                                        break;
+                                    default:
+                                        try
+                                        {
+                                            altLang = System.Globalization.CultureInfo.GetCultureInfo(sia.Runs[0].si.altLid).IetfLanguageTag;
+                                        }
+                                        catch (Exception)
+                                        {
+                                            //ignore
+                                        }
+                                        break;
+                                }
+                            }
                         }
                         break;
                     case 0xfd8: //SlideNumberMCAtom
@@ -3177,7 +3202,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             if (slide == null) slide = textbox.FirstAncestorWithType<Note>();
                             if (slide == null) slide = textbox.FirstAncestorWithType<Handout>();
 
-                            new CharacterRunPropsMapping(_ctx, _writer).Apply(style.CRuns[0], "defRPr", slide, ref lastColor, ref lastSize, ref lastTypeface, lang, null,r.IndentLevel,null,null,0); 
+                            new CharacterRunPropsMapping(_ctx, _writer).Apply(style.CRuns[0], "defRPr", slide, ref lastColor, ref lastSize, ref lastTypeface, lang, altLang, null,r.IndentLevel,null,null,0, insideTable); 
                             _writer.WriteEndElement();
                             lvlRprWritten = true;
                         }
@@ -3189,8 +3214,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
             _writer.WriteEndElement();
 
-            new TextMapping(_ctx, _writer).Apply(this, textbox, _footertext, _headertext, _datetext);
-
+            new TextMapping(_ctx, _writer).Apply(this, textbox, _footertext, _headertext, _datetext, insideTable);
+                        
             _writer.WriteEndElement();
         }
 

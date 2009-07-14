@@ -57,6 +57,9 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         public Dictionary<SlidePersistAtom, List<TextHeaderAtom>> SlideToPlaceholderTextHeaders =
             new Dictionary<SlidePersistAtom,List<TextHeaderAtom>>();
 
+        public Dictionary<SlidePersistAtom, List<TextSpecialInfoAtom>> SlideToPlaceholderSpecialInfo =
+           new Dictionary<SlidePersistAtom, List<TextSpecialInfoAtom>>();
+
         public SlideListWithText(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
             : base(_reader, size, typeCode, version, instance)
         {
@@ -68,6 +71,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
                 SlidePersistAtom spAtom = r as SlidePersistAtom;
                 TextHeaderAtom thAtom = r as TextHeaderAtom;
                 ITextDataRecord tdRecord = r as ITextDataRecord;
+                TextSpecialInfoAtom tsiAtom = r as TextSpecialInfoAtom;
 
                 if (spAtom != null)
                 {
@@ -88,6 +92,17 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
                 else if (tdRecord != null)
                 {
                     curThAtom.HandleTextDataRecord(tdRecord);
+                }
+                else if (tsiAtom != null)
+                {
+                    if (!this.SlideToPlaceholderSpecialInfo.ContainsKey(curSpAtom))
+                        this.SlideToPlaceholderSpecialInfo[curSpAtom] = new List<TextSpecialInfoAtom>();
+
+                    this.SlideToPlaceholderSpecialInfo[curSpAtom].Add(tsiAtom);
+                }
+                else
+                {
+
                 }
             }
         }

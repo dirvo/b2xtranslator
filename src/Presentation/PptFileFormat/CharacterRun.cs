@@ -14,7 +14,19 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         #region Presence flag getters
         public bool StyleFlagsFieldPresent
         {
-            get { return (this.Mask & CharacterMask.StyleFlagsFieldPresent) != 0; }
+            //get { return (this.Mask & CharacterMask.StyleFlagsFieldPresent) != 0; }
+            get { 
+                if ((this.Mask & CharacterMask.IsBold) != 0) return true;
+                if ((this.Mask & CharacterMask.IsItalic) != 0) return true;
+                if ((this.Mask & CharacterMask.IsUnderlined) != 0) return true;
+                if ((this.Mask & CharacterMask.HasShadow) != 0) return true;
+                if ((this.Mask & CharacterMask.HasAsianSmartQuotes) != 0) return true;
+                if ((this.Mask & CharacterMask.HasHorizonNumRendering) != 0) return true;
+                if ((this.Mask & CharacterMask.IsEmbossed) != 0) return true;
+                if ((this.Mask & CharacterMask.fHasStyle) != 0) return true;
+               
+                return false;
+            }
         }
 
         public bool TypefacePresent
@@ -196,6 +208,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 
         IsEmbossed = 1 << 9,
 
+        fHasStyle = 0xF << 10,
         unused10 = 1 << 10, // Bit 10 is unused
         unused11 = 1 << 11, // Bit 11 is unused
         unused12 = 1 << 12, // Bit 12 is unused
@@ -211,15 +224,14 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         ColorPresent = 1 << 18,
         PositionPresent = 1 << 19,
 
-        unused20 = 1 << 20, // Bit 20 is unused
+        pp10ext = 1 << 20, // Bit 20 is unused
 
         FEOldTypefacePresent = 1 << 21,
         ANSITypefacePresent = 1 << 22,
         SymbolTypefacePresent = 1 << 23,
-        unused24 = 1 << 24, // Bit 24 is unused
-        unused25 = 1 << 25, // Bit 25 is unused
+        newEATypeface = 1 << 24, // Bit 24 is unused
+        csTypeface = 1 << 25, // Bit 25 is unused
         pp11ext = 1 << 26,
-        
-        StyleFlagsFieldPresent = 0xFFFF,
+
     }
 }

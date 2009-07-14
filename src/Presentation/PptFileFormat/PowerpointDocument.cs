@@ -343,7 +343,14 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         /// <returns>Slide or main master with the specified masterId or null if none exists</returns>
         public Slide FindMasterRecordById(UInt32 masterId)
         {
-            return this.MasterRecordsById[masterId];
+            if (this.MasterRecordsById.ContainsKey(masterId))
+            {
+                return this.MasterRecordsById[masterId];
+            }
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>

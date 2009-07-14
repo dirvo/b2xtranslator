@@ -516,7 +516,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             //defRPr
             //extLst
 
-            new CharacterRunPropsMapping(_ctx, _writer).Apply(cr, "defRPr", (RegularContainer)_Master, ref lastColor, ref lastSize, ref lastTypeface, "en-US", null,IndentLevel,null,null,0);                    
+            new CharacterRunPropsMapping(_ctx, _writer).Apply(cr, "defRPr", (RegularContainer)_Master, ref lastColor, ref lastSize, ref lastTypeface, "", "", null,IndentLevel,null,null,0, false);                    
 
             _writer.WriteEndElement(); //lvlXpPr
         }

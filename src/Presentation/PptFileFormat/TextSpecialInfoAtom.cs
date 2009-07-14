@@ -34,6 +34,17 @@ using DIaLOGIKa.b2xtranslator.Tools;
 
 namespace DIaLOGIKa.b2xtranslator.PptFileFormat
 {
+    [OfficeRecordAttribute(4009)]
+    public class TextSIExceptionAtom : Record
+    {
+        public TextSIException si;
+        public TextSIExceptionAtom(BinaryReader _reader, uint size, uint typeCode, uint version, uint instance)
+            : base(_reader, size, typeCode, version, instance)
+        {
+            si = new TextSIException(Reader);
+        }
+    }
+
     [OfficeRecordAttribute(4010)]
     public class TextSpecialInfoAtom : Record
     {
@@ -81,6 +92,7 @@ namespace DIaLOGIKa.b2xtranslator.PptFileFormat
         public TextSIException(BinaryReader reader)
         {
             flags = reader.ReadUInt32();
+
             spell = Utils.BitmaskToBool(flags, 0x1);
             lang = Utils.BitmaskToBool(flags, 0x1 << 1);
             altLang = Utils.BitmaskToBool(flags, 0x1 << 2);

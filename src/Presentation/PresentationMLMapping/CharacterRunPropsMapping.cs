@@ -48,12 +48,77 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             _ctx = ctx;
         }
 
-        public void Apply(CharacterRun run, string startElement, RegularContainer slide, ref string lastColor, ref string lastSize, ref string lastTypeface, string lang, TextMasterStyleAtom defaultStyle, int lvl, List<MouseClickInteractiveInfoContainer> mciics, ShapeTreeMapping parentShapeTreeMapping, uint position)
+        public void Apply(CharacterRun run, string startElement, RegularContainer slide, ref string lastColor, ref string lastSize, ref string lastTypeface, string lang, string altLang, TextMasterStyleAtom defaultStyle, int lvl, List<MouseClickInteractiveInfoContainer> mciics, ShapeTreeMapping parentShapeTreeMapping, uint position, bool insideTable)
         {
-
+            
             _writer.WriteStartElement("a", startElement, OpenXmlNamespaces.DrawingML);
 
+
+            if (lang.Length == 0)
+            {
+                TextSIExceptionAtom siea = _ctx.Ppt.DocumentRecord.FirstDescendantWithType<TextSIExceptionAtom>();
+                if (siea != null)
+                {
+                    if (siea.si.lang)
+                    {
+                        switch (siea.si.lid)
+                        {
+                            case 0x0: // no language
+                                break;
+                            case 0x13: //Any Dutch language is preferred over non-Dutch languages when proofing the text
+                                break;
+                            case 0x400: //no proofing
+                                break;
+                            default:
+                                try
+                                {
+                                    lang = System.Globalization.CultureInfo.GetCultureInfo(siea.si.lid).IetfLanguageTag;
+                                }
+                                catch (Exception)
+                                {
+                                    //ignore
+                                }
+                                break;
+                        }
+                    }
+                }
+            }
+
+            if (altLang.Length == 0)
+            {
+                TextSIExceptionAtom siea = _ctx.Ppt.DocumentRecord.FirstDescendantWithType<TextSIExceptionAtom>();
+                if (siea != null)
+                {
+                    if (siea.si.altLang)
+                    {
+                        switch (siea.si.altLid)
+                        {
+                            case 0x0: // no language
+                                break;
+                            case 0x13: //Any Dutch language is preferred over non-Dutch languages when proofing the text
+                                break;
+                            case 0x400: //no proofing
+                                break;
+                            default:
+                                try
+                                {
+                                    altLang = System.Globalization.CultureInfo.GetCultureInfo(siea.si.altLid).IetfLanguageTag;
+                                }
+                                catch (Exception)
+                                {
+                                    //ignore
+                                }
+                                break;
+                        }
+                    }
+                }
+            }
+
+            if (lang.Length > 0)
             _writer.WriteAttributeString("lang", lang);
+
+            if (altLang.Length > 0)
+                _writer.WriteAttributeString("altLang", altLang);
 
             bool runExists = run != null;
 
@@ -239,6 +304,123 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                 }
 
                 _writer.WriteEndElement();
+            }
+            else
+            {
+                if (insideTable)
+                if (slide.FirstChildWithType<SlideAtom>() != null && _ctx.Ppt.FindMasterRecordById(slide.FirstChildWithType<SlideAtom>().MasterId) != null)
+                foreach (TextMasterStyleAtom item in _ctx.Ppt.FindMasterRecordById(slide.FirstChildWithType<SlideAtom>().MasterId).AllChildrenWithType<TextMasterStyleAtom>())
+                {
+                    if (item.Instance == 1)
+                    {
+                        if (item.CRuns.Count > 0 && item.CRuns[0].TypefacePresent)
+                        {
+                            _writer.WriteStartElement("a", "latin", OpenXmlNamespaces.DrawingML);
+                            try
+                            {
+                                FontCollection fonts = _ctx.Ppt.DocumentRecord.FirstChildWithType<DIaLOGIKa.b2xtranslator.PptFileFormat.Environment>().FirstChildWithType<FontCollection>();
+                                FontEntityAtom entity = fonts.entities[(int)item.CRuns[0].TypefaceIdx];
+                                if (entity.TypeFace.IndexOf('\0') > 0)
+                                {
+                                    _writer.WriteAttributeString("typeface", entity.TypeFace.Substring(0, entity.TypeFace.IndexOf('\0')));
+                                    lastTypeface = entity.TypeFace.Substring(0, entity.TypeFace.IndexOf('\0'));
+                                }
+                                else
+                                {
+                                    _writer.WriteAttributeString("typeface", entity.TypeFace);
+                                    lastTypeface = entity.TypeFace;
+                                }
+                                //_writer.WriteAttributeString("charset", "0");
+                            }
+                            catch (Exception ex)
+                            {
+                                throw;
+                            }
+
+                            _writer.WriteEndElement();
+                        }
+                    }
+                }
+            //        try
+            //        {
+            //            CharacterRun cr = _ctx.Ppt.DocumentRecord.FirstChildWithType<PptFileFormat.Environment>().FirstChildWithType<TextMasterStyleAtom>().CRuns[0];
+            //            if (cr.TypefacePresent)
+            //            {
+            //                    FontCollection fonts = _ctx.Ppt.DocumentRecord.FirstChildWithType<DIaLOGIKa.b2xtranslator.PptFileFormat.Environment>().FirstChildWithType<FontCollection>();
+            //                    FontEntityAtom entity = fonts.entities[(int)cr.TypefaceIdx];
+            //                    if (entity.TypeFace.IndexOf('\0') > 0)
+            //                    {
+            //                        _writer.WriteStartElement("a", "latin", OpenXmlNamespaces.DrawingML);
+            //                        _writer.WriteAttributeString("typeface", entity.TypeFace.Substring(0, entity.TypeFace.IndexOf('\0')));
+            //                        _writer.WriteEndElement();
+            //                    }
+            //                    else
+            //                    {
+            //                        _writer.WriteStartElement("a", "latin", OpenXmlNamespaces.DrawingML);
+            //                        _writer.WriteAttributeString("typeface", entity.TypeFace);
+            //                        _writer.WriteEndElement();
+            //                    }
+            //                }
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            //throw;
+            //        }
+                
+            }
+
+            if (runExists && run.FEOldTypefacePresent)
+            {
+                try
+                {
+                    FontCollection fonts = _ctx.Ppt.DocumentRecord.FirstChildWithType<DIaLOGIKa.b2xtranslator.PptFileFormat.Environment>().FirstChildWithType<FontCollection>();
+                    FontEntityAtom entity = fonts.entities[(int)run.FEOldTypefaceIdx];
+                    if (entity.TypeFace.IndexOf('\0') > 0)
+                    {
+                        _writer.WriteStartElement("a", "ea", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("typeface", entity.TypeFace.Substring(0, entity.TypeFace.IndexOf('\0')));
+                        _writer.WriteEndElement();
+                    }
+                    else
+                    {
+                        _writer.WriteStartElement("a", "ea", OpenXmlNamespaces.DrawingML);
+                        _writer.WriteAttributeString("typeface", entity.TypeFace);
+                        _writer.WriteEndElement();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //throw;
+                }
+            }
+            else
+            {
+                 try
+                    {
+                        CharacterRun cr = _ctx.Ppt.DocumentRecord.FirstChildWithType<PptFileFormat.Environment>().FirstChildWithType<TextMasterStyleAtom>().CRuns[0];
+                        if (cr.FEOldTypefacePresent)
+                        {                   
+                            FontCollection fonts = _ctx.Ppt.DocumentRecord.FirstChildWithType<DIaLOGIKa.b2xtranslator.PptFileFormat.Environment>().FirstChildWithType<FontCollection>();
+                            FontEntityAtom entity = fonts.entities[(int)cr.FEOldTypefaceIdx];
+                            if (entity.TypeFace.IndexOf('\0') > 0)
+                            {
+                                _writer.WriteStartElement("a", "ea", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("typeface", entity.TypeFace.Substring(0, entity.TypeFace.IndexOf('\0')));
+                                _writer.WriteEndElement();
+                            }
+                            else
+                            {
+                                _writer.WriteStartElement("a", "ea", OpenXmlNamespaces.DrawingML);
+                                _writer.WriteAttributeString("typeface", entity.TypeFace);
+                                _writer.WriteEndElement();
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        //throw;
+                    }
+                
             }
 
             if (runExists && run.SymbolTypefacePresent)

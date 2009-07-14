@@ -34,6 +34,7 @@ using System.Xml;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using DIaLOGIKa.b2xtranslator.OfficeDrawing;
 using DIaLOGIKa.b2xtranslator.Tools;
+using System.Drawing;
 
 namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 {
@@ -42,7 +43,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
         IMapping<ClientTextbox>
     {
         protected ConversionContext _ctx;
-        private string lang = "en-US";
+        private string lang = "";
+        private string altLang = "";
         private ShapeTreeMapping parentShapeTreeMapping = null;
 
         public TextMapping(ConversionContext ctx, XmlWriter writer)
@@ -145,10 +147,10 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
         public void Apply(ClientTextbox textbox)
         {
-            Apply(null, textbox, "", "", "");
+            Apply(null, textbox, "", "", "", false);
         }
 
-        public void Apply(ShapeTreeMapping pparentShapeTreeMapping, ClientTextbox textbox, string footertext, string headertext, string datetext)
+        public void Apply(ShapeTreeMapping pparentShapeTreeMapping, ClientTextbox textbox, string footertext, string headertext, string datetext, bool insideTable)
         {
             parentShapeTreeMapping = pparentShapeTreeMapping;
             System.IO.MemoryStream ms = new System.IO.MemoryStream(textbox.Bytes);
@@ -156,6 +158,8 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             TextHeaderAtom thAtom = null;
             TextStyleAtom style = null;
             FooterMCAtom mca = null;
+            TextSpecialInfoAtom sia = null;
+            TextSpecialInfoAtom siaDefaults = null;
             TextRulerAtom ruler = null;
             List<MouseClickInteractiveInfoContainer> mciics = new List<MouseClickInteractiveInfoContainer>();
             MasterTextPropAtom masterTextProp = null;
@@ -164,6 +168,19 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
             ShapeOptions so = textbox.FirstAncestorWithType<ShapeContainer>().FirstChildWithType<ShapeOptions>();
             TextMasterStyleAtom defaultStyle = null;
             int lvl = 0;
+
+            Slide parentSlide = textbox.FirstAncestorWithType<Slide>();
+            if (parentSlide != null)
+            foreach (SlideListWithText container in _ctx.Ppt.DocumentRecord.AllChildrenWithType<SlideListWithText>())
+            {
+                if (container.Instance == 0)
+                {
+                    if (container.SlideToPlaceholderSpecialInfo.ContainsKey(parentSlide.PersistAtom))
+                    {
+                        siaDefaults = container.SlideToPlaceholderSpecialInfo[parentSlide.PersistAtom][0];
+                    }
+                }
+            }
 
             switch (rec.TypeCode)
             {
@@ -193,32 +210,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 thAtom.TextAtom = (TextAtom)rec;
                                 break;
                             case 0xfaa: //TextSpecialInfoAtom
-                                TextSpecialInfoAtom sia = (TextSpecialInfoAtom)rec;
-                                if (sia.Runs.Count > 0)
-                                {
-                                    if (sia.Runs[0].si.lang)
-                                    {
-                                        switch (sia.Runs[0].si.lid)
-                                        {
-                                            case 0x0: // no language
-                                                break;
-                                            case 0x13: //Any Dutch language is preferred over non-Dutch languages when proofing the text
-                                                break;
-                                            case 0x400: //no proofing
-                                                break;
-                                            default:
-                                                try
-                                                {
-                                                    lang = System.Globalization.CultureInfo.GetCultureInfo(sia.Runs[0].si.lid).IetfLanguageTag;
-                                                }
-                                                catch (Exception)
-                                                {
-                                                    //ignore
-                                                }
-                                                break;
-                                        }
-                                    }
-                                }
+                                sia = (TextSpecialInfoAtom)rec;
                                 break;
                             case 0xfa2: //MasterTextPropAtom
                                 masterTextProp = (MasterTextPropAtom)rec;
@@ -270,7 +262,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                     RegularContainer slide = textbox.FirstAncestorWithType<Slide>();
                                     if (slide == null) slide = textbox.FirstAncestorWithType<Note>();
                                     if (slide == null) slide = textbox.FirstAncestorWithType<Handout>();
-                                    new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", slide, ref dummy, ref dummy2, ref dummy3, lang, defaultStyle,lvl,mciics,pparentShapeTreeMapping,0);
+                                    new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", slide, ref dummy, ref dummy2, ref dummy3, lang, altLang, defaultStyle,lvl,mciics,pparentShapeTreeMapping,0, insideTable);
                                 }
 
                                 _writer.WriteElementString("a", "t", OpenXmlNamespaces.DrawingML, date);
@@ -363,11 +355,6 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                         Slide m = _ctx.Ppt.FindMasterRecordById(a.MasterId);
                         foreach (TextMasterStyleAtom at in m.AllChildrenWithType<TextMasterStyleAtom>())
                         {
-                            //if (at.Instance == 1 && thAtom.TextType == TextType.Other)
-                            //{
-                            //    defaultStyle = at;
-                            //    break;
-                            //}
                             if (at.Instance == (int)thAtom.TextType)
                             {
                                 defaultStyle = at;
@@ -380,6 +367,23 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                     throw;
                 }
                 
+            }
+
+            //combine sia and siaDefaults
+            Dictionary<TextSIRun, uint> lstSIRuns = new Dictionary<TextSIRun, uint>();
+            uint pos = 0;
+            if (siaDefaults != null)
+            foreach (TextSIRun sirun in siaDefaults.Runs)
+            {
+                lstSIRuns.Add(sirun,pos);
+                pos += sirun.count;
+            }
+            pos = 0;
+            if (sia != null)
+            foreach (TextSIRun sirun in sia.Runs)
+            {
+                lstSIRuns.Add(sirun, pos);
+                pos += sirun.count;
             }
             
             if (so.OptionsByID.ContainsKey(ShapeOptions.PropertyId.hspMaster))
@@ -437,7 +441,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                 RegularContainer slide = textbox.FirstAncestorWithType<Slide>();
                                 if (slide == null) slide = textbox.FirstAncestorWithType<Note>();
                                 if (slide == null) slide = textbox.FirstAncestorWithType<Handout>();
-                                new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", slide, ref dummy, ref dummy2, ref dummy3, lang, defaultStyle,lvl,mciics,pparentShapeTreeMapping,idx);
+                                new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", slide, ref dummy, ref dummy2, ref dummy3, lang, altLang, defaultStyle,lvl,mciics,pparentShapeTreeMapping,idx, insideTable);
                             }
 
                             _writer.WriteEndElement();
@@ -498,7 +502,71 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                     //link starts inside the text
                                     runText = line.Substring((int)(idx - offset), (int)(mccic.Range.begin - (idx)));
                                 }
+                            }                          
+
+                            //split runlines that contain a change of language
+                            lang = "";
+                            altLang = "";
+                            foreach (TextSIRun sirun in lstSIRuns.Keys)
+                            {
+                                uint start = lstSIRuns[sirun];
+                                uint end = start + sirun.count; //languageRuns[start];
+
+                                if (idx >= start && idx < end)
+                                {
+                                    if (end < idx + runText.Length)
+                                    {
+                                        runText = line.Substring((int)(idx - offset), (int)(end - idx));
+                                    }
+
+                                    if (sirun.si.lang)
+                                    {
+                                        switch (sirun.si.lid)
+                                        {
+                                            case 0x0: // no language
+                                                break;
+                                            case 0x13: //Any Dutch language is preferred over non-Dutch languages when proofing the text
+                                                break;
+                                            case 0x400: //no proofing
+                                                break;
+                                            default:
+                                                try
+                                                {
+                                                    lang = System.Globalization.CultureInfo.GetCultureInfo(sirun.si.lid).IetfLanguageTag;
+                                                }
+                                                catch (Exception)
+                                                {
+                                                    //ignore
+                                                }
+                                                break;
+                                        }
+                                    }
+                                    if (sirun.si.altLang)
+                                    {
+                                        switch (sirun.si.altLid)
+                                        {
+                                            case 0x0: // no language
+                                                break;
+                                            case 0x13: //Any Dutch language is preferred over non-Dutch languages when proofing the text
+                                                break;
+                                            case 0x400: //no proofing
+                                                break;
+                                            default:
+                                                try
+                                                {
+                                                    altLang = System.Globalization.CultureInfo.GetCultureInfo(sirun.si.altLid).IetfLanguageTag;
+                                                }
+                                                catch (Exception)
+                                                {
+                                                    //ignore
+                                                }
+                                                break;
+                                        }
+                                    }
+                                                         
+                                }
                             }
+                            
 
                             _writer.WriteStartElement("a", "r", OpenXmlNamespaces.DrawingML);
 
@@ -511,7 +579,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
 
                             if (r != null || defaultStyle != null)
                             {
-                                new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", slide,ref dummy, ref dummy2, ref dummy3, lang, defaultStyle,lvl, mciics, pparentShapeTreeMapping, idx);
+                                new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "rPr", slide,ref dummy, ref dummy2, ref dummy3, lang, altLang, defaultStyle,lvl, mciics, pparentShapeTreeMapping, idx, insideTable);
                             }
                             else
                             {                              
@@ -548,7 +616,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                             RegularContainer slide = textbox.FirstAncestorWithType<Slide>();
                             if (slide == null) slide = textbox.FirstAncestorWithType<Note>();
                             if (slide == null) slide = textbox.FirstAncestorWithType<Handout>();
-                            new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "endParaRPr", slide, ref dummy, ref dummy2, ref dummy3, lang, defaultStyle,lvl,mciics,pparentShapeTreeMapping,idx);
+                            new CharacterRunPropsMapping(_ctx, _writer).Apply(r, "endParaRPr", slide, ref dummy, ref dummy2, ref dummy3, lang, altLang, defaultStyle,lvl,mciics,pparentShapeTreeMapping,idx, insideTable);
                         }
 
                     }
@@ -1048,7 +1116,7 @@ namespace DIaLOGIKa.b2xtranslator.PresentationMLMapping
                                     else if (entry.styleTextProp9Atom.P9Runs.Count > runCount && entry.styleTextProp9Atom.P9Runs[runCount].BulletBlipReferencePresent)
                                     {
                                        BlipCollection9Container blips = ((RegularContainer)c.ParentRecord).FirstChildWithType<BlipCollection9Container>();
-                                        if (blips.Children.Count > 0)
+                                        if (blips != null && blips.Children.Count > 0)
                                         {
                                             ImagePart imgPart = null;
 
