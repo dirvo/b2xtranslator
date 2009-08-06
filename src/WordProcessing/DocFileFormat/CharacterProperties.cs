@@ -150,6 +150,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public byte ffm;
         public bool fSdtVanish;
         public FontFamilyName FontAscii;
+        public DIaLOGIKa.b2xtranslator.DocFileFormat.Global.UnderlineCode UnderlineStyle;
 
         /// <summary>
         /// Creates a CHP with default properties
@@ -205,6 +206,10 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     case SinglePropertyModifier.OperationCode.sprmCHps:
                         this.hps = sprm.Arguments[0];
                         break;
+                    // color
+                    case SinglePropertyModifier.OperationCode.sprmCCv:
+                        this.cv = new RGBColor(System.BitConverter.ToInt32(sprm.Arguments, 0), RGBColor.ByteOrder.RedFirst);
+                        break;
                     //bold
                     case SinglePropertyModifier.OperationCode.sprmCFBold:
                         this.fBold = handleToogleValue(this.fBold, sprm.Arguments[0]);
@@ -224,6 +229,10 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     //strike through
                     case SinglePropertyModifier.OperationCode.sprmCFStrike:
                         this.fStrike = Utils.ByteToBool(sprm.Arguments[0]);
+                        break;
+                        // underline
+                    case SinglePropertyModifier.OperationCode.sprmCKul:
+                        this.UnderlineStyle = (Global.UnderlineCode)sprm.Arguments[0];
                         break;
                 }
             }
