@@ -149,6 +149,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         public Int32 hplcnf;
         public byte ffm;
         public bool fSdtVanish;
+        public FontFamilyName FontAscii;
 
         /// <summary>
         /// Creates a CHP with default properties
@@ -163,7 +164,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         /// <param name="styles">The stylesheet</param>
         /// <param name="chpx">The CHPX</param>
-        public CharacterProperties(StyleSheet styleSheet, CharacterPropertyExceptions chpx, ParagraphPropertyExceptions parentPapx)
+        public CharacterProperties(CharacterPropertyExceptions chpx, ParagraphPropertyExceptions parentPapx, WordDocument parentDocument)
         {
             setDefaultValues();
 
@@ -172,21 +173,21 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             chpxHierarchy.Add(chpx);
 
             //add parent character styles
-            buildHierarchy(chpxHierarchy, styleSheet, (UInt16)getIsdt(chpx));
+            buildHierarchy(chpxHierarchy, parentDocument.Styles, (UInt16)getIsdt(chpx));
 
             //add parent paragraph styles
-            buildHierarchy(chpxHierarchy, styleSheet, parentPapx.istd);
+            buildHierarchy(chpxHierarchy, parentDocument.Styles, parentPapx.istd);
 
             chpxHierarchy.Reverse();
 
             //apply the CHPX hierarchy to this CHP
             foreach(CharacterPropertyExceptions c in chpxHierarchy)
             {
-                applyChpx(c);
+                applyChpx(c, parentDocument);
             }
         }
 
-        private void applyChpx(PropertyExceptions chpx)
+        private void applyChpx(PropertyExceptions chpx, WordDocument parentDocument)
         {
             foreach (SinglePropertyModifier sprm in chpx.grpprl)
             {
@@ -195,6 +196,10 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     //style id 
                     case SinglePropertyModifier.OperationCode.sprmCIstd:
                         this.istd = System.BitConverter.ToUInt16(sprm.Arguments, 0);
+                        break;
+                    //font name ASCII
+                    case SinglePropertyModifier.OperationCode.sprmCRgFtc0:
+                        this.FontAscii = (FontFamilyName)parentDocument.FontTable.Data[System.BitConverter.ToUInt16(sprm.Arguments, 0)];
                         break;
                     //font size
                     case SinglePropertyModifier.OperationCode.sprmCHps:
@@ -207,6 +212,18 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                     //italic
                     case SinglePropertyModifier.OperationCode.sprmCFItalic:
                         this.fItalic = handleToogleValue(this.fItalic, sprm.Arguments[0]);
+                        break;
+                    //outline
+                    case SinglePropertyModifier.OperationCode.sprmCFOutline:
+                        this.fOutline = Utils.ByteToBool(sprm.Arguments[0]);
+                        break;
+                    //shadow
+                    case SinglePropertyModifier.OperationCode.sprmCFShadow:
+                        this.fShadow = Utils.ByteToBool(sprm.Arguments[0]);
+                        break;
+                    //strike through
+                    case SinglePropertyModifier.OperationCode.sprmCFStrike:
+                        this.fStrike = Utils.ByteToBool(sprm.Arguments[0]);
                         break;
                 }
             }

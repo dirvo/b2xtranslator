@@ -114,7 +114,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormatTest
         {
             CharacterPropertyExceptions chpx = doc.AllChpxFkps[0].grpchpx[0];
             ParagraphPropertyExceptions papx = doc.AllPapxFkps[0].grppapx[0];
-            CharacterProperties chp = new CharacterProperties(doc.Styles, chpx, papx);
+            CharacterProperties chp = new CharacterProperties(chpx, papx, doc);
         }
 
         private static void testPieceTable()

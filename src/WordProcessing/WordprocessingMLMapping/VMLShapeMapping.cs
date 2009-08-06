@@ -22,6 +22,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private PictureDescriptor _pict;
         private ContentPart _targetPart;
         private XmlElement _fill, _stroke, _shadow, _imagedata, _3dstyle, _textpath;
+        private static GroupShapeRecord _groupShapeRecord;
         private List<byte> pSegmentInfo = new List<byte>();
         private List<byte> pVertices = new List<byte>();
         private StringBuilder _textPathStyle;
@@ -79,7 +80,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
         private void convertGroup(GroupContainer container)
         {
             ShapeContainer groupShape = (ShapeContainer)container.Children[0];
-            GroupShapeRecord gsr = (GroupShapeRecord)groupShape.Children[0];
+            _groupShapeRecord = (GroupShapeRecord)groupShape.Children[0];
             Shape shape = (Shape)groupShape.Children[1];
             List<ShapeOptions.OptionEntry> options = groupShape.ExtractOptions();
             ChildAnchor anchor = groupShape.FirstChildWithType<ChildAnchor>();
@@ -87,8 +88,8 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             _writer.WriteStartElement("v", "group", OpenXmlNamespaces.VectorML);
             _writer.WriteAttributeString("id", getShapeId(shape));
             _writer.WriteAttributeString("style", buildStyle(shape, anchor, options, container.Index).ToString());
-            _writer.WriteAttributeString("coordorigin", gsr.rcgBounds.Left + "," + gsr.rcgBounds.Top);
-            _writer.WriteAttributeString("coordsize", gsr.rcgBounds.Width + "," + gsr.rcgBounds.Height);
+            _writer.WriteAttributeString("coordorigin", _groupShapeRecord.rcgBounds.Left + "," + _groupShapeRecord.rcgBounds.Top);
+            _writer.WriteAttributeString("coordsize", _groupShapeRecord.rcgBounds.Width + "," + _groupShapeRecord.rcgBounds.Height);
             
             //write wrap coords
             foreach (ShapeOptions.OptionEntry entry in options)
@@ -912,7 +913,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
             // because they have "from" and "to" attributes to decline the dimension
             if(!(shape.ShapeType is LineType))
             {
-                if (_fspa != null)
+                if (shape.fChild == false && _fspa != null)
                 {
                     //this shape is placed directly in the document, 
                     //so use the FSPA to build the style
