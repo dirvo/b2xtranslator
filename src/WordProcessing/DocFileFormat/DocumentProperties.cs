@@ -1640,7 +1640,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
         private void setDefaultCompatibilityOptions(FileInformationBlock.FibVersion nFib)
         {
-            if(nFib == FileInformationBlock.FibVersion.Fib1997)
+            if(nFib == FileInformationBlock.FibVersion.Fib1997 || nFib == FileInformationBlock.FibVersion.Fib1997Beta)
             {
                 //Word 97 default settings
                 this.fAlignTablesRowByRow = true;
@@ -1697,7 +1697,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
                 this.fNoTabForInd = true;
 
             }
-            else if (nFib < FileInformationBlock.FibVersion.Fib1997)
+            else if (nFib < FileInformationBlock.FibVersion.Fib1997Beta)
             {
                 throw new UnspportedFileVersionException();
             }

@@ -225,14 +225,14 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             //check the file version
             if ((int)FIB.nFib != 0)
             {
-                if (this.FIB.nFib < FileInformationBlock.FibVersion.Fib1997)
+                if (this.FIB.nFib < FileInformationBlock.FibVersion.Fib1997Beta)
                 {
                     throw new ByteParseException("Could not parse the file because it was created by an unsupported application (Word 95 or older).");
                 }
             }
             else
             {
-                if (this.FIB.nFibNew < FileInformationBlock.FibVersion.Fib1997)
+                if (this.FIB.nFibNew < FileInformationBlock.FibVersion.Fib1997Beta)
                 {
                     throw new ByteParseException("Could not parse the file because it was created by an unsupported application (Word 95 or older).");
                 }

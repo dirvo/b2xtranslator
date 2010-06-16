@@ -37,6 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
     {
         public enum FibVersion
         {
+            Fib1997Beta = 0x00C0,
             Fib1997 = 0x00C1,
             Fib2000 = 0x00D9,
             Fib2002 = 0x0101,
@@ -521,7 +522,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
 
             this.cbRgFcLcb = reader.ReadUInt16();
 
-            if (this.nFib >= FibVersion.Fib1997)
+            if (this.nFib >= FibVersion.Fib1997Beta)
             {
                 //Read the FibRgFcLcb97
                 this.fcStshfOrig = reader.ReadUInt32();
