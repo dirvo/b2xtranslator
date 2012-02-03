@@ -253,7 +253,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case 0x4A61:
                         appendValueElement(parent, "szCs", System.BitConverter.ToInt16(sprm.Arguments, 0).ToString(), true);
                         break;
-
+                    
                     //font family
                     case 0x4A4F:
                         XmlAttribute ascii = _nodeFactory.CreateAttribute("w", "ascii", OpenXmlNamespaces.WordprocessingML);
@@ -272,6 +272,19 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                         FontFamilyName ffnAnsi = (FontFamilyName)_doc.FontTable.Data[System.BitConverter.ToUInt16(sprm.Arguments, 0)];
                         ansi.Value = ffnAnsi.xszFtn;
                         rFonts.Attributes.Append(ansi);
+                        break;
+                    case (int)SinglePropertyModifier.OperationCode.sprmCIdctHint:
+                        // it's complex script 
+                        XmlAttribute hint = _nodeFactory.CreateAttribute("w", "hint", OpenXmlNamespaces.WordprocessingML);
+                        hint.Value = "cs";
+                        rFonts.Attributes.Append(hint);
+                        break;
+                    case (int)SinglePropertyModifier.OperationCode.sprmCFtcBi:
+                        // complex script font
+                        XmlAttribute cs = _nodeFactory.CreateAttribute("w", "cs", OpenXmlNamespaces.WordprocessingML);
+                        FontFamilyName ffnCs = (FontFamilyName)_doc.FontTable.Data[System.BitConverter.ToUInt16(sprm.Arguments, 0)];
+                        cs.Value = ffnCs.xszFtn;
+                        rFonts.Attributes.Append(cs);
                         break;
 
                     //Underlining

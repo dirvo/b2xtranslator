@@ -201,6 +201,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
         /// </summary>
         public HeaderAndFooterTable HeaderAndFooterTable;
 
+        public StwStructure UserVariables;
+
         public WordDocument Glossary;
 
         public WordDocument(StructuredStorageReader reader)
@@ -262,6 +264,8 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             this.BookmarkNames = new StringTable(typeof(String), this.TableStream, this.FIB.fcSttbfBkmk, this.FIB.lcbSttbfBkmk);
             this.AutoTextNames = new StringTable(typeof(String), this.TableStream, this.FIB.fcSttbfGlsy, this.FIB.lcbSttbfGlsy);
             //this.ProtectionUsers = new StringTable(typeof(String), this.TableStream, this.FIB.fcSttbProtUser, this.FIB.lcbSttbProtUser);
+            //
+            this.UserVariables = new StwStructure(this.TableStream, this.FIB.fcStwUser, this.FIB.lcbStwUser);
 
             //Read all needed PLCFs
             this.AnnotationsReferencePlex = new Plex<AnnotationReferenceDescriptor>(30, this.TableStream, this.FIB.fcPlcfandRef, this.FIB.lcbPlcfandRef);

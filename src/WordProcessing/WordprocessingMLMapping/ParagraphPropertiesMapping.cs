@@ -115,6 +115,7 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 }
             }
 
+            bool isRightToLeft = false;
             foreach (SinglePropertyModifier sprm in papx.grpprl)
             {
                 switch (sprm.OpCode)
@@ -138,14 +139,15 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     case SinglePropertyModifier.OperationCode.sprmPFAutoSpaceDN:
                         appendFlagAttribute(_pPr, sprm, "autoSpaceDN");
                         break;
-                    case SinglePropertyModifier.OperationCode.sprmPFBiDi:
-                        appendFlagAttribute(_pPr, sprm, "bidi");
-                        break;
                     case SinglePropertyModifier.OperationCode.sprmPFContextualSpacing:
                         appendFlagAttribute(_pPr, sprm, "contextualSpacing");
                         break;
                     
                     //element flags
+                    case SinglePropertyModifier.OperationCode.sprmPFBiDi:
+                        isRightToLeft = true;
+                        appendFlagElement(_pPr, sprm, "bidi", true);
+                        break;
                     case SinglePropertyModifier.OperationCode.sprmPFKeep:
                         appendFlagElement(_pPr, sprm, "keepLines", true);
                         break;
@@ -463,7 +465,17 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
 
             //append justification
             if (jc != null)
-                _pPr.AppendChild(jc);
+            {
+                XmlAttribute jcVal = jc.Attributes["val", OpenXmlNamespaces.WordprocessingML];
+                if ((isRightToLeft || isStyleRightToLeft(papx.istd)) && jcVal.Value == "right")
+                {
+                    //ignore jc="right" for RTL documents
+                }
+                else
+                {
+                    _pPr.AppendChild(jc);
+                }
+            }
 
             //append numPr
             if (numPr.ChildNodes.Count > 0)
@@ -492,6 +504,19 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                 }
             }
             return ret;
+        }
+
+        private bool isStyleRightToLeft(ushort istd)
+        {
+            StyleSheetDescription style = _parentDoc.Styles.Styles[istd];
+            foreach (SinglePropertyModifier sprm in style.papx.grpprl)
+            {
+                if (sprm.OpCode == SinglePropertyModifier.OperationCode.sprmPFBiDi)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

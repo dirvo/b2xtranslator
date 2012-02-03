@@ -334,7 +334,7 @@ namespace DIaLOGIKa.b2xtranslator.Tools
                 if (colCounter == colCount)
                 {
                     colCounter = 0;
-                    ret += "\n" + String.Format("({0:X04}) ", i);
+                    ret += Environment.NewLine + String.Format("({0:X04}) ", i);
                 }
                 ret += String.Format("{0:X02} ", bytes[i]);
                 colCounter++;
