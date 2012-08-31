@@ -167,7 +167,5 @@ namespace DIaLOGIKa.b2xtranslator.doc2x
                 }
             }
         }
-
-   
     }
 }
