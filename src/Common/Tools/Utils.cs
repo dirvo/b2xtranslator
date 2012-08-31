@@ -112,20 +112,22 @@ namespace DIaLOGIKa.b2xtranslator.Tools
 
         public static string ReadXstz(byte[] bytes, int pos)
         {
-            byte[] xstz = new byte[System.BitConverter.ToInt16(bytes, pos) * 2];
+            byte[] xstz = new byte[System.BitConverter.ToUInt16(bytes, pos) * 2];
             Array.Copy(bytes, pos + 2, xstz, 0, xstz.Length);
             return Encoding.Unicode.GetString(xstz);
         }
 
         public static string ReadXst(Stream stream)
         {
+            // read the char count
             byte[] cch = new byte[2];
             stream.Read(cch, 0, cch.Length);
+            UInt16 charCount = System.BitConverter.ToUInt16(cch, 0);
 
-            byte[] xstz = new byte[System.BitConverter.ToInt16(cch, 0) * 2];
-            stream.Read(xstz, 0, xstz.Length);
-
-            return Encoding.Unicode.GetString(xstz);
+            // read the string
+            byte[] xst = new byte[charCount * 2];
+            stream.Read(xst, 0, xst.Length);
+            return Encoding.Unicode.GetString(xst);
         }
 
         public static string ReadXstz(Stream stream)
