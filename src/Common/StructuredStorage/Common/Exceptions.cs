@@ -45,6 +45,11 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Common
         {
         }
 
+        public MagicNumberException(string additionalMessage)
+            : base("Magic Number not found in file. " + additionalMessage)
+        {
+        }
+
         protected MagicNumberException(SerializationInfo info, StreamingContext ctxt)
             : base(info, ctxt)
         {
@@ -101,6 +106,11 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Common
         {
         }
 
+        public InvalidValueInHeaderException(string value, string additionalMessage)
+            : base("The value for '" + value + "' in the header is invalid. " + additionalMessage)
+        {
+        }
+
         protected InvalidValueInHeaderException(SerializationInfo info, StreamingContext ctxt)
             : base(info, ctxt)
         {
@@ -126,6 +136,11 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Common
     {
         public ChainSizeMismatchException(string name)
             : base("The number of sectors used by " + name + " does not match the specified size.")
+        {
+        }
+
+        public ChainSizeMismatchException(string name, string additionalMessage)
+            : base("The number of sectors used by " + name + " does not match the specified size. " + additionalMessage)
         {
         }
 
@@ -194,7 +209,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Common
     [Serializable]
     public class StreamNotFoundException : Exception
     {
-        public StreamNotFoundException(string name )
+        public StreamNotFoundException(string name)
             : base("Stream with name '" + name + "' not found.")
         {
         }
@@ -260,5 +275,5 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Common
         {
         }
     }
-        
+
 }

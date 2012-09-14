@@ -118,11 +118,19 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Reader
         /// <param name="stream">The stream to the storage</param>
         public StructuredStorageReader(Stream stream)
         {
-            _fileHandler = new InputHandler(stream);
-            _header = new Header(_fileHandler);
-            _fat = new Fat(_header, _fileHandler);
-            _directory = new DirectoryTree(_fat, _header, _fileHandler);
-            _miniFat = new MiniFat(_fat, _header, _fileHandler, _directory.GetMiniStreamStart(), _directory.GetSizeOfMiniStream());
+            try
+            {
+                _fileHandler = new InputHandler(stream);
+                _header = new Header(_fileHandler);
+                _fat = new Fat(_header, _fileHandler);
+                _directory = new DirectoryTree(_fat, _header, _fileHandler);
+                _miniFat = new MiniFat(_fat, _header, _fileHandler, _directory.GetMiniStreamStart(), _directory.GetSizeOfMiniStream());
+            }
+            catch
+            {
+                this.Close();
+                throw;
+            }
         }
 
         /// <summary>
@@ -131,11 +139,19 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Reader
         /// <param name="fileName">The name of the file including its path</param>
         public StructuredStorageReader(string fileName)
         {
-            _fileHandler = new InputHandler(fileName);
-            _header = new Header(_fileHandler);
-            _fat = new Fat(_header, _fileHandler);
-            _directory = new DirectoryTree(_fat, _header, _fileHandler);
-            _miniFat = new MiniFat(_fat, _header, _fileHandler, _directory.GetMiniStreamStart(), _directory.GetSizeOfMiniStream());
+            try
+            {
+                _fileHandler = new InputHandler(fileName);
+                _header = new Header(_fileHandler);
+                _fat = new Fat(_header, _fileHandler);
+                _directory = new DirectoryTree(_fat, _header, _fileHandler);
+                _miniFat = new MiniFat(_fat, _header, _fileHandler, _directory.GetMiniStreamStart(), _directory.GetSizeOfMiniStream());
+            }
+            catch
+            {
+                this.Close();
+                throw;
+            }
         }
 
 

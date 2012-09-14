@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
+using System.Diagnostics;
 
 namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Reader
 {
@@ -151,7 +152,9 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Reader
             }
             if (_sectorsUsedByMiniStream.Count != Math.Ceiling((double)_sizeOfMiniStream / _header.SectorSize))
             {
-                throw new ChainSizeMismatchException("MiniStream");
+                Trace.TraceWarning("StructuredStorage: The number of sectors used by MiniFat does not match the specified size.");
+                Trace.TraceInformation("StructuredStorage: _sectorsUsedByMiniStream.Count={0};_sizeOfMiniStream={1};_header.SectorSize={2}; Math.Ceiling={3}", _sectorsUsedByMiniStream.Count, _sizeOfMiniStream, _header.SectorSize, Math.Ceiling((double)_sizeOfMiniStream / _header.SectorSize));
+                //throw new ChainSizeMismatchException("MiniStream");
             }
         }
     }

@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Common;
+using System.IO;
 
 namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Reader
 {
@@ -42,6 +43,8 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Reader
         protected InputHandler _fileHandler;
         protected int _addressesPerSector;
 
+
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -52,6 +55,14 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Reader
             _header = header;
             _fileHandler = fileHandler;
             _addressesPerSector = (int)_header.SectorSize / 4;
+        }
+
+        internal Stream _InternalFileStream
+        {
+            get
+            {
+                return _fileHandler._InternalFileStream;
+            }
         }
 
 

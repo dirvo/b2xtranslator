@@ -62,19 +62,21 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Reader
             // Determine endian
             byte[] byteArray16 = new byte[2];
             fileHandler.ReadPosition(byteArray16, 0x1C);
-            if (byteArray16[0] == 0xFE && byteArray16[1] == 0xFF)
-            {
-                fileHandler.InitBitConverter(true);
-            }
-            else
+            if (byteArray16[0] == 0xFF && byteArray16[1] == 0xFE)
             {
                 fileHandler.InitBitConverter(false);
             }
-
-            // Check for Magic Number                       
-            if (fileHandler.ReadUInt64(0x0) != MAGIC_NUMBER)
+            else
             {
-                throw new MagicNumberException();
+                // default little endian
+                fileHandler.InitBitConverter(true);
+            }
+
+            ulong magicNumber = fileHandler.ReadUInt64(0x0);
+            // Check for Magic Number                       
+            if (magicNumber != MAGIC_NUMBER)
+            {                
+                throw new MagicNumberException(String.Format("Found: {0,10:X}", magicNumber));
             }
 
             SectorShift = fileHandler.ReadUInt16(0x1E);

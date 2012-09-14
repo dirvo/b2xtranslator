@@ -397,5 +397,18 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Reader
         {
             throw new NotSupportedException("This method is not supported on a read-only stream.");
         }
+
+        public void WriteByte(int position, byte value)
+        {
+            if (position < 0 || position > _length)
+            {
+                throw new ArgumentOutOfRangeException("position");
+            }
+
+            int sectorInChain = (int)(position / _fat.SectorSize);
+            int positionInSector = Convert.ToInt32(position % _fat.SectorSize);
+            _fat.SeekToPositionInSector(_sectors[sectorInChain], positionInSector);
+           _fat._InternalFileStream.WriteByte(value);
+        }
     }
 }

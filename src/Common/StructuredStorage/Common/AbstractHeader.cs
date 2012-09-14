@@ -54,7 +54,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Common
                 _sectorSize = (UInt16)Math.Pow((double)2, (double)_sectorShift);
                 if (_sectorShift != 9 && _sectorShift != 12)
                 {
-                    throw new UnsupportedSizeException("SectorShift");
+                    throw new UnsupportedSizeException("SectorShift: " + _sectorShift);
                 }
             }
         }
@@ -77,7 +77,7 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Common
                 _miniSectorSize = (UInt16)Math.Pow((double)2, (double)_miniSectorShift);
                 if (_miniSectorShift != 6)
                 {
-                    throw new UnsupportedSizeException("MiniSectorShift");
+                    throw new UnsupportedSizeException("MiniSectorShift: " + _miniSectorShift);
                 }
             }
         }
@@ -195,9 +195,9 @@ namespace DIaLOGIKa.b2xtranslator.StructuredStorage.Common
             set
             {
                 _diFatStartSector = value;
-                if (value > _ioHandler.IOStreamSize / SectorSize && value != SectorId.ENDOFCHAIN)
+                if (value > _ioHandler.IOStreamSize / SectorSize && value != SectorId.ENDOFCHAIN && value != SectorId.FREESECT)
                 {
-                    throw new InvalidValueInHeaderException("DiFatStartSector");
+                    throw new InvalidValueInHeaderException("DiFatStartSector", String.Format("Details: value={0};_ioHandler.IOStreamSize={1};SectorSize={2}; SectorId.ENDOFCHAIN: {3}", value, _ioHandler.IOStreamSize, SectorSize, SectorId.ENDOFCHAIN));
                 }
             }
         }
