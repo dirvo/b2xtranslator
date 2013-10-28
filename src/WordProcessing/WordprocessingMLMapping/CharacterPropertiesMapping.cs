@@ -421,6 +421,10 @@ namespace DIaLOGIKa.b2xtranslator.WordprocessingMLMapping
                     {
                         hierarchy.Add(baseChpx);
                         istd = (int)styleSheet.Styles[istd].istdBase;
+                        if (istd == 4095) // null style
+                        {
+                            goOn = false;
+                        }
                     }
                     else
                     {
