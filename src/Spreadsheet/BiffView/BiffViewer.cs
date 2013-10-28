@@ -75,8 +75,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
                 {
                     IStreamReader workbookReader = new VirtualStreamReader(reader.GetStream("Workbook"));
 
-                    using (StreamWriter sw = this.Options.Mode == BiffViewerMode.File 
-                        ? File.CreateText(this.Options.OutputFileName) 
+                    using (StreamWriter sw = this.Options.Mode == BiffViewerMode.File
+                        ? File.CreateText(this.Options.OutputFileName)
                         : new StreamWriter(Console.OpenStandardOutput()))
                     {
                         sw.AutoFlush = true;
@@ -134,41 +134,52 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             {
                 while (workbookReader.BaseStream.Position < workbookReader.BaseStream.Length)
                 {
+                    long offset = workbookReader.BaseStream.Position;
+
                     bh.id = (RecordType)workbookReader.ReadUInt16();
                     bh.length = workbookReader.ReadUInt16();
 
-                    byte[] buffer = new byte[bh.length];
-                    if (bh.length != workbookReader.Read(buffer, bh.length))
-                        sw.WriteLine("EOF");
-
-                    sw.Write("BIFF {0}\t{1}\t", bh.id, bh.length);
-                    //Dump(buffer);
-                    int count = 0;
-                    foreach (byte b in buffer)
+                    if (offset < this.Options.StartPosition || offset > this.Options.EndPosition)
                     {
-                        sw.Write("{0:X02} ", b);
-                        count++;
-                        if (count % 16 == 0 && count < buffer.Length)
-                        {
-                            sw.Write("\n\t\t\t");
-                        }
+                        workbookReader.BaseStream.Position += bh.length;
                     }
-                    sw.Write("\n");
-
-                    if (_backgroundWorker != null)
+                    else
                     {
-                        int progress = 100;
-
-                        if (sw.BaseStream.Length != 0)
+                        byte[] buffer = new byte[bh.length];
+                        if (bh.length != workbookReader.Read(buffer, bh.length))
                         {
-                            progress = (int)(100 * workbookReader.BaseStream.Position / workbookReader.BaseStream.Length);
+                            sw.WriteLine("EOF");
                         }
-                        _backgroundWorker.ReportProgress(progress);
 
-                        if (_backgroundWorker.CancellationPending)
+                        sw.Write("BIFF {0}\t0x{1:X02}\t0x{2:X02}\t", bh.id.ToString().PadRight(10, ' '), offset, bh.length);
+                        //Dump(buffer);
+                        int count = 0;
+                        foreach (byte b in buffer)
                         {
-                            _isCancelled = true;
-                            break;
+                            sw.Write("{0:X02} ", b);
+                            count++;
+                            if (count % 16 == 0 && count < buffer.Length)
+                            {
+                                sw.Write("\n\t\t\t");
+                            }
+                        }
+                        sw.Write("\n");
+
+                        if (_backgroundWorker != null)
+                        {
+                            int progress = 100;
+
+                            if (sw.BaseStream.Length != 0)
+                            {
+                                progress = (int)(100 * workbookReader.BaseStream.Position / workbookReader.BaseStream.Length);
+                            }
+                            _backgroundWorker.ReportProgress(progress);
+
+                            if (_backgroundWorker.CancellationPending)
+                            {
+                                _isCancelled = true;
+                                break;
+                            }
                         }
                     }
                 }
@@ -225,26 +236,26 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
 
                     string strId = ((XlsFileFormat.RecordType)bh.id).ToString();
                     string strCurrentBlock = "";
-                    
+
                     int indent = 4 * indentLevel;
-                            
+
                     if (bh.id == RecordType.Begin)
-                        //|| bh.id == RecordType.StartObject
-                        //|| bh.id == RecordType.StartBlock)
+                    //|| bh.id == RecordType.StartObject
+                    //|| bh.id == RecordType.StartBlock)
                     {
-                        indent += 2; 
+                        indent += 2;
                         indentLevel++;
                         blocks.Push(prevHeader);
                         strCurrentBlock = " " + prevHeader.id;
                     }
                     else if (bh.id == RecordType.End)
-                        //|| bh.id == RecordType.EndObject
-                        //|| bh.id == RecordType.EndBlock)
+                    //|| bh.id == RecordType.EndObject
+                    //|| bh.id == RecordType.EndBlock)
                     {
                         indent -= 2;
                         strCurrentBlock = " " + blocks.Pop().id;
                     }
-                    
+
                     sw.WriteLine("<tr>");
                     {
                         byte[] buffer = workbookReader.ReadBytes(bh.length);
@@ -303,8 +314,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
                     sw.Write("</tr>");
 
                     if (bh.id == RecordType.End)
-                        //|| bh.id == RecordType.EndObject
-                        //|| bh.id == RecordType.EndBlock)
+                    //|| bh.id == RecordType.EndObject
+                    //|| bh.id == RecordType.EndBlock)
                     {
                         indentLevel--;
                     }

@@ -26,6 +26,7 @@
  */
 using System;
 using System.Windows.Forms;
+using System.Globalization;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
 {
@@ -39,41 +40,67 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
 
     static class Program
     {
+        [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+        private static extern bool AllocConsole();
+
+        [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+        private static extern bool AttachConsole(int pid);
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         static void Main(string[] args)
         {
-            BiffViewerOptions options = ParseCommandLine(args);
-
-            if (options != null)
+            try
             {
-                if (args.Length == 0)
+                BiffViewerOptions options = ParseCommandLine(args);
+
+                if (options != null)
                 {
-                    Application.EnableVisualStyles();
-                    Application.SetCompatibleTextRenderingDefault(false);
-                    Application.Run(new MainWindow());
-                }
-                else
-                {
-                    try
+                    if (args.Length == 0)
                     {
-                        BiffViewer viewer = new BiffViewer(options);
-                        viewer.DoTheMagic();
+                        Application.EnableVisualStyles();
+                        Application.SetCompatibleTextRenderingDefault(false);
+                        Application.Run(new MainWindow());
                     }
-                    catch (CommandLineException cex)
+                    else
                     {
-                        Console.WriteLine(cex.Message);
-                        PrintUsage();
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("An unexpected error occurred.");
-                        Console.WriteLine(ex.ToString());
+                        // console mode
+                        try
+                        {
+                            if (!AttachConsole(-1))
+                            { // Attach to a parent process console
+                                AllocConsole(); // Alloc a new console
+                            }
+
+                            BiffViewer viewer = new BiffViewer(options);
+                            viewer.DoTheMagic();
+                        }
+                        catch (CommandLineException cex)
+                        {
+                            Console.WriteLine(cex.Message);
+                            PrintUsage();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("An unexpected error occurred.");
+                            Console.WriteLine(ex.ToString());
+                        }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                if (!AttachConsole(-1))
+                { // Attach to a parent process console
+                    AllocConsole(); // Alloc a new console
+                }
+
+                Console.WriteLine(ex.Message);
+                PrintUsage();
+            }
+
         }
 
         private static void PrintUsage()
@@ -84,7 +111,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             Console.WriteLine("    -s, --show               Opens the output in the default browser.");
             Console.WriteLine("    -t, --text               Outputs text only.");
             Console.WriteLine("    -r, --range start [end]  Shows only BIFF records within the range from 'start' to 'end'.");
-            Console.WriteLine("                             The parameters are integer numbers. If 'end' is omitted, all BIFF records");
+            Console.WriteLine("                             The parameters are the decimal or hexadecimal record offsets.");
+            Console.WriteLine("                             If 'end' is omitted, all BIFF records");
             Console.WriteLine("                             to the end of the document are printed.");
             Console.WriteLine("    -c, --console            Does not display an interactive dialog.");
             Console.WriteLine("    -v, --version            Display the application version.");
@@ -126,17 +154,27 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
                         {
                             throw new CommandLineException("Start position for range not specified.");
                         }
-                        long dummy;
-                        if (long.TryParse(args[i], out dummy))
+                        string unparsedNumber;
+                        long parsedNumber;
+                        NumberStyles styles;
+
+                        unparsedNumber = args[i].StartsWith("0x") ? args[i].Substring(2) : args[i];
+                        styles = args[i].StartsWith("0x") ? NumberStyles.HexNumber : NumberStyles.None;
+
+                        if (long.TryParse(unparsedNumber, styles, CultureInfo.InvariantCulture, out parsedNumber))
                         {
-                            options.StartPosition = dummy;
+                            options.StartPosition = parsedNumber;
                         }
-                        
-                        if (i + 1 != args.Length)
+
+                        if (i + 1 <= args.Length)
                         {
-                            if (long.TryParse(args[i + 1], out dummy))
+                            unparsedNumber = args[i + 1].StartsWith("0x") ? args[i + 1].Substring(2) : args[i + 1];
+                            styles = args[i + 1].StartsWith("0x") ? NumberStyles.HexNumber : NumberStyles.None;
+
+                            if (long.TryParse(unparsedNumber, styles, CultureInfo.InvariantCulture, out parsedNumber))
                             {
-                                options.EndPosition = dummy;
+                                options.EndPosition = parsedNumber;
+                                i++;
                             }
                         }
                         break;
@@ -149,6 +187,10 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
                     case "/h":
                     case "/?":
                     case "--help":
+                        if (!AttachConsole(-1))
+                        { // Attach to a parent process console
+                            AllocConsole(); // Alloc a new console
+                        }
                         PrintUsage();
                         return null;
                     default:

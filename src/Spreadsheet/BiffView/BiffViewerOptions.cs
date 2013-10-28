@@ -61,7 +61,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.BiffView
             set { _startPosition = value; }
         }
 
-        private long _endPosition = -1;
+        private long _endPosition = long.MaxValue;
         public long EndPosition
         {
             get { return _endPosition; }
