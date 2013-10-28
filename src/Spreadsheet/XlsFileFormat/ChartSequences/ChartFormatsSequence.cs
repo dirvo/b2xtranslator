@@ -38,7 +38,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
         public TextPropsSequence TextPropsSequence;
 
-        public Dat Dat;
+        public DatSequence Dat;
 
         public CrtLayout12 CrtLayout12A;
 
@@ -127,7 +127,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             // [DAT]
             if (BiffRecord.GetNextRecordType(reader) == RecordType.Dat)
             {
-                this.Dat = (Dat)BiffRecord.ReadRecord(reader);
+                this.Dat = new DatSequence(reader);
             }
 
             // *ATTACHEDLABEL

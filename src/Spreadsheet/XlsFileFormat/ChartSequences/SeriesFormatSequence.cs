@@ -115,6 +115,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 
             public AttachedLabelSequence AttachedLabelSequence;
 
+            public TextPropsSequence TextPropsSequence;
+
             public End End;
 
 
@@ -134,7 +136,12 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                     // ATTACHEDLABEL
                     this.AttachedLabelSequence = new AttachedLabelSequence(reader);
 
-
+                    //[TEXTPROPS] 
+                    if (BiffRecord.GetNextRecordType(reader) == RecordType.RichTextStream ||
+                        BiffRecord.GetNextRecordType(reader) == RecordType.TextPropsStream)
+                    {
+                        this.TextPropsSequence = new TextPropsSequence(reader);
+                    }
 
                     // End
                     this.End = (End)BiffRecord.ReadRecord(reader);

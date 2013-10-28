@@ -30,14 +30,14 @@ using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
 {
-    [BiffRecordAttribute(RecordType.SupBook)] 
+    [BiffRecordAttribute(RecordType.SupBook)]
     public class SupBook : BiffRecord
     {
         public const RecordType ID = RecordType.SupBook;
 
         public UInt16 ctab;
 
-        public UInt16 cch; 
+        public UInt16 cch;
 
         public String virtpathstring;
 
@@ -47,7 +47,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
         public bool isexternalworkbookreferencing;
         public bool isselfreferencing;
         public bool isaddinreferencing;
-        public bool isunusedsupportinglink; 
+        public bool isunusedsupportinglink;
 
         public SupBook(IStreamReader reader, RecordType id, UInt16 length)
             : base(reader, id, length)
@@ -63,26 +63,26 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
             this.isaddinreferencing = false;
             this.isvirtpath = false;
             this.isexternalworkbookreferencing = false;
-            this.isunusedsupportinglink = false; 
+            this.isunusedsupportinglink = false;
 
             // Check cch 
             if (cch == 0x0401)
             {
-                this.isselfreferencing = true; 
+                this.isselfreferencing = true;
             }
             else if (cch == 0x3A01)
             {
-                this.isaddinreferencing = true; 
+                this.isaddinreferencing = true;
                 //0x0001 to 0x00ff (inclusive)
             }
             else if (cch >= 0x0001 && cch <= 0x00ff)
             {
-                this.isvirtpath = true; 
+                this.isvirtpath = true;
             }
 
             if (this.isvirtpath)
             {
-                this.virtpathstring = ""; 
+                this.virtpathstring = "";
                 byte firstbyte = this.Reader.ReadByte();
                 int firstbit = firstbyte & 0x1;
                 for (int i = 0; i < this.cch; i++)
@@ -100,7 +100,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
                 }
                 this.virtpathstring = ExcelHelperClass.parseVirtualPath(this.virtpathstring);
             }
-            
+
             if (this.virtpathstring != null)
             {
                 if (this.virtpathstring.Equals(0x00))
@@ -113,7 +113,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
                 }
                 else
                 {
-                    this.isexternalworkbookreferencing = true; 
+                    this.isexternalworkbookreferencing = true;
                 }
             }
 
@@ -122,30 +122,29 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records
                 this.rgst = new String[this.ctab];
                 for (int i = 0; i < this.ctab; i++)
                 {
-                   
-                        UInt16 cch2 = this.Reader.ReadUInt16(); 
-                        byte firstbyte = this.Reader.ReadByte();
-                        int firstbit = firstbyte & 0x1;
-                        for (int j = 0; j < cch2; j++)
+                    UInt16 cch2 = this.Reader.ReadUInt16();
+                    byte firstbyte = this.Reader.ReadByte();
+                    int firstbit = firstbyte & 0x1;
+                    for (int j = 0; j < cch2; j++)
+                    {
+                        if (firstbit == 0)
                         {
-                            if (firstbit == 0)
-                            {
-                                this.rgst[i] += (char)this.Reader.ReadByte();
-                                // read 1 byte per char 
-                            }
-                            else
-                            {
-                                // read two byte per char 
-                                this.rgst[i] += System.BitConverter.ToChar(this.Reader.ReadBytes(2), 0);
-                            }
-                        }        
+                            this.rgst[i] += (char)this.Reader.ReadByte();
+                            // read 1 byte per char 
+                        }
+                        else
+                        {
+                            // read two byte per char 
+                            this.rgst[i] += System.BitConverter.ToChar(this.Reader.ReadBytes(2), 0);
+                        }
+                    }
                 }
             }
             if (this.virtpathstring != null && virtpathstring.Length > 1)
                 this.isselfreferencing = false;
 
             // assert that the correct number of bytes has been read from the stream
-            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position); 
+            Debug.Assert(this.Offset + this.Length == this.Reader.BaseStream.Position);
         }
     }
 }

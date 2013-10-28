@@ -73,7 +73,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
 
         public int ExternalLinkId;
         public String ExternalLinkRef;
-        public int Number; 
+        public int Number;
+        public bool IsVirtualPath;
 
         /// <summary>
         /// Ctor 
@@ -83,6 +84,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         {
             this.rgst = supbook.rgst;
             this.virtPath = supbook.virtpathstring;
+            this.IsVirtualPath = supbook.isvirtpath;
             this.selfref = supbook.isselfreferencing;
             this.xctDataList = new LinkedList<XCTData>();
             this.externNames = new LinkedList<string>(); 

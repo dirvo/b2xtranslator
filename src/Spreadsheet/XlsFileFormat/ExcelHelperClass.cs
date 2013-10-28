@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Ptg;
 using DIaLOGIKa.b2xtranslator.StructuredStorage.Reader;
+using System.Text.RegularExpressions;
 
 namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
 {
@@ -244,6 +245,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                             case PtgNumber.PtgAreaErr3d: ptg = new PtgAreaErr3d(reader, ptgtype); break;
                             case PtgNumber.PtgMemFunc: ptg = new PtgMemFunc(reader, ptgtype); break;
                             case PtgNumber.PtgErr: ptg = new PtgErr(reader, ptgtype); break;
+                            case PtgNumber.PtgArray: ptg = new PtgArray(reader, ptgtype); break;
 
                             default: break;
                         }
@@ -413,5 +415,64 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             return unescapedString.Replace("\"", "\"\"")
                 .Replace("'", "''");
         }
+
+        /// <summary>
+        /// Asserts that a defined name is valid. 
+        /// </summary>
+        /// <param name="definedName">the name as found in the input document</param>
+        /// <returns>A unique and valid name</returns>
+        /// <remarks>
+        ///  * Valid characters  
+        ///         The first character of a name must be a letter, an underscore character (_), 
+        ///         or a backslash (\). Remaining characters in the name can be letters, numbers, 
+        ///         periods, and underscore characters.
+        ///         
+        ///         Note: You cannot use the uppercase and lowercase characters "C", "c", "R", or "r" as 
+        ///         a defined name, because they are all used as a shorthand for selecting a row or column 
+        ///         for the currently selected cell when you enter them in a Name or Go To text box.
+        ///         
+        ///  * Cell references disallowed  
+        ///         Names cannot be the same as a cell reference, such as Z$100 or R1C1. 
+        ///         
+        ///  * Spaces are not valid   
+        ///         Spaces are not allowed as part of a name. Use the underscore character (_) and 
+        ///         period (.) as word separators, such as, Sales_Tax or First.Quarter. 
+        ///         
+        ///  * Name length  
+        ///         A name can contain up to 255 characters. 
+        ///         
+        ///  * Case sensitivity  
+        ///         Names can contain uppercase and lowercase letters. Excel does not distinguish between 
+        ///         uppercase and lowercase characters in names. For example, if you created the name Sales 
+        ///         and then create another name called SALES in the same workbook, 
+        ///         Excel prompts you to choose a unique name. 
+        /// </remarks>
+        public static string AssertNameIsValid(string definedName)
+        {
+            string validName = definedName.Replace(' ', '_').TrimEnd('\0');
+            
+            Match invalidCharsMatch = Regex.Match(validName, @"[^\w\d._\\]");
+            foreach (Capture invalidCharCapture in invalidCharsMatch.Captures)
+            {
+                validName = validName.Replace(invalidCharCapture.Value, string.Format("_x{0:x4}_", (int)invalidCharCapture.Value[0]));
+            }
+
+            if (!Regex.Match(validName, @"^[_\w\\]").Success)
+            {
+                validName = "_" + validName;
+            }
+
+            return validName;
+            //int count = 0;
+            //string uniqueValidName = validName;
+            //while (_definedNames.ContainsKey(uniqueValidName))
+            //{
+            //    uniqueValidName = "_" + (++count).ToString() + validName;
+            //}
+            //_definedNames.Add(uniqueValidName, string.Empty);
+
+            //return uniqueValidName;
+        }
+        //private static Dictionary<string, string> _definedNames = new Dictionary<string,string>();
     }
 }

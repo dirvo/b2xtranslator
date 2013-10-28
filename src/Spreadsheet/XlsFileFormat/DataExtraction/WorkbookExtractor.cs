@@ -127,8 +127,8 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                                 {
                                     // add general sheet info
                                     sheetData.boundsheetRecord = bs;
+                                    this.workBookData.addBoundSheetData(sheetData);
                                 }
-                                this.workBookData.addBoundSheetData(sheetData);
                             }
                             break;
 
@@ -147,50 +147,50 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
                                  * CONTINUE BiffRecord, so the parser has to read over the SST border. 
                                  * The problem here is, that the parser has to overread the continue biff record header 
                                 */
-                                SST sst;
-                                UInt16 length = bh.length;
+                                //SST sst;
+                                //UInt16 length = bh.length;
 
-                                // save the old offset from this record begin 
-                                this.oldOffset = this.StreamReader.BaseStream.Position;
-                                // create a list of bytearrays to store the following continue records 
-                                // List<byte[]> byteArrayList = new List<byte[]>();
-                                byte[] buffer = new byte[length];
-                                LinkedList<VirtualStreamReader> vsrList = new LinkedList<VirtualStreamReader>();
-                                buffer = this.StreamReader.ReadBytes((int)length);
-                                // byteArrayList.Add(buffer);
+                                //// save the old offset from this record begin 
+                                //this.oldOffset = this.StreamReader.BaseStream.Position;
+                                //// create a list of bytearrays to store the following continue records 
+                                //// List<byte[]> byteArrayList = new List<byte[]>();
+                                //byte[] buffer = new byte[length];
+                                //LinkedList<VirtualStreamReader> vsrList = new LinkedList<VirtualStreamReader>();
+                                //buffer = this.StreamReader.ReadBytes((int)length);
+                                //// byteArrayList.Add(buffer);
 
-                                // create a new memory stream and a new virtualstreamreader 
-                                MemoryStream bufferstream = new MemoryStream(buffer);
-                                VirtualStreamReader binreader = new VirtualStreamReader(bufferstream);
-                                BiffHeader bh2;
-                                bh2.id = (RecordType)this.StreamReader.ReadUInt16();
+                                //// create a new memory stream and a new virtualstreamreader 
+                                //MemoryStream bufferstream = new MemoryStream(buffer);
+                                //VirtualStreamReader binreader = new VirtualStreamReader(bufferstream);
+                                //BiffHeader bh2;
+                                //bh2.id = (RecordType)this.StreamReader.ReadUInt16();
 
-                                while (bh2.id == RecordType.Continue)
-                                {
-                                    bh2.length = (UInt16)(this.StreamReader.ReadUInt16());
+                                //while (bh2.id == RecordType.Continue)
+                                //{
+                                //    bh2.length = (UInt16)(this.StreamReader.ReadUInt16());
 
-                                    buffer = new byte[bh2.length];
+                                //    buffer = new byte[bh2.length];
 
-                                    // create a buffer with the bytes from the records and put that array into the 
-                                    // list 
-                                    buffer = this.StreamReader.ReadBytes((int)bh2.length);
-                                    // byteArrayList.Add(buffer);
+                                //    // create a buffer with the bytes from the records and put that array into the 
+                                //    // list 
+                                //    buffer = this.StreamReader.ReadBytes((int)bh2.length);
+                                //    // byteArrayList.Add(buffer);
 
-                                    // create for each continue record a new streamreader !! 
-                                    MemoryStream contbufferstream = new MemoryStream(buffer);
-                                    VirtualStreamReader contreader = new VirtualStreamReader(contbufferstream);
-                                    vsrList.AddLast(contreader);
+                                //    // create for each continue record a new streamreader !! 
+                                //    MemoryStream contbufferstream = new MemoryStream(buffer);
+                                //    VirtualStreamReader contreader = new VirtualStreamReader(contbufferstream);
+                                //    vsrList.AddLast(contreader);
 
 
-                                    // take next Biffrecord ID 
-                                    bh2.id = (RecordType)this.StreamReader.ReadUInt16();
-                                }
-                                // set the old position of the stream 
-                                this.StreamReader.BaseStream.Position = this.oldOffset;
+                                //    // take next Biffrecord ID 
+                                //    bh2.id = (RecordType)this.StreamReader.ReadUInt16();
+                                //}
+                                //// set the old position of the stream 
+                                //this.StreamReader.BaseStream.Position = this.oldOffset;
 
-                                sst = new SST(binreader, bh.id, length, vsrList);
-                                this.StreamReader.BaseStream.Position = this.oldOffset + bh.length;
-                                this.workBookData.SstData = new SSTData(sst);
+                                SST sst = new SST(this.StreamReader, bh.id, bh.length);
+                                //this.StreamReader.BaseStream.Position = this.oldOffset + bh.length;
+                                this.workBookData.SstData = sst;
                             }
                             break;
 

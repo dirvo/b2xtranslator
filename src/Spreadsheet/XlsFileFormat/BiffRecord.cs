@@ -37,7 +37,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
         IStreamReader _reader;
 
         RecordType _id;
-        UInt32 _length;
+        UInt16 _length;
         long _offset;
 
         /// <summary>

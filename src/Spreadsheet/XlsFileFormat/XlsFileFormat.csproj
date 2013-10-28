@@ -8,8 +8,8 @@
     <ProjectGuid>{92295756-46BB-4D1F-B0FD-CA7DF03F6C65}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat</RootNamespace>
-    <AssemblyName>DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat</AssemblyName>
+    <RootNamespace>DIaLOGIKa.b2xtranslator.XlsFileFormat</RootNamespace>
+    <AssemblyName>DIaLOGIKa.b2xtranslator.XlsFileFormat</AssemblyName>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
@@ -143,6 +143,7 @@
     <Compile Include="Ptg\PtgAreaErr.cs" />
     <Compile Include="Ptg\PtgAreaErr3d.cs" />
     <Compile Include="Ptg\PtgAreaN.cs" />
+    <Compile Include="Ptg\PtgArray.cs" />
     <Compile Include="Ptg\PtgAttrChoose.cs" />
     <Compile Include="Ptg\PtgAttrGoto.cs" />
     <Compile Include="Ptg\PtgAttrIf.cs" />
@@ -151,10 +152,12 @@
     <Compile Include="Ptg\PtgAttrSum.cs" />
     <Compile Include="Ptg\PtgBool.cs" />
     <Compile Include="Ptg\PtgConcat.cs" />
+    <Compile Include="Ptg\PtgDataType.cs" />
     <Compile Include="Ptg\PtgDiv.cs" />
     <Compile Include="Ptg\PtgEq.cs" />
     <Compile Include="Ptg\PtgErr.cs" />
     <Compile Include="Ptg\PtgExp.cs" />
+    <Compile Include="Ptg\PtgExtraArray.cs" />
     <Compile Include="Ptg\PtgFunc.cs" />
     <Compile Include="Ptg\PtgFuncVar.cs" />
     <Compile Include="Ptg\PtgGe.cs" />
@@ -189,6 +192,7 @@
     <Compile Include="DataContainer\WorkSheetData.cs" />
     <Compile Include="DataExtraction\StreamExtractor.cs" />
     <Compile Include="DataExtraction\WorkbookExtractor.cs" />
+    <Compile Include="Ptg\SerAr.cs" />
     <Compile Include="Records\AbstractCellContent.cs" />
     <Compile Include="Records\Addin.cs" />
     <Compile Include="Records\Addmenu.cs" />
@@ -560,6 +564,7 @@
     <Compile Include="Structures\SheetExtOptional.cs" />
     <Compile Include="Structures\TxOLastRun.cs" />
     <Compile Include="Structures\TxORuns.cs" />
+    <Compile Include="Structures\XLUnicodeRichExtendedString.cs" />
     <Compile Include="Structures\XmlTkHeightPercent.cs" />
     <Compile Include="Structures\XmlTkRotXFrt.cs" />
     <Compile Include="Structures\XmlTkRotYFrt.cs" />

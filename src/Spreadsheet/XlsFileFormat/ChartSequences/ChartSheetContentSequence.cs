@@ -209,6 +209,16 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat
             {
                 this.CodeName = (CodeName)BiffRecord.ReadRecord(reader);
             }
+
+            // NOTE: The occurence of a HeaderFooter record at this position in the sequence 
+            //    is a deviation from the spec. However it has been encountered in certain 
+            //    test documents 
+            //
+            // [HeaderFooter]
+            if (BiffRecord.GetNextRecordType(reader) == RecordType.HeaderFooter)
+            {
+                this.HeaderFooter = (HeaderFooter)BiffRecord.ReadRecord(reader);
+            }
             
             // [CRTMLFRT] 
             if (BiffRecord.GetNextRecordType(reader) == RecordType.CrtMlFrt)

@@ -43,21 +43,20 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         /// <summary>
         /// This attribute stores the SharedStringTable Data
         /// </summary>
-        private SSTData sstData;
-        public SSTData SstData
+        private SST sstData;
+        public SST SstData
         {
             get { return sstData; }
             set { sstData = value; }
         }
 
-
         public bool Template { get; set; }
 
         public List<SheetData> boundSheetDataList;
         public List<ExternSheetData> externSheetDataList;
-        public LinkedList<SupBookData> supBookDataList;
+        public List<SupBookData> supBookDataList;
         public LinkedList<XTIData> xtiDataList;
-        public List<Lbl> definedNameList; 
+        public List<Lbl> definedNameList;
 
         public int refWorkBookNumber;
 
@@ -73,12 +72,12 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         {
             this.boundSheetDataList = new List<SheetData>();
             this.externSheetDataList = new List<ExternSheetData>();
-            this.supBookDataList = new LinkedList<SupBookData>();
+            this.supBookDataList = new List<SupBookData>();
             this.xtiDataList = new LinkedList<XTIData>();
-            this.definedNameList = new List<Lbl>(); 
+            this.definedNameList = new List<Lbl>();
             refWorkBookNumber = 0;
 
-            this.styleData = new StyleData.StyleData(); 
+            this.styleData = new StyleData.StyleData();
         }
 
         /// <summary>
@@ -87,7 +86,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         /// <param name="bsd">The Boundsheetdata element</param>
         public void addBoundSheetData(SheetData bsd)
         {
-            this.boundSheetDataList.Add(bsd); 
+            this.boundSheetDataList.Add(bsd);
         }
 
         /// <summary>
@@ -99,7 +98,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
             for (int i = 0; i < ext.cXTI; i++)
             {
                 ExternSheetData extdata = new ExternSheetData(ext.iSUPBOOK[i], ext.itabFirst[i], ext.itabLast[i]);
-                this.externSheetDataList.Add(extdata); 
+                this.externSheetDataList.Add(extdata);
             }
         }
 
@@ -109,16 +108,16 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         /// <param name="sup"></param>
         public void addSupBookData(SupBook sup)
         {
-            
+
             SupBookData supbook = new SupBookData(sup);
             if (!supbook.SelfRef)
             {
                 this.refWorkBookNumber++;
-                supbook.Number = this.refWorkBookNumber; 
+                supbook.Number = this.refWorkBookNumber;
             }
 
 
-            this.supBookDataList.AddLast(supbook); 
+            this.supBookDataList.Add(supbook);
         }
 
 
@@ -130,53 +129,58 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         public String getIXTIString(UInt16 index)
         {
             ExternSheetData extSheet = this.externSheetDataList[index];
-            SupBookData supData = null;
-            LinkedList<SupBookData>.Enumerator listenum = this.supBookDataList.GetEnumerator();   
-            
+            SupBookData supData = this.supBookDataList[extSheet.iSUPBOOK];
 
-            int count = 0;
-            listenum.MoveNext(); 
-            do
-            {
-                if (count == extSheet.iSUPBOOK)
-                {
-                    supData = listenum.Current; 
-                }
-                count++; 
-            }
-            while (listenum.MoveNext());
+            //List<SupBookData>.Enumerator listenum = this.supBookDataList.GetEnumerator();
 
-            String back = ""; 
-            if (supData != null && supData.SelfRef)
+            //int count = 0;
+            //listenum.MoveNext();
+            //do
+            //{
+            //    if (count == extSheet.iSUPBOOK)
+            //    {
+            //        supData = listenum.Current;
+            //    }
+            //    count++;
+            //}
+            //while (listenum.MoveNext());
+
+            String back = "";
+            if (extSheet.itabFirst >= 0 && extSheet.itabLast >= 0
+                    && extSheet.itabFirst < this.boundSheetDataList.Count
+                    && extSheet.itabLast < this.boundSheetDataList.Count)
             {
-                String first = this.boundSheetDataList[extSheet.itabFirst].boundsheetRecord.stName.Value;
-                String last = this.boundSheetDataList[extSheet.itabLast].boundsheetRecord.stName.Value;
-                if (first.Equals(last))
+                if (supData != null && supData.SelfRef)
                 {
-                    back = first;
+                    String first = this.boundSheetDataList[extSheet.itabFirst].boundsheetRecord.stName.Value;
+                    String last = this.boundSheetDataList[extSheet.itabLast].boundsheetRecord.stName.Value;
+                    if (first.Equals(last))
+                    {
+                        back = first;
+                    }
+                    else
+                    {
+                        back = first + ":" + last;
+                    }
                 }
                 else
                 {
-                    back = first + ":" + last; 
-                }
-            }
-            else
-            {
-                String first = supData.getRgstString(extSheet.itabFirst);
-                String last = supData.getRgstString(extSheet.itabLast);
-                if (first.Equals(last))
-                {
-                    back = first;
-                }
-                else
-                {
-                    back = first + ":" + last;
-                }
-                // add one to the index 
-                back = "[" + supData.Number.ToString()+"]" + back; 
+                    String first = supData.getRgstString(extSheet.itabFirst);
+                    String last = supData.getRgstString(extSheet.itabLast);
+                    if (first.Equals(last))
+                    {
+                        back = first;
+                    }
+                    else
+                    {
+                        back = first + ":" + last;
+                    }
+                    // add one to the index 
+                    back = "[" + supData.Number.ToString() + "]" + back;
 
+                }
             }
-            return back; 
+            return back;
         }
 
 
@@ -188,7 +192,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         {
             XTIData xti = new XTIData(this.xtiDataList.Count - 1, this.supBookDataList.Count - 1, xct.itab);
             this.xtiDataList.AddLast(xti);
-            this.supBookDataList.Last.Value.addXCT(xct); 
+            this.supBookDataList[this.supBookDataList.Count - 1].addXCT(xct);
         }
 
         /// <summary>
@@ -197,7 +201,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         /// <param name="xct"></param>
         public void addCRN(CRN crn)
         {
-            this.supBookDataList.Last.Value.addCRN(crn); 
+            this.supBookDataList[this.supBookDataList.Count - 1].addCRN(crn);
         }
 
         /// <summary>
@@ -206,7 +210,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         /// <param name="xct"></param>
         public void addEXTERNNAME(ExternName extname)
         {
-            this.supBookDataList.Last.Value.addEXTERNNAME(extname); 
+            this.supBookDataList[this.supBookDataList.Count - 1].addEXTERNNAME(extname);
         }
 
         /// <summary>
@@ -215,7 +219,7 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         /// <param name="name"></param>
         public void addDefinedName(Lbl name)
         {
-            this.definedNameList.Add(name); 
+            this.definedNameList.Add(name);
         }
 
         /// <summary>
@@ -227,14 +231,14 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         {
             if (this.definedNameList[id - 1].Name.Value.Length > 1)
             {
-                return this.definedNameList[id - 1].Name.Value; 
+                return this.definedNameList[id - 1].Name.Value;
             }
             else
             {
                 string internName = "_xlnm." + ExcelHelperClass.getNameStringfromBuiltInFunctionID(this.definedNameList[id - 1].Name.Value);
-                return internName; 
+                return internName;
             }
-           
+
         }
 
         /// <summary>
@@ -246,35 +250,41 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer
         public String getExternNameByRef(UInt16 supIndex, UInt32 nameIndex)
         {
             ExternSheetData extSheet = this.externSheetDataList[supIndex];
-            SupBookData supData = null;
-            LinkedList<SupBookData>.Enumerator listenum = this.supBookDataList.GetEnumerator();
+            SupBookData supData = this.supBookDataList[extSheet.iSUPBOOK];
 
-            String back = ""; 
-            int count = 0;
-            int counttwo = 0; 
-            listenum.MoveNext();
-            do
-            {
-                if (count == extSheet.iSUPBOOK)
+            String back = "";
+            //List<SupBookData>.Enumerator listenum = this.supBookDataList.GetEnumerator();
+            //int count = 0;
+            int counttwo = 0;
+            //listenum.MoveNext();
+            //do
+            //{
+            //    if (count == extSheet.iSUPBOOK)
+            //    {
+            //        supData = listenum.Current;
+            //    }
+            //    count++;
+            //}
+            //while (listenum.MoveNext());
+            //if (supData.SelfRef)
+            //{
+            //    back = this.definedNameList[(int)nameIndex - 1].Name.Value;
+            //}
+            //else
+            //{
+                LinkedList<String>.Enumerator nameEnum = supData.ExternNames.GetEnumerator();
+                do
                 {
-                    supData = listenum.Current;
-                }
-                count++;
-            }
-            while (listenum.MoveNext());
+                    if (counttwo == nameIndex)
+                    {
+                        back = nameEnum.Current;
+                    }
+                    counttwo++;
+                } while (nameEnum.MoveNext());
+            //}
 
-            LinkedList<String>.Enumerator nameEnum = supData.ExternNames.GetEnumerator();
-            do
-            {
-                if (counttwo == nameIndex)
-                {
-                    back = nameEnum.Current;
-                }
-                counttwo++;
-            } while (nameEnum.MoveNext());
-            
 
-            return "[" + (supData.Number) + "]!" + back; 
+            return "[" + (supData.Number) + "]!" + back;
         }
 
         #region IVisitable Members

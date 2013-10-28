@@ -73,27 +73,32 @@ namespace DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Structures
 
             if (fHighByte)
             {
-                this.rgb = new byte[2 * cch];
+                this.rgb = reader.ReadBytes(2 * cch);
             }
             else
             {
-                this.rgb = new byte[cch];
+                this.rgb = reader.ReadBytes(cch);
             }
-
-            this.rgb = reader.ReadBytes(this.rgb.Length);
         }
 
         public string Value
         {
             get
             {
-                if (fHighByte)
+                if (this.rgb != null)
                 {
-                    return Encoding.Unicode.GetString(this.rgb);
+                    if (fHighByte)
+                    {
+                        return Encoding.Unicode.GetString(this.rgb);
+                    }
+                    else
+                    {
+                        return Encoding.GetEncoding(1252).GetString(this.rgb);
+                    }
                 }
                 else
                 {
-                    return Encoding.GetEncoding(1252).GetString(this.rgb);
+                    return string.Empty;
                 }
             }
         }
