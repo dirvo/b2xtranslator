@@ -11,10 +11,14 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
     {
         public StwStructure(VirtualStream tableStream, UInt32 fc, UInt32 lcb) : base()
         {
+            if (lcb == 0)
+            {
+                return;
+            }
             tableStream.Seek((long)fc, System.IO.SeekOrigin.Begin);
 
             // parse the names
-            StringTable names = new StringTable(typeof(String), new VirtualStreamReader(tableStream));
+            StringTable names = new StringTable(typeof(String), tableStream, fc, lcb);
 
             // parse the values
             List<string> values = new List<string>();
