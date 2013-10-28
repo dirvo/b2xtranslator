@@ -306,7 +306,7 @@ namespace DIaLOGIKa.b2xtranslator.DocFileFormat
             {
                 for (int j = 0; j < this.AllPapxFkps[i].grppapx.Length; j++)
                 {
-                    this.AllPapx.Add(this.AllPapxFkps[i].rgfc[j], this.AllPapxFkps[i].grppapx[j]);
+                    this.AllPapx[this.AllPapxFkps[i].rgfc[j]] = this.AllPapxFkps[i].grppapx[j];
                 }
             }
 
