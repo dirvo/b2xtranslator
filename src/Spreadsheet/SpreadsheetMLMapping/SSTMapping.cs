@@ -32,13 +32,14 @@ using DIaLOGIKa.b2xtranslator.CommonTranslatorLib;
 using DIaLOGIKa.b2xtranslator.OpenXmlLib;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.DataContainer;
 using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.StyleData;
+using DIaLOGIKa.b2xtranslator.Spreadsheet.XlsFileFormat.Records;
 
 
 namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 {
 
     public class SSTMapping : AbstractOpenXmlMapping,
-          IMapping<SSTData>
+          IMapping<SST>
     {
         ExcelContext xlsContext;
 
@@ -57,22 +58,19 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
         /// Creates the sharedstring xml document 
         /// </summary>
         /// <param name="SSTData">SharedStringData Object</param>
-        public void Apply(SSTData sstData)
+        public void Apply(SST sst)
         {
             _writer.WriteStartDocument();
             _writer.WriteStartElement("sst", OpenXmlNamespaces.SpreadsheetML);
-            // count="x" uniqueCount="y" 
-            _writer.WriteAttributeString("count", sstData.cstTotal.ToString());
-            _writer.WriteAttributeString("uniqueCount", sstData.cstUnique.ToString());
-
-
+            _writer.WriteAttributeString("count", sst.cstTotal.ToString());
+            _writer.WriteAttributeString("uniqueCount", sst.cstUnique.ToString());
 
             int count = 0;
-            // create the string _entries 
-            foreach (String var in sstData.StringList)
+            // create the string entries 
+            foreach (string var in sst.StringList)
             {
                 count++;
-                List<StringFormatAssignment> list = sstData.getFormatingRuns(count);
+                List<StringFormatAssignment> list = this.getFormatingRuns(sst, count);
 
                 _writer.WriteStartElement("si");
 
@@ -83,8 +81,6 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 }
                 else
                 {
-                    // if there is no formatting, there is no run, write only the text
-
                     // first text 
                     if (list[0].CharNumber != 0)
                     {
@@ -115,7 +111,6 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 }
 
                 _writer.WriteEndElement(); // end si
-
             }
 
             // close tags 
@@ -140,6 +135,18 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             writer.WriteEndElement();
         }
 
+        private List<StringFormatAssignment> getFormatingRuns(SST sst, int stringNumber)
+        {
+            List<StringFormatAssignment> returnList = new List<StringFormatAssignment>();
+            foreach (StringFormatAssignment item in sst.FormatList)
+            {
+                if (item.StringNumber == stringNumber)
+                {
+                    returnList.Add(item);
+                }
+            }
+            return returnList;
+        }
     }
 
 }

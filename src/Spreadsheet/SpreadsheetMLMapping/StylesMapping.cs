@@ -337,7 +337,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                 foreach (RGBColor item in sd.ColorDataList)
                 {
                     _writer.WriteStartElement("rgbColor");
-                    _writer.WriteAttributeString("rgb", String.Format("{0:x2}", item.Alpha).ToString() + item.SixDigitHexCode); 
+                    _writer.WriteAttributeString("rgb", string.Format("{0:x2}", item.Alpha).ToString() + item.SixDigitHexCode); 
 
                     _writer.WriteEndElement(); 
 
@@ -365,7 +365,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
         public static void WriteRgbColor(XmlWriter writer, string color)
         {
-            if (!String.IsNullOrEmpty(color) && color != "Auto")
+            if (!string.IsNullOrEmpty(color) && color != "Auto")
             {
                 writer.WriteStartElement("color");
                 
@@ -378,7 +378,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
         public static void WriteRgbForegroundColor(XmlWriter writer, string color)
         {
-            if (!String.IsNullOrEmpty(color) && color != "Auto")
+            if (!string.IsNullOrEmpty(color) && color != "Auto")
             {
                 writer.WriteStartElement("fgColor");
                 writer.WriteAttributeString("rgb", "FF" + color);
@@ -388,7 +388,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
 
         public static void WriteRgbBackgroundColor(XmlWriter writer, string color)
         {
-            if (!String.IsNullOrEmpty(color) && color != "Auto")
+            if (!string.IsNullOrEmpty(color) && color != "Auto")
             {
                 writer.WriteStartElement("bgColor");
                 writer.WriteAttributeString("rgb", "FF" + color);

@@ -167,7 +167,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         _writer.WriteStartElement("definedName");
                         if (item.Name.Value.Length > 1)
                         {
-                            _writer.WriteAttributeString("name", item.Name.Value);
+                            _writer.WriteAttributeString("name", ExcelHelperClass.AssertNameIsValid(item.Name.Value));
                         }
                         else
                         {
@@ -177,6 +177,10 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                         if (item.itab > 0)
                         {
                             _writer.WriteAttributeString("localSheetId", (item.itab - 1).ToString());
+                        }
+                        if (item.fHidden)
+                        {
+                            _writer.WriteAttributeString("hidden", "1");
                         }
                         _writer.WriteValue(FormulaInfixMapping.mapFormula(item.rgce, _xlsContext));
 

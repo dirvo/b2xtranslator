@@ -231,7 +231,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             FormulaCell fcell = (FormulaCell)cell;
 
 
-                            if (((FormulaCell)cell).calculatedValue is String)
+                            if (((FormulaCell)cell).calculatedValue is string)
                             {
                                 _writer.WriteAttributeString("t", "str");
                             }
@@ -253,8 +253,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                             _writer.WriteStartElement("f");
                             if (!fcell.isSharedFormula)
                             {
-                                String value = FormulaInfixMapping.mapFormula(fcell.PtgStack, this._xlsContext);
-
+                                string value = FormulaInfixMapping.mapFormula(fcell.PtgStack, this._xlsContext);
 
                                 if (fcell.usesArrayRecord)
                                 {
@@ -289,7 +288,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                                         /// Write value and reference 
                                         _writer.WriteAttributeString("ref", sfd.getOXMLFormatedData());
 
-                                        String value = FormulaInfixMapping.mapFormula(sfd.PtgStack, this._xlsContext, sfd.rwFirst, sfd.colFirst);
+                                        string value = FormulaInfixMapping.mapFormula(sfd.PtgStack, this._xlsContext, sfd.rwFirst, sfd.colFirst);
                                         _writer.WriteString(value);
 
                                         sfd.RefCount++;

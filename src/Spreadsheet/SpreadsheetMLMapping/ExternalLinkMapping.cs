@@ -71,7 +71,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             _writer.WriteAttributeString("r", "id", OpenXmlNamespaces.Relationships, er.Id.ToString());
 
             _writer.WriteStartElement("sheetNames");
-            foreach (String var in sbd.RGST)
+            foreach (string var in sbd.RGST)
             {
                 _writer.WriteStartElement("sheetName");
                 _writer.WriteAttributeString("val", var);
@@ -83,7 +83,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
             if (sbd.ExternNames.Count > 0)
             {
                 _writer.WriteStartElement("definedNames");
-                foreach (String var in sbd.ExternNames)
+                foreach (string var in sbd.ExternNames)
                 {
                     _writer.WriteStartElement("definedName");
                     _writer.WriteAttributeString("name", var);
@@ -126,7 +126,7 @@ namespace DIaLOGIKa.b2xtranslator.SpreadsheetMLMapping
                                 // _writer.WriteAttributeString("t", "b");
                                 _writer.WriteElementString("v", Convert.ToString(crn.oper[i - crn.colFirst], CultureInfo.GetCultureInfo("en-US")));
                             }
-                            if (crn.oper[i - crn.colFirst] is String)
+                            if (crn.oper[i - crn.colFirst] is string)
                             {
                                 _writer.WriteAttributeString("t", "str");
                                 _writer.WriteElementString("v", crn.oper[i - crn.colFirst].ToString());
