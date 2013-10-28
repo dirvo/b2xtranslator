@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DIaLOGIKa.b2xtranslator.PresentationMLMapping</RootNamespace>
-    <AssemblyName>PresentationMLMapping</AssemblyName>
+    <AssemblyName>DIaLOGIKa.b2xtranslator.PresentationMLMapping</AssemblyName>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
