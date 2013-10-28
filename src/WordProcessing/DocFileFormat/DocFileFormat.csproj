@@ -160,7 +160,7 @@
     <Compile Include="SectionPropertyExceptions.cs" />
     <Compile Include="SprmTDefTable.cs" />
     <Compile Include="StringTable.cs" />
-    <Compile Include="StwStructure.cs" />
+    <Compile Include="StwUser.cs" />
     <Compile Include="ToolbarControl.cs" />
     <Compile Include="ToolbarControlBitmap.cs" />
     <Compile Include="ToolbarCustomization.cs" />
